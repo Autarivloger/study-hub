@@ -368,6 +368,111 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .lesson-header h2{ font-size:26px; margin:4px 0 6px; }
 .lh-sub{ font-size:15.5px; color:var(--text-dim); margin:0; line-height:1.55; }
 
+/* ---------- Lesson learning structure ---------- */
+/* Learning objective, shown directly under the lesson title. */
+.ls-obj{
+  border:1px solid var(--border); border-left:3px solid var(--accent);
+  background:var(--accent-soft); border-radius:0 10px 10px 0;
+  padding:12px 14px; margin:14px 0 0;
+}
+.ls-obj-lab{
+  font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent); margin-bottom:4px;
+}
+.ls-obj-text{ font-size:14.5px; line-height:1.55; color:var(--text); }
+
+/* Per-lesson progress indicator in the header. */
+.ls-prog{ margin:14px 0 0; }
+.ls-prog-row{
+  display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+  font-size:12px; color:var(--text-dim); margin-bottom:5px;
+}
+.ls-prog-row b{ color:var(--text); }
+
+/* Syntax pattern box. */
+.ls-syn{
+  border:1px solid var(--border); border-radius:10px; overflow:hidden;
+  margin:0 0 12px; background:var(--bg-soft);
+}
+.ls-syn-tag{
+  font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--text-dim); padding:7px 12px; border-bottom:1px solid var(--border);
+}
+.ls-syn pre{ margin:0; padding:12px 14px; overflow-x:auto; -webkit-overflow-scrolling:touch; background:#1e1c19; }
+.ls-syn pre code{ color:#e6e1d8; font-size:13px; line-height:1.6; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+.ls-syn-note{ font-size:13px; color:var(--text-dim); padding:9px 12px; line-height:1.5; }
+
+/* Common mistake: wrong / right / why. */
+.ls-mis{ border:1px solid var(--border); border-radius:10px; overflow:hidden; margin:0 0 12px; }
+.ls-mis-row{ display:flex; align-items:stretch; border-bottom:1px solid var(--border); }
+.ls-mis-lab{
+  flex:0 0 54px; display:flex; align-items:center; justify-content:center;
+  font-size:10.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+}
+.ls-mis-bad .ls-mis-lab{ background:var(--danger); color:#fff; }
+.ls-mis-good .ls-mis-lab{ background:var(--good); color:#fff; }
+.ls-mis-row pre{ margin:0; padding:11px 13px; flex:1; min-width:0; overflow-x:auto; background:#1e1c19; }
+.ls-mis-row pre code{ color:#e6e1d8; font-size:12.5px; line-height:1.6; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+.ls-mis-why{ font-size:13.5px; line-height:1.55; color:var(--text-dim); padding:10px 13px; background:var(--bg-soft); }
+
+/* Mini challenge. */
+.ls-chal{
+  border:1px solid var(--warn); border-radius:12px; padding:16px 18px; margin:0 0 14px;
+  background:var(--bg-elev);
+}
+.ls-chal-lab{
+  font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--warn); margin-bottom:6px;
+}
+.ls-chal-brief{ font-size:15px; line-height:1.6; margin:0 0 10px; }
+.ls-chal-hint{ font-size:13.5px; color:var(--text-dim); line-height:1.55; margin:0 0 12px; }
+
+/* Inline end-of-lesson quiz. */
+.ls-quiz{ border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin:0 0 14px; background:var(--bg-elev); }
+.ls-quiz-lab{
+  font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent); margin-bottom:8px;
+}
+.ls-quiz-q{ font-size:15.5px; font-weight:700; line-height:1.5; margin:0 0 12px; }
+.ls-quiz-opt{
+  display:block; width:100%; text-align:left; background:var(--bg-soft);
+  border:1px solid var(--border); border-radius:9px; padding:11px 13px;
+  font-size:14.5px; margin-bottom:7px; line-height:1.45; color:var(--text);
+}
+.ls-quiz-opt:hover:not(:disabled){ border-color:var(--accent); }
+.ls-quiz-opt.correct{ background:var(--good); border-color:var(--good); color:#fff; font-weight:600; }
+.ls-quiz-opt.wrong{ background:var(--danger); border-color:var(--danger); color:#fff; font-weight:600; }
+.ls-quiz-opt:disabled{ opacity:1; }
+.ls-quiz-why{
+  font-size:13.5px; line-height:1.55; color:var(--text-dim);
+  border-left:3px solid var(--border); padding:2px 0 2px 11px; margin:10px 0 0;
+}
+.ls-quiz-score{ font-size:14.5px; line-height:1.6; }
+
+/* Previous / next lesson bar. */
+.ls-nav{ display:flex; gap:10px; margin:18px 0 0; }
+.ls-nav button{
+  flex:1; min-width:0; text-align:left; background:var(--bg-elev);
+  border:1px solid var(--border); border-radius:11px; padding:11px 13px; color:var(--text);
+}
+.ls-nav button:hover:not(:disabled){ border-color:var(--accent); }
+.ls-nav button:disabled{ opacity:.4; }
+.ls-nav .lsn-dir{
+  font-size:10.5px; font-weight:800; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--text-dim); margin-bottom:3px;
+}
+.ls-nav .lsn-name{
+  font-size:14px; font-weight:700; line-height:1.35;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.ls-nav .lsn-next{ text-align:right; }
+@media (max-width:520px){
+  .ls-nav{ flex-direction:column; }
+  .ls-nav .lsn-next{ text-align:left; }
+  .ls-mis-row{ flex-direction:column; }
+  .ls-mis-lab{ flex:0 0 auto; justify-content:flex-start; padding:5px 13px; }
+}
+
 .ls-h{ font-size:18px; margin:30px 0 8px; padding-top:14px; border-top:1px solid var(--border); }
 .ls-p{ font-size:15.5px; line-height:1.75; margin:0 0 14px; font-family:var(--font-read); max-width:65ch; }
 
@@ -930,13 +1035,14 @@ function loadData(){
       d.course.practice.solved = d.course.practice.solved || {};
       d.journal = d.journal || {};
       d.lessonsDone = d.lessonsDone || {};   // lessonId -> ISO completion date
+      d.lessonQuizScores = d.lessonQuizScores || {};  // lessonId -> best quiz %
       d.wisdom = d.wisdom || [];
       d.lastBackup = d.lastBackup || null;
       return d;
     }
   }catch(e){}
   return { notes:[], decks:[], cards:[], todos:[], quizzes:[],
-    timerSettings:{ focus:25, short:5, long:15, longEvery:4 }, timerLog:[], seedVersion:0, course:{ startDate:null, done:{}, notes:{}, practice:{ solved:{}, attempts:0 } }, journal:{}, lessonsDone:{}, wisdom:[], lastBackup:null };
+    timerSettings:{ focus:25, short:5, long:15, longEvery:4 }, timerLog:[], seedVersion:0, course:{ startDate:null, done:{}, notes:{}, practice:{ solved:{}, attempts:0 } }, journal:{}, lessonsDone:{}, lessonQuizScores:{}, wisdom:[], lastBackup:null };
 }
 let DB = loadData();
 function save(){
@@ -6974,6 +7080,31 @@ const LESSONS = [
   level:"Absolute beginner",
   minutes:75,
   week:1,
+  objective:"Write a .py file and run it from the terminal, store values in well-named variables, and read a traceback well enough to fix your own mistakes without asking anyone.",
+  mistakes:[
+    {wrong:"print(\"Total: \" + 5)", right:"print(\"Total:\", 5)\nprint(f\"Total: {5}\")",
+     why:"You cannot glue a string to a number with +. Python raises TypeError: can only concatenate str (not \"int\") to str. Either let print() handle it with a comma, or convert the number into the string yourself with an f-string."},
+    {wrong:"age = input(\"Your age: \")\nprint(age + 1)", right:"age = int(input(\"Your age: \"))\nprint(age + 1)",
+     why:"input() ALWAYS hands back a string, even when the user types digits. \"20\" + 1 is a TypeError. Convert at the moment you read it, not later."},
+    {wrong:"2 + 2 = total", right:"total = 2 + 2",
+     why:"Assignment always flows right to left: the name being created goes on the left of the =. Written the other way round Python reports SyntaxError: cannot assign to expression."},
+  ],
+  challenge:{ brief:"Write receipt.py that stores a shop name, three item names with three prices, and a tax rate. Print a receipt with each item on its own line, then a subtotal, the tax amount, and the final total — every money value shown to exactly two decimal places.",
+    hint:"Use f-strings with the :.2f format spec, like f\"{price:.2f}\". Compute the subtotal into its own variable before you calculate tax on it.",
+    code:"shop = \"Autari Store\"\ntax_rate = 0.13\n\nitem1, price1 = \"Notebook\", 120.0\nitem2, price2 = \"Pen\", 25.5\nitem3, price3 = \"Backpack\", 1499.99\n\nsubtotal = price1 + price2 + price3\ntax = subtotal * tax_rate\ntotal = subtotal + tax\n\nprint(shop)\nprint(\"-\" * 28)\nprint(f\"{item1:<12}{price1:>10.2f}\")\nprint(f\"{item2:<12}{price2:>10.2f}\")\nprint(f\"{item3:<12}{price3:>10.2f}\")\nprint(\"-\" * 28)\nprint(f\"{'Subtotal':<12}{subtotal:>10.2f}\")\nprint(f\"{'Tax 13%':<12}{tax:>10.2f}\")\nprint(f\"{'TOTAL':<12}{total:>10.2f}\")",
+    out:"Autari Store\n----------------------------\nNotebook        120.00\nPen              25.50\nBackpack       1499.99\n----------------------------\nSubtotal       1645.49\nTax 13%         213.91\nTOTAL          1859.40",
+    why:"Three ideas are doing the work. :.2f rounds to two decimals so money never shows as 213.9137. :<12 pads a name to 12 characters on the left and :>10 pushes a number to the right inside 10 characters, which is what makes the columns line up. And \"-\" * 28 repeats a string, which is far tidier than typing 28 dashes." },
+  quiz:[
+    {q:"What does input(\"Age: \") give you back when the user types 20?",
+     options:["The integer 20", "The string \"20\"", "The float 20.0", "It depends on what the user typed"], correct:1,
+     why:"input() always returns a string, no matter what was typed. That is why you wrap it in int() when you need to do arithmetic."},
+    {q:"Which line correctly stores the result of 5 divided by 2?",
+     options:["5 / 2 = result", "result = 5 / 2", "result == 5 / 2", "let result = 5 / 2"], correct:1,
+     why:"The name goes on the left, the value on the right. == is a comparison, not an assignment, and Python has no let keyword."},
+    {q:"You see: TypeError: can only concatenate str (not \"int\") to str. What did you most likely do?",
+     options:["Misspelled a variable name", "Forgot a colon at the end of a line", "Used + between a string and a number", "Divided by zero"], correct:2,
+     why:"That exact message is Python telling you a + had a string on one side and a number on the other. Use a comma in print(), or an f-string."},
+  ],
   sections:[
     {t:"key", v:"A program is a list of instructions, run top to bottom, one line at a time. Everything else in Python is built on that. This lesson covers all six days of Week 1 in one place."},
 
@@ -7153,6 +7284,31 @@ const LESSONS = [
   level:"Beginner → Intermediate",
   minutes:60,
   week:9,
+  objective:"Package a piece of work behind a name, pass information in with parameters and get results back with return, and understand why returning beats printing.",
+  mistakes:[
+    {wrong:"def add(a, b):\n    print(a + b)\n\ntotal = add(2, 3)\nprint(total * 2)", right:"def add(a, b):\n    return a + b\n\ntotal = add(2, 3)\nprint(total * 2)",
+     why:"A function that prints shows you a value but hands back None, so total is None and total * 2 raises TypeError. print() is for a human to read; return is for the rest of your program to use. Almost always, return."},
+    {wrong:"def add_item(item, basket=[]):\n    basket.append(item)\n    return basket\n\nprint(add_item(\"apple\"))\nprint(add_item(\"pear\"))", right:"def add_item(item, basket=None):\n    if basket is None:\n        basket = []\n    basket.append(item)\n    return basket",
+     why:"The default list is created ONCE when the function is defined, not each time it is called, so it quietly accumulates: the second call prints ['apple', 'pear']. Never use a mutable default — use None and build the list inside."},
+    {wrong:"def greet(name):\n    message = f\"Hello {name}\"\n\ngreet(\"Ram\")\nprint(message)", right:"def greet(name):\n    return f\"Hello {name}\"\n\nmessage = greet(\"Ram\")\nprint(message)",
+     why:"Variables created inside a function are local and vanish when it ends, so the outer print raises NameError: name 'message' is not defined. The only supported way to get a value out is to return it."},
+  ],
+  challenge:{ brief:"Write three small functions and combine them: is_pass(score) returning True or False, best_of(scores) returning the highest, and report(name, scores) that uses both to return a one-line summary string. No function should print anything except the last line of your test code.",
+    hint:"Keep each function doing exactly one thing and returning its answer. report() should call the other two rather than repeating their logic — that is the whole point of splitting them up.",
+    code:"def is_pass(score):\n    return score >= 40\n\ndef best_of(scores):\n    return max(scores)\n\ndef report(name, scores):\n    top = best_of(scores)\n    passed = sum(1 for s in scores if is_pass(s))\n    return f\"{name}: best {top}, passed {passed} of {len(scores)}\"\n\nprint(report(\"Autari\", [72, 35, 90, 41]))\nprint(report(\"Sita\", [30, 22]))",
+    out:"Autari: best 90, passed 3 of 4\nSita: best 22, passed 0 of 2",
+    why:"Notice that is_pass just returns the comparison directly — writing `if score >= 40: return True else: return False` is the same thing the long way round. Because each function returns rather than prints, report() can freely reuse them, and you could later swap the pass mark in one place only." },
+  quiz:[
+    {q:"What does a function return if it has no return statement?",
+     options:["0", "None", "An empty string", "It raises an error"], correct:1,
+     why:"Every Python function returns None unless you return something else. That is why assigning the result of a printing function gives you None."},
+    {q:"Why is def f(items=[]) dangerous?",
+     options:["Lists cannot be parameters", "The same list is reused across every call", "It is slower than a tuple", "It shadows the built-in list"], correct:1,
+     why:"The default is evaluated once at definition time, so changes made in one call are still there on the next. Use None as the default and create the list inside the function."},
+    {q:"A variable created inside a function is visible where?",
+     options:["Everywhere in the file", "Only inside that function", "Only after the function runs", "In any function defined later"], correct:1,
+     why:"It is local to that call and disappears when the function ends. To get a value out, return it."},
+  ],
   sections:[
     {t:"key", v:"A function is a named piece of work. You define it once, then run it whenever you like, with different inputs. This is the single biggest step up in code quality you will make as a beginner."},
 
@@ -7315,6 +7471,31 @@ const LESSONS = [
   level:"Beginner",
   minutes:50,
   week:3,
+  objective:"Branch your program with if, elif and else, combine conditions with and, or and not, and understand why the order of your branches decides the result.",
+  mistakes:[
+    {wrong:"if score = 50:\n    print(\"Pass\")", right:"if score == 50:\n    print(\"Pass\")",
+     why:"A single = assigns, a double == compares. Inside an if Python needs a comparison, so a single = is SyntaxError: invalid syntax. Read == out loud as \"is equal to\"."},
+    {wrong:"if day == \"Sat\" or \"Sun\":\n    print(\"Weekend\")", right:"if day == \"Sat\" or day == \"Sun\":\n    print(\"Weekend\")\n\n# or, more Pythonic:\nif day in (\"Sat\", \"Sun\"):\n    print(\"Weekend\")",
+     why:"This is the nastiest bug on this page because it never errors — it is just always True. Python reads it as (day == \"Sat\") or (\"Sun\"), and a non-empty string is truthy. You must repeat the variable on both sides, or use in."},
+    {wrong:"if score >= 40:\n    print(\"Pass\")\nelif score >= 70:\n    print(\"Distinction\")", right:"if score >= 70:\n    print(\"Distinction\")\nelif score >= 40:\n    print(\"Pass\")",
+     why:"Branches are tested top to bottom and the first match wins. With the loose test first, a score of 90 matches >= 40 and prints \"Pass\" — the distinction branch can never run. Always order thresholds from strictest to loosest."},
+  ],
+  challenge:{ brief:"Write grade(score) that returns \"A\" for 80 and above, \"B\" for 60-79, \"C\" for 40-59, and \"F\" below 40. Reject impossible input: anything below 0 or above 100 should return \"Invalid\". Test it with 95, 72, 40, 12 and 150.",
+    hint:"Handle the invalid range FIRST and return early. After that guard, you know the number is sane and your thresholds can go strictest to loosest without repeating yourself.",
+    code:"def grade(score):\n    if score < 0 or score > 100:\n        return \"Invalid\"\n    if score >= 80:\n        return \"A\"\n    elif score >= 60:\n        return \"B\"\n    elif score >= 40:\n        return \"C\"\n    else:\n        return \"F\"\n\nfor s in (95, 72, 40, 12, 150):\n    print(s, \"->\", grade(s))",
+    out:"95 -> A\n72 -> B\n40 -> C\n12 -> F\n150 -> Invalid",
+    why:"The early return for invalid input is called a guard clause, and it keeps the rest of the function simple — below it, every score is known to be 0-100. Because elif stops at the first match, `score >= 60` already means \"60 to 79\"; you never need to write `score >= 60 and score < 80`." },
+  quiz:[
+    {q:"What does if x == 3 or 4: actually test?",
+     options:["Whether x is 3 or x is 4", "Whether x equals 3, otherwise it is always True", "Whether x equals both 3 and 4", "It is a syntax error"], correct:1,
+     why:"Python groups it as (x == 3) or (4). The number 4 is truthy, so the whole condition is True for ANY x. Write x == 3 or x == 4, or x in (3, 4)."},
+    {q:"With score = 85, what does this print?\nif score >= 40: print(\"Pass\")\nelif score >= 80: print(\"Distinction\")",
+     options:["Distinction", "Pass", "Both", "Nothing"], correct:1,
+     why:"The first matching branch wins and the rest are skipped entirely. 85 satisfies >= 40, so it prints \"Pass\" and the elif is never reached. Order thresholds strictest first."},
+    {q:"Which value is truthy in Python?",
+     options:["0", "\"\"", "[]", "\"False\""], correct:3,
+     why:"Zero, the empty string and the empty list are all falsy. The string \"False\" is a non-empty string, so it is truthy — a classic trap when reading text input."},
+  ],
   sections:[
     {t:"key", v:"A condition is a question with only two possible answers: True or False. Everything in this lesson is about asking those questions well, and putting them in the right order."},
 
@@ -7468,6 +7649,31 @@ const LESSONS = [
   level:"Beginner",
   minutes:55,
   week:4,
+  objective:"Repeat work with for and while, generate number sequences with range(), and choose the right loop for the job without writing an accidental infinite one.",
+  mistakes:[
+    {wrong:"nums = [1, 2, 3, 4]\nfor n in nums:\n    if n % 2 == 0:\n        nums.remove(n)", right:"nums = [1, 2, 3, 4]\nnums = [n for n in nums if n % 2 != 0]",
+     why:"Never change a list while looping over it. Removing an item shifts everything left, the loop's internal counter moves on, and items get skipped — this leaves [1, 3, 4], not [1, 3]. Build a new list instead."},
+    {wrong:"for i in range(1, 10):\n    print(i)   # I want 1 to 10", right:"for i in range(1, 11):\n    print(i)",
+     why:"range() stops BEFORE its second argument. range(1, 10) gives 1 through 9. To include 10 you must write 11 — the classic off-by-one."},
+    {wrong:"count = 0\nwhile count < 5:\n    print(count)", right:"count = 0\nwhile count < 5:\n    print(count)\n    count += 1",
+     why:"Nothing inside the loop changes count, so the condition stays True forever and the program hangs. Every while loop needs something in its body that moves it toward being False."},
+  ],
+  challenge:{ brief:"Print a clean 5 x 5 multiplication table with a header row and a header column, each number right-aligned in a 4-character space so the grid stays square.",
+    hint:"Use a nested loop: the outer one walks the rows, the inner one builds a single row. Give print() the end=\"\" argument so it stays on the same line, then a bare print() at the end of each row to break the line.",
+    code:"size = 5\n\nprint(\"    \", end=\"\")\nfor col in range(1, size + 1):\n    print(f\"{col:>4}\", end=\"\")\nprint()\n\nfor row in range(1, size + 1):\n    print(f\"{row:>4}\", end=\"\")\n    for col in range(1, size + 1):\n        print(f\"{row * col:>4}\", end=\"\")\n    print()",
+    out:"       1   2   3   4   5\n   1   1   2   3   4   5\n   2   2   4   6   8  10\n   3   3   6   9  12  15\n   4   4   8  12  16  20\n   5   5  10  15  20  25",
+    why:"end=\"\" is the key: by default print() adds a newline, which would put every number on its own line. Suppressing it keeps the row together, and the bare print() after the inner loop supplies the single line break. :>4 right-aligns in four characters so single and double digits still line up." },
+  quiz:[
+    {q:"How many numbers does range(2, 8) produce?",
+     options:["8", "7", "6", "5"], correct:2,
+     why:"It starts at 2 and stops before 8, giving 2, 3, 4, 5, 6, 7 — six numbers. A quick rule: stop minus start."},
+    {q:"Which loop should you reach for when you do not know in advance how many times to repeat?",
+     options:["for", "while", "range", "Either works identically"], correct:1,
+     why:"A for loop walks a known sequence. A while loop repeats until a condition changes, which is what you want for things like 'keep asking until the input is valid'."},
+    {q:"What is the danger in removing items from a list while looping over it?",
+     options:["It raises IndexError immediately", "It silently skips items", "It reverses the list", "Nothing, it is fine"], correct:1,
+     why:"Removing shifts later items down one position while the loop counter still moves up, so some items are never visited. It fails silently, which makes it much worse than a crash."},
+  ],
   sections:[
     {t:"key", v:"A for loop repeats once for each item in a collection. A while loop repeats as long as something stays true. That is the whole distinction: for knows how many times, while does not."},
 
@@ -7634,6 +7840,31 @@ const LESSONS = [
   level:"Beginner",
   minutes:45,
   week:2,
+  objective:"Pull any part out of a string with indexing and slicing, clean up messy text with the core string methods, and build formatted output with f-strings.",
+  mistakes:[
+    {wrong:"name = \"autari\"\nname[0] = \"A\"", right:"name = \"autari\"\nname = name.capitalize()",
+     why:"Strings are immutable — you can never change one in place. name[0] = \"A\" raises TypeError: 'str' object does not support item assignment. Every string method returns a NEW string instead, which you must assign back."},
+    {wrong:"answer = input(\"Country? \")\nif answer == \"Nepal\":\n    print(\"Correct\")", right:"answer = input(\"Country? \")\nif answer.strip().lower() == \"nepal\":\n    print(\"Correct\")",
+     why:"\" Nepal\" and \"nepal\" and \"NEPAL\" are three different strings as far as == is concerned. Real user input carries stray spaces and unpredictable case, so normalise with .strip().lower() before you compare."},
+    {wrong:"name = \"Autari\"\nprint(\"Hello \" + name + \", you are \" + 20 + \" years old\")", right:"name = \"Autari\"\nage = 20\nprint(f\"Hello {name}, you are {age} years old\")",
+     why:"Concatenation with + breaks the moment a number joins in, and it is painful to read. An f-string puts the values directly where they belong and converts them for you."},
+  ],
+  challenge:{ brief:"Write a function clean_username(raw) that turns messy sign-up input into a tidy username: trim the spaces, lowercase it, replace any inner spaces with underscores, and cut it to 12 characters. Test it with \"  Autari Parajuli  \".",
+    hint:"Chain the methods in the right order — strip first, then lower, then replace, then slice. A slice past the end of a string is safe, so [:12] never errors.",
+    code:"def clean_username(raw):\n    return raw.strip().lower().replace(\" \", \"_\")[:12]\n\nprint(clean_username(\"  Autari Parajuli  \"))\nprint(clean_username(\"Ram\"))\nprint(clean_username(\"   A Very Long Name Here \"))",
+    out:"autari_paraj\nram\na_very_long_",
+    why:"Order matters. Stripping first means the trailing spaces never become underscores. Each method returns a new string, so they chain left to right. The final [:12] is a slice, and because slicing never raises IndexError, a short name like \"Ram\" passes through untouched." },
+  quiz:[
+    {q:"What is \"Python\"[1:4]?",
+     options:["\"Pyt\"", "\"yth\"", "\"ytho\"", "\"tho\""], correct:1,
+     why:"Slicing starts at index 1 (the 'y') and stops BEFORE index 4, giving characters 1, 2 and 3 — \"yth\"."},
+    {q:"After name = \"ram\", what does name.upper() leave name as?",
+     options:["\"RAM\"", "\"ram\"", "\"Ram\"", "It raises an error"], correct:1,
+     why:"Strings are immutable. .upper() RETURNS \"RAM\" but changes nothing; name is still \"ram\" unless you assign the result back."},
+    {q:"Which is the safest way to compare messy user input to \"yes\"?",
+     options:["reply == \"yes\"", "reply.strip().lower() == \"yes\"", "reply.upper() == \"yes\"", "reply in \"yes\""], correct:1,
+     why:"Stripping removes stray spaces and lowering removes case differences, so \" YES \" still matches. Comparing to \"yes\" after .upper() can never match, and `in` would also accept \"y\" or \"es\"."},
+  ],
   sections:[
     {t:"key", v:"Strings cannot be changed. Every string method gives you a NEW string and leaves the original alone. Forget this one fact and half your string code will silently do nothing."},
 
@@ -7762,6 +7993,31 @@ const LESSONS = [
   level:"Beginner → Advanced",
   minutes:60,
   week:5,
+  objective:"Store many values in order, read and change them by index, grow and shrink a list with its core methods, and avoid the aliasing trap that catches every beginner.",
+  mistakes:[
+    {wrong:"a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)   # expecting [1, 2, 3]", right:"a = [1, 2, 3]\nb = a.copy()      # or a[:] or list(a)\nb.append(4)\nprint(a)",
+     why:"b = a does not copy the list — it gives the same list a second name. Changing b changes a, so this prints [1, 2, 3, 4]. Use .copy() when you want a genuinely separate list."},
+    {wrong:"names = [\"Ram\", \"Sita\"]\nnames.append([\"Hari\", \"Gita\"])", right:"names = [\"Ram\", \"Sita\"]\nnames.extend([\"Hari\", \"Gita\"])",
+     why:"append() adds its argument as ONE item, so you end up with a list nested inside your list: [\"Ram\", \"Sita\", [\"Hari\", \"Gita\"]]. extend() unpacks the other list and adds each item separately."},
+    {wrong:"items = [\"a\", \"b\", \"c\"]\nprint(items[3])", right:"items = [\"a\", \"b\", \"c\"]\nprint(items[-1])     # last item\nprint(items[2])      # also the last item",
+     why:"Three items occupy positions 0, 1 and 2 — there is no position 3, so this raises IndexError: list index out of range. The last item is always [-1], which is safer than counting."},
+  ],
+  challenge:{ brief:"Given scores = [72, 45, 90, 33, 88, 61], print the highest, the lowest, the average to one decimal place, and a new list holding only the passing scores (40 and above), sorted from high to low.",
+    hint:"max(), min(), sum() and len() do most of this for you. Build the passing list with a comprehension, then sort it with reverse=True.",
+    code:"scores = [72, 45, 90, 33, 88, 61]\n\nprint(\"Highest:\", max(scores))\nprint(\"Lowest: \", min(scores))\nprint(f\"Average: {sum(scores) / len(scores):.1f}\")\n\npassing = sorted([s for s in scores if s >= 40], reverse=True)\nprint(\"Passing:\", passing)",
+    out:"Highest: 90\nLowest:  33\nAverage: 64.8\nPassing: [90, 88, 72, 61, 45]",
+    why:"sum(scores) / len(scores) is the standard average idiom — just remember it is a float, hence :.1f. sorted() returns a NEW sorted list and leaves the original alone, whereas scores.sort() would rearrange the original in place and return None." },
+  quiz:[
+    {q:"After a = [1, 2] and b = a, what does b.append(3) do to a?",
+     options:["Nothing, a is unchanged", "a becomes [1, 2, 3]", "It raises an error", "a becomes [1, 2, [3]]"], correct:1,
+     why:"b = a makes both names point at the same list object, so a change through either name is visible through both. Use a.copy() for an independent list."},
+    {q:"What is the last valid index of a list with 4 items?",
+     options:["4", "3", "5", "It depends on the contents"], correct:1,
+     why:"Indexing starts at 0, so 4 items sit at 0, 1, 2 and 3. Asking for [4] raises IndexError."},
+    {q:"Which returns a new sorted list without changing the original?",
+     options:["nums.sort()", "sorted(nums)", "nums.sorted()", "nums.order()"], correct:1,
+     why:"sorted(nums) returns a new list. nums.sort() sorts in place and returns None — assigning its result is a very common bug."},
+  ],
   sections:[
     {t:"key", v:"A list is an ordered, changeable collection. Ordered means position matters. Changeable means you can add, remove and edit after creating it. Those two facts explain almost everything lists do — and every trap they hide."},
 
@@ -7899,6 +8155,31 @@ const LESSONS = [
   level:"Beginner",
   minutes:40,
   week:6,
+  objective:"Choose the right container for the job: a tuple when the data must not change, a set when you need uniqueness and fast membership tests, and a list when order and editing matter.",
+  mistakes:[
+    {wrong:"point = (5)\nprint(type(point))", right:"point = (5,)\nprint(type(point))",
+     why:"Parentheses alone do not make a tuple — they are just grouping, so (5) is simply the integer 5. It is the COMMA that creates a tuple. For a single-item tuple you must write the trailing comma."},
+    {wrong:"colours = {\"red\", \"green\", \"blue\"}\nprint(colours[0])", right:"colours = {\"red\", \"green\", \"blue\"}\nfor c in colours:\n    print(c)\nprint(\"red\" in colours)",
+     why:"Sets are unordered, so there is no 'first' item and indexing raises TypeError: 'set' object is not subscriptable. Loop over a set, or test membership with in — which is what sets are brilliantly fast at."},
+    {wrong:"seen = set()\nseen.add([\"a\", \"b\"])", right:"seen = set()\nseen.add((\"a\", \"b\"))",
+     why:"Everything in a set must be hashable, and lists are not because they can change. Adding one raises TypeError: unhashable type: 'list'. A tuple is immutable and therefore hashable, so it can go in a set — and can be a dictionary key."},
+  ],
+  challenge:{ brief:"Two students list the subjects they take. Find the subjects both take, the ones only the first takes, and the full set either takes — then report how many distinct subjects are involved in total.",
+    hint:"Sets have operators for exactly this: & for the overlap, - for the difference, and | for the union. Convert the lists to sets first.",
+    code:"ram  = [\"maths\", \"physics\", \"nepali\", \"maths\"]\nsita = [\"physics\", \"chemistry\", \"nepali\"]\n\na, b = set(ram), set(sita)\n\nprint(\"Both take:     \", sorted(a & b))\nprint(\"Only Ram takes:\", sorted(a - b))\nprint(\"Either takes:  \", sorted(a | b))\nprint(\"Distinct total:\", len(a | b))",
+    out:"Both take:      ['nepali', 'physics']\nOnly Ram takes: ['maths']\nEither takes:   ['chemistry', 'maths', 'nepali', 'physics']\nDistinct total: 4",
+    why:"Converting to a set silently removed Ram's duplicate \"maths\" — that de-duplication is often the whole reason to reach for a set. The three operators read almost like English: & is and, | is or, - is except. sorted() is only there to make the output predictable, since sets have no order of their own." },
+  quiz:[
+    {q:"What is type((7)) in Python?",
+     options:["tuple", "int", "list", "set"], correct:1,
+     why:"Without a comma the parentheses only group, so (7) is just the integer 7. You need (7,) to make a one-item tuple."},
+    {q:"Why can a tuple be a dictionary key when a list cannot?",
+     options:["Tuples are shorter", "Tuples are immutable and therefore hashable", "Lists are too slow", "Tuples can only hold strings"], correct:1,
+     why:"Keys must hash to a stable value. A list can change after being used as a key, which would corrupt the lookup, so Python forbids it. Tuples cannot change, so they are safe."},
+    {q:"What does len({1, 2, 2, 3, 3, 3}) return?",
+     options:["6", "3", "2", "1"], correct:1,
+     why:"A set keeps only distinct values, so the duplicates collapse and you are left with {1, 2, 3} — three items."},
+  ],
   sections:[
     {t:"key", v:"You now know lists and dictionaries. Two containers remain. A SET holds unique things with no order. A TUPLE holds a fixed group that cannot be changed. Learn these and you know all four."},
 
@@ -8014,6 +8295,31 @@ const LESSONS = [
   level:"Beginner",
   minutes:45,
   week:7,
+  objective:"Store data by meaningful name rather than by position, read and update it safely, loop over keys and values together, and know when a dictionary beats a list.",
+  mistakes:[
+    {wrong:"student = {\"name\": \"Autari\"}\nprint(student[\"age\"])", right:"student = {\"name\": \"Autari\"}\nprint(student.get(\"age\"))\nprint(student.get(\"age\", \"not given\"))",
+     why:"Square brackets on a missing key raise KeyError and stop the program. .get() returns None instead, and takes an optional fallback value — use it whenever the key might legitimately be absent."},
+    {wrong:"scores = {\"ram\": 70, \"sita\": 85}\nfor s in scores:\n    print(s + 10)", right:"scores = {\"ram\": 70, \"sita\": 85}\nfor name, score in scores.items():\n    print(name, score + 10)",
+     why:"Looping over a dictionary gives you the KEYS, not the values, so this tries to add 10 to \"ram\" and raises TypeError. Use .items() when you want both, or .values() when you only need the values."},
+    {wrong:"lookup = {}\nlookup[[\"a\", \"b\"]] = 1", right:"lookup = {}\nlookup[(\"a\", \"b\")] = 1",
+     why:"Dictionary keys must be immutable so their hash never changes. A list raises TypeError: unhashable type: 'list'. Strings, numbers and tuples all work as keys."},
+  ],
+  challenge:{ brief:"Count how many times each word appears in a sentence, then print the words from most common to least, one per line. Treat words case-insensitively.",
+    hint:"Split the lowercased sentence into words, then build the counts with .get(word, 0) + 1. To sort by count, pass sorted() a key function that returns the value of each pair.",
+    code:"text = \"the quick brown fox jumps over the lazy dog the fox\"\n\ncounts = {}\nfor word in text.lower().split():\n    counts[word] = counts.get(word, 0) + 1\n\nfor word, n in sorted(counts.items(), key=lambda pair: pair[1], reverse=True):\n    if n > 1:\n        print(f\"{word:<8}{n}\")",
+    out:"the     3\nfox     2",
+    why:"counts.get(word, 0) + 1 is the standard counting idiom: on the first sighting .get() returns the fallback 0, so the count becomes 1, and it grows from there — no separate 'is this key here yet?' check needed. sorted() on .items() receives (word, count) pairs, and the key function picks out pair[1] so it sorts by the count rather than alphabetically." },
+  quiz:[
+    {q:"What does looping directly over a dictionary give you?",
+     options:["The values", "The keys", "(key, value) pairs", "The keys and values alternately"], correct:1,
+     why:"for k in d: walks the keys. Use d.values() for the values, or d.items() when you want both at once."},
+    {q:"For a key that might be missing, which is safe?",
+     options:["d[\"maybe\"]", "d.get(\"maybe\")", "d.fetch(\"maybe\")", "d->\"maybe\""], correct:1,
+     why:".get() returns None (or a fallback you supply) instead of raising KeyError, which is what square brackets do."},
+    {q:"Which of these can NOT be used as a dictionary key?",
+     options:["\"name\"", "42", "(1, 2)", "[1, 2]"], correct:3,
+     why:"Keys must be hashable, which in practice means immutable. Lists can change, so they are rejected with TypeError: unhashable type: 'list'. A tuple of the same values is fine."},
+  ],
   sections:[
     {t:"key", v:"A list finds things by POSITION. A dictionary finds things by NAME. That one sentence is 80% of dictionaries."},
 
@@ -8263,6 +8569,116 @@ function toggleLessonDone(id){
   save();
 }
 
+/* Lessons are authored in a convenient order, but taught in curriculum
+   order. Everything the learner sees - the list, and previous/next -
+   uses week order so the path through the course is coherent. */
+function lessonOrder(){
+  return LESSONS.slice().sort(function(a,b){ return a.week - b.week; });
+}
+function lessonNeighbours(id){
+  const seq = lessonOrder();
+  const i = seq.findIndex(function(x){ return x.id === id; });
+  return {
+    seq: seq,
+    pos: i,
+    prev: i > 0 ? seq[i-1] : null,
+    next: (i !== -1 && i < seq.length - 1) ? seq[i+1] : null
+  };
+}
+
+/* Item 8: common mistakes. Built from the lesson's `mistakes` array and
+   rendered through the shared section renderer, so the wrong/right pairs
+   are styled and highlighted exactly like every other block. */
+function renderMistakes(L){
+  if(!L.mistakes || !L.mistakes.length) return "";
+  return '<h3 class="ls-h">Common mistakes</h3>'
+    + renderSections(L.mistakes.map(function(m){
+        return { t:"mis", wrong:m.wrong, right:m.right, why:m.why };
+      }));
+}
+
+/* Item 10: mini challenge. Reuses the existing solB/data-sol reveal
+   mechanism so wireRevealButtons() picks it up with no extra wiring. */
+function renderChallenge(L){
+  if(!L.challenge) return "";
+  const c = L.challenge;
+  const i = solCount++;
+  return '<h3 class="ls-h">Mini challenge</h3>'
+    + '<div class="ls-chal">'
+    + '<div class="ls-chal-lab">Build it yourself</div>'
+    + '<p class="ls-chal-brief">' + escapeHtml(c.brief) + '</p>'
+    + (c.hint ? '<p class="ls-chal-hint"><b>Hint:</b> ' + escapeHtml(c.hint) + '</p>' : "")
+    + '<button type="button" class="btn secondary btn-sm" data-sol="' + i + '">Show solution</button>'
+    + '<div class="ls-sol-body" id="solB' + i + '" hidden>'
+    +   '<div class="ls-code"><div class="ls-code-tag">solution</div><pre><code>' + highlightPy(c.code) + '</code></pre></div>'
+    +   '<div class="ls-out"><div class="ls-out-tag">output</div><pre><code>' + escapeHtml(c.out) + '</code></pre></div>'
+    +   '<div class="ls-sol-why"><b>How it works</b>' + escapeHtml(c.why).replace(/\n/g,"<br>") + '</div>'
+    + '</div></div>';
+}
+
+/* Item 11: end-of-lesson quiz. Answers are graded in place rather than by
+   re-rendering, because a lesson page can be very long and a re-render
+   would throw away the reader's scroll position. */
+function renderLessonQuiz(L){
+  if(!L.quiz || !L.quiz.length) return "";
+  const best = DB.lessonQuizScores[L.id];
+  return '<h3 class="ls-h">Check yourself</h3>'
+    + '<div class="ls-quiz">'
+    + '<div class="ls-quiz-lab">' + L.quiz.length + ' questions</div>'
+    + (best != null ? '<div class="ls-quiz-score" id="lsQuizBest">Best so far: <b>' + best + '%</b></div>' : '')
+    + L.quiz.map(function(q, qi){
+        return '<div class="ls-quiz-item">'
+          + '<div class="ls-quiz-q">' + (qi+1) + '. ' + escapeHtml(q.q).replace(/\n/g,"<br>") + '</div>'
+          + q.options.map(function(o, oi){
+              return '<button type="button" class="ls-quiz-opt" data-lq="' + qi + '" data-lo="' + oi + '">'
+                + escapeHtml(o) + '</button>';
+            }).join("")
+          + '<div class="ls-quiz-why" id="lsWhy' + qi + '" hidden>' + escapeHtml(q.why) + '</div>'
+          + '</div>';
+      }).join("")
+    + '<div class="ls-quiz-score" id="lsQuizResult" hidden></div>'
+    + '</div>';
+}
+
+function wireLessonQuiz(el, L){
+  if(!L.quiz || !L.quiz.length) return;
+  const answered = {};
+  el.querySelectorAll(".ls-quiz-opt").forEach(function(btn){
+    btn.onclick = function(){
+      const qi = Number(btn.dataset.lq), oi = Number(btn.dataset.lo);
+      if(answered[qi] !== undefined) return;      // one shot per question
+      answered[qi] = oi;
+      const q = L.quiz[qi];
+      el.querySelectorAll('.ls-quiz-opt[data-lq="' + qi + '"]').forEach(function(b){
+        b.disabled = true;
+        const bi = Number(b.dataset.lo);
+        if(bi === q.correct) b.classList.add("correct");
+        else if(bi === oi)   b.classList.add("wrong");
+      });
+      const why = el.querySelector("#lsWhy" + qi);
+      if(why) why.hidden = false;
+
+      if(Object.keys(answered).length === L.quiz.length){
+        let correct = 0;
+        L.quiz.forEach(function(qq, i){ if(answered[i] === qq.correct) correct++; });
+        const pct = Math.round((correct / L.quiz.length) * 100);
+        const res = el.querySelector("#lsQuizResult");
+        if(res){
+          res.hidden = false;
+          res.innerHTML = '<b>' + correct + ' / ' + L.quiz.length + ' correct \u00b7 ' + pct + '%</b>';
+        }
+        const prev = DB.lessonQuizScores[L.id];
+        if(prev == null || pct > prev){          // only ever keep the best
+          DB.lessonQuizScores[L.id] = pct;
+          save();
+          const bestEl = el.querySelector("#lsQuizBest");
+          if(bestEl) bestEl.innerHTML = 'Best so far: <b>' + pct + '%</b>';
+        }
+      }
+    };
+  });
+}
+
 function renderLessons(){
   if(practiceState) return renderPractice();
   if(activeLessonId) return renderLessonDetail();
@@ -8274,7 +8690,7 @@ function renderLessons(){
       <div class="lp-row"><b>${LESSONS.filter(l=>lessonDone(l.id)).length} of ${LESSONS.length} lessons complete</b></div>
       ${progressBar(LESSONS.filter(l=>lessonDone(l.id)).length, LESSONS.length)}
     </div>
-    ${LESSONS.map(l=>`
+    ${lessonOrder().map(l=>`
       <button type="button" class="lesson-card${lessonDone(l.id) ? " done" : ""}" data-lesson="${l.id}">
         <div class="lc-top">
           <span class="lc-level">${escapeHtml(l.level)}</span>
@@ -8318,6 +8734,24 @@ function renderSections(sections){
     if(s.t==="warn") return `<div class="ls-box ls-warn"><b>Watch out</b>${escapeHtml(s.v).replace(/\n/g,"<br>")}</div>`;
     if(s.t==="key")  return `<div class="ls-box ls-key"><b>Key idea</b>${escapeHtml(s.v)}</div>`;
     if(s.t==="ex")   return `<div class="ls-ex">${escapeHtml(s.v)}</div>`;
+    /* Syntax pattern: the shape of the construct, before any real example. */
+    if(s.t==="syn")  return `<div class="ls-syn">
+        <div class="ls-syn-tag">Syntax</div>
+        <pre><code>${highlightPy(s.v)}</code></pre>
+        ${s.note ? `<div class="ls-syn-note">${escapeHtml(s.note)}</div>` : ""}
+      </div>`;
+    /* Common mistake: the wrong version, the fix, and why. */
+    if(s.t==="mis")  return `<div class="ls-mis">
+        <div class="ls-mis-row ls-mis-bad">
+          <div class="ls-mis-lab">Don't</div>
+          <pre><code>${highlightPy(s.wrong)}</code></pre>
+        </div>
+        <div class="ls-mis-row ls-mis-good">
+          <div class="ls-mis-lab">Do</div>
+          <pre><code>${highlightPy(s.right)}</code></pre>
+        </div>
+        <div class="ls-mis-why">${escapeHtml(s.why).replace(/\n/g,"<br>")}</div>
+      </div>`;
     if(s.t==="sol"){
       const i = solCount++;
       return `<div class="ls-sol">
@@ -8352,29 +8786,62 @@ function renderLessonDetail(){
 
   tryCount = 0; solCount = 0;
   const body = renderSections(L.sections);
+  const nb = lessonNeighbours(L.id);
+  const doneCount = LESSONS.filter(function(x){ return lessonDone(x.id); }).length;
 
+  /* Composed in the order a lesson is meant to be worked through:
+     title -> objective -> progress -> taught content (explanation, syntax,
+     examples, output, key ideas, practice) -> common mistakes -> mini
+     challenge -> quiz -> mark complete -> previous/next. */
   el.innerHTML = `
     <button type="button" class="back-link" id="backLessons">← All lessons</button>
     <div class="lesson-header">
       <div class="lh-eyebrow">${escapeHtml(L.level)} · ${L.minutes} min · Week ${L.week}</div>
       <h2>${escapeHtml(L.title)}</h2>
       <p class="lh-sub">${escapeHtml(L.subtitle)}</p>
+      ${L.objective ? `<div class="ls-obj">
+        <div class="ls-obj-lab">What you'll be able to do</div>
+        <div class="ls-obj-text">${escapeHtml(L.objective)}</div>
+      </div>` : ""}
+      <div class="ls-prog">
+        <div class="ls-prog-row">
+          <span>Lesson <b>${nb.pos + 1}</b> of ${nb.seq.length}</span>
+          <span>${doneCount} complete</span>
+        </div>
+        ${progressBar(doneCount, LESSONS.length, true)}
+      </div>
     </div>
     ${body}
+    ${renderMistakes(L)}
+    ${renderChallenge(L)}
+    ${renderLessonQuiz(L)}
     <div class="lesson-footer">
-      <p>Finished? Test yourself with the <b>Dictionaries</b> flashcard deck and quiz.</p>
+      <p>Finished? Reinforce it with the flashcard decks and the quiz bank.</p>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" class="btn${lessonDone(L.id) ? " secondary" : ""}" id="lessonDoneBtn">${lessonDone(L.id) ? "✓ Completed — undo" : "Mark as complete"}</button>
         <button type="button" class="btn secondary" id="lessonToCards">Study flashcards</button>
-        <button type="button" class="btn secondary" id="lessonToQuiz">Take the quiz</button>
+        <button type="button" class="btn secondary" id="lessonToQuiz">Quiz bank</button>
         <button type="button" class="btn secondary" id="lessonPractice">Shuffle these problems</button>
+      </div>
+      <div class="ls-nav">
+        <button type="button" id="lessonPrev"${nb.prev ? "" : " disabled"}>
+          <div class="lsn-dir">← Previous</div>
+          <div class="lsn-name">${nb.prev ? escapeHtml(nb.prev.title) : "Start of course"}</div>
+        </button>
+        <button type="button" id="lessonNext" class="lsn-next"${nb.next ? "" : " disabled"}>
+          <div class="lsn-dir">Next →</div>
+          <div class="lsn-name">${nb.next ? escapeHtml(nb.next.title) : "End of lessons"}</div>
+        </button>
       </div>
     </div>
   `;
 
   document.getElementById("backLessons").onclick = ()=>{ activeLessonId=null; window.scrollTo(0,0); renderLessons(); };
   wireRevealButtons(el);
-  document.getElementById("backLessons").onclick = ()=>{ activeLessonId=null; window.scrollTo(0,0); renderLessons(); };
+  wireLessonQuiz(el, L);
+  const goLesson = (t)=>{ if(!t) return; activeLessonId = t.id; window.scrollTo(0,0); renderLessons(); };
+  document.getElementById("lessonPrev").onclick = ()=> goLesson(nb.prev);
+  document.getElementById("lessonNext").onclick = ()=> goLesson(nb.next);
   document.getElementById("lessonDoneBtn").onclick = ()=>{
     toggleLessonDone(L.id);
     toast(lessonDone(L.id) ? "Lesson marked complete" : "Marked as not complete");
@@ -9144,9 +9611,10 @@ let searchIndex = null;
 
 /* Section types worth searching. Code and expected-output are included so
    you can find "zip(" or an error message you half-remember seeing. */
-const SEARCHABLE = { h:1, p:1, key:1, tip:1, warn:1, ex:1, code:1, out:1 };
+const SEARCHABLE = { h:1, p:1, key:1, tip:1, warn:1, ex:1, code:1, out:1, syn:1, mis:1 };
 
 function sectionText(sec){
+  if(sec.t === "mis") return [sec.wrong, sec.right, sec.why].filter(Boolean).join("\n");
   if(sec.v) return sec.v;
   if(sec.t === "sol") return [sec.code, sec.why].filter(Boolean).join("\n");
   if(sec.t === "try") return [sec.q, sec.a, sec.why].filter(Boolean).join("\n");
