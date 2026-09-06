@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Study Hub</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#33507c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Study Hub">
 <style>
 :root{
   --bg:#eeece5; --bg-elev:#ffffff; --bg-soft:#e2ded2;
@@ -805,8 +810,11 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
   #topbar .brand #brandTitle{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 }
 /* Below ~420px there is no room for the wordmark at all — the dot stays. */
+/* The bar carries 8 controls at 375px, so the gap and side padding are
+   trimmed instead of the buttons: touch targets stay a full 40x44.
+   A ninth control will not fit — that needs an overflow menu, not less gap. */
 @media (max-width: 420px){
-  #topbar{ padding-left:10px; padding-right:10px; }
+  #topbar{ padding-left:8px; padding-right:8px; gap:5px; }
   #topbar #brandTitle{ display:none; }
 }
 #backBtn{ display:none; }
@@ -821,6 +829,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
   <button type="button" id="backBtn" class="icon-btn" title="Back">←</button>
   <div class="brand"><span class="dot"></span><span id="brandTitle">Study Hub</span></div>
   <button type="button" class="icon-btn" id="searchBtn" title="Search all lessons (press /)">🔍</button>
+  <button type="button" class="icon-btn" id="syncBtn" title="Sync across devices">☁</button>
   <button type="button" class="icon-btn" id="exportBtn" title="Export backup">⇩</button>
   <button type="button" class="icon-btn" id="importBtn" title="Import backup">⇧</button>
   <input type="file" id="importFile" accept="application/json" style="display:none">
@@ -1019,35 +1028,92 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
 
 /* ============ Storage ============ */
 const STORE_KEY = "studyHubData_v1";
+/* The single source of truth for the shape of the saved data.
+   EVERY path that brings data in from outside - first load, file import,
+   device transfer, cloud pull - must run through this, so it is impossible
+   for one of them to forget a key and quietly destroy it. */
+function applyDefaults(d){
+  d = (d && typeof d === "object") ? d : {};
+  d.notes = d.notes||[]; d.decks = d.decks||[]; d.cards = d.cards||[];
+  d.todos = d.todos||[]; d.quizzes = d.quizzes||[];
+  d.timerSettings = d.timerSettings || { focus:25, short:5, long:15, longEvery:4 };
+  d.timerLog = d.timerLog || [];
+  d.seedVersion = d.seedVersion || 0;
+  d.course = d.course || { startDate:null, done:{}, notes:{} };
+  d.course.done = d.course.done || {}; d.course.notes = d.course.notes || {};
+  d.course.practice = d.course.practice || { solved:{}, attempts:0 };
+  d.course.practice.solved = d.course.practice.solved || {};
+  d.journal = d.journal || {};
+  d.lessonsDone = d.lessonsDone || {};   // lessonId -> ISO completion date
+  d.lessonQuizScores = d.lessonQuizScores || {};  // lessonId -> best quiz %
+  d.wisdom = d.wisdom || [];
+  d.lastBackup = d.lastBackup || null;
+  return d;
+}
+
+/* Every key that holds progress, listed once. Used by the merge below so a
+   new key can never be forgotten by one restore path but not another. */
+const ARRAY_KEYS = ["notes","decks","cards","todos","quizzes","wisdom"];
+const MAP_KEYS   = ["journal","lessonsDone","lessonQuizScores"];
+
+/* Union merge: nothing already on this device is ever removed. Items are
+   matched by id; map entries already held locally win, because that is the
+   copy the person in front of the screen has been editing. */
+function mergeIntoDB(incoming){
+  incoming = applyDefaults(JSON.parse(JSON.stringify(incoming || {})));
+
+  ARRAY_KEYS.forEach(function(key){
+    const have = new Set(DB[key].map(function(x){ return x && x.id; }));
+    incoming[key].forEach(function(item){
+      if(item && !have.has(item.id)) DB[key].push(item);
+    });
+  });
+
+  MAP_KEYS.forEach(function(key){
+    Object.keys(incoming[key]).forEach(function(k){
+      if(key === "lessonQuizScores"){
+        const mine = DB[key][k];
+        const theirs = incoming[key][k];
+        DB[key][k] = (mine == null) ? theirs : Math.max(mine, theirs);   // keep the best
+      }else if(DB[key][k] === undefined){
+        DB[key][k] = incoming[key][k];
+      }
+    });
+  });
+
+  ["done","notes"].forEach(function(k){
+    Object.keys(incoming.course[k]).forEach(function(kk){
+      if(DB.course[k][kk] === undefined) DB.course[k][kk] = incoming.course[k][kk];
+    });
+  });
+  Object.keys(incoming.course.practice.solved).forEach(function(kk){
+    if(!DB.course.practice.solved[kk]) DB.course.practice.solved[kk] = incoming.course.practice.solved[kk];
+  });
+  if(!DB.course.startDate && incoming.course.startDate) DB.course.startDate = incoming.course.startDate;
+
+  // Focus sessions carry no id, so de-duplicate on their content.
+  const seenLog = new Set(DB.timerLog.map(function(x){ return JSON.stringify(x); }));
+  incoming.timerLog.forEach(function(x){
+    const sig = JSON.stringify(x);
+    if(!seenLog.has(sig)){ seenLog.add(sig); DB.timerLog.push(x); }
+  });
+
+  DB.seedVersion = Math.max(DB.seedVersion || 0, incoming.seedVersion || 0);
+  applyDefaults(DB);
+}
+
 function loadData(){
   try{
     const raw = localStorage.getItem(STORE_KEY);
-    if(raw){
-      const d = JSON.parse(raw);
-      d.notes = d.notes||[]; d.decks = d.decks||[]; d.cards = d.cards||[];
-      d.todos = d.todos||[]; d.quizzes = d.quizzes||[];
-      d.timerSettings = d.timerSettings || { focus:25, short:5, long:15, longEvery:4 };
-      d.timerLog = d.timerLog || [];
-      d.seedVersion = d.seedVersion || 0;
-      d.course = d.course || { startDate:null, done:{}, notes:{} };
-      d.course.done = d.course.done || {}; d.course.notes = d.course.notes || {};
-      d.course.practice = d.course.practice || { solved:{}, attempts:0 };
-      d.course.practice.solved = d.course.practice.solved || {};
-      d.journal = d.journal || {};
-      d.lessonsDone = d.lessonsDone || {};   // lessonId -> ISO completion date
-      d.lessonQuizScores = d.lessonQuizScores || {};  // lessonId -> best quiz %
-      d.wisdom = d.wisdom || [];
-      d.lastBackup = d.lastBackup || null;
-      return d;
-    }
+    if(raw) return applyDefaults(JSON.parse(raw));
   }catch(e){}
-  return { notes:[], decks:[], cards:[], todos:[], quizzes:[],
-    timerSettings:{ focus:25, short:5, long:15, longEvery:4 }, timerLog:[], seedVersion:0, course:{ startDate:null, done:{}, notes:{}, practice:{ solved:{}, attempts:0 } }, journal:{}, lessonsDone:{}, lessonQuizScores:{}, wisdom:[], lastBackup:null };
+  return applyDefaults({});
 }
 let DB = loadData();
 function save(){
   try{ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }catch(e){ toast("Save failed — storage may be full"); }
   renderSideStats();
+  if(typeof syncQueuePush === "function") syncQueuePush();
 }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 function nowISO(){ return new Date().toISOString(); }
@@ -1836,16 +1902,15 @@ function confirmMerge(incoming){
     </div>
   `);
   document.getElementById("impCancel").onclick = closeModal;
+  /* Both branches go through applyDefaults/mergeIntoDB, so course progress,
+     the journal, Life Lessons and lesson results survive an import. */
   document.getElementById("impReplace").onclick = ()=>{
-    DB = { notes:incoming.notes||[], decks:incoming.decks||[], cards:incoming.cards||[], todos:incoming.todos||[], quizzes:incoming.quizzes||[] };
-    save(); closeModal(); switchView("notes"); toast("Data replaced");
+    DB = applyDefaults(incoming);
+    save(); closeModal(); renderEverything(); switchView("course"); toast("Data replaced");
   };
   document.getElementById("impMerge").onclick = ()=>{
-    ["notes","decks","cards","todos","quizzes"].forEach(key=>{
-      const existingIds = new Set((DB[key]||[]).map(x=>x.id));
-      (incoming[key]||[]).forEach(item=>{ if(!existingIds.has(item.id)) DB[key].push(item); });
-    });
-    save(); closeModal(); switchView("notes"); toast("Data merged");
+    mergeIntoDB(incoming);
+    save(); closeModal(); renderEverything(); switchView("course"); toast("Data merged");
   };
 }
 
@@ -9787,6 +9852,166 @@ document.addEventListener("keydown", function(ev){
   openSearch();
 });
 
+/* ================= CLOUD SYNC (private GitHub Gist) =================
+   Optional, and entirely separate from the offline app: if it is not set
+   up, or there is no connection, nothing here runs and nothing breaks.
+
+   The token lives under its own localStorage key, NEVER inside DB, so it
+   can never end up inside an exported backup or a synced payload. */
+
+const SYNC_KEY = "studyHubSync";
+const SYNC_FILE = "study-hub-progress.json";
+
+function syncCfg(){
+  try{ return JSON.parse(localStorage.getItem(SYNC_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function saveSyncCfg(c){
+  try{ localStorage.setItem(SYNC_KEY, JSON.stringify(c)); }catch(e){}
+}
+function syncReady(){ const c = syncCfg(); return !!(c.token && c.token.length > 10); }
+
+async function gistRequest(method, url, body){
+  const c = syncCfg();
+  const res = await fetch(url, {
+    method: method,
+    headers: {
+      "Authorization": "Bearer " + c.token,
+      "Accept": "application/vnd.github+json",
+      "Content-Type": "application/json"
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if(!res.ok){
+    let detail = "";
+    try{ detail = (await res.json()).message || ""; }catch(e){}
+    if(res.status === 401) throw new Error("Token rejected. Check it has the Gists permission.");
+    if(res.status === 404) throw new Error("Gist not found. Use Push first to create it.");
+    throw new Error("GitHub said " + res.status + (detail ? ": " + detail : ""));
+  }
+  return res.json();
+}
+
+async function syncPush(quiet){
+  if(!syncReady()){ if(!quiet) toast("Add your token first"); return; }
+  const c = syncCfg();
+  const payload = JSON.stringify({ syncedAt: nowISO(), data: DB }, null, 2);
+  const files = {}; files[SYNC_FILE] = { content: payload };
+  try{
+    let gist;
+    if(c.gistId){
+      gist = await gistRequest("PATCH", "https://api.github.com/gists/" + c.gistId, { files: files });
+    }else{
+      gist = await gistRequest("POST", "https://api.github.com/gists", {
+        description: "Study Hub progress (private)", public: false, files: files
+      });
+      c.gistId = gist.id;
+    }
+    c.lastSync = nowISO();
+    saveSyncCfg(c);
+    if(!quiet) toast("Progress saved to your cloud");
+    return true;
+  }catch(err){
+    if(!quiet) toast(String(err.message || err));
+    return false;
+  }
+}
+
+async function syncPull(){
+  const c = syncCfg();
+  if(!syncReady()){ toast("Add your token first"); return false; }
+  if(!c.gistId){ toast("Nothing in the cloud yet - Push from your other device first"); return false; }
+  try{
+    const gist = await gistRequest("GET", "https://api.github.com/gists/" + c.gistId);
+    const file = gist.files && gist.files[SYNC_FILE];
+    if(!file) throw new Error("That gist has no Study Hub data in it.");
+    let raw = file.content;
+    if(file.truncated && file.raw_url){ raw = await (await fetch(file.raw_url)).text(); }
+    const parsed = JSON.parse(raw);
+    const incoming = parsed && parsed.data ? parsed.data : parsed;
+
+    const before = totalDone() + Object.keys(DB.lessonsDone).length;
+    mergeIntoDB(incoming);
+    const after = totalDone() + Object.keys(DB.lessonsDone).length;
+
+    c.lastSync = nowISO();
+    saveSyncCfg(c);
+    save();
+    renderEverything();
+    toast(after > before ? ("Merged in " + (after - before) + " new completions") : "Already up to date");
+    return true;
+  }catch(err){
+    toast(String(err.message || err));
+    return false;
+  }
+}
+
+/* Auto-push is debounced hard: save() fires on nearly every keystroke in
+   the journal, and each push is a network round trip. */
+let syncTimer = null;
+function syncQueuePush(){
+  const c = syncCfg();
+  if(!c.auto || !syncReady()) return;
+  if(typeof navigator !== "undefined" && navigator.onLine === false) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(function(){ syncPush(true); }, 8000);
+}
+
+function openSyncSettings(){
+  const c = syncCfg();
+  openModal(
+    '<h2>Sync across your devices</h2>'
+    + '<p style="color:var(--text-dim);font-size:13.5px;line-height:1.6;margin:0 0 14px;">'
+    + 'Your progress is kept in a <b>private</b> GitHub Gist that only you can read. '
+    + 'The app still works completely offline \u2014 this only runs when you tap Push or Pull.</p>'
+    + '<div class="form-row"><label>GitHub token</label>'
+    + '<input type="password" id="syTok" placeholder="github_pat_..." value="' + escapeAttr(c.token || "") + '"></div>'
+    + '<div class="tf-hint" style="margin:-4px 0 12px;">Make a <b>fine-grained token</b> at github.com/settings/tokens '
+    + 'with the <b>Gists</b> permission set to Read and write. Nothing else. '
+    + 'It is stored only on this device and is never included in your backups.</div>'
+    + '<div class="form-row"><label>Gist ID <span style="font-weight:400;color:var(--text-dim);">(leave blank on your first device)</span></label>'
+    + '<input type="text" id="syGist" placeholder="created automatically" value="' + escapeAttr(c.gistId || "") + '"></div>'
+    + '<label style="display:flex;gap:9px;align-items:center;font-size:14px;margin:6px 0 4px;">'
+    + '<input type="checkbox" id="syAuto"' + (c.auto ? " checked" : "") + '> Push automatically after changes</label>'
+    + (c.lastSync ? '<div class="tf-hint">Last synced ' + escapeHtml(fmtDate(c.lastSync)) + '</div>' : '')
+    + '<div class="modal-actions">'
+    + '<button type="button" class="btn secondary" id="syClose">Close</button>'
+    + '<button type="button" class="btn secondary" id="syPull">\u2193 Pull</button>'
+    + '<button type="button" class="btn" id="syPush">\u2191 Push</button>'
+    + '</div>', true);
+
+  function collect(){
+    const c2 = syncCfg();
+    c2.token = document.getElementById("syTok").value.trim();
+    c2.gistId = document.getElementById("syGist").value.trim();
+    c2.auto = document.getElementById("syAuto").checked;
+    saveSyncCfg(c2);
+    return c2;
+  }
+  document.getElementById("syClose").onclick = ()=>{ collect(); closeModal(); };
+  /* On failure the dialog stays open with the button restored, so a wrong
+     token can be corrected without losing what was already typed. */
+  document.getElementById("syPush").onclick = async ()=>{
+    collect();
+    const btn = document.getElementById("syPush");
+    btn.disabled = true; btn.textContent = "Pushing\u2026";
+    const ok = await syncPush(false);
+    if(ok){ closeModal(); openSyncSettings(); }   // reopen so the new Gist ID shows
+    else { btn.disabled = false; btn.textContent = "\u2191 Push"; }
+  };
+  document.getElementById("syPull").onclick = async ()=>{
+    collect();
+    const btn = document.getElementById("syPull");
+    btn.disabled = true; btn.textContent = "Pulling\u2026";
+    const ok = await syncPull();
+    if(ok) closeModal();
+    else { btn.disabled = false; btn.textContent = "\u2193 Pull"; }
+  };
+}
+
+var syncBtnEl = document.getElementById("syncBtn");
+if(syncBtnEl) syncBtnEl.addEventListener("click", openSyncSettings);
+
 /* ================= DIAGNOSTICS =================
    Runs on the user's real device and reports what is actually happening.
    This exists because emulator testing cannot reproduce every phone browser. */
@@ -9976,17 +10201,7 @@ function openTransfer(){
       toast("That does not look like Study Hub data"); return;
     }
     confirmDialog("This replaces everything in this browser with the pasted data.", function(){
-      DB = {
-        notes: incoming.notes || [], decks: incoming.decks || [], cards: incoming.cards || [],
-        todos: incoming.todos || [], quizzes: incoming.quizzes || [],
-        timerSettings: incoming.timerSettings || { focus:25, short:5, long:15, longEvery:4 },
-        timerLog: incoming.timerLog || [],
-        seedVersion: incoming.seedVersion || 0,
-        course: incoming.course || { startDate:null, done:{}, notes:{} },
-        journal: incoming.journal || {},
-        wisdom: incoming.wisdom || [],
-        lastBackup: incoming.lastBackup || null
-      };
+      DB = applyDefaults(incoming);
       DB.course.done = DB.course.done || {};
       DB.course.notes = DB.course.notes || {};
       DB.course.practice = DB.course.practice || { solved:{}, attempts:0 };
@@ -10002,6 +10217,16 @@ var transferBtnEl = document.getElementById("transferBtn");
 if(transferBtnEl) transferBtnEl.addEventListener("click", openTransfer);
 
 /* ================= Init ================= */
+/* Re-render every pane. Used after any bulk data change (import,
+   transfer, cloud pull) so no stale view is left on screen. */
+function renderEverything(){
+  [renderCourse, renderLessons, renderJournal, renderWisdom, renderNotesList,
+   renderNoteDetail, renderTimer, renderDecks, renderTodos, renderQuizList,
+   renderQuizDetail, renderSideStats].forEach(function(fn){
+    try{ fn(); }catch(e){ console.error("re-render failed", e); }
+  });
+}
+
 function boot(){
   // Each step is isolated: one failure can never blank the whole app.
   function step(name, fn){
@@ -10054,6 +10279,15 @@ function boot(){
   }catch(e){}
 }
 boot();
+
+/* Offline support when hosted (GitHub Pages). Opened as a local file there
+   is no server to register against, so this simply does not run - the file
+   is already offline by definition. */
+if("serviceWorker" in navigator && location.protocol.indexOf("http") === 0){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){});
+  });
+}
 
 })();
 </script>

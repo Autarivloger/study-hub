@@ -1,0 +1,18 @@
+{
+  "name": "Study Hub",
+  "short_name": "Study Hub",
+  "description": "Offline Python learning platform",
+  "start_url": "./study-hub.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eeece5",
+  "theme_color": "#33507c",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
