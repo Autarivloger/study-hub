@@ -373,6 +373,32 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .lesson-header h2{ font-size:26px; margin:4px 0 6px; }
 .lh-sub{ font-size:15.5px; color:var(--text-dim); margin:0; line-height:1.55; }
 
+/* ---------- Multi-part days ---------- */
+.part-chips{ display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
+.part-chip{
+  background:var(--bg-soft); border:1px solid var(--border); border-radius:999px;
+  padding:6px 13px; font-size:12.5px; font-weight:700; color:var(--text-dim);
+}
+.part-chip:hover{ border-color:var(--accent); color:var(--text); }
+.part-chip.active{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+.part-chip.done{ color:var(--good); border-color:var(--good); }
+.part-chip.done.active{ background:var(--accent-soft); }
+.part-head{ margin:0 0 10px; }
+.part-count{
+  font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent); margin-bottom:3px;
+}
+.part-title{ font-size:18px; font-weight:700; line-height:1.35; }
+.part-nav{
+  display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+  margin:14px 0 4px; padding-top:12px; border-top:1px solid var(--border);
+}
+.part-nav #partDoneBtn{ margin-left:auto; }
+@media (max-width:520px){
+  .part-nav{ flex-direction:column; align-items:stretch; }
+  .part-nav #partDoneBtn{ margin-left:0; order:-1; }
+}
+
 /* ---------- Lesson learning structure ---------- */
 /* Learning objective, shown directly under the lesson title. */
 .ls-obj{
@@ -1043,6 +1069,7 @@ function applyDefaults(d){
   d.course.done = d.course.done || {}; d.course.notes = d.course.notes || {};
   d.course.practice = d.course.practice || { solved:{}, attempts:0 };
   d.course.practice.solved = d.course.practice.solved || {};
+  d.course.partsDone = d.course.partsDone || {};   // "week.day.partIndex" -> ISO
   d.journal = d.journal || {};
   d.lessonsDone = d.lessonsDone || {};   // lessonId -> ISO completion date
   d.lessonQuizScores = d.lessonQuizScores || {};  // lessonId -> best quiz %
@@ -6780,7 +6807,172 @@ const DAY_TEACH = {
  {t:"sol", code:"for pct in (0, 30, 100):\n    filled = pct * 20 // 100\n    bar = \"#\" * filled + \".\" * (20 - filled)\n    print(f\"[{bar}] {pct:>3d}%\")", out:"[....................]   0%\n[######..............]  30%\n[####################] 100%", why:"pct * 20 // 100 scales the percentage into a count of characters, and // keeps it a whole number so string repetition works. The empty part is always 20 - filled, so the bar is always exactly 20 wide. {pct:>3d} right-aligns in 3 columns, which is what keeps the % signs in a straight line."},
 
  {t:"key", v:"Today in one line: :.2f for decimals, :<10 and :>10 for columns, :.1% for percentages, and {x=} for debugging."}
-]
+],
+
+/* ---------------- WEEK 14 · DAY 1 ---------------- */
+"14.0": { parts: [
+ { title: "A traceback is a message, not a wall of noise", sections: [
+  {t:"key", v:"A traceback is Python telling you exactly where it gave up and why. It is the single most useful text your computer will ever show you, and most beginners never read it because it looks frightening."},
+  {t:"h", v:"1. What you are actually looking at"},
+  {t:"p", v:"When Python cannot continue, it stops and prints a report. That report has three parts, always in the same order:\n\n1. The line 'Traceback (most recent call last):'\n2. One or more FRAMES - the file, line number and code that was running\n3. The last line: the error TYPE and a MESSAGE\n\nThat last line is the answer. Everything above it is the route Python took to get there."},
+  {t:"syn", v:"Traceback (most recent call last):\n  File \"<name>\", line <n>, in <where>\n    <the line of code>\n<ErrorType>: <message>", note:"Read the LAST line first. It tells you what went wrong. Then look at the line number above it to find where."},
+  {t:"h", v:"2. Your first one, on purpose"},
+  {t:"p", v:"Create a file called broken.py with exactly this in it, and run it. Do not fix it yet - we are here to read it."},
+  {t:"code", v:"total = 100\ncount = 0\n\nprint(\"Average:\", total / count)"},
+  {t:"out", v:"Traceback (most recent call last):\n  File \"broken.py\", line 4, in <module>\n    print(\"Average:\", total / count)\n                      ~~~~~~^~~~~~~\nZeroDivisionError: division by zero"},
+  {t:"p", v:"Now read it the way a professional does, from the bottom up:\n\n- 'ZeroDivisionError: division by zero' - I divided by zero.\n- 'line 4' - it happened on line 4.\n- The code is shown, so I do not even have to open the file.\n- 'in <module>' means it was at the top level of the file, not inside a function.\n\nThat is the whole diagnosis, in about three seconds."},
+  {t:"tip", v:"Python 3.11 and newer draw the ~~~^~~~ markers under the exact part of the line that failed. On older versions you get the line without markers. Everything else is identical."},
+  {t:"h", v:"3. Bottom-up is not a preference, it is the rule"},
+  {t:"p", v:"The frames are printed oldest first and newest last - hence 'most recent call last'. The bottom is where the program actually died. The top is where the journey started, which is usually somewhere you do not care about.\n\nBeginners read from the top, see a file they have never heard of, and give up. Start at the bottom and you almost never need the rest."},
+  {t:"key", v:"Last line = what went wrong. Line number just above it = where. Only look higher up if those two do not explain it."},
+  {t:"h", v:"4. The error type is a category, the message is the detail"},
+  {t:"p", v:"'ZeroDivisionError' is the type. There are a few dozen of these and you will meet the same eight or nine constantly. 'division by zero' is the message, which is specific to this occurrence.\n\nSearching the web for the type alone gives you general advice. Searching for the message gives you your actual problem."},
+  {t:"try", q:"Which line of this traceback do you read first?\n\nTraceback (most recent call last):\n  File \"app.py\", line 12, in <module>\n    main()\n  File \"app.py\", line 8, in main\n    return items[5]\nIndexError: list index out of range", code:"# read it and decide before scrolling", a:"The last line: IndexError: list index out of range", why:"It names the problem. Then you look immediately above it - line 8, inside main(), at items[5] - and you know a list is shorter than you assumed. Line 12 only tells you main() was called, which you already knew."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Cause each of these on purpose in a file and write down, in your own words, the last line of each traceback: dividing by zero, using a name you never created, and adding a string to a number."},
+  {t:"sol", code:"# Run these ONE AT A TIME - the first one stops the program.\n\nprint(1 / 0)\n# ZeroDivisionError: division by zero\n\nprint(undefined_name)\n# NameError: name 'undefined_name' is not defined\n\nprint(\"age: \" + 30)\n# TypeError: can only concatenate str (not \"int\") to str", out:"Traceback (most recent call last):\n  File \"broken.py\", line 3, in <module>\n    print(1 / 0)\n          ~~^~~\nZeroDivisionError: division by zero", why:"Only the first error appears, because an uncaught exception stops the program immediately - nothing after it runs. That is why you comment out the earlier ones to see the later ones. Getting used to causing errors deliberately is the fastest way to stop fearing them."},
+  {t:"ex", v:"Problem 2 - Given this traceback, say in one sentence what is wrong and which line you would open:\n\nTraceback (most recent call last):\n  File \"report.py\", line 22, in <module>\n    print(totals[\"march\"])\nKeyError: 'march'"},
+  {t:"sol", code:"# Diagnosis, not code:\n# WHAT: a dictionary called totals has no key \"march\".\n# WHERE: report.py, line 22.\n# FIX: either the key is spelled differently (\"March\"? \"mar\"?),\n#      or it was never added - print(totals.keys()) to see.\n\ntotals = {\"jan\": 10, \"feb\": 20}\nprint(totals.keys())\nprint(totals.get(\"march\", \"no data\"))", out:"dict_keys(['jan', 'feb'])\nno data", why:"KeyError always names the key it could not find, in quotes. Printing .keys() shows what actually exists, which instantly reveals a spelling or casing mistake. .get() with a fallback is how you stop it crashing once you understand it."},
+ ]},
+ { title: "The nine errors you will actually meet", sections: [
+  {t:"p", v:"Python has dozens of exception types, but in practice a beginner meets the same handful over and over. Learn to recognise these on sight and most debugging becomes instant."},
+  {t:"h", v:"1. SyntaxError - Python could not even read your code"},
+  {t:"code", v:"if x == 5\n    print(\"five\")"},
+  {t:"out", v:"  File \"broken.py\", line 1\n    if x == 5\n             ^\nSyntaxError: expected ':'"},
+  {t:"p", v:"This one is special: it happens BEFORE anything runs, so there are no frames. The caret ^ points at where Python got confused - which is often just after the real mistake. Here, the missing colon."},
+  {t:"warn", v:"A SyntaxError reported on line 10 is often caused by line 9 - an unclosed bracket or quote makes Python read on until it gives up. If line 10 looks perfect, check the line above it."},
+  {t:"h", v:"2. IndentationError - the shape is wrong"},
+  {t:"code", v:"def greet():\nprint(\"hi\")"},
+  {t:"out", v:"  File \"broken.py\", line 2\n    print(\"hi\")\n    ^\nIndentationError: expected an indented block after function definition on line 1"},
+  {t:"h", v:"3. NameError - you used something that does not exist"},
+  {t:"code", v:"total = 10\nprint(totl)"},
+  {t:"out", v:"Traceback (most recent call last):\n  File \"broken.py\", line 2, in <module>\n    print(totl)\n          ^^^^\nNameError: name 'totl' is not defined"},
+  {t:"p", v:"Almost always a typo, or a variable created inside a function and used outside it."},
+  {t:"h", v:"4. TypeError - right idea, wrong kind of thing"},
+  {t:"code", v:"print(\"age: \" + 30)"},
+  {t:"out", v:"Traceback (most recent call last):\n  File \"broken.py\", line 1, in <module>\n    print(\"age: \" + 30)\n          ~~~~~~~~^~~~\nTypeError: can only concatenate str (not \"int\") to str"},
+  {t:"h", v:"5. ValueError - right kind of thing, impossible value"},
+  {t:"code", v:"print(int(\"twelve\"))"},
+  {t:"out", v:"Traceback (most recent call last):\n  File \"broken.py\", line 1, in <module>\n    print(int(\"twelve\"))\n          ^^^^^^^^^^^^^\nValueError: invalid literal for int() with base 10: 'twelve'"},
+  {t:"key", v:"TypeError versus ValueError, the distinction that confuses everyone: int([1,2]) is a TypeError because a list is the wrong KIND of thing. int(\"twelve\") is a ValueError because a string is the right kind, but that particular string is not a number."},
+  {t:"h", v:"6. IndexError - past the end of a sequence"},
+  {t:"code", v:"items = [\"a\", \"b\", \"c\"]\nprint(items[3])"},
+  {t:"out", v:"Traceback (most recent call last):\n  File \"broken.py\", line 2, in <module>\n    print(items[3])\n          ~~~~~^^^\nIndexError: list index out of range"},
+  {t:"h", v:"7. KeyError - no such key in a dictionary"},
+  {t:"code", v:"person = {\"name\": \"Autari\"}\nprint(person[\"age\"])"},
+  {t:"out", v:"Traceback (most recent call last):\n  File \"broken.py\", line 2, in <module>\n    print(person[\"age\"])\n          ~~~~~~^^^^^^^\nKeyError: 'age'"},
+  {t:"h", v:"8. AttributeError - that thing has no such method"},
+  {t:"code", v:"name = \"autari\"\nprint(name.push(\"x\"))"},
+  {t:"out", v:"Traceback (most recent call last):\n  File \"broken.py\", line 2, in <module>\n    print(name.push(\"x\"))\n          ^^^^^^^^^\nAttributeError: 'str' object has no attribute 'push'"},
+  {t:"p", v:"This one is generous: it tells you the TYPE it was looking at. 'str' object means the thing was a string when you thought it was a list. Very often the real bug is that a variable holds the wrong type entirely."},
+  {t:"warn", v:"AttributeError: 'NoneType' object has no attribute ... is the most common version of this, and it nearly always means a function returned None because you forgot a return statement."},
+  {t:"h", v:"9. ModuleNotFoundError - the import failed"},
+  {t:"code", v:"import pandas"},
+  {t:"out", v:"Traceback (most recent call last):\n  File \"broken.py\", line 1, in <module>\n    import pandas\nModuleNotFoundError: No module named 'pandas'"},
+  {t:"p", v:"Either it is not installed, or you are running a different Python than the one you installed it into. Check with: python -m pip install pandas - using the same python you run your script with."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - For each message, name the error type WITHOUT running anything: (a) adding a list to a string, (b) calling .upper() on a number, (c) int(\"3.5\"), (d) reading position 10 of a 3-item list."},
+  {t:"sol", code:"# (a) TypeError   - wrong kind of thing\n# (b) AttributeError - numbers have no .upper()\n# (c) ValueError  - right kind, impossible value\n# (d) IndexError  - past the end\n\n# Prove each one, one at a time:\nprint([\"a\"] + \"b\")", out:"Traceback (most recent call last):\n  File \"broken.py\", line 6, in <module>\n    print([\"a\"] + \"b\")\n          ~~~~~~^~~~~\nTypeError: can only concatenate list (not \"str\") to list", why:"(c) is the interesting one. int(\"3.5\") looks harmless, but int() will not silently throw away the decimal part of a STRING - it only does that for a float. So you need int(float(\"3.5\")). This exact trap catches people reading numbers from files."},
+  {t:"ex", v:"Problem 2 - Write a script that deliberately raises five DIFFERENT error types, each one commented out except the one you are testing. Keep it as a reference file you can come back to."},
+  {t:"sol", code:"# errors_reference.py - uncomment one at a time\n\nprint(1 / 0)                    # ZeroDivisionError\n# print(missing)                # NameError\n# print(\"a\" + 1)                # TypeError\n# print(int(\"abc\"))             # ValueError\n# print([1, 2][9])              # IndexError\n# print({\"a\": 1}[\"b\"])          # KeyError\n# print((5).upper())            # AttributeError", out:"Traceback (most recent call last):\n  File \"errors_reference.py\", line 3, in <module>\n    print(1 / 0)\n          ~~^~~\nZeroDivisionError: division by zero", why:"Keeping a file like this is not busywork. When you meet an unfamiliar error in six months, having caused it yourself once makes it recognisable rather than frightening. Professionals build exactly these reference scraps."},
+ ]},
+ { title: "Following a traceback through several frames", sections: [
+  {t:"p", v:"Everything so far has been a one-line failure at the top level. Real programs fail deep inside a chain of function calls, and the traceback shows the whole chain. That looks scarier and is actually easier."},
+  {t:"h", v:"1. A failure three calls deep"},
+  {t:"code", v:"def average(numbers):\n    return sum(numbers) / len(numbers)\n\ndef report(scores):\n    return f\"Average: {average(scores):.1f}\"\n\ndef main():\n    print(report([]))\n\nmain()"},
+  {t:"out", v:"Traceback (most recent call last):\n  File \"stats.py\", line 10, in <module>\n    main()\n  File \"stats.py\", line 8, in main\n    print(report([]))\n          ~~~~~~^^^^\n  File \"stats.py\", line 5, in report\n    return f\"Average: {average(scores):.1f}\"\n                      ~~~~~~~^^^^^^^^\n  File \"stats.py\", line 2, in average\n    return sum(numbers) / len(numbers)\n           ~~~~~~~~~~~~~^~~~~~~~~~~~~~\nZeroDivisionError: division by zero"},
+  {t:"p", v:"Read bottom-up and it tells a story:\n\n- It died in average(), dividing by len(numbers).\n- len(numbers) was zero, so numbers was empty.\n- average() was called from report(), which was called from main().\n- main() passed an empty list.\n\nThe bug is not in average(). The bug is that something handed it an empty list. The bottom frame tells you the symptom; walking up tells you the cause."},
+  {t:"key", v:"The bottom frame is where it broke. The frame that passed in the bad value is usually where you fix it."},
+  {t:"h", v:"2. When the bottom frame is not your code"},
+  {t:"p", v:"Once you use libraries, tracebacks include files from deep inside them. Do not panic and do not start editing library files.\n\nScan the frames from the bottom and find the last one whose File path is YOUR file. That is almost always the line you need to change."},
+  {t:"out", v:"Traceback (most recent call last):\n  File \"app.py\", line 14, in <module>\n    data = json.loads(text)\n  File \"C:\\\\Python312\\\\Lib\\\\json\\\\__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n  File \"C:\\\\Python312\\\\Lib\\\\json\\\\decoder.py\", line 340, in decode\n    raise JSONDecodeError(\"Extra data\", s, end)\njson.decoder.JSONDecodeError: Extra data: line 2 column 1 (char 15)"},
+  {t:"p", v:"Three frames, two of them inside Python's own json module. The only one that is yours is the top one: app.py line 14. The json library is not broken - you handed it text that is not valid JSON. Fix your input, not their file."},
+  {t:"tip", v:"A quick habit: search the traceback for your own filename. The lowest match is your line."},
+  {t:"h", v:"3. 'During handling of the above exception, another occurred'"},
+  {t:"p", v:"Sometimes you get two tracebacks joined by that sentence. It means an error happened while Python was already dealing with an error.\n\nRead the SECOND one first, because that is what actually stopped the program. The first one is context for how you got there."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Write a three-function chain like the one above where the innermost function fails on a KeyError, run it, and identify from the traceback which function supplied the bad key."},
+  {t:"sol", code:"def lookup(table, key):\n    return table[key]\n\ndef describe(table):\n    return \"City: \" + lookup(table, \"city\")\n\ndef main():\n    print(describe({\"name\": \"Autari\"}))\n\nmain()", out:"Traceback (most recent call last):\n  File \"chain.py\", line 9, in <module>\n    main()\n  File \"chain.py\", line 8, in main\n    print(describe({\"name\": \"Autari\"}))\n  File \"chain.py\", line 5, in describe\n    return \"City: \" + lookup(table, \"city\")\n                     ~~~~~~^^^^^^^^^^^^^^^\n  File \"chain.py\", line 2, in lookup\n    return table[key]\n           ~~~~~^^^^^\nKeyError: 'city'", why:"lookup() is where it died, but lookup() is fine - it does exactly what it was asked. describe() asked for \"city\", and main() supplied a dictionary that never had one. The fix belongs in main() or in describe(), depending on whether a missing city is an error or an acceptable absence."},
+  {t:"ex", v:"Problem 2 - Take this traceback and answer three questions: what type of error, which line of MY file should I open, and what is the most likely cause?\n\nTraceback (most recent call last):\n  File \"loader.py\", line 31, in <module>\n    rows = read_rows(\"data.csv\")\n  File \"loader.py\", line 18, in read_rows\n    return [parse(line) for line in lines]\n  File \"loader.py\", line 11, in parse\n    return int(parts[1])\nValueError: invalid literal for int() with base 10: 'n/a'"},
+  {t:"sol", code:"# TYPE:  ValueError - the string is not a number.\n# LINE:  loader.py line 11, inside parse(). All three frames are mine,\n#        so the lowest one is the one to open.\n# CAUSE: the CSV contains the text 'n/a' where a number was expected.\n\n# A fix that keeps the rest of the data:\ndef parse_cell(text):\n    text = text.strip()\n    if not text or text.lower() in (\"n/a\", \"na\", \"-\"):\n        return None\n    return int(text)\n\nfor cell in (\"42\", \" 7 \", \"n/a\", \"\"):\n    print(repr(cell), \"->\", parse_cell(cell))", out:"'42' -> 42\n' 7 ' -> 7\n'n/a' -> None\n'' -> None", why:"Notice the error message quoted the offending value: 'n/a'. Python nearly always shows you the value it choked on, which turns guesswork into a fact. Returning None for missing data is honest - it records that there was no number, rather than pretending it was zero."},
+  {t:"key", v:"The whole of today in four moves: read the last line, read the line number above it, find the lowest frame that is your file, and look at the value Python quoted back at you."},
+ ]},
+]},
+
+/* ---------------- WEEK 14 · DAY 2 ---------------- */
+"14.1": { parts: [
+ { title: "try and except - catching a failure on purpose", sections: [
+  {t:"key", v:"An exception stops your program. try/except lets you say: if this particular thing fails, here is what to do instead. It is not for hiding bugs - it is for handling the failures you can genuinely predict."},
+  {t:"h", v:"1. The shape"},
+  {t:"syn", v:"try:\n    <code that might fail>\nexcept <ErrorType>:\n    <what to do instead>", note:"Python runs the try block. If the named error happens, it jumps straight to except. If nothing fails, except is skipped entirely."},
+  {t:"h", v:"2. The simplest useful example"},
+  {t:"code", v:"raw = \"abc\"\n\ntry:\n    number = int(raw)\n    print(\"You typed the number\", number)\nexcept ValueError:\n    print(\"That was not a number.\")"},
+  {t:"out", v:"That was not a number."},
+  {t:"p", v:"Compare that with what happens without the try: the program crashes with a ValueError traceback and everything after it is skipped. With it, the program keeps its dignity and continues."},
+  {t:"h", v:"3. Execution jumps - it does not resume"},
+  {t:"p", v:"This trips people up. When an error happens inside try, Python abandons the REST of the try block. It does not carry on from the next line."},
+  {t:"code", v:"try:\n    print(\"one\")\n    print(10 / 0)\n    print(\"two\")        # never runs\nexcept ZeroDivisionError:\n    print(\"caught it\")\n\nprint(\"three\")"},
+  {t:"out", v:"one\ncaught it\nthree"},
+  {t:"p", v:"'two' never prints. Once the division fails, the remainder of the try block is skipped. Then normal flow resumes after the whole try/except."},
+  {t:"key", v:"Keep the try block SHORT - ideally the one line that can fail. A long try block hides which line you were actually protecting."},
+  {t:"h", v:"4. Name the exception you expect"},
+  {t:"code", v:"def safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        return None\n\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))"},
+  {t:"out", v:"5.0\nNone"},
+  {t:"try", q:"What does this print?", code:"try:\n    values = [1, 2, 3]\n    print(values[10])\nexcept KeyError:\n    print(\"handled\")", a:"It crashes with IndexError: list index out of range", why:"The code raises IndexError, but the except clause is watching for KeyError. An except only catches the type you name (and its subclasses), so this one does not match and the error escapes as if there were no try at all. Catching the wrong type is the same as catching nothing."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Write to_int(text) that returns the whole number in text, or None if it is not a number. Test it with \"42\", \"3.5\", \"abc\" and \"\"."},
+  {t:"sol", code:"def to_int(text):\n    try:\n        return int(text)\n    except ValueError:\n        return None\n\nfor raw in (\"42\", \"3.5\", \"abc\", \"\"):\n    print(repr(raw), \"->\", to_int(raw))", out:"'42' -> 42\n'3.5' -> None\n'abc' -> None\n'' -> None", why:"Note that \"3.5\" gives None: int() refuses a decimal string outright, it does not round it. If you wanted 3 you would need int(float(text)), and then you would have to decide whether silently dropping the .5 is honest. Only ValueError is caught, so a genuine bug like to_int(None) still raises TypeError loudly - which is what you want."},
+  {t:"ex", v:"Problem 2 - Write get_first(items) that returns the first item of a list, or the string \"empty\" if the list has nothing in it. Do it with try/except, then write the version without it and decide which you prefer."},
+  {t:"sol", code:"def get_first(items):\n    try:\n        return items[0]\n    except IndexError:\n        return \"empty\"\n\ndef get_first_checked(items):\n    if not items:\n        return \"empty\"\n    return items[0]\n\nprint(get_first([\"a\", \"b\"]), get_first([]))\nprint(get_first_checked([\"a\", \"b\"]), get_first_checked([]))", out:"a empty\na empty", why:"Both are correct. The checked version is clearer here, because 'is this list empty' is a cheap, obvious question to ask up front. Reach for try/except when the check would be expensive, unreliable, or when the failure is genuinely exceptional rather than routine. Asking first is often the better style in Python when the check is this easy."},
+ ]},
+ { title: "Catching the right thing, and the bare except trap", sections: [
+  {t:"h", v:"1. Never write a bare except"},
+  {t:"p", v:"You will see this in tutorials and on forums. It is the most damaging habit in this entire week."},
+  {t:"mis", why:"A bare except catches EVERYTHING - your typos, your NameErrors, and even Ctrl+C while the program is running. A bug that should have shown you a clear traceback instead silently becomes 0, and you spend an evening wondering why your totals are wrong. Name the exception you actually expect, always.", wrong:"try:\n    value = int(user_input)\nexcept:\n    value = 0", right:"try:\n    value = int(user_input)\nexcept ValueError:\n    value = 0"},
+  {t:"h", v:"2. Catching more than one type"},
+  {t:"syn", v:"except (ValueError, TypeError):\n    ...", note:"One tuple, one handler. Use this when different failures deserve the same response."},
+  {t:"code", v:"def to_number(value):\n    try:\n        return float(value)\n    except (ValueError, TypeError):\n        return None\n\nfor v in (\"3.5\", \"abc\", None, [1]):\n    print(repr(v), \"->\", to_number(v))"},
+  {t:"out", v:"'3.5' -> 3.5\n'abc' -> None\nNone -> None\n[1] -> None"},
+  {t:"p", v:"float(\"abc\") is a ValueError; float(None) is a TypeError. Both mean the same thing to this function - 'not usable as a number' - so one handler for both is honest."},
+  {t:"h", v:"3. Separate handlers when the responses differ"},
+  {t:"code", v:"def read_setting(config, key):\n    try:\n        return int(config[key])\n    except KeyError:\n        return \"missing setting: \" + key\n    except ValueError:\n        return \"setting is not a number: \" + key\n\nsettings = {\"port\": \"8080\", \"timeout\": \"soon\"}\nprint(read_setting(settings, \"port\"))\nprint(read_setting(settings, \"host\"))\nprint(read_setting(settings, \"timeout\"))"},
+  {t:"out", v:"8080\nmissing setting: host\nsetting is not a number: timeout"},
+  {t:"p", v:"Python checks the except clauses in order and runs the first one that matches. Different causes, different messages - that is what makes an error message useful to whoever reads it."},
+  {t:"h", v:"4. Look at the exception itself"},
+  {t:"syn", v:"except ValueError as err:\n    print(err)", note:"'as err' gives you the exception object. str(err) is the message Python would have printed."},
+  {t:"code", v:"try:\n    int(\"twelve\")\nexcept ValueError as err:\n    print(\"Could not convert.\")\n    print(\"Python said:\", err)"},
+  {t:"out", v:"Could not convert.\nPython said: invalid literal for int() with base 10: 'twelve'"},
+  {t:"tip", v:"Include str(err) in your message while you are learning. It keeps the detail Python gave you instead of throwing it away, and it costs nothing."},
+  {t:"h", v:"5. Do not swallow errors in silence"},
+  {t:"mis", why:"'except: pass' makes a failure invisible. The user believes the file saved; it did not. If you cannot handle a failure meaningfully, either report it or let it propagate with a bare raise - which re-raises the exception you just caught, keeping the original traceback intact.", wrong:"try:\n    save_to_disk(data)\nexcept OSError:\n    pass", right:"try:\n    save_to_disk(data)\nexcept OSError as err:\n    print(\"Could not save:\", err)\n    raise"},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Write describe_failure(value) that tries int(value) and returns a DIFFERENT sentence for a ValueError and for a TypeError, including Python's own message in each. Test with \"abc\" and with None."},
+  {t:"sol", code:"def describe_failure(value):\n    try:\n        return \"ok: \" + str(int(value))\n    except ValueError as err:\n        return \"bad text (\" + str(err) + \")\"\n    except TypeError as err:\n        return \"wrong type (\" + str(err) + \")\"\n\nprint(describe_failure(\"42\"))\nprint(describe_failure(\"abc\"))\nprint(describe_failure(None))", out:"ok: 42\nbad text (invalid literal for int() with base 10: 'abc')\nwrong type (int() argument must be a string, a bytes-like object or a real number, not 'NoneType')", why:"The two failures have genuinely different causes and so deserve different messages. Keeping str(err) means you never lose the detail - and notice how precisely Python describes the TypeError, right down to naming NoneType."},
+  {t:"ex", v:"Problem 2 - This function hides a bug. Find it, explain what a bare except is concealing, and fix it.\n\ndef total_of(values):\n    total = 0\n    for v in values:\n        try:\n            total += int(v)\n        except:\n            pass\n    return total"},
+  {t:"sol", code:"# The bug: `except:` swallows EVERY failure, so a typo inside the loop\n# would silently produce a wrong total instead of a traceback.\n# It also hides genuinely bad data - the caller cannot tell the\n# difference between \"no bad values\" and \"half the file was junk\".\n\ndef total_of(values):\n    total = 0\n    skipped = []\n    for v in values:\n        try:\n            total += int(v)\n        except (ValueError, TypeError):\n            skipped.append(v)\n    return total, skipped\n\nprint(total_of([\"10\", \"20\", \"n/a\", None, \"5\"]))", out:"(35, ['n/a', None])", why:"Two fixes in one. Naming (ValueError, TypeError) means a real bug still raises loudly. Returning what was skipped means the caller can decide whether 35 is trustworthy - a total that quietly ignored half its input is worse than no total at all."},
+ ]},
+ { title: "Making a program that cannot be crashed by a human", sections: [
+  {t:"p", v:"Now we put it to work. The single most common real use of try/except for a beginner is refusing to let bad input kill the program."},
+  {t:"h", v:"1. The ask-until-valid loop"},
+  {t:"p", v:"This pattern is worth memorising. You will write it for the rest of your life."},
+  {t:"syn", v:"while True:\n    raw = input(prompt)\n    try:\n        value = <convert raw>\n    except ValueError:\n        print(<complaint>)\n        continue\n    if <value is acceptable>:\n        return value\n    print(<complaint>)", note:"Loop forever, break out only when the value is both convertible AND sensible."},
+  {t:"code", v:"def ask_age(answers):\n    \"\"\"answers stands in for input() so the output here is reproducible.\"\"\"\n    for raw in answers:\n        print(\"Your age?\", repr(raw))\n        try:\n            age = int(raw)\n        except ValueError:\n            print(\"  Please type digits only.\")\n            continue\n        if age < 0 or age > 130:\n            print(\"  That is not a believable age.\")\n            continue\n        return age\n    return None\n\nprint(\"accepted:\", ask_age([\"abc\", \"-5\", \"200\", \"27\"]))"},
+  {t:"out", v:"Your age? 'abc'\n  Please type digits only.\nYour age? '-5'\n  That is not a believable age.\nYour age? '200'\n  That is not a believable age.\nYour age? '27'\naccepted: 27"},
+  {t:"p", v:"Two separate gates, and they are not the same job. try/except handles 'this is not a number at all'. The if handles 'this is a number, but not a sensible one'. Beginners try to do both with exceptions and end up with tangled code."},
+  {t:"key", v:"Exceptions are for things that FAILED. Plain if statements are for things that worked but are unacceptable. Keep the two jobs apart."},
+  {t:"h", v:"2. Fail loudly at the edges, quietly in the middle"},
+  {t:"p", v:"A rough rule that will serve you well: catch exceptions where you can actually do something about them - usually near the user, or near a file or network. Deep helper functions should let errors escape, because they have no idea what the right response is."},
+  {t:"mis", why:"Returning 0 is a lie: the average of nothing is not zero, it is undefined. A caller plotting that 0 on a chart now shows false data. Raising says 'I cannot answer that' and lets the caller - who knows the context - decide whether to skip the row, show a dash, or stop.", wrong:"def average(numbers):\n    try:\n        return sum(numbers) / len(numbers)\n    except ZeroDivisionError:\n        return 0", right:"def average(numbers):\n    if not numbers:\n        raise ValueError(\"average() needs at least one number\")\n    return sum(numbers) / len(numbers)"},
+  {t:"h", v:"3. What today buys you"},
+  {t:"p", v:"Before this week, any unexpected input ended your program with a traceback. From now on, you decide which failures are survivable and what should happen instead. That is the difference between a script and a program someone else can use."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Write read_menu_choice(answers, options) that accepts a number between 1 and len(options). Reject non-numbers and out-of-range numbers with different messages, and return the chosen option text."},
+  {t:"sol", code:"def read_menu_choice(answers, options):\n    for raw in answers:\n        print(\"Choose 1-\" + str(len(options)) + \":\", repr(raw))\n        try:\n            n = int(raw)\n        except ValueError:\n            print(\"  Type a number, not text.\")\n            continue\n        if n < 1 or n > len(options):\n            print(\"  There is no option\", n)\n            continue\n        return options[n - 1]\n    return None\n\nmenu = [\"Add\", \"Remove\", \"Quit\"]\nprint(\"chose:\", read_menu_choice([\"x\", \"9\", \"2\"], menu))", out:"Choose 1-3: 'x'\n  Type a number, not text.\nChoose 1-3: '9'\n  There is no option 9\nChoose 1-3: '2'\nchose: Remove", why:"options[n - 1] is where menus bite: humans count from 1, lists index from 0. Validating n against 1..len(options) BEFORE indexing means IndexError can never happen here - the check makes the error impossible rather than catching it afterwards. Preventing beats catching."},
+  {t:"ex", v:"Problem 2 - Write sum_file_numbers(lines) that adds up every line that is a number, counts the ones that are not, and returns both. It must never crash, whatever the lines contain."},
+  {t:"sol", code:"def sum_file_numbers(lines):\n    total = 0.0\n    bad = 0\n    for line in lines:\n        try:\n            total += float(str(line).strip())\n        except (ValueError, TypeError):\n            bad += 1\n    return total, bad\n\nlines = [\"10\", \"  20.5 \", \"\", \"n/a\", \"7\", None, \"3,000\"]\ntotal, bad = sum_file_numbers(lines)\nprint(f\"total: {total:.1f}\")\nprint(\"unusable lines:\", bad)", out:"total: 37.5\nunusable lines: 4", why:"Four lines fail, and each for a different reason: the empty string, 'n/a', None, and '3,000' - because a comma is not a decimal separator to float(). Counting the failures rather than ignoring them is the whole point; a total of 37.5 means something quite different when you know four lines were dropped."},
+  {t:"key", v:"This week's habit: name the exception, keep the try block to the line that can fail, and never make a failure invisible."},
+ ]},
+]},
 
 };
 
@@ -6790,10 +6982,50 @@ const REST_DAY = ["Review & rest",
 
 /* Collects every problem (an "ex" section plus the "sol" that follows it)
    from all taught days of one week, so Day 7 can shuffle them together. */
+/* ---- Multi-part days ----
+   Some topics cannot be taught honestly in one sitting. Such a day stores
+   {parts:[{title, sections}]} instead of a bare section array, and the day
+   page shows "Day 3 · Part 1 of 4" with its own navigation.
+
+   dayParts()    -> [{title, sections}] for either shape, or null
+   daySections() -> every section flattened, for search and practice pools */
+function dayParts(key){
+  const t = DAY_TEACH[key];
+  if(!t) return null;
+  if(Array.isArray(t)) return [{ title:null, sections:t }];
+  return (t.parts && t.parts.length) ? t.parts : null;
+}
+function daySections(key){
+  const parts = dayParts(key);
+  if(!parts) return null;
+  let out = [];
+  parts.forEach(function(p){ out = out.concat(p.sections || []); });
+  return out;
+}
+
+/* Per-part completion. Day-level completion (course.done) still drives the
+   "x / 364" headline, so a day counts as done once every part is done. */
+function partKey(w, d, i){ return w + "." + d + "." + i; }
+function isPartDone(w, d, i){ return !!DB.course.partsDone[partKey(w, d, i)]; }
+function togglePartDone(w, d, i){
+  const k = partKey(w, d, i);
+  if(DB.course.partsDone[k]) delete DB.course.partsDone[k];
+  else DB.course.partsDone[k] = nowISO();
+
+  // Keep the day flag in step with its parts.
+  const parts = dayParts(w + "." + d) || [];
+  let all = parts.length > 0;
+  for(let n = 0; n < parts.length; n++) if(!isPartDone(w, d, n)) all = false;
+  const dk = dayKey(w, d);
+  if(all && !DB.course.done[dk]) DB.course.done[dk] = nowISO();
+  if(!all && DB.course.done[dk]) delete DB.course.done[dk];
+  save();
+}
+
 function weekProblems(weekNum){
   const out = [];
   for(let d = 0; d < 7; d++){
-    const secs = DAY_TEACH[weekNum + "." + d];
+    const secs = daySections(weekNum + "." + d);
     if(!secs) continue;
     for(let i = 0; i < secs.length; i++){
       if(secs[i].t === "ex"){
@@ -6836,7 +7068,7 @@ function corePool(){
 
   taughtWeeks().forEach(function(w){
     for(let d = 0; d < 7; d++){
-      const secs = DAY_TEACH[w + "." + d];
+      const secs = daySections(w + "." + d);
       if(!secs) continue;
       let n = 0;
       for(let i = 0; i < secs.length; i++){
@@ -7058,9 +7290,35 @@ function renderCourseDay(){
   const link = DAY_LESSON_LINK[teachKey];
   const probs = weekProblems(wn);
 
-  if(DAY_TEACH[teachKey]){
+  const parts = dayParts(teachKey);
+  if(parts){
+    /* One part is one sitting. The day is only "done" when all of them are,
+       so a big topic can spread across as many days as it actually needs. */
+    const total = parts.length;
+    let pi = courseView.part || 0;
+    if(pi < 0 || pi >= total) pi = 0;
+    const part = parts[pi];
+    const partDone = isPartDone(wn, di, pi);
+
+    const chips = total > 1
+      ? `<div class="part-chips">${parts.map((p, n)=>
+          `<button type="button" class="part-chip${n===pi?" active":""}${isPartDone(wn,di,n)?" done":""}" data-part="${n}">
+             ${isPartDone(wn,di,n) ? "\u2713 " : ""}Part ${n+1}
+           </button>`).join("")}</div>`
+      : "";
+
     teachHtml = `<div class="section-label">Today's teaching</div>
-      <div class="day-teach">${renderSections(DAY_TEACH[teachKey])}</div>`;
+      ${chips}
+      ${total > 1 ? `<div class="part-head">
+          <div class="part-count">Part ${pi+1} of ${total}</div>
+          ${part.title ? `<div class="part-title">${escapeHtml(part.title)}</div>` : ""}
+        </div>` : ""}
+      <div class="day-teach">${renderSections(part.sections)}</div>
+      ${total > 1 ? `<div class="part-nav">
+          <button type="button" class="btn secondary btn-sm" id="partPrev"${pi===0?" disabled":""}>\u2190 ${pi===0 ? "Previous" : "Part " + pi}</button>
+          <button type="button" class="btn${partDone?" secondary":""} btn-sm" id="partDoneBtn">${partDone ? "\u2713 Part done \u2014 undo" : "Mark part " + (pi+1) + " done"}</button>
+          <button type="button" class="btn secondary btn-sm" id="partNext"${pi===total-1?" disabled":""}>${pi===total-1 ? "Last part" : "Part " + (pi+2)} \u2192</button>
+        </div>` : ""}`;
   } else if(link){
     teachHtml = `<div class="section-label">Today's teaching</div>
       <div class="day-teach">
@@ -7128,6 +7386,21 @@ function renderCourseDay(){
   if(toLesson && link) toLesson.onclick = ()=>{
     activeLessonId = link.id; switchView("lessons"); window.scrollTo(0,0); renderLessons();
   };
+  el.querySelectorAll("[data-part]").forEach(function(b){
+    b.onclick = function(){
+      courseView.part = Number(b.dataset.part);
+      renderCourseDay(); window.scrollTo(0,0);
+    };
+  });
+  const pPrev = document.getElementById("partPrev");
+  if(pPrev) pPrev.onclick = ()=>{ courseView.part = (courseView.part||0) - 1; renderCourseDay(); window.scrollTo(0,0); };
+  const pNext = document.getElementById("partNext");
+  if(pNext) pNext.onclick = ()=>{ courseView.part = (courseView.part||0) + 1; renderCourseDay(); window.scrollTo(0,0); };
+  const pDone = document.getElementById("partDoneBtn");
+  if(pDone) pDone.onclick = ()=>{
+    togglePartDone(wn, di, courseView.part || 0);
+    renderCourseDay(); renderSideStats();
+  };
   const resh = document.getElementById("reshuffleDay");
   if(resh) resh.onclick = ()=>{ dayPracticeOrder = null; renderCourseDay(); window.scrollTo(0,0); };
   let noteTimer;
@@ -7136,10 +7409,10 @@ function renderCourseDay(){
     noteTimer = setTimeout(()=>{ DB.course.notes[noteKey] = e.target.value; save(); }, 400);
   });
   document.getElementById("prevDay").onclick = ()=>{
-    const p = gd-1; courseView = {mode:"day", week:Math.ceil(p/7), dayIdx:(p-1)%7}; renderCourse();
+    const p = gd-1; courseView = {mode:"day", week:Math.ceil(p/7), dayIdx:(p-1)%7, part:0}; renderCourse();
   };
   document.getElementById("nextDay").onclick = ()=>{
-    const n = gd+1; courseView = {mode:"day", week:Math.ceil(n/7), dayIdx:(n-1)%7}; renderCourse();
+    const n = gd+1; courseView = {mode:"day", week:Math.ceil(n/7), dayIdx:(n-1)%7, part:0}; renderCourse();
   };
 }
 
@@ -9742,7 +10015,7 @@ function buildSearchIndex(){
     const wn = Number(parts[0]), di = Number(parts[1]);
     const dayTitle = dayTitleFor(wn, di) || ("Week " + wn);
     let heading = dayTitle;
-    DAY_TEACH[key].forEach(sec=>{
+    (daySections(key) || []).forEach(sec=>{
       if(sec.t === "h"){ heading = sec.v; return; }
       if(!SEARCHABLE[sec.t]) return;
       const text = sectionText(sec);
