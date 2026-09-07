@@ -6817,11 +6817,24 @@ function dayTitleFor(weekNum, dayIdx){
 }
 
 let corePoolCache = null;
+
+/* Every week that actually has teaching written for it, in order.
+   Derived from DAY_TEACH itself, so authoring a new week is enough to make
+   it appear everywhere - there is no second list to remember to update. */
+function taughtWeeks(){
+  const seen = {};
+  Object.keys(DAY_TEACH).forEach(function(k){
+    const w = parseInt(k.split(".")[0], 10);
+    if(w) seen[w] = true;
+  });
+  return Object.keys(seen).map(Number).sort(function(a,b){ return a - b; });
+}
+
 function corePool(){
   if(corePoolCache) return corePoolCache;
   const out = [];
 
-  for(let w = 1; w <= 13; w++){
+  taughtWeeks().forEach(function(w){
     for(let d = 0; d < 7; d++){
       const secs = DAY_TEACH[w + "." + d];
       if(!secs) continue;
@@ -6834,20 +6847,39 @@ function corePool(){
         n++;
       }
     }
-  }
+  });
   corePoolCache = out;
   return out;
 }
 
-/* The five blocks the course is built from, used for filtering. */
-const CORE_BLOCKS = [
-  { key:"all",   label:"Everything",            weeks:[1,2,3,4,5,6,7,8,9,10,11,12,13] },
-  { key:"b1",    label:"W1-3 · Basics & logic", weeks:[1,2,3] },
-  { key:"b2",    label:"W4-5 · Loops & lists",  weeks:[4,5] },
-  { key:"b3",    label:"W6-8 · Data",           weeks:[6,7,8] },
-  { key:"b4",    label:"W9-10 · Functions",     weeks:[9,10] },
-  { key:"b5",    label:"W11-13 · Pythonic",     weeks:[11,12,13] }
-];
+/* Practice filters, built from the phases the course already defines and
+   narrowed to the weeks that have teaching written. A newly authored phase
+   therefore gets its own filter automatically. */
+let coreBlocksCache = null;
+function coreBlocks(){
+  if(coreBlocksCache) return coreBlocksCache;
+  const taught = taughtWeeks();
+  const blocks = [{ key:"all", label:"Everything", weeks: taught.slice() }];
+
+  PHASES.forEach(function(p){
+    const weeks = p.weeks.filter(function(w){ return taught.indexOf(w) !== -1; });
+    if(!weeks.length) return;                       // nothing written yet
+    const span = weeks.length === 1
+      ? ("W" + weeks[0])
+      : ("W" + weeks[0] + "-" + weeks[weeks.length - 1]);
+    blocks.push({ key:"p" + p.n, label: span + " \u00b7 " + p.name, weeks: weeks });
+  });
+
+  /* Single weeks too, so revision can be aimed at exactly the topic that is
+     shaky rather than at a whole phase. */
+  taught.forEach(function(w){
+    const wk = weekByNum(w);
+    blocks.push({ key:"w" + w, label:"\u2003W" + w + " \u00b7 " + (wk ? wk[2] : "Week " + w), weeks:[w] });
+  });
+
+  coreBlocksCache = blocks;
+  return blocks;
+}
 
 let practiceView = {
   block: "all",
@@ -6872,7 +6904,8 @@ function practiceStats(){
 }
 
 function buildPracticeSet(){
-  const block = CORE_BLOCKS.find(b=> b.key === practiceView.block) || CORE_BLOCKS[0];
+  const blocks = coreBlocks();
+  const block = blocks.find(b=> b.key === practiceView.block) || blocks[0];
   const solved = practiceSolved();
   let pool = corePool().filter(p=> block.weeks.indexOf(p.week) !== -1);
   if(practiceView.unsolvedOnly) pool = pool.filter(p=> !solved[p.id]);
@@ -6925,7 +6958,7 @@ function renderCorePractice(){
     <div class="prac-controls">
       <label>Topics
         <select id="pracBlock">
-          ${CORE_BLOCKS.map(b=>`<option value="${b.key}" ${practiceView.block===b.key?'selected':''}>${b.label}</option>`).join("")}
+          ${coreBlocks().map(b=>`<option value="${b.key}" ${practiceView.block===b.key?'selected':''}>${escapeHtml(b.label)}</option>`).join("")}
         </select>
       </label>
       <label>Questions
