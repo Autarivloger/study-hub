@@ -1692,7 +1692,11 @@ function soundDone(){ playChime([784, 988, 1319, 1568], 0.34, 0.26); }
 let alertHideTimer = null;
 let alertPendingMs = 0;
 
-function showTimerAlert(kind, title, detail, ms){
+/* waitForVisible: hold the banner until the page is actually looked at.
+   Right for "Time up", which you must not miss. Wrong for the warning,
+   which is only meaningful during the seconds it names - so that one always
+   hides on its own schedule, seen or not. */
+function showTimerAlert(kind, title, detail, ms, waitForVisible){
   const box = document.getElementById("timerAlert");
   if(!box) return;
   clearTimeout(alertHideTimer);
@@ -1708,8 +1712,8 @@ function showTimerAlert(kind, title, detail, ms){
     if(anchor) box.style.top = (anchor.getBoundingClientRect().bottom + 10) + "px";
   }catch(e){}
   box.hidden = false;
-  alertPendingMs = ms;
-  if(document.hidden) return;          // start the countdown when it is seen
+  alertPendingMs = waitForVisible ? ms : 0;
+  if(waitForVisible && document.hidden) return;   // start it when it is seen
   alertHideTimer = setTimeout(hideTimerAlert, ms);
 }
 
@@ -1733,6 +1737,7 @@ function fmtClock(sec){
   return `${m}:${s}`;
 }
 const WARN_SECONDS = 15;     // heads-up before the session ends
+const WARN_ALERT_MS = 6000;  // the heads-up is a nudge, not a fixture
 const DONE_ALERT_MS = 5000;  // how long the "Time up" banner stays
 
 let timerEndsAt = null;      // real wall-clock deadline, not a tick count
@@ -1770,8 +1775,11 @@ function tickTimer(){
   if(!timerWarned && left > 0 && left <= WARN_SECONDS){
     timerWarned = true;
     soundWarn();
-    showTimerAlert("warn", left + " seconds left",
-      MODES[timerMode].label + " is nearly done", (WARN_SECONDS + 3) * 1000);
+    /* Shows for a few seconds and goes away again - a nudge, not a fixture. */
+    showTimerAlert("warn",
+      timerMode === "focus" ? "Your focus session is about to end"
+                            : "Your break is about to end",
+      left + " seconds left", WARN_ALERT_MS, false);
   }
   if(left <= 0) completeTimer();
 }
@@ -1799,7 +1807,7 @@ function completeTimer(){
 
   showTimerAlert("done", "Time up!",
     nextLabel + " \u00b7 " + DB.timerSettings[nextMode] + " min \u00b7 press Start when ready",
-    DONE_ALERT_MS);
+    DONE_ALERT_MS, true);
 
   setTimerMode(nextMode);
 }
@@ -1809,7 +1817,16 @@ function completeTimer(){
 document.addEventListener("visibilitychange", function(){
   if(document.hidden) return;
   if(timerRunning) tickTimer();
-  if(alertPendingMs && !document.getElementById("timerAlert").hidden){
+
+  const box = document.getElementById("timerAlert");
+  /* A warning you were not there to see is already out of date - a hidden
+     tab throttles its hide timer too, so clear it the moment you look back
+     rather than letting a stale "about to end" greet you. */
+  if(box && !box.hidden && box.classList.contains("warn")){
+    hideTimerAlert();
+    return;
+  }
+  if(alertPendingMs && box && !box.hidden){
     clearTimeout(alertHideTimer);
     alertHideTimer = setTimeout(hideTimerAlert, alertPendingMs);
   }
