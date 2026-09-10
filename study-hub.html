@@ -373,6 +373,39 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .lesson-header h2{ font-size:26px; margin:4px 0 6px; }
 .lh-sub{ font-size:15.5px; color:var(--text-dim); margin:0; line-height:1.55; }
 
+/* ---------- Timer announcements ---------- */
+.timer-alert{
+  position:fixed; z-index:45;
+  top:calc(66px + env(safe-area-inset-top));
+  left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:12px;
+  background:var(--bg-elev); border:1px solid var(--border);
+  border-left:4px solid var(--accent);
+  border-radius:13px; padding:11px 12px 11px 14px;
+  box-shadow:0 8px 28px rgba(0,0,0,0.22);
+  width:max-content; max-width:min(430px, calc(100vw - 20px));
+  animation:taIn .22s ease-out;
+}
+@keyframes taIn{ from{ opacity:0; transform:translate(-50%,-10px); } to{ opacity:1; transform:translate(-50%,0); } }
+@media (prefers-reduced-motion:reduce){ .timer-alert{ animation:none; } }
+.timer-alert.warn{ border-left-color:var(--warn); }
+.timer-alert.done{ border-left-color:var(--good); }
+.timer-alert .ta-icon{ font-size:22px; line-height:1; flex-shrink:0; }
+.timer-alert .ta-body{ min-width:0; }
+.timer-alert .ta-title{ font-size:15px; font-weight:700; line-height:1.3; }
+.timer-alert.done .ta-title{ font-size:17px; }
+.timer-alert .ta-detail{ font-size:13px; color:var(--text-dim); line-height:1.4; margin-top:2px; }
+.timer-alert .ta-close{
+  background:none; border:none; color:var(--text-dim);
+  font-size:20px; line-height:1; padding:4px 6px; margin-left:4px; flex-shrink:0;
+  align-self:flex-start; border-radius:6px;
+}
+.timer-alert .ta-close:hover{ background:var(--bg-soft); color:var(--text); }
+@media (max-width:520px){
+  .timer-alert{ top:calc(60px + env(safe-area-inset-top)); left:10px; right:10px; transform:none; width:auto; max-width:none; }
+  @keyframes taIn{ from{ opacity:0; transform:translateY(-10px); } to{ opacity:1; transform:translateY(0); } }
+}
+
 /* ---------- Multi-part days ---------- */
 .part-chips{ display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
 .part-chip{
@@ -998,6 +1031,16 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
 <div id="modalOverlay"><div id="modalBox"></div></div>
 <div class="toast" id="toast"></div>
 
+<!-- Timer announcements. Fixed, so they reach you from any tab of the app. -->
+<div class="timer-alert" id="timerAlert" hidden>
+  <div class="ta-icon" id="taIcon">⏰</div>
+  <div class="ta-body">
+    <div class="ta-title" id="taTitle"></div>
+    <div class="ta-detail" id="taDetail"></div>
+  </div>
+  <button type="button" class="ta-close" id="taClose" aria-label="Dismiss">×</button>
+</div>
+
 <script>
 /* --- Crash guard: never show a blank page again --- */
 (function(){
@@ -1063,6 +1106,7 @@ function applyDefaults(d){
   d.notes = d.notes||[]; d.decks = d.decks||[]; d.cards = d.cards||[];
   d.todos = d.todos||[]; d.quizzes = d.quizzes||[];
   d.timerSettings = d.timerSettings || { focus:25, short:5, long:15, longEvery:4 };
+  if(d.timerSettings.sound === undefined) d.timerSettings.sound = true;
   d.timerLog = d.timerLog || [];
   d.seedVersion = d.seedVersion || 0;
   d.course = d.course || { startDate:null, done:{}, notes:{} };
@@ -1594,27 +1638,91 @@ function todaysFocusCount(){
   const t = todayStr();
   return DB.timerLog.filter(e=> e.type==="focus" && e.date===t).length;
 }
-function beep(){
+/* ---- Sound ----
+   The old version built a fresh AudioContext at the moment the timer ended.
+   A browser will not let a page start audio without a user gesture, so that
+   context could open in the "suspended" state and play nothing at all.
+
+   Instead we create ONE context on the Start click - a real gesture - keep it
+   for the life of the page, and resume it before every sound. */
+let audioCtx = null;
+
+function ensureAudio(){
+  if(!DB.timerSettings.sound) return null;
   try{
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    const ctx = new Ctx();
-    [660, 880].forEach((freq, i)=>{
+    if(!audioCtx){
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if(!Ctx) return null;
+      audioCtx = new Ctx();
+    }
+    if(audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }catch(e){ return null; }
+}
+
+function playChime(notes, volume, gap){
+  const ctx = ensureAudio();
+  if(!ctx) return;
+  try{
+    notes.forEach(function(freq, i){
+      const at = ctx.currentTime + i * gap;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.type = "sine"; osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + i*0.22 + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + i*0.22 + 0.32);
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, at);
+      gain.gain.exponentialRampToValueAtTime(volume, at + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.55);
       osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + i*0.22);
-      osc.stop(ctx.currentTime + i*0.22 + 0.34);
+      osc.start(at);
+      osc.stop(at + 0.6);
     });
-    setTimeout(()=>ctx.close(), 1200);
   }catch(e){}
+}
+
+/* One soft tone for the warning, a rising three-note chime for the end - two
+   sounds you can tell apart from across the room without looking. */
+function soundWarn(){ playChime([880], 0.16, 0.3); }
+function soundDone(){ playChime([784, 988, 1319, 1568], 0.34, 0.26); }
+
+/* ---- Announcements ----
+   Fixed to the viewport, so a session that ends while you are reading a
+   lesson still tells you. If the page is hidden when it fires, the auto-hide
+   countdown does not start until you come back and can actually see it. */
+let alertHideTimer = null;
+let alertPendingMs = 0;
+
+function showTimerAlert(kind, title, detail, ms){
+  const box = document.getElementById("timerAlert");
+  if(!box) return;
+  clearTimeout(alertHideTimer);
+  document.getElementById("taIcon").textContent = kind === "done" ? "\u2705" : "\u23f3";
+  document.getElementById("taTitle").textContent = title;
+  document.getElementById("taDetail").textContent = detail || "";
+  box.className = "timer-alert " + kind;
+  /* Sit just below whichever bar is on screen - the tab strip on phones, the
+     top bar on desktop - so the banner never covers the navigation. */
+  try{
+    const bar = document.getElementById("tabnav");
+    const anchor = (bar && bar.offsetParent !== null) ? bar : document.getElementById("topbar");
+    if(anchor) box.style.top = (anchor.getBoundingClientRect().bottom + 10) + "px";
+  }catch(e){}
+  box.hidden = false;
+  alertPendingMs = ms;
+  if(document.hidden) return;          // start the countdown when it is seen
+  alertHideTimer = setTimeout(hideTimerAlert, ms);
+}
+
+function hideTimerAlert(){
+  clearTimeout(alertHideTimer);
+  alertPendingMs = 0;
+  const box = document.getElementById("timerAlert");
+  if(box) box.hidden = true;
 }
 function setTimerMode(mode, resetOnly){
   timerMode = mode;
   clearInterval(timerInterval); timerInterval = null; timerRunning = false;
+  if(typeof timerEndsAt !== "undefined"){ timerEndsAt = null; timerWarned = false; }
   timerTotal = DB.timerSettings[mode] * 60;
   timerRemaining = timerTotal;
   renderTimer();
@@ -1624,38 +1732,96 @@ function fmtClock(sec){
   const s = Math.floor(sec%60).toString().padStart(2,"0");
   return `${m}:${s}`;
 }
+const WARN_SECONDS = 15;     // heads-up before the session ends
+const DONE_ALERT_MS = 5000;  // how long the "Time up" banner stays
+
+let timerEndsAt = null;      // real wall-clock deadline, not a tick count
+let timerWarned = false;
+
 function toggleTimer(){
   if(timerRunning){
     clearInterval(timerInterval); timerInterval = null; timerRunning = false;
+    timerRemaining = secondsLeft();
+    timerEndsAt = null;
   } else {
+    ensureAudio();                         // unlock sound while a real click is in play
+    hideTimerAlert();
     timerRunning = true;
-    timerInterval = setInterval(()=>{
-      timerRemaining--;
-      if(timerRemaining <= 0){
-        clearInterval(timerInterval); timerInterval = null; timerRunning = false;
-        DB.timerLog.push({ type: timerMode, date: todayStr(), ts: nowISO() });
-        if(DB.timerLog.length > 500) DB.timerLog = DB.timerLog.slice(-500);
-        save();
-        beep();
-        const finishedFocus = timerMode === "focus";
-        toast(finishedFocus ? "Focus session complete — take a break!" : "Break's over — back to it!");
-        if(finishedFocus){
-          const count = todaysFocusCount();
-          const nextMode = (count % DB.timerSettings.longEvery === 0) ? "long" : "short";
-          setTimerMode(nextMode);
-        } else {
-          setTimerMode("focus");
-        }
-        return;
-      }
-      renderTimerTick();
-    }, 1000);
+    timerWarned = false;
+    timerEndsAt = Date.now() + timerRemaining * 1000;
+    /* Four ticks a second keeps the display honest; the countdown itself is
+       read from the clock, so a throttled or missed tick cannot lose time. */
+    timerInterval = setInterval(tickTimer, 250);
   }
   renderTimer();
 }
+
+function secondsLeft(){
+  if(timerEndsAt === null) return timerRemaining;
+  return Math.max(0, Math.round((timerEndsAt - Date.now()) / 1000));
+}
+
+function tickTimer(){
+  const left = secondsLeft();
+  if(left !== timerRemaining){
+    timerRemaining = left;
+    renderTimerTick();
+  }
+  if(!timerWarned && left > 0 && left <= WARN_SECONDS){
+    timerWarned = true;
+    soundWarn();
+    showTimerAlert("warn", left + " seconds left",
+      MODES[timerMode].label + " is nearly done", (WARN_SECONDS + 3) * 1000);
+  }
+  if(left <= 0) completeTimer();
+}
+
+function completeTimer(){
+  clearInterval(timerInterval); timerInterval = null; timerRunning = false;
+  timerEndsAt = null; timerRemaining = 0;
+
+  DB.timerLog.push({ type: timerMode, date: todayStr(), ts: nowISO() });
+  if(DB.timerLog.length > 500) DB.timerLog = DB.timerLog.slice(-500);
+  save();
+  soundDone();
+
+  const finishedFocus = timerMode === "focus";
+  let nextMode;
+  if(finishedFocus){
+    const count = todaysFocusCount();
+    nextMode = (count % DB.timerSettings.longEvery === 0) ? "long" : "short";
+  }else{
+    nextMode = "focus";
+  }
+  const nextLabel = nextMode === "focus" ? "Focus mode start"
+                  : nextMode === "long"  ? "Long break"
+                  : "Take a break";
+
+  showTimerAlert("done", "Time up!",
+    nextLabel + " \u00b7 " + DB.timerSettings[nextMode] + " min \u00b7 press Start when ready",
+    DONE_ALERT_MS);
+
+  setTimerMode(nextMode);
+}
+
+/* Coming back to a hidden tab: settle the clock at once rather than waiting
+   for the next throttled tick, and let a waiting banner start its countdown. */
+document.addEventListener("visibilitychange", function(){
+  if(document.hidden) return;
+  if(timerRunning) tickTimer();
+  if(alertPendingMs && !document.getElementById("timerAlert").hidden){
+    clearTimeout(alertHideTimer);
+    alertHideTimer = setTimeout(hideTimerAlert, alertPendingMs);
+  }
+});
+
+var taCloseEl = document.getElementById("taClose");
+if(taCloseEl) taCloseEl.addEventListener("click", hideTimerAlert);
 function resetTimer(){
   clearInterval(timerInterval); timerInterval = null; timerRunning = false;
+  timerEndsAt = null; timerWarned = false;
   timerRemaining = timerTotal;
+  hideTimerAlert();
   renderTimer();
 }
 function renderTimerTick(){
@@ -1704,6 +1870,10 @@ document.getElementById("timerSettingsBtn").addEventListener("click", ()=>{
     <div class="form-row"><label>Short break (minutes)</label><input type="text" inputmode="numeric" id="setShort" value="${DB.timerSettings.short}"></div>
     <div class="form-row"><label>Long break (minutes)</label><input type="text" inputmode="numeric" id="setLong" value="${DB.timerSettings.long}"></div>
     <div class="form-row"><label>Long break after how many focus sessions</label><input type="text" inputmode="numeric" id="setLongEvery" value="${DB.timerSettings.longEvery}"></div>
+    <label style="display:flex; gap:9px; align-items:center; font-size:14px; margin:2px 0 4px;">
+      <input type="checkbox" id="setSound" ${DB.timerSettings.sound ? "checked" : ""}> Play a chime at the warning and at the end
+    </label>
+    <div class="tf-hint">A soft tone ${WARN_SECONDS} seconds before the end, and a rising chime when the session finishes.</div>
     <div class="modal-actions">
       <button type="button" class="btn secondary" id="tsCancel">Cancel</button>
       <button type="button" class="btn" id="tsSave">Save</button>
@@ -1715,8 +1885,10 @@ document.getElementById("timerSettingsBtn").addEventListener("click", ()=>{
     const short = parseInt(document.getElementById("setShort").value) || 5;
     const long = parseInt(document.getElementById("setLong").value) || 15;
     const longEvery = parseInt(document.getElementById("setLongEvery").value) || 4;
-    DB.timerSettings = { focus, short, long, longEvery };
+    const sound = document.getElementById("setSound").checked;
+    DB.timerSettings = { focus, short, long, longEvery, sound };
     save(); closeModal();
+    if(sound) ensureAudio();          // the Save click is our gesture to unlock audio
     setTimerMode(timerMode);
   };
 });
