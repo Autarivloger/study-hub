@@ -561,6 +561,9 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
   padding:6px 12px;
 }
 .ls-code-tag{ background:#282520; color:#9aa8b8; }
+/* Terminal blocks read as a shell, not a Python file. */
+.ls-sh .ls-code-tag{ background:#20262c; color:#8fbca8; }
+.ls-sh{ border-color:#2b3138; }
 .ls-out-tag{ background:var(--bg-soft); color:var(--text-dim); }
 .ls-code pre, .ls-out pre{ margin:0; padding:12px 14px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
 .ls-code code{ color:#e6e1d8; }
@@ -2157,6 +2160,40 @@ function escapeAttr(s){ return escapeHtml(s); }
    does not claim falls through to escapeHtml, so no input can inject HTML. */
 const PY_KEYWORDS = /^(False|None|True|and|as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|match|case)$/;
 const PY_BUILTINS = /^(abs|all|any|bool|bytes|callable|chr|dict|dir|divmod|enumerate|eval|filter|float|format|frozenset|getattr|hasattr|hash|id|input|int|isinstance|issubclass|iter|len|list|map|max|min|next|object|open|ord|pow|print|range|repr|reversed|round|self|set|setattr|sorted|str|sum|super|tuple|type|vars|zip)$/;
+
+/* Terminal commands, not Python. Only three things are worth colouring:
+   a comment, the program being run, and anything in quotes. Everything else
+   falls through to escapeHtml, so no input can inject markup. */
+const SH_TOOLS = /^(git|python|python3|py|pip|black|ruff|cd|ls|dir|mkdir|echo|cat|touch|rm|mv|cp|code|pre-commit|pytest)$/;
+
+function highlightShell(src){
+  const lines = src.split("\n");
+  return lines.map(function(line){
+    const hash = line.indexOf("#");
+    let body = line, comment = "";
+    if(hash !== -1){ body = line.slice(0, hash); comment = line.slice(hash); }
+
+    let out = "", last = 0, m;
+    const re = /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|([A-Za-z][\w.-]*)/g;
+    let firstWord = true;
+    while((m = re.exec(body)) !== null){
+      out += escapeHtml(body.slice(last, m.index));
+      const t = m[0];
+      if(m[1]){
+        out += '<span class="tk-str">' + escapeHtml(t) + '</span>';
+      }else if(firstWord && SH_TOOLS.test(t)){
+        out += '<span class="tk-kw">' + escapeHtml(t) + '</span>';
+      }else{
+        out += escapeHtml(t);
+      }
+      if(m[2]) firstWord = false;
+      last = m.index + t.length;
+    }
+    out += escapeHtml(body.slice(last));
+    if(comment) out += '<span class="tk-com">' + escapeHtml(comment) + '</span>';
+    return out;
+  }).join("\n");
+}
 
 function highlightPy(src){
   const re = /(#[^\n]*)|("""[\s\S]*?"""|'''[\s\S]*?''')|([rbfuRBFU]{0,2}"(?:\\.|[^"\\\n])*"|[rbfuRBFU]{0,2}'(?:\\.|[^'\\\n])*')|(\b\d[\d_]*\.?[\d_]*(?:[eE][+-]?\d+)?\b)|(@[A-Za-z_]\w*)|([A-Za-z_]\w*)/g;
@@ -7783,6 +7820,458 @@ const DAY_TEACH = {
  ]},
 ]},
 
+/* ---------------- WEEK 16 · DAY 1 ---------------- */
+"16.0": { parts: [
+ { title: "What git is, and the three places your code lives", sections: [
+  {t:"key", v:"Git is a machine for remembering. Every time you decide a piece of work is finished, you take a snapshot. You can then look at any past snapshot, compare any two, and go back to any of them. That is the whole idea, and everything else is detail."},
+  {t:"new", v:"git", note:"A program you install once and then run from the terminal. It watches a folder and, whenever you ask, records exactly what every file in it looked like at that moment. It is not GitHub - GitHub is a website that stores git snapshots for you. You can use git for years without ever touching GitHub."},
+  {t:"h", v:"1. Check it is there"},
+  {t:"sh", v:"git --version"},
+  {t:"out", v:"git version 2.55.0.windows.3"},
+  {t:"p", v:"Your number will differ and that is fine - anything from 2.30 upward behaves the way this week describes. If the command is not recognised, install git from git-scm.com and open a NEW terminal window afterwards."},
+  {t:"h", v:"2. Tell git who you are, once"},
+  {t:"p", v:"Every snapshot records who made it. Git refuses to record anything until you have told it your name and email, so do this now and never again."},
+  {t:"sh", v:"git config --global user.name \"Your Name\"\ngit config --global user.email \"you@example.com\""},
+  {t:"new", v:"--global", note:"A flag meaning 'for every project on this computer', rather than only the folder you happen to be standing in. Without it the setting applies to one repository only."},
+  {t:"tip", v:"The email is stored in every snapshot and, if you later publish to GitHub, becomes public. Use an address you are happy for strangers to see. GitHub can give you a no-reply address for exactly this reason."},
+  {t:"h", v:"3. Turning a folder into a repository"},
+  {t:"new", v:"repository", note:"Usually shortened to 'repo'. It is an ordinary folder with a hidden .git folder inside it. That hidden folder holds every snapshot you have ever taken. Delete it and you have a plain folder again with no history - so never delete .git."},
+  {t:"new", v:"git init", note:"Creates that hidden .git folder, turning the folder you are standing in into a repository. You run it once per project. It does not change, move or delete any of your existing files."},
+  {t:"sh", v:"git init -b main"},
+  {t:"out", v:"Initialized empty Git repository in C:/Users/you/projects/myapp/.git/"},
+  {t:"new", v:"-b main", note:"Names the first line of history 'main'. Older git called it 'master' by default, and you will still meet that name in old projects. Naming it explicitly means your repo matches what GitHub expects."},
+  {t:"h", v:"4. The three places - the idea everything else rests on"},
+  {t:"p", v:"This is the part beginners skip and then never fully understand git. A file in a repo can be in three places at once, and they hold different versions of it:\n\n1. The WORKING FOLDER - the files as they are on disk right now, as your editor sees them.\n2. The STAGING AREA - a list of changes you have chosen to include in the next snapshot.\n3. The HISTORY - every snapshot you have already taken.\n\nYou edit in the first, choose in the second, and record into the third."},
+  {t:"new", v:"staging area", note:"Also called 'the index'. Think of it as a box you put things into before posting them. You can edit ten files and stage only two, so one snapshot contains one coherent change rather than a jumble. This box is why git commits can be tidy."},
+  {t:"key", v:"Editing a file does not put it in the next snapshot. You must stage it, then commit. Two separate steps, on purpose."},
+  {t:"h", v:"5. git status tells you where everything is"},
+  {t:"new", v:"git status", note:"Asks git to describe the current situation: which branch you are on, which files have changed, and which of those changes are staged. It changes nothing. Run it constantly - when you are confused about git, this is almost always the answer."},
+  {t:"sh", v:"git status"},
+  {t:"out", v:"On branch main\n\nNo commits yet\n\nnothing to commit (create/copy files and use \"git add\" to track)"},
+  {t:"p", v:"Now create a file called hello.py containing one print, and ask again:"},
+  {t:"sh", v:"git status"},
+  {t:"out", v:"On branch main\n\nNo commits yet\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\thello.py\n\nnothing added to commit but untracked files present (use \"git add\" to track)"},
+  {t:"new", v:"untracked", note:"Git has noticed the file exists but is not watching it. Until you stage it once, git will never record it and never warn you if you lose it. New files are always untracked at first."},
+  {t:"tip", v:"git status --short gives the same information in two columns instead of paragraphs. Once the words are familiar, the short form is much faster to read: ?? means untracked, A means added, M means modified."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Make a new folder, turn it into a repository, create one file in it, and use git status to prove that git can see the file but is not yet watching it."},
+  {t:"sol", code:"mkdir practice\ncd practice\ngit init -b main\n\n# create a file however you like, then:\ngit status --short", out:"Initialized empty Git repository in .../practice/.git/\n?? hello.py", why:"The two question marks are git saying 'this exists and I am ignoring it'. That is the untracked state. Note that git init printed a path ending in .git - that hidden folder is the repository itself; everything else in the folder is just your work.", sh:true},
+  {t:"ex", v:"Problem 2 - In your own words, say what would happen if you deleted the .git folder from a repository. Then say what would happen if you deleted every OTHER file instead."},
+  {t:"sol", code:"# Deleting .git   -> the history is gone forever.\n#                   Your current files stay exactly as they are.\n#                   The folder becomes an ordinary folder again.\n\n# Deleting the rest -> your files disappear from the working folder,\n#                   BUT every committed snapshot is still inside .git,\n#                   so you can bring them all back:\n\ngit restore .", why:"This is the asymmetry worth understanding on day one. Your history lives in .git, and your current work lives outside it. Losing .git loses the past; losing the files loses only what you had not committed. It is also why committing often is the cheapest insurance there is.", sh:true},
+ ]},
+ { title: "Staging, committing, and reading your own history", sections: [
+  {t:"h", v:"1. Stage, then commit"},
+  {t:"new", v:"git add", note:"Puts a file's current state into the staging area - the box for the next snapshot. Adding does not save anything permanently; it only says 'include this in what I am about to record'."},
+  {t:"new", v:"git commit", note:"Takes everything in the staging area and records it as one permanent snapshot, with a message explaining why. After this, that version can always be recovered."},
+  {t:"sh", v:"git status --short\ngit add hello.py\ngit status --short"},
+  {t:"out", v:"?? hello.py\nA  hello.py"},
+  {t:"p", v:"The marker changed from ?? (untracked) to A (added, waiting in the box). Now record it:"},
+  {t:"sh", v:"git commit -m \"Add hello.py\""},
+  {t:"out", v:"[main (root-commit) 8b85ee4] Add hello.py\n 1 file changed, 1 insertion(+)\n create mode 100644 hello.py"},
+  {t:"new", v:"-m", note:"Supplies the commit message on the same line. Leave it out and git opens a text editor to ask for one, which catches people out badly the first time. Always pass -m until you have configured an editor you like."},
+  {t:"new", v:"8b85ee4", note:"The identifier of this snapshot, shortened. Git names every commit by a long hash of its contents, and shows the first seven characters. YOURS WILL BE DIFFERENT from mine - the hash depends on your name, your email and the exact second you committed. Every hash in this week's lessons is real but personal to my run."},
+  {t:"p", v:"'root-commit' appears only on the very first commit of a repository, because it is the one commit with nothing before it."},
+  {t:"h", v:"2. The everyday loop"},
+  {t:"syn", v:"edit files\ngit status          # what changed?\ngit add <files>     # choose what goes in\ngit status          # confirm the box\ngit commit -m \"...\" # record it", note:"This is the entire daily cycle. Everything else in git is for when something goes wrong or when you work with other people."},
+  {t:"tip", v:"git add . stages everything that changed in the current folder and below. It is convenient and it is how most people work - but look at git status first, or you will one day commit a password file you did not mean to."},
+  {t:"h", v:"3. Writing a message worth reading"},
+  {t:"p", v:"You are writing to yourself in six months, when you are looking for the change that broke something. 'update', 'fix' and 'stuff' tell that person nothing."},
+  {t:"mis", why:"A good message says WHAT changed and, when it is not obvious, why. The convention is the imperative mood - 'Add', 'Fix', 'Rename' - because the message completes the sentence 'this commit will...'. You will thank yourself the first time you search a year of history for the moment a bug appeared.", wrong:"git commit -m \"changes\"\ngit commit -m \"fix\"\ngit commit -m \"asdf\"", right:"git commit -m \"Add login form validation\"\ngit commit -m \"Fix crash when the CSV has no header row\"\ngit commit -m \"Rename calc() to total_price() for clarity\""},
+  {t:"h", v:"4. Seeing what you changed, before you commit"},
+  {t:"new", v:"git diff", note:"Shows the changes in your working folder that are NOT yet staged - line by line, with a minus for what was removed and a plus for what was added. It answers 'what exactly have I altered since my last snapshot?'"},
+  {t:"sh", v:"git diff"},
+  {t:"out", v:"diff --git a/app.py b/app.py\nindex 2c18545..ac0ba2e 100644\n--- a/app.py\n+++ b/app.py\n@@ -1,2 +1,3 @@\n x = 1\n-y = 2\n+y = 20\n+z = 3"},
+  {t:"p", v:"Read it as: in app.py, the line 'y = 2' was removed, and 'y = 20' and 'z = 3' were added. The line starting with a space is unchanged context. The @@ line gives line numbers and can be ignored while you are learning."},
+  {t:"warn", v:"Once you stage a file, plain git diff shows nothing for it - because it compares your folder against the staging box, and they now match. That silence confuses everyone once. Use git diff --staged to see what is actually in the box."},
+  {t:"sh", v:"git add app.py\ngit diff\ngit diff --staged"},
+  {t:"out", v:"diff --git a/app.py b/app.py\nindex 2c18545..ac0ba2e 100644\n--- a/app.py\n+++ b/app.py\n@@ -1,2 +1,3 @@\n x = 1\n-y = 2\n+y = 20\n+z = 3"},
+  {t:"p", v:"The first git diff printed nothing at all; only --staged had anything to show. That is the three places again: folder and box now agree, box and history do not."},
+  {t:"h", v:"5. Reading the history"},
+  {t:"new", v:"git log", note:"Lists the snapshots, newest first. On its own it prints a long paragraph per commit; --oneline compresses each to a single line, which is what you will use most of the time."},
+  {t:"sh", v:"git log --oneline"},
+  {t:"out", v:"37c0782 Extend a.txt\n623a0ea Add b.txt\ne1c592b Add a.txt"},
+  {t:"p", v:"Three snapshots, newest at the top. Now you can see why the messages matter - this list IS your project's story, and it is only as useful as the sentences you wrote."},
+  {t:"sh", v:"git log --oneline --stat -1"},
+  {t:"out", v:"37c0782 Extend a.txt\n a.txt | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)"},
+  {t:"new", v:"--stat", note:"Adds a summary of which files each commit touched and by how much. -1 limits the output to the most recent commit. Together they answer 'what did that last commit actually do?'"},
+  {t:"tip", v:"If git log fills the screen and seems to trap you, you are in a pager. Press q to quit. This catches absolutely everybody the first time."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - In a fresh repository, make three commits: create a file, add a second file, then change the first. Show the history as three lines."},
+  {t:"sol", code:"git init -b main\n\n# after creating a.txt\ngit add .\ngit commit -m \"Add a.txt\"\n\n# after creating b.txt\ngit add .\ngit commit -m \"Add b.txt\"\n\n# after editing a.txt\ngit add .\ngit commit -m \"Extend a.txt\"\n\ngit log --oneline", out:"37c0782 Extend a.txt\n623a0ea Add b.txt\ne1c592b Add a.txt", why:"Three separate commits rather than one means you can later return to any of the three states. Your hashes will differ from these - they encode your name, email and the moment you committed. The order is what matters: newest first.", sh:true},
+  {t:"ex", v:"Problem 2 - You have edited three files but only two of them belong together. Stage just those two, commit them, then commit the third separately. Write the commands."},
+  {t:"sol", code:"git status --short\n# M  login.py\n# M  auth.py\n# M  README.md\n\ngit add login.py auth.py\ngit status --short\n# M  login.py     <- staged\n# M  auth.py      <- staged\n#  M README.md    <- not staged\n\ngit commit -m \"Check the password length before logging in\"\n\ngit add README.md\ngit commit -m \"Document the new password rule\"", why:"This is exactly what the staging area is for, and why git makes it a separate step. Two commits, each doing one thing, mean that if the password change turns out to be wrong you can undo it without also undoing the documentation. Notice the column position in git status --short: a letter in the FIRST column means staged, in the second column means changed but not staged.", sh:true},
+ ]},
+ { title: ".gitignore, and undoing things safely", sections: [
+  {t:"h", v:"1. Files that must never be committed"},
+  {t:"p", v:"Some files simply do not belong in a repository: passwords and API keys, anything generated automatically, and anything enormous. Committing a secret is serious - once it is in the history it stays there even after you delete the file, and if you have published the repo you must treat that secret as leaked."},
+  {t:"new", v:".gitignore", note:"A plain text file, one pattern per line, listing what git should pretend not to see. It lives in the top folder of your repo and IS itself committed, so everyone working on the project ignores the same things."},
+  {t:"sh", v:"git status --short"},
+  {t:"out", v:"?? __pycache__/\n?? app.py\n?? secrets.env"},
+  {t:"p", v:"Two of those three should never be recorded. Create a file called .gitignore containing:"},
+  {t:"sh", v:"__pycache__/\n*.env"},
+  {t:"sh", v:"git status --short"},
+  {t:"out", v:"?? .gitignore\n?? app.py"},
+  {t:"p", v:"The cache folder and the secrets file have vanished from git's view entirely, and .gitignore itself has appeared, waiting to be committed - which is right, because the rules should travel with the project."},
+  {t:"new", v:"*.env", note:"The star matches any characters, so this one line covers secrets.env, local.env and anything else ending in .env. A trailing slash like __pycache__/ means 'this folder and everything in it'."},
+  {t:"tip", v:"A sensible starting .gitignore for a Python project: __pycache__/, *.pyc, .venv/, venv/, *.env, .DS_Store, and your editor's folder such as .vscode/. GitHub offers a ready-made Python one when you create a repository."},
+  {t:"warn", v:"Adding a file to .gitignore does NOT remove it from history if you already committed it once. Ignoring only affects files git is not yet tracking. If you have committed a password, change the password - that is the only real fix."},
+  {t:"h", v:"2. Undoing a change you have not committed"},
+  {t:"new", v:"git restore", note:"Throws away your edits to a file and puts back the last committed version. It is the 'I have made this worse, take me back' button - and because it discards work permanently, git only lets it touch files it already has a snapshot of."},
+  {t:"sh", v:"git status --short\ngit restore notes.txt\ncat notes.txt\ngit status --short"},
+  {t:"out", v:" M notes.txt\nthe good version"},
+  {t:"p", v:"The file is back to its committed content, and the final git status prints nothing at all - nothing has changed since the last snapshot. That empty output is git saying everything is clean."},
+  {t:"warn", v:"git restore cannot be undone. The edits you discarded were never in a snapshot, so git has no copy of them. Commit before experimenting, and this command becomes safe rather than frightening."},
+  {t:"h", v:"3. Taking something back out of the box"},
+  {t:"p", v:"Staged the wrong file? You do not have to undo your work - just take it out of the staging area and leave the file alone."},
+  {t:"sh", v:"git add .\ngit status --short\ngit restore --staged b.txt\ngit status --short"},
+  {t:"out", v:"M  a.txt\nA  b.txt\nM  a.txt\n?? b.txt"},
+  {t:"p", v:"b.txt went from A (in the box) back to ?? (untracked) - the file itself is untouched on disk. Compare the two forms carefully, because they do very different things:"},
+  {t:"mis", why:"One word apart, and one of them destroys work. --staged unstages, plain restore reverts the file. When you are unsure which you want, run git status - it prints the exact command for the thing you are trying to do, right there in the output.", wrong:"git restore notes.txt\n# discards your edits - they are gone", right:"git restore --staged notes.txt\n# only empties the box; your edits are safe"},
+  {t:"h", v:"4. What to do when you are lost"},
+  {t:"p", v:"Three commands rescue almost every beginner situation:\n\n- git status - where am I and what is going on\n- git diff - what exactly have I changed\n- git log --oneline - what have I recorded so far\n\nNone of them changes anything, so you can run all three whenever you feel uncertain."},
+  {t:"key", v:"Commit early and often. A commit costs nothing, takes a second, and turns every later mistake into something you can walk back from."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - You have a folder containing app.py, a __pycache__ folder and a file called keys.env. Write the .gitignore that leaves only app.py visible to git, then prove it worked."},
+  {t:"sol", code:"# .gitignore\n__pycache__/\n*.env\n\n# then:\ngit status --short", out:"?? .gitignore\n?? app.py", why:"Two patterns cover both problems, and .gitignore appears in the list because it should be committed along with everything else - the next person to clone the project then ignores the same files automatically. Had you written keys.env instead of *.env it would work today and fail the moment someone adds prod.env.", sh:true},
+  {t:"ex", v:"Problem 2 - You edited two files. One edit was good and is already committed; the other made things worse and is not committed. Write the commands to throw away only the bad one, and explain why this is safe."},
+  {t:"sol", code:"git status --short\n#  M good.py     <- already committed, then edited again\n#  M ruined.py   <- the mistake\n\ngit diff ruined.py        # look before you leap\ngit restore ruined.py\n\ngit status --short\n#  M good.py", why:"Naming the single file means only that one is touched - git restore with no filename would have discarded both. Running git diff first is the habit that makes this safe: you see precisely what is about to be destroyed. And it is only recoverable at all because ruined.py had been committed once before; work that has never been committed cannot be restored by anything.", sh:true},
+  {t:"key", v:"Today in one line: a repo is a folder plus its history in .git, changes move folder to box to history, .gitignore keeps secrets and junk out, and git status is the answer whenever you are lost."},
+ ]},
+]},
+
+/* ---------------- WEEK 16 · DAY 2 ---------------- */
+"16.1": { parts: [
+ { title: "Branches - trying something without risking what works", sections: [
+  {t:"key", v:"A branch lets you build something new while the working version stays untouched. If the experiment succeeds you fold it back in; if it fails you delete the branch and nothing is lost. In git this costs nothing, which is why professionals branch constantly."},
+  {t:"new", v:"branch", note:"A movable label pointing at one commit. Making a branch does not copy your files - it just writes a new label, which is why it is instant even on a huge project. 'main' is itself just a branch, with no special powers."},
+  {t:"h", v:"1. Where am I?"},
+  {t:"new", v:"git branch", note:"With no arguments, lists the branches in this repo and marks the one you are on with an asterisk. It is the 'where am I standing' question."},
+  {t:"sh", v:"git branch"},
+  {t:"out", v:"* main"},
+  {t:"h", v:"2. Making one and moving to it"},
+  {t:"new", v:"git switch -c", note:"Creates a new branch and moves you onto it in one step. The -c stands for create. You will also see the older command git checkout -b, which does the same thing; switch was added later because checkout did too many unrelated jobs."},
+  {t:"sh", v:"git switch -c feature-login\ngit branch"},
+  {t:"out", v:"Switched to a new branch 'feature-login'\n* feature-login\n  main"},
+  {t:"p", v:"Your files did not change. You are simply now recording into a different line of history. Commit here and main stays exactly as it was."},
+  {t:"sh", v:"git add .\ngit commit -m \"Add login\"\ngit log --oneline --all --decorate"},
+  {t:"out", v:"2c7e582 (HEAD -> feature-login) Add login\nf9d9d51 (main) Initial"},
+  {t:"new", v:"--all --decorate", note:"--all shows commits from every branch, not just the one you are on. --decorate prints the branch labels in brackets so you can see where each one points. Together they are the clearest picture of the shape of your history."},
+  {t:"new", v:"HEAD", note:"Git's word for 'where you are standing right now'. HEAD -> feature-login means you are on that branch, so your next commit will extend it. When people say they are 'on a branch', HEAD is what they mean."},
+  {t:"p", v:"Read that output carefully: main is still sitting on the Initial commit, and the new work hangs off feature-login. Two lines of history, one folder."},
+  {t:"h", v:"3. Moving back and forth"},
+  {t:"sh", v:"git switch main\ngit switch feature-login"},
+  {t:"out", v:"Switched to branch 'main'"},
+  {t:"p", v:"When you switch, git rewrites the files in your folder to match that branch. The login file you added will literally vanish from the folder while you are on main, and reappear when you switch back. That is not a bug and nothing was lost - the snapshot is safe in .git."},
+  {t:"warn", v:"Git will refuse to switch if you have uncommitted changes that would be overwritten, and it is protecting you when it does. Commit first, and switching becomes free and instant."},
+  {t:"h", v:"4. When to branch"},
+  {t:"p", v:"A useful rule while learning: one branch per thing you are trying. Naming it after that thing - feature-login, fix-csv-crash, try-new-layout - means git branch becomes a list of what you have in flight.\n\nWorking alone you can honestly get by committing straight to main. Branching becomes essential the moment you want to keep a working version safe while you break things."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - In a repo with one commit, create a branch called experiment, commit a new file on it, and then show that main does not contain that file."},
+  {t:"sol", code:"git switch -c experiment\n\n# create experiment.py, then:\ngit add .\ngit commit -m \"Try a new approach\"\n\ngit switch main\ndir            # on macOS or Linux: ls\n# experiment.py is NOT here\n\ngit log --oneline --all --decorate", out:"2c7e582 (experiment) Try a new approach\nf9d9d51 (HEAD -> main) Initial", why:"Listing the folder is the demonstration that matters - the file genuinely is not on disk while you are on main. The decorated log then shows why: the experiment label points one commit further along than main. Nothing was copied and nothing was deleted; only the label you are standing on changed.", sh:true},
+  {t:"ex", v:"Problem 2 - Explain, in your own words, why creating a branch in git is instant even in a project with fifty thousand files."},
+  {t:"sol", code:"# Because a branch is only a label - a small file containing\n# the hash of one commit. Creating it writes about 40 bytes.\n#\n# Older tools copied the whole project folder to make a branch,\n# which is why branching used to be a big decision. In git it is not.\n\ngit switch -c anything      # instant, whatever the project size", why:"Understanding this removes the fear. Beginners avoid branches because they imagine an expensive, risky operation. Knowing that a branch is a 40-byte label pointing at a commit makes it obvious that you can create and delete them freely.", sh:true},
+ ]},
+ { title: "Merging, and the conflict everyone dreads", sections: [
+  {t:"h", v:"1. Folding a branch back in"},
+  {t:"new", v:"git merge", note:"Brings the commits from another branch into the one you are standing on. You always run it FROM the branch that should receive the work - so to put a feature into main, you switch to main first, then merge the feature."},
+  {t:"sh", v:"git switch main\ngit merge feature"},
+  {t:"out", v:"Updating f9d9d51..740a7da\nFast-forward\n feature.py | 1 +\n 1 file changed, 1 insertion(+)\n create mode 100644 feature.py"},
+  {t:"new", v:"Fast-forward", note:"Git's way of saying it did not have to combine anything. Main had not moved since you branched, so git simply slid the main label forward to where the feature branch already was. Nothing could conflict, because only one side changed."},
+  {t:"sh", v:"git log --oneline"},
+  {t:"out", v:"740a7da Add feature\nf9d9d51 Initial"},
+  {t:"h", v:"2. When both sides moved"},
+  {t:"p", v:"If main also gained a commit while you were working on the feature, git cannot just slide a label. It has to build a new commit that joins the two histories."},
+  {t:"sh", v:"git merge feature -m \"Merge feature into main\""},
+  {t:"out", v:"Merge made by the 'ort' strategy.\n feature.py | 1 +\n 1 file changed, 1 insertion(+)\n create mode 100644 feature.py"},
+  {t:"sh", v:"git log --oneline --graph"},
+  {t:"out", v:"*   e924142 Merge feature into main\n|\\  \n| * 740a7da Add feature\n* | 113f10f Add readme\n|/  \n* f9d9d51 Initial"},
+  {t:"new", v:"--graph", note:"Draws the shape of the history with lines down the left. A split means the history diverged, and the lines coming back together mean a merge. It is the fastest way to see what actually happened in a repo."},
+  {t:"p", v:"Read the drawing from the bottom: one commit, then the history splits in two, then a merge commit at the top joins them. The word 'ort' is just the name of the algorithm git used and can be ignored."},
+  {t:"h", v:"3. A conflict, on purpose"},
+  {t:"p", v:"Git merges different files, and even different parts of the same file, without any help. It only stops when both branches changed THE SAME LINES differently - because then only a human can say which is right."},
+  {t:"new", v:"merge conflict", note:"Not an error and not damage. It is git pausing to ask a question it cannot answer: two branches changed the same line, so which version do you want? Your repository is intact the whole time."},
+  {t:"sh", v:"git merge fast"},
+  {t:"out", v:"Auto-merging config.py\nCONFLICT (content): Merge conflict in config.py\nAutomatic merge failed; fix conflicts and then commit the result."},
+  {t:"sh", v:"git status --short\ncat config.py"},
+  {t:"out", v:"UU config.py\n<<<<<<< HEAD\nTIMEOUT = 60\n=======\nTIMEOUT = 5\n>>>>>>> fast"},
+  {t:"new", v:"UU", note:"Both sides changed this file - U for unmerged, twice. It is git's short way of marking the files that need your decision."},
+  {t:"p", v:"Git has written both versions into the file, with markers:\n\n- Between <<<<<<< HEAD and ======= is what YOUR current branch says.\n- Between ======= and >>>>>>> fast is what the OTHER branch says.\n\nThe file is not broken - it is a question written in text."},
+  {t:"h", v:"4. Resolving it"},
+  {t:"p", v:"You edit the file into whatever the final answer should be, and delete all three marker lines. You may keep one side, keep the other, or write something new - here, 45 is a compromise neither branch proposed."},
+  {t:"sh", v:"# config.py, edited by hand until it reads exactly:\nTIMEOUT = 45\n\ngit add config.py\ngit commit -m \"Merge fast, settle on 45\"\ngit log --oneline --graph"},
+  {t:"out", v:"*   9a7dbd5 Merge fast, settle on 45\n|\\  \n| * d1627b9 Lower timeout\n* | 2c341c4 Raise timeout\n|/  \n* cb39d8b Initial"},
+  {t:"key", v:"Resolving a conflict is three steps: edit the file until it is right, git add it to say 'I have settled this', then commit. There is no special conflict command to learn."},
+  {t:"warn", v:"Search your project for <<<<<<< before committing a merge. Leaving a marker in by accident is extremely common, and since the markers are not valid Python, the file will crash the moment it runs."},
+  {t:"tip", v:"Stuck halfway through a merge and want out? git merge --abort puts everything back exactly as it was before you started. Knowing that escape hatch exists is what makes merging stop being frightening."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Cause a merge conflict deliberately, then resolve it. Write the whole sequence."},
+  {t:"sol", code:"# Start from a committed file containing TIMEOUT = 30\n\ngit switch -c fast\n# edit to TIMEOUT = 5\ngit add . && git commit -m \"Lower timeout\"\n\ngit switch main\n# edit the SAME line to TIMEOUT = 60\ngit add . && git commit -m \"Raise timeout\"\n\ngit merge fast\n# CONFLICT (content): Merge conflict in config.py\n\n# edit config.py, remove the markers, leave TIMEOUT = 45\ngit add config.py\ngit commit -m \"Merge fast, settle on 45\"", out:"Auto-merging config.py\nCONFLICT (content): Merge conflict in config.py\nAutomatic merge failed; fix conflicts and then commit the result.", why:"Causing one on purpose, in a repo you do not care about, is the single best way to stop fearing conflicts. Note that both branches had to change the SAME line - had one changed the timeout and the other added a new setting below it, git would have merged them silently with no conflict at all.", sh:true},
+  {t:"ex", v:"Problem 2 - You start a merge, see a conflict in six files, and decide you are not ready. How do you get back to exactly where you were?"},
+  {t:"sol", code:"git merge --abort\n\ngit status\n# On branch main\n# nothing to commit, working tree clean\n\n# The merge never happened. Both branches are untouched\n# and you can try again whenever you like.", why:"--abort restores the working folder and the staging area to their state before the merge began. It only works while the merge is unfinished, which is precisely when you need it. Knowing this command exists is what lets you attempt a merge without anxiety.", sh:true},
+  {t:"key", v:"Today in one line: a branch is a cheap label, merge brings work back, a conflict is a question rather than a failure, and --abort is always there if you want out."},
+ ]},
+]},
+
+/* ---------------- WEEK 16 · DAY 3 ---------------- */
+"16.2": { parts: [
+ { title: "Remotes - a copy of your repo that lives somewhere else", sections: [
+  {t:"key", v:"Everything so far happened on your own machine. A remote is another copy of the same repository, usually on a server, that you send snapshots to and fetch snapshots from. That is what GitHub is: a place to keep a remote."},
+  {t:"new", v:"remote", note:"A nickname for another copy of this repository, stored as a URL. Adding a remote does not send anything anywhere - it only teaches your repo where that other copy lives, so you can name it in later commands."},
+  {t:"new", v:"origin", note:"The conventional nickname for the main remote of a project. There is nothing magical about the word; it is just the name almost everyone uses, so tools and tutorials assume it."},
+  {t:"h", v:"1. Pointing your repo at a remote"},
+  {t:"sh", v:"git remote add origin https://github.com/yourname/yourproject.git\ngit remote -v"},
+  {t:"out", v:"origin\thttps://github.com/yourname/yourproject.git (fetch)\norigin\thttps://github.com/yourname/yourproject.git (push)"},
+  {t:"p", v:"Two lines because git tracks the address it reads from and the address it writes to separately. They are almost always the same."},
+  {t:"h", v:"2. Sending your work"},
+  {t:"new", v:"git push", note:"Copies the commits on your current branch up to the remote. Nothing is sent until you push - until then the remote knows nothing about the work you have committed."},
+  {t:"sh", v:"git push -u origin main"},
+  {t:"out", v:"branch 'main' set up to track 'origin/main'.\nTo https://github.com/yourname/yourproject.git\n * [new branch]      main -> main"},
+  {t:"new", v:"-u", note:"Short for --set-upstream. It records which remote branch your local branch belongs with, so from then on a bare git push and git pull know where to go. You need it on the first push of a branch and never again for that branch."},
+  {t:"sh", v:"git branch -vv"},
+  {t:"out", v:"* main f9d9d51 [origin/main] Initial"},
+  {t:"p", v:"The bracketed part is the link -u created. From now on, plain git push is enough."},
+  {t:"h", v:"3. Getting other people's work"},
+  {t:"new", v:"git pull", note:"Fetches the commits from the remote and merges them into your current branch. It is git fetch and git merge in one step - which is why a pull can produce a merge conflict, exactly like yesterday's."},
+  {t:"sh", v:"git pull"},
+  {t:"out", v:"Updating f9d9d51..5f1e4e8\nFast-forward\n app.py | 1 +\n 1 file changed, 1 insertion(+)"},
+  {t:"p", v:"Fast-forward again - the same word from yesterday, meaning nothing had to be combined. You had made no local commits, so git just slid your branch forward."},
+  {t:"tip", v:"Pull before you start work, and push when you stop. Most painful merges come from letting a local copy drift for a week."},
+  {t:"h", v:"4. Starting from someone else's project"},
+  {t:"new", v:"git clone", note:"Downloads an entire repository - every file and its whole history - into a new folder, and sets up origin for you automatically. You do not run git init afterwards; clone has already done it."},
+  {t:"sh", v:"git clone https://github.com/yourname/yourproject.git\ncd yourproject\ngit log --oneline"},
+  {t:"p", v:"You now have the complete history on your machine, not just the latest files. That is what distributed means: your clone is a full repository in its own right, and you can commit, branch and read history with no connection at all."},
+  {t:"h", v:"5. Rehearsing without GitHub"},
+  {t:"p", v:"You do not need an account or a network to practise any of this. A remote can be another folder on your own disk, and it behaves identically."},
+  {t:"sh", v:"# somewhere outside your project:\ngit init --bare -b main shared.git\n\n# back in your project:\ngit remote add origin ../shared.git\ngit push -u origin main"},
+  {t:"new", v:"--bare", note:"Creates a repository with history but no working files - exactly what a server holds. You never edit inside a bare repo; you only push to and pull from it. Every remote you meet, GitHub included, is a bare repository."},
+  {t:"tip", v:"Clone that bare repo into a second folder and you have two 'people' on one machine. Pushing from one and pulling into the other is the safest way to practise collaboration, including conflicts, before anything is public."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Without using GitHub, set up a shared repository on your own disk, push to it, and clone it into a second folder to prove the history travelled."},
+  {t:"sol", code:"# 1. the pretend server\ngit init --bare -b main shared.git\n\n# 2. in your project\ngit remote add origin ../shared.git\ngit push -u origin main\n\n# 3. somewhere else, pretend to be a colleague\ngit clone shared.git colleague\ncd colleague\ngit log --oneline", out:"branch 'main' set up to track 'origin/main'.\nTo ../shared.git\n * [new branch]      main -> main", why:"The clone contains the full history, not just the files - run git log inside it and every commit message you wrote is there. This proves the important idea: pushing sends snapshots, not a folder. It also gives you a completely private sandbox for practising push, pull and conflicts.", sh:true},
+  {t:"ex", v:"Problem 2 - You commit, then try to push, and git refuses saying the remote has work you do not have. What happened, and what do you do?"},
+  {t:"sol", code:"# What happened: someone else pushed commits after you last pulled,\n# so the remote branch has moved on and your history is behind.\n# Git refuses rather than silently discarding their work.\n\ngit pull          # fetch their commits and merge them into yours\n# resolve a conflict here if there is one, then:\ngit push", why:"Git will never let a push throw away commits that are only on the remote. The fix is always the same: bring their work down, combine it with yours, then send the result. You may see advice to use git push --force here - do not, unless you are certain you are the only person using that branch, because it deletes their commits.", sh:true},
+ ]},
+ { title: "GitHub, READMEs and pull requests", sections: [
+  {t:"h", v:"1. What GitHub adds"},
+  {t:"p", v:"Git is the tool. GitHub is a website that hosts remotes and adds things git itself has no opinion about: a page for your project, issue tracking, code review, and a way for strangers to propose changes.\n\nOther sites do the same job - GitLab, Codeberg, Bitbucket. The git commands are identical on all of them."},
+  {t:"h", v:"2. Putting an existing project online"},
+  {t:"p", v:"Create an EMPTY repository on GitHub - no README, no .gitignore, no licence - then connect your local one to it. If you let GitHub create a file, both sides have history that the other does not, and your first push is refused."},
+  {t:"sh", v:"git remote add origin https://github.com/yourname/project.git\ngit branch -M main\ngit push -u origin main"},
+  {t:"new", v:"git branch -M main", note:"Renames your current branch to main, forcing it even if the name is already taken. GitHub expects main, and older repos are often still called master, so this line makes the two agree."},
+  {t:"warn", v:"The first push opens a browser window to sign in. That is normal - GitHub stopped accepting account passwords in the terminal years ago. Never paste a password at a terminal prompt; if one appears, cancel and let the browser flow handle it."},
+  {t:"h", v:"3. The README is the front page"},
+  {t:"new", v:"README.md", note:"The file GitHub displays on your project's page. The .md means Markdown - plain text with a few simple marks for headings and lists. It is the first and usually only thing anyone reads about your project."},
+  {t:"sh", v:"# My Project\n\nOne sentence saying what this does and who it is for.\n\n## Running it\n\n    python app.py\n\n## What I learned\n\n- How to read a traceback properly\n- Why every file open needs an encoding"},
+  {t:"p", v:"In Markdown, # is a big heading and ## a smaller one, a hyphen starts a bullet, and four spaces of indentation makes a code block.\n\nFor a learning project the most valuable section is the last one. Anyone looking at your work - including a future employer - cares far more about what you understood than about the code itself."},
+  {t:"key", v:"A project with no README looks abandoned no matter how good the code is. Three honest sentences beat a beautiful repository with none."},
+  {t:"h", v:"4. Pull requests"},
+  {t:"new", v:"pull request", note:"A GitHub feature, not a git command. You push a branch, then open a pull request asking for it to be merged into main. It gives people a place to read the change and comment on specific lines before it is accepted."},
+  {t:"syn", v:"git switch -c fix-csv-crash\n# ... work, commit ...\ngit push -u origin fix-csv-crash\n# then open the pull request on the GitHub page", note:"The first push of a new branch prints a link that opens the pull request page for you - watch for it in the output."},
+  {t:"p", v:"Working alone this can still be worth doing. Opening a pull request against your own project forces you to read your own change as a whole, which catches an astonishing amount."},
+  {t:"h", v:"5. What a good repository contains"},
+  {t:"p", v:"Whatever else you add, these four make a project look cared for:\n\n- README.md - what it is, how to run it\n- .gitignore - so junk and secrets stay out\n- requirements.txt - the packages it needs\n- a clean history - messages that explain the work"},
+  {t:"new", v:"requirements.txt", note:"A list of the outside packages your project needs, one per line. Anyone who clones it can install them all with a single command, which is what makes a project runnable by someone other than you."},
+  {t:"sh", v:"pip freeze > requirements.txt\n\n# and on another machine:\npip install -r requirements.txt"},
+  {t:"warn", v:"pip freeze lists everything installed in the current environment, which is far too much unless you are inside a virtual environment. For a small project it is often better to write requirements.txt by hand with just the packages you actually import."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Write a README for one of your Week 13 or Week 14 projects. Include what it does, how to run it, and one thing you learned building it."},
+  {t:"sol", code:"# Receipt Printer\n\nA small command-line program that takes a shop name, a list of items\nand a tax rate, and prints a formatted receipt with aligned columns.\n\n## Running it\n\n    python receipt.py\n\n## What I learned\n\n- f-string format specs: `:.2f` for money, `:<12` and `:>10` for columns\n- Why `input()` always returns a string, and where to convert it\n- That opening a file with mode `w` empties it before writing a byte", why:"Notice there is no attempt to sound impressive. It says what the thing is, gives the one command needed to run it, and lists three specific things learned. That last section is what turns a folder of exercises into evidence that you understood them.", sh:true},
+  {t:"ex", v:"Problem 2 - You created a repository on GitHub and ticked 'Add a README'. Now your first push is rejected. Explain why, and give the safest fix."},
+  {t:"sol", code:"# Why: GitHub made a commit containing its README. Your local repo\n# has its own commits. Neither history contains the other, so git\n# refuses rather than choosing for you.\n\n# Safest fix - join the two histories:\ngit pull origin main --allow-unrelated-histories\n# resolve any conflict, then:\ngit push -u origin main\n\n# Simplest fix - if the GitHub repo has nothing you want,\n# delete it and create a new EMPTY one, then push.", why:"--allow-unrelated-histories exists precisely for this situation and tells git you accept that the two lines of history began separately. The second option is often better when the only thing on GitHub is an auto-generated README you were going to replace anyway. Either way, creating the repository empty in the first place avoids the whole problem.", sh:true},
+  {t:"key", v:"Today in one line: a remote is another copy of your repo, push sends and pull receives, clone brings a whole history down, and a README is what makes the result look like a project rather than a folder."},
+ ]},
+]},
+
+/* ---------------- WEEK 16 · DAY 4 ---------------- */
+"16.3": { parts: [
+ { title: "PEP 8 - the shared shape of Python code", sections: [
+  {t:"key", v:"Python has an official style guide, and essentially the whole community follows it. Following it does not make your code run better. It makes your code look like everybody else's, which means anyone can read it - including you, next year."},
+  {t:"new", v:"PEP 8", note:"A document from 2001 describing how Python code should be laid out: naming, spacing, line length, import order. PEP stands for Python Enhancement Proposal, the numbered documents where changes to Python are proposed. Number 8 happens to be the style one, which is why you hear the name constantly."},
+  {t:"h", v:"1. Naming, which matters most"},
+  {t:"syn", v:"snake_case      variables, functions, methods, modules\nPascalCase      classes\nUPPER_SNAKE     constants\n_leading        internal, not part of the public interface", note:"Consistency here does more for readability than every other rule combined, because names are what you actually read."},
+  {t:"mis", why:"Four separate fixes. The class becomes PascalCase and gains a name that says what it is. The method becomes snake_case. The local variable stops shouting. And itemList becomes items because Python does not put types in names - the plural already tells you it holds several things.", wrong:"class myClass:\n    def CalcTotal(self, itemList):\n        TotalPrice = 0\n        for i in itemList:\n            TotalPrice += i\n        return TotalPrice", right:"class ShoppingCart:\n    def total_price(self, items):\n        total = 0\n        for price in items:\n            total += price\n        return total"},
+  {t:"h", v:"2. Spacing"},
+  {t:"p", v:"The rules that come up every single day:\n\n- One space either side of = < > + - and friends, when they separate values.\n- NO spaces around = when giving a function argument by name.\n- A space after every comma, never before.\n- No space just inside brackets."},
+  {t:"mis", why:"greeting=\"hi\" has no spaces because it is a default argument, while message = ... has them because it is an assignment. That distinction is the one people get wrong most often, and it is deliberate: it makes a function signature visually different from a block of assignments.", wrong:"def greet( name,greeting = \"hi\" ):\n    message=greeting+\", \"+name\n    return message.strip( )", right:"def greet(name, greeting=\"hi\"):\n    message = f\"{greeting}, {name}\"\n    return message.strip()"},
+  {t:"code", v:"# correct spacing, several cases at once\ntotal = 0\nitems = [1, 2, 3]\nprices = {\"apple\": 30, \"pen\": 5}\n\n\ndef apply_tax(amount, rate=0.13):\n    return amount * (1 + rate)\n\n\nfor price in items:\n    total += price\n\nprint(f\"{total} -> {apply_tax(total):.2f}\")\nprint(prices)"},
+  {t:"out", v:"6 -> 6.78\n{'apple': 30, 'pen': 5}"},
+  {t:"p", v:"Every rule from above is in there: spaces around = for assignments, none around = for the default argument rate=0.13, a space after each comma, none inside the brackets, and two blank lines before the function.\n\nThe :.2f is doing real work rather than decoration. 6 * 1.13 is actually 6.779999999999999 in binary floating point, and printing it raw would show all of it. Money is always formatted, never printed bare."},
+  {t:"h", v:"3. Blank lines and line length"},
+  {t:"syn", v:"2 blank lines   before a top-level def or class\n1 blank line    between methods inside a class\n1 blank line    to separate logical steps inside a function\n79 characters   the classic maximum line length", note:"79 comes from PEP 8 itself. Many modern projects use 88, which is what the black formatter defaults to, and some use 100. What matters is picking one and applying it everywhere."},
+  {t:"tip", v:"Why limit line length at all, on a wide screen? Because you read code in narrow columns - side by side in a diff, in a review panel, on a phone. A 200-character line is unreadable everywhere except the editor it was written in."},
+  {t:"h", v:"4. Import order"},
+  {t:"syn", v:"import os                    # 1. the standard library\nimport sys\n\nimport requests              # 2. installed packages\n\nfrom myapp import helpers    # 3. your own code", note:"Three groups, separated by blank lines, alphabetical within each group. One import per line."},
+  {t:"mis", why:"One per line means a diff shows exactly which import was added or removed, instead of a whole line changing. It also means you can delete one without carefully editing around commas. The `from x import y` form is the exception - several names on one line there is normal.", wrong:"import os, sys, json", right:"import json\nimport os\nimport sys"},
+  {t:"h", v:"5. Where to read it"},
+  {t:"p", v:"The guide itself is at peps.python.org/pep-0008 and is genuinely readable - not a dry specification. You do not need to memorise it, because tomorrow you will install tools that apply most of it automatically. But read it once, so you know what the tools are doing and why."},
+  {t:"key", v:"PEP 8 is a convention, not a law. It even has a section called 'A Foolish Consistency is the Hobgoblin of Little Minds' - break a rule when following it would make the code harder to read."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Rewrite this to follow PEP 8. There are at least six separate problems.\n\nimport os,sys\nclass dataProcessor:\n  def ProcessItems( self,ItemList ):\n        Result=[]\n        for I in ItemList:\n            Result.append( I*2 )\n        return Result"},
+  {t:"sol", code:"import os\nimport sys\n\n\nclass DataProcessor:\n    def process_items(self, items):\n        result = []\n        for item in items:\n            result.append(item * 2)\n        return result\n\n\nprint(DataProcessor().process_items([1, 2, 3]))", out:"[2, 4, 6]", why:"The fixes: imports split one per line and sorted; class renamed to PascalCase; method renamed to snake_case; four-space indentation used consistently instead of two-then-eight; local names lowercased; spaces added around the operator and removed from inside the brackets; two blank lines before the class. The single-letter I also became item, which is the change that helps a reader most."},
+  {t:"ex", v:"Problem 2 - Explain why greeting=\"hi\" has no spaces but message = greeting is written with them, even though both use an equals sign."},
+  {t:"sol", code:"def greet(name, greeting=\"hi\"):     # default argument - NO spaces\n    message = f\"{greeting}, {name}\"  # assignment - WITH spaces\n    return message\n\n\nprint(greet(\"Autari\"))\nprint(greet(\"Ram\", greeting=\"namaste\"))", out:"hi, Autari\nnamaste, Ram", why:"They are two different operations that happen to share a symbol. Inside a function's parentheses, = attaches a default to a parameter; at statement level it creates a variable. PEP 8 spaces them differently on purpose, so that a signature reads as one compact unit and assignments read as separate steps. Note the same no-space rule applies when CALLING with a keyword, as in the second print."},
+ ]},
+ { title: "Line length, type hints, and when to break the rules", sections: [
+  {t:"h", v:"1. Breaking a long line"},
+  {t:"p", v:"When a line gets too long, the fix is almost never a backslash. Python already continues a line automatically inside brackets, so put the break there."},
+  {t:"mis", why:"A backslash is invisible, and a single trailing space after it is a syntax error you cannot see. Wrapping the expression in brackets lets Python continue the line naturally, and putting each operator at the START of its line means you can read down the left edge and see what is being combined.", wrong:"total = first_value + second_value + \\\n        third_value + fourth_value", right:"total = (\n    first_value\n    + second_value\n    + third_value\n    + fourth_value\n)"},
+  {t:"code", v:"def register(name, email, age, city, country=\"Nepal\", newsletter=False):\n    return {\n        \"name\": name,\n        \"email\": email,\n        \"age\": age,\n        \"city\": city,\n        \"country\": country,\n        \"newsletter\": newsletter,\n    }\n\n\nuser = register(\n    \"Autari\",\n    \"autari@example.com\",\n    age=20,\n    city=\"Kathmandu\",\n)\nprint(user[\"name\"], user[\"city\"], user[\"country\"], user[\"newsletter\"])"},
+  {t:"out", v:"Autari Kathmandu Nepal False"},
+  {t:"new", v:"the trailing comma", note:"The comma after the last item, before the closing bracket. It is legal Python and deliberate: adding another item later changes one line instead of two, so the diff shows only the real change. Black adds these for you whenever it splits something across lines."},
+  {t:"h", v:"2. Type hints"},
+  {t:"new", v:"type hint", note:"An optional note on a parameter or return value saying what kind of thing it should be. Python does not check or enforce them at all - they are for people reading the code, and for your editor, which uses them to warn you and to offer better suggestions."},
+  {t:"syn", v:"def greet(name: str, times: int = 1) -> str:\n    ...", note:"A colon after the parameter name gives its type; the arrow gives the return type. Note the spacing rule shifts: with a type hint, a default gets spaces around the = after all."},
+  {t:"code", v:"def repeat(text: str, times: int = 2) -> str:\n    return (text + \" \") * times\n\n\ndef average(numbers: list[float]) -> float | None:\n    if not numbers:\n        return None\n    return sum(numbers) / len(numbers)\n\n\nprint(repeat(\"hi\", 3))\nprint(average([1.0, 2.0, 3.0]))\nprint(average([]))\nprint(repeat(5, 2))"},
+  {t:"out", v:"hi hi hi \n2.0\nNone\nTraceback (most recent call last):\n  File \"hints.py\", line 14, in <module>\n    print(repeat(5, 2))\n          ^^^^^^^^^^^^\n  File \"hints.py\", line 2, in repeat\n    return (text + \" \") * times\n            ~~~~~^~~~~\nTypeError: unsupported operand type(s) for +: 'int' and 'str'"},
+  {t:"warn", v:"That last line is the point. repeat(5, 2) contradicts the hint, and Python runs it anyway - the hint is not a check. It fails only because you cannot add a number to a string, which is the Week 1 TypeError, not a type-hint error. Hints document intent; they never enforce it."},
+  {t:"new", v:"float | None", note:"Read as 'a float OR None'. The vertical bar builds a union of types, and it is how you say that a function may legitimately return nothing. This syntax needs Python 3.10 or newer; older code writes Optional[float] and imports it from typing."},
+  {t:"tip", v:"Do not go back and annotate everything you have written. Add hints to new functions whose inputs are not obvious from the name, and leave the rest. Half-hearted hints on old code are worse than none, because a wrong hint actively misleads."},
+  {t:"h", v:"3. Two spacing rules people get backwards"},
+  {t:"code", v:"def f(a, b=1, *, c: int = 2) -> int:\n    return a + b + c\n\n\nprint(f(1))\nprint(f(1, 2, c=3))\n\nnumbers = [1, 2, 3]\nprint(numbers[1:2], numbers[-1])\nprint({\"a\": 1}, (1,), [x * 2 for x in numbers])"},
+  {t:"out", v:"4\n6\n[2] 3\n{'a': 1} (1,) [2, 4, 6]"},
+  {t:"p", v:"Two things to notice. b=1 has no spaces because it is a plain default, while c: int = 2 does have them because the annotation makes the whole thing long enough to need separating - that is the rule PEP 8 actually states. And a one-item tuple still needs its trailing comma, exactly as in Week 6."},
+  {t:"h", v:"4. When to ignore PEP 8"},
+  {t:"p", v:"The guide devotes a whole section to this. Break a rule when following it would make the code less readable, when the surrounding code already follows a different convention consistently, or when the code is older than the rule and changing it would create noise in the history for no gain.\n\nWhat you should not do is invent a personal style and apply it to a shared project."},
+  {t:"code", v:"# A grid where the layout IS the meaning - forcing this onto\n# separate lines would destroy the thing that makes it readable.\nBOARD = [\n    [1, 0, 0],\n    [0, 1, 0],\n    [0, 0, 1],\n]\n\nfor row in BOARD:\n    print(\" \".join(\"X\" if cell else \".\" for cell in row))"},
+  {t:"out", v:"X . .\n. X .\n. . X"},
+  {t:"new", v:"# fmt: off", note:"A comment that tells black to stop reformatting until it sees # fmt: on. Use it for the rare block like this one where the hand-made layout carries meaning. Reach for it very rarely - almost always the formatter is right and you are not."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Rewrite this over several lines without using a backslash, and add type hints:\n\ndef calc(a,b,c,d): return a*0.1+b*0.2+c*0.3+d*0.4"},
+  {t:"sol", code:"def weighted_score(\n    homework: float,\n    quizzes: float,\n    midterm: float,\n    final: float,\n) -> float:\n    \"\"\"Combine four marks into one score using fixed weights.\"\"\"\n    return (\n        homework * 0.1\n        + quizzes * 0.2\n        + midterm * 0.3\n        + final * 0.4\n    )\n\n\nprint(f\"{weighted_score(80, 70, 90, 60):.1f}\")", out:"73.0", why:"Three improvements beyond the line breaks. The name now says what the number means. The four parameters are named, so a caller cannot silently swap the midterm and the final. And the operators lead their lines, so the weights line up in a column where a wrong one would be obvious. The result is formatted because it is a float built from float arithmetic."},
+  {t:"ex", v:"Problem 2 - A type hint says a function takes a str, but someone passes an int and the program runs anyway. Explain why, and say what a type hint is actually worth."},
+  {t:"sol", code:"def shout(text: str) -> str:\n    return text.upper()\n\n\nprint(shout(\"hello\"))      # fine\n\ntry:\n    print(shout(5))        # the hint says no; Python does not care\nexcept AttributeError as err:\n    print(\"failed at runtime:\", err)\n\n# What hints are worth:\n#  - your editor underlines the mistake as you type it\n#  - a checker such as mypy can find it before you ever run the code\n#  - the next reader knows what to pass without opening the function", out:"HELLO\nfailed at runtime: 'int' object has no attribute 'upper'", why:"Python discards hints at runtime, so the call proceeds and fails later for an ordinary reason - an int has no .upper(). The value of the hint is that it moves the discovery earlier: your editor flags it while you type, and a tool such as mypy can check a whole project without running it. A hint is documentation that tools happen to be able to read."},
+ ]},]},
+
+/* ---------------- WEEK 16 · DAY 5 ---------------- */
+"16.4": { parts: [
+ { title: "black - stop arguing about formatting", sections: [
+  {t:"key", v:"A formatter rewrites your file into a standard layout automatically. You stop thinking about spacing entirely, every file in the project looks the same, and code reviews stop containing comments about commas."},
+  {t:"new", v:"black", note:"A Python formatter that reformats your file to one fixed style. It deliberately offers almost no options - that is its selling point, because a style nobody can configure is a style nobody can argue about. It never changes what your code DOES, only how it is laid out."},
+  {t:"h", v:"1. Installing it"},
+  {t:"sh", v:"pip install black ruff"},
+  {t:"new", v:"pip", note:"The installer that comes with Python. It downloads packages from the Python Package Index and makes them importable, and installs their command-line tools. You have been using only the standard library until now; this is the moment you start adding to it."},
+  {t:"tip", v:"Install these inside a virtual environment where you can. If pip is not recognised, use python -m pip install black ruff instead - that form works whenever Python itself does."},
+  {t:"h", v:"2. Looking before you leap"},
+  {t:"p", v:"Start with a deliberately messy file called messy.py:"},
+  {t:"code", v:"import os,sys\nimport json\n\ndef calc( x,y ):\n    result=x+y\n    return result\n\nclass myClass:\n  def __init__(self,name):\n        self.name=name\n\nd = { 'a':1,'b':2 }\nprint( calc(1,2) )"},
+  {t:"sh", v:"black --check messy.py"},
+  {t:"out", v:"would reformat messy.py\n\nOh no! 💥 💔 💥\n1 file would be reformatted."},
+  {t:"new", v:"--check", note:"Reports what black WOULD do without touching anything, and exits with a failure code if any file needs changing. That exit code is what makes it usable in an automatic check later. Add --diff to see the exact changes it would make."},
+  {t:"h", v:"3. Running it"},
+  {t:"sh", v:"black messy.py"},
+  {t:"out", v:"reformatted messy.py\n\nAll done! ✨ 🍰 ✨\n1 file reformatted."},
+  {t:"p", v:"The file now reads:"},
+  {t:"code", v:"import os, sys\nimport json\n\n\ndef calc(x, y):\n    result = x + y\n    return result\n\n\nclass myClass:\n    def __init__(self, name):\n        self.name = name\n\n\nd = {\"a\": 1, \"b\": 2}\nprint(calc(1, 2))"},
+  {t:"p", v:"Every spacing problem is gone, the blank lines are right, the indentation is fixed, and the quotes are now all double. That took one command and no thought."},
+  {t:"h", v:"4. What black does NOT fix"},
+  {t:"warn", v:"Look at that output again. The class is still called myClass, the imports are still unsorted, and os, sys and json are still imported without ever being used. Black formats layout only - it will never rename anything or delete anything, because either could change behaviour. Formatting is not the same as correctness, and it is not the same as style in the wider sense."},
+  {t:"key", v:"Black answers 'where do the spaces go'. It has nothing to say about whether your code is any good. That is what a linter is for."},
+  {t:"h", v:"5. Double quotes, and why arguing is pointless"},
+  {t:"p", v:"Black rewrote 'a' as \"a\". Many people dislike this at first. The reason it is not configurable is precisely so that no project ever has to hold that discussion - you accept the default, and the entire Python world's black-formatted code looks the same.\n\nGive it a week. Almost everyone stops noticing."},
+  {t:"tip", v:"Set your editor to run black when you save. In VS Code that is the Black Formatter extension plus 'Format On Save'. After that you genuinely never think about layout again."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Predict what black will do to this line, then run it and check: result=calc( 1,2 )"},
+  {t:"sol", code:"# before\n# result=calc( 1,2 )\n\n# after black\nresult = 3\n\n\ndef calc(x, y):\n    return x + y\n\n\nresult = calc(1, 2)\nprint(result)", out:"3", why:"Three changes: spaces around the assignment, the space just inside the brackets removed, and a space after the comma. What black did NOT do is just as instructive - it left the name result alone, and it did not question whether calc is a good name for the function. Layout only."},
+  {t:"ex", v:"Problem 2 - Your teammate says black is pointless because they already format carefully by hand. Give the two strongest arguments for using it anyway."},
+  {t:"sol", code:"# 1. Diffs get smaller and more honest.\n#    When everyone formats identically, a change in git diff is a real\n#    change - not someone's editor re-wrapping a line. Code review\n#    stops being about commas.\n#\n# 2. It removes a decision from every single line you write.\n#    Formatting by hand is a small tax paid thousands of times a day.\n#    Black makes that cost zero, and makes it impossible to get wrong.\n\nprint(\"the style you would have chosen matters far less than everyone having the same one\")", out:"the style you would have chosen matters far less than everyone having the same one", why:"The diff argument is the one that convinces experienced developers, because they have all lost an afternoon to a review full of whitespace noise. Notice neither argument claims black's style is the best possible - it is not, and it does not need to be."},
+ ]},
+ { title: "ruff - the linter that finds real problems", sections: [
+  {t:"new", v:"linter", note:"A program that reads your code without running it and reports likely mistakes: unused imports, variables assigned but never used, names that do not exist, dangerous patterns. Where a formatter fixes how code looks, a linter tells you something may be wrong with it."},
+  {t:"new", v:"ruff", note:"A modern Python linter, written in Rust and fast enough to check a whole project instantly. It bundles the rules of many older tools - flake8, isort, pyupgrade and more - into one command, which is why it has largely replaced them."},
+  {t:"h", v:"1. Pointing it at a file"},
+  {t:"p", v:"Take loader.py, which looks perfectly innocent:"},
+  {t:"code", v:"import os\nimport json\n\n\ndef load(path):\n    with open(path) as f:\n        return json.load(f)"},
+  {t:"sh", v:"ruff check --output-format=concise loader.py"},
+  {t:"out", v:"loader.py:1:1: I001 [*] Import block is un-sorted or un-formatted\nloader.py:1:8: F401 [*] `os` imported but unused\nFound 2 errors.\n[*] 2 fixable with the `--fix` option."},
+  {t:"new", v:"--output-format=concise", note:"Prints one line per problem: file, line, column, rule code, description. Ruff's default format draws a diagram of each issue, which is helpful once you know the rules and overwhelming while you are learning."},
+  {t:"new", v:"F401 and I001", note:"Rule codes. The letter says which family the rule came from - F is pyflakes, real likely-bug checks; E is pycodestyle, PEP 8 layout; I is isort, import ordering. The number identifies the specific rule. Searching a code such as F401 finds its documentation immediately."},
+  {t:"p", v:"An unused import is not a crime, but it is a signal: either you meant to use it and forgot, or the code changed and nobody cleaned up. Both are worth knowing about."},
+  {t:"h", v:"2. Fixing automatically"},
+  {t:"new", v:"[*]", note:"Ruff's mark for 'I can fix this one myself'. Rules without it need a human, because the right answer is not mechanical."},
+  {t:"sh", v:"ruff check --fix loader.py"},
+  {t:"out", v:"Found 1 error (1 fixed, 0 remaining)."},
+  {t:"p", v:"The file is now:"},
+  {t:"code", v:"import json\n\n\ndef load(path):\n    with open(path) as f:\n        return json.load(f)"},
+  {t:"p", v:"The unused import is gone and the remaining one is correctly placed. Two problems, reported as one fix, because removing the unused import also settled the sorting."},
+  {t:"warn", v:"Commit before running --fix the first time. It is well behaved, but any tool that edits your files automatically deserves a snapshot in front of it - which is exactly what you learned to make on day one of this week."},
+  {t:"h", v:"3. Choosing which rules to run"},
+  {t:"sh", v:"ruff check --select E,F,I --output-format=concise messy.py"},
+  {t:"out", v:"messy.py:1:1: E401 [*] Multiple imports on one line\nmessy.py:1:1: I001 [*] Import block is un-sorted or un-formatted\nmessy.py:1:8: F401 [*] `os` imported but unused\nmessy.py:1:11: F401 [*] `sys` imported but unused\nmessy.py:2:8: F401 [*] `json` imported but unused\nFound 5 errors.\n[*] 5 fixable with the `--fix` option."},
+  {t:"new", v:"--select", note:"Chooses which rule families to apply. E, F and I are a sensible starting set: layout, likely bugs, and import order. Ruff has hundreds of rules available and enabling them all at once on an old project is demoralising."},
+  {t:"p", v:"Rather than passing flags every time, put the settings in a file at the top of your project:"},
+  {t:"sh", v:"# pyproject.toml\n[tool.ruff]\nline-length = 88\n\n[tool.ruff.lint]\nselect = [\"E\", \"F\", \"I\"]"},
+  {t:"new", v:"pyproject.toml", note:"The standard configuration file for a modern Python project. Most tools read their settings from it, so one file in the project root configures everything and travels with the repository."},
+  {t:"h", v:"4. Formatter and linter together"},
+  {t:"syn", v:"black .        # make the layout uniform\nruff check --fix .   # remove dead code, sort imports\nruff check .         # see what still needs a human", note:"The dot means 'this folder and everything below it'. Run all three before committing and your history stays clean."},
+  {t:"tip", v:"Ruff can also format, with ruff format, using black's style. Some projects now use ruff alone for both jobs. Either choice is fine; using both black and ruff format at once is not, because they will fight."},
+  {t:"h", v:"5. Making it automatic"},
+  {t:"new", v:"pre-commit hook", note:"A script git runs just before recording a commit. If it fails, the commit is refused. It is how a project stops unformatted code from ever entering its history - the check happens whether or not anyone remembers to run it."},
+  {t:"p", v:"The tool called pre-commit manages these for you from a small config file. It is worth setting up on a real project; while you are learning, running the three commands by hand teaches you more about what they actually do."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Run ruff on a file that imports os without using it, and explain what the rule code F401 tells you about the KIND of problem it is."},
+  {t:"sol", code:"# loader.py\nimport os      # never used\nimport json\n\n\ndef load(path):\n    with open(path) as f:\n        return json.load(f)\n\n\n# $ ruff check --output-format=concise loader.py\n# loader.py:1:8: F401 [*] `os` imported but unused\n\nprint(\"F = pyflakes = likely-bug rules, not layout rules\")", out:"F = pyflakes = likely-bug rules, not layout rules", why:"The F family is about code that is probably wrong, as opposed to E which is about code that is merely untidy. That distinction matters when you adopt a linter on an old project: fix every F first, because those can indicate real bugs, and treat the E findings as a tidy-up you can do gradually."},
+  {t:"ex", v:"Problem 2 - Write the pyproject.toml section that sets a line length of 100 and enables only the E, F and I rule families. Then say why a config file beats passing flags."},
+  {t:"sol", code:"# pyproject.toml\n#\n# [tool.ruff]\n# line-length = 100\n#\n# [tool.ruff.lint]\n# select = [\"E\", \"F\", \"I\"]\n\nreasons = [\n    \"the settings are committed, so everyone gets the same checks\",\n    \"your editor reads them too, so it warns you as you type\",\n    \"nobody has to remember the flags\",\n]\nfor r in reasons:\n    print(\"-\", r)", out:"- the settings are committed, so everyone gets the same checks\n- your editor reads them too, so it warns you as you type\n- nobody has to remember the flags", why:"The middle reason is the one people underestimate. Once the config is in the repository, your editor's ruff extension picks it up and underlines problems while you write, so you stop finding them at commit time. A flag typed in a terminal helps only the person who typed it."},
+ ]},
+]},
+
+/* ---------------- WEEK 16 · DAY 6 ---------------- */
+"16.5": { parts: [
+ { title: "Names, and functions that do one thing", sections: [
+  {t:"key", v:"Formatters and linters handle everything mechanical. What is left is the part only you can do: choosing names, and deciding where one idea ends and the next begins. That is what separates code that can be maintained from code that has to be rewritten."},
+  {t:"h", v:"1. A name should answer a question"},
+  {t:"p", v:"You spend far more time reading code than writing it, and most of that reading is working out what things are. A good name answers that before you have to go and look."},
+  {t:"mis", why:"The left version is not shorter in any way that matters - it is the same number of lines. But to understand it you must mentally execute it, and hold d, f, r and i[1] in your head at once. On the right, unpacking the pair into name and score removes the need to remember what position 1 held, and the function name means a reader may not need to open it at all.", wrong:"def proc(d, f):\n    r = []\n    for i in d:\n        if i[1] > f:\n            r.append(i[0])\n    return r", right:"def names_above_score(students, minimum):\n    passing = []\n    for name, score in students:\n        if score > minimum:\n            passing.append(name)\n    return passing"},
+  {t:"p", v:"Three practical rules that cover most cases:\n\n- Functions are verbs, because they do something: load_config, is_valid, calculate_tax.\n- Collections are plural: students, prices, failed_rows.\n- Booleans read as a question: is_ready, has_permission, should_retry."},
+  {t:"tip", v:"Single letters are fine in a short loop over something obvious - for i in range(3) is clearer than for index_number in range(3). The rule is about distance: the further apart a name's creation and its use, the more it has to explain itself."},
+  {t:"h", v:"2. A function should do one thing"},
+  {t:"p", v:"The practical test is whether you can describe it in one sentence with no 'and'. If your sentence needs an 'and', you probably have two functions."},
+  {t:"code", v:"# One thing each - and each is testable on its own\ndef parse_row(line):\n    name, score = line.split(\",\")\n    return name.strip(), int(score)\n\n\ndef is_passing(score, minimum=40):\n    return score >= minimum\n\n\ndef summarise(lines, minimum=40):\n    rows = [parse_row(line) for line in lines]\n    passed = [name for name, score in rows if is_passing(score, minimum)]\n    return f\"{len(passed)} of {len(rows)} passed\"\n\n\nprint(summarise([\"Ram, 72\", \"Sita, 31\", \"Hari, 55\"]))\nprint(parse_row(\"Ram, 72\"))\nprint(is_passing(31))"},
+  {t:"out", v:"2 of 3 passed\n('Ram', 72)\nFalse"},
+  {t:"p", v:"Because each piece is separate, each can be checked separately - look at the last two lines. Had this been one forty-line function, the only way to test the parsing would have been to run the whole thing."},
+  {t:"key", v:"Short functions are not the goal; one responsibility is. A twenty-line function doing one clear thing is better than four five-line functions doing half a thing each."},
+  {t:"h", v:"3. Return early and stop nesting"},
+  {t:"mis", why:"The left version makes you hold three open conditions in your head to reach the real logic, and the matching else branches are far from their if. Handling each bad case immediately and returning - a guard clause, from Week 14 - means the interesting line sits at the left margin with nothing pending. Deep nesting is the most reliable sign that a function is harder to read than it needs to be.", wrong:"def grade(score):\n    if score is not None:\n        if 0 <= score <= 100:\n            if score >= 40:\n                return \"pass\"\n            else:\n                return \"fail\"\n        else:\n            return \"invalid\"\n    else:\n        return \"missing\"", right:"def grade(score):\n    if score is None:\n        return \"missing\"\n    if not 0 <= score <= 100:\n        return \"invalid\"\n    return \"pass\" if score >= 40 else \"fail\""},
+  {t:"code", v:"def grade(score):\n    if score is None:\n        return \"missing\"\n    if not 0 <= score <= 100:\n        return \"invalid\"\n    return \"pass\" if score >= 40 else \"fail\"\n\n\nfor s in (None, 150, 72, 12):\n    print(s, \"->\", grade(s))"},
+  {t:"out", v:"None -> missing\n150 -> invalid\n72 -> pass\n12 -> fail"},
+  {t:"new", v:"0 <= score <= 100", note:"Python lets you chain comparisons, so this reads exactly like the maths and is evaluated once. Most languages force you to write score >= 0 and score <= 100. Putting not in front then means 'outside that range', which is the guard you want."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Rename everything in this function so a reader needs no explanation, without changing what it does.\n\ndef f(l, n):\n    o = []\n    for x in l:\n        if len(x) > n:\n            o.append(x.upper())\n    return o"},
+  {t:"sol", code:"def long_words_upper(words, min_length):\n    result = []\n    for word in words:\n        if len(word) > min_length:\n            result.append(word.upper())\n    return result\n\n\nprint(long_words_upper([\"fig\", \"apple\", \"banana\"], 3))\n\n\n# The same thing, once the names made the shape obvious:\ndef long_words_upper_short(words, min_length):\n    return [word.upper() for word in words if len(word) > min_length]\n\n\nprint(long_words_upper_short([\"fig\", \"apple\", \"banana\"], 3))", out:"['APPLE', 'BANANA']\n['APPLE', 'BANANA']", why:"Notice what happened after the rename: the function's purpose became obvious enough that the comprehension version reads as a single English sentence. That is common - bad names hide structure, and fixing the names often reveals a simpler shape underneath. The parameter n became min_length rather than length, because the comparison is strictly greater than."},
+  {t:"ex", v:"Problem 2 - Split this into functions that each do one thing, and show that each can be checked on its own.\n\ndef report(lines):\n    total = 0\n    count = 0\n    for line in lines:\n        parts = line.split(',')\n        if len(parts) == 2:\n            total += int(parts[1])\n            count += 1\n    if count == 0:\n        return 'no data'\n    return 'average ' + str(total / count)"},
+  {t:"sol", code:"def parse_score(line):\n    \"\"\"Return the score in a 'name,score' line, or None if it is unusable.\"\"\"\n    parts = line.split(\",\")\n    if len(parts) != 2:\n        return None\n    return int(parts[1])\n\n\ndef average(numbers):\n    if not numbers:\n        return None\n    return sum(numbers) / len(numbers)\n\n\ndef report(lines):\n    scores = [s for s in (parse_score(line) for line in lines) if s is not None]\n    result = average(scores)\n    if result is None:\n        return \"no data\"\n    return f\"average {result:.1f} from {len(scores)} rows\"\n\n\nprint(report([\"Ram,72\", \"broken line\", \"Sita,58\"]))\nprint(parse_score(\"Ram,72\"), parse_score(\"broken line\"))\nprint(average([]), average([1, 2, 3]))", out:"average 65.0 from 2 rows\n72 None\nNone 2.0", why:"Three functions, three sentences with no 'and': parse one line, average some numbers, build the report. The last two print lines test the pieces directly - impossible with the original. average() returning None for an empty list rather than 0 is the honest choice from Week 14: the average of nothing is undefined, not zero, and report() is the right place to turn that into a human message."},
+ ]},
+ { title: "Comments, and the smells that tell you to refactor", sections: [
+  {t:"h", v:"1. Most comments are apologies for unclear code"},
+  {t:"mis", why:"The left comments restate the code, which any reader can already see, and they rot - the code changes and the comment quietly starts lying. The right ones say WHY, which the code genuinely cannot express: a fact about an external system, and a decision with a reason behind it. Comment the why, never the what.", wrong:"# add 1 to i\ni = i + 1\n\n# loop through the list\nfor x in l:\n    # check if x is bigger than n\n    if x > n:\n        ...", right:"# The API returns prices in paisa, not rupees, so divide by 100.\nprice = raw_price / 100\n\n# Retry twice: this endpoint is flaky on the first call after a deploy.\nfor attempt in range(3):\n    ..."},
+  {t:"key", v:"If you feel you must explain what a line does, try renaming things first. A comment is the fallback when the code cannot be made to say it by itself."},
+  {t:"h", v:"2. Docstrings are different"},
+  {t:"new", v:"docstring", note:"A string on the first line inside a function, class or module. Unlike a comment it is kept at runtime, so help() and your editor can show it. It documents what something is for and how to call it - the public description, as opposed to a note about the implementation."},
+  {t:"code", v:"def apply_tax(amount, rate=0.13):\n    \"\"\"Return amount with tax added.\n\n    rate is a fraction, so 0.13 means 13 percent.\n    \"\"\"\n    return amount * (1 + rate)\n\n\nprint(f\"{apply_tax(100):.2f}\")\nprint(apply_tax.__doc__.splitlines()[0])\nprint(f\"{apply_tax(100, rate=0.05):.2f}\")"},
+  {t:"out", v:"113.00\nReturn amount with tax added.\n105.00"},
+  {t:"p", v:"One line describing what it returns is enough for most functions. The extra note here earns its place because 'rate' is genuinely ambiguous - 13 or 0.13 - and that is exactly the kind of thing a caller would otherwise get wrong."},
+  {t:"h", v:"3. Code smells"},
+  {t:"new", v:"code smell", note:"Something that is not a bug, and may not even be wrong, but is a common sign that code will be painful to change later. The word is deliberate: a smell makes you go and look, it does not prove anything is rotten."},
+  {t:"p", v:"The ones you will meet first:\n\n- LONG FUNCTION - you have to scroll to read it. Usually several ideas stuck together.\n- DEEP NESTING - more than three levels of indentation. Usually missing guard clauses.\n- MAGIC NUMBERS - a bare 0.13 or 86400 in the middle of a line, meaning nothing to a reader.\n- REPEATED BLOCKS - the same four lines in three places, so a fix has to be made three times.\n- A COMMENT SAYING 'hack' OR 'temporary' - it is neither, it is permanent."},
+  {t:"mis", why:"Named constants do three jobs at once: they explain the number, they put it in one place so a change happens once, and they let the comparison say what it means - age >= ADULT_AGE rather than the slightly off-by-one-looking age > 17. UPPER_SNAKE is the convention from yesterday, and it signals 'do not change this at runtime'.", wrong:"if age > 17 and days < 86400:\n    total = price * 1.13", right:"ADULT_AGE = 18\nSECONDS_PER_DAY = 86400\nTAX_RATE = 0.13\n\nif age >= ADULT_AGE and seconds < SECONDS_PER_DAY:\n    total = price * (1 + TAX_RATE)"},
+  {t:"h", v:"4. Repeated blocks"},
+  {t:"code", v:"# The same shape three times is a function waiting to be written\ndef summarise(label, values):\n    if not values:\n        return f\"{label}: no data\"\n    return f\"{label}: {len(values)} values, average {sum(values) / len(values):.1f}\"\n\n\nprint(summarise(\"maths\", [70, 80, 90]))\nprint(summarise(\"science\", [55, 65]))\nprint(summarise(\"nepali\", []))"},
+  {t:"out", v:"maths: 3 values, average 80.0\nscience: 2 values, average 60.0\nnepali: no data"},
+  {t:"p", v:"The empty case is handled once. Written out three times, it is the kind of thing that gets fixed in two places and forgotten in the third - and that third one is the bug someone finds in production."},
+  {t:"warn", v:"Do not remove duplication too eagerly. Two pieces of code that merely look similar today, but change for different reasons, are better left apart - forcing them into one function with a flag argument usually produces something worse than the repetition. Wait until the third occurrence before generalising."},
+  {t:"h", v:"5. How to actually refactor"},
+  {t:"new", v:"refactoring", note:"Changing how code is written without changing what it does. The discipline is in that second half: if behaviour changes, it is not refactoring, it is a rewrite, and the two should never be mixed in one commit."},
+  {t:"p", v:"A safe sequence, using this week's tools:\n\n1. Commit, so you have a point to return to.\n2. Run the program and note exactly what it outputs.\n3. Change one thing - a rename, or extracting one function.\n4. Run it again and compare the output. Identical?\n5. Commit, with a message saying what you improved.\n6. Repeat.\n\nSmall steps, each committed, mean a mistake costs one git restore."},
+  {t:"key", v:"Never refactor and add a feature in the same commit. If something breaks afterwards, you need to know which of the two did it - and a diff full of both is unreadable."},
+  {t:"h", v:"Now your turn"},
+  {t:"ex", v:"Problem 1 - Name every smell in this function, then rewrite it.\n\ndef p(u):\n    if u != None:\n        if u['age'] > 17:\n            if u['bal'] > 0:\n                return u['bal'] * 1.13\n            else:\n                return 0\n        else:\n            return 0\n    else:\n        return 0"},
+  {t:"sol", code:"# Smells: single-letter name; deep nesting; magic numbers 17 and 1.13;\n# three separate returns of a bare 0 meaning three different things;\n# `!= None` instead of `is not None`; keys 'bal' abbreviated for no reason.\n\nADULT_AGE = 18\nTAX_RATE = 0.13\n\n\ndef balance_with_tax(user):\n    \"\"\"Return the user's balance including tax, or 0.0 if they are not eligible.\"\"\"\n    if user is None:\n        return 0.0\n    if user[\"age\"] < ADULT_AGE:\n        return 0.0\n    if user[\"balance\"] <= 0:\n        return 0.0\n    return user[\"balance\"] * (1 + TAX_RATE)\n\n\nprint(f\"{balance_with_tax({'age': 20, 'balance': 100}):.2f}\")\nprint(f\"{balance_with_tax({'age': 16, 'balance': 100}):.2f}\")\nprint(f\"{balance_with_tax(None):.2f}\")", out:"113.00\n0.00\n0.00", why:"Three guard clauses replace three levels of nesting, so the real calculation sits at the left margin on the last line. `is not None` is the correct identity test - `!= None` can be fooled by a class that defines its own equality. Returning 0.0 rather than 0 keeps the return type consistent, since the real answer is always a float.\n\nThe printing uses :.2f because 100 * 1.13 is really 112.99999999999999 - binary floating point cannot hold 1.13 exactly. Money is always formatted on the way out.\n\nThe docstring admits the remaining weakness: returning 0 for 'not eligible' is ambiguous, and a real system would probably raise instead."},
+  {t:"ex", v:"Problem 2 - Write the commit sequence for refactoring a messy script, assuming you rename things, extract two functions, and want to be able to undo any single step."},
+  {t:"sol", code:"# $ git commit -m \"Save working version before refactoring\"\n#\n# $ black messy.py && ruff check --fix messy.py\n# $ python messy.py        # output unchanged?\n# $ git commit -m \"Format with black and fix ruff warnings\"\n#\n# $ # rename variables only\n# $ python messy.py        # output unchanged?\n# $ git commit -m \"Rename variables to say what they hold\"\n#\n# $ # extract parse_row()\n# $ python messy.py        # output unchanged?\n# $ git commit -m \"Extract parse_row() from report()\"\n#\n# $ # extract average()\n# $ python messy.py        # output unchanged?\n# $ git commit -m \"Extract average() from report()\"\n\nprint(\"five commits, each reversible on its own\")", out:"five commits, each reversible on its own", why:"The formatting pass goes first and alone, because it touches every line - mixing it with a rename would produce a diff where the real change is invisible. After that each commit is one kind of change, and running the program between each is what makes 'behaviour unchanged' a fact rather than a hope. If the fourth commit turns out to have broken something, you can undo exactly that one."},
+  {t:"key", v:"This week in one line: git remembers your work so mistakes are cheap, branches let you experiment safely, GitHub shares the result, and black, ruff and honest naming keep the code worth sharing."},
+ ]},
+]},
+
 };
 
 const REST_DAY = ["Review & rest",
@@ -9909,6 +10398,7 @@ function renderSections(sections){
     if(s.t==="h")    return `<h3 class="ls-h">${escapeHtml(s.v)}</h3>`;
     if(s.t==="p")    return `<p class="ls-p">${escapeHtml(s.v).replace(/\n/g,"<br>")}</p>`;
     if(s.t==="code") return `<div class="ls-code"><div class="ls-code-tag">python</div><pre><code>${highlightPy(s.v)}</code></pre></div>`;
+    if(s.t==="sh")   return `<div class="ls-code ls-sh"><div class="ls-code-tag">terminal</div><pre><code>${highlightShell(s.v)}</code></pre></div>`;
     if(s.t==="out")  return `<div class="ls-out"><div class="ls-out-tag">output</div><pre><code>${escapeHtml(s.v)}</code></pre></div>`;
     if(s.t==="tip")  return `<div class="ls-box ls-tip"><b>Tip</b>${escapeHtml(s.v).replace(/\n/g,"<br>")}</div>`;
     if(s.t==="warn") return `<div class="ls-box ls-warn"><b>Watch out</b>${escapeHtml(s.v).replace(/\n/g,"<br>")}</div>`;
@@ -9944,8 +10434,8 @@ function renderSections(sections){
       return `<div class="ls-sol">
         <button type="button" class="btn secondary btn-sm" data-sol="${i}">Show solution</button>
         <div class="ls-sol-body" id="solB${i}" hidden>
-          <div class="ls-code"><div class="ls-code-tag">solution</div><pre><code>${highlightPy(s.code)}</code></pre></div>
-          <div class="ls-out"><div class="ls-out-tag">output</div><pre><code>${escapeHtml(s.out)}</code></pre></div>
+          <div class="ls-code${s.sh ? " ls-sh" : ""}"><div class="ls-code-tag">${s.sh ? "terminal \u00b7 solution" : "solution"}</div><pre><code>${s.sh ? highlightShell(s.code) : highlightPy(s.code)}</code></pre></div>
+          ${s.out ? `<div class="ls-out"><div class="ls-out-tag">output</div><pre><code>${escapeHtml(s.out)}</code></pre></div>` : ""}
           <div class="ls-sol-why"><b>How it works</b>${escapeHtml(s.why).replace(/\n/g,"<br>")}</div>
         </div>
       </div>`;
@@ -10798,7 +11288,7 @@ let searchIndex = null;
 
 /* Section types worth searching. Code and expected-output are included so
    you can find "zip(" or an error message you half-remember seeing. */
-const SEARCHABLE = { h:1, p:1, key:1, tip:1, warn:1, ex:1, code:1, out:1, syn:1, mis:1, new:1 };
+const SEARCHABLE = { h:1, p:1, key:1, tip:1, warn:1, ex:1, code:1, out:1, syn:1, mis:1, new:1, sh:1 };
 
 function sectionText(sec){
   if(sec.t === "mis") return [sec.wrong, sec.right, sec.why].filter(Boolean).join("\n");
