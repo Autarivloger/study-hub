@@ -988,7 +988,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
         <h1>Python Course</h1>
         <button type="button" class="btn secondary btn-sm" id="courseHomeBtn">All phases</button>
         <button type="button" class="btn secondary btn-sm" id="coursePracticeBtn">🏋️ Practice</button>
-        <button type="button" class="btn btn-sm" id="courseTodayBtn">Today</button>
+        <button type="button" class="btn btn-sm" id="courseTodayBtn">Resume</button>
       </div>
       <div id="courseBody"><div id="staticFallback" style="padding:20px;max-width:640px;">
           <h2 style="margin:0 0 8px;font-size:19px;">Python Course — 12 months, 364 lessons</h2>
@@ -1171,6 +1171,7 @@ function applyDefaults(d){
   d.lessonsDone = d.lessonsDone || {};   // lessonId -> ISO completion date
   d.lessonQuizScores = d.lessonQuizScores || {};  // lessonId -> best quiz %
   d.headNotes = d.headNotes || {};   // "context|heading-slug" -> your own note
+  d.lastSeen = d.lastSeen || null;   // the exact page you were last reading
   d.wisdom = d.wisdom || [];
   d.lastBackup = d.lastBackup || null;
   return d;
@@ -1224,6 +1225,16 @@ function mergeIntoDB(incoming){
   });
 
   DB.seedVersion = Math.max(DB.seedVersion || 0, incoming.seedVersion || 0);
+
+  /* Reading position follows you between devices: whichever side was read
+     more recently wins, so picking up your phone and then your computer
+     lands you on the same page. */
+  if(incoming.lastSeen && incoming.lastSeen.at){
+    if(!DB.lastSeen || !DB.lastSeen.at || incoming.lastSeen.at > DB.lastSeen.at){
+      DB.lastSeen = incoming.lastSeen;
+    }
+  }
+
   applyDefaults(DB);
 }
 
@@ -2888,6 +2899,49 @@ const WEEKS_D = [
 ];
 
 
+/* ---- Where you actually left off ----
+   The calendar is no guide to this course: a reader going at their own
+   pace can be on week 3 in month 9. So the resume card is driven by the
+   last page genuinely opened, not by today's date. */
+function rememberSpot(spot){
+  const prev = DB.lastSeen;
+  if(prev && prev.kind === spot.kind && prev.week === spot.week
+     && prev.dayIdx === spot.dayIdx && prev.part === spot.part
+     && prev.id === spot.id){
+    return;                       // same page - nothing worth writing
+  }
+  spot.at = nowISO();
+  DB.lastSeen = spot;
+  save();
+}
+
+/* The first day with no tick against it - where a new reader should start,
+   and a sensible answer before anything has been opened. */
+function firstIncompleteDay(){
+  for(let w = 1; w <= 52; w++){
+    for(let d = 0; d < 7; d++){
+      if(!isDone(w, d)) return { week:w, dayIdx:d };
+    }
+  }
+  return { week:52, dayIdx:6 };
+}
+
+function sinceText(iso){
+  if(!iso) return "";
+  const then = new Date(iso), now = new Date();
+  const mins = Math.floor((now - then) / 60000);
+  if(mins < 2) return "just now";
+  if(mins < 60) return mins + " minutes ago";
+  const hrs = Math.floor(mins / 60);
+  if(hrs < 24) return hrs === 1 ? "an hour ago" : hrs + " hours ago";
+  const a = new Date(then); a.setHours(0,0,0,0);
+  const b = new Date(now);  b.setHours(0,0,0,0);
+  const days = Math.round((b - a) / 86400000);
+  if(days === 1) return "yesterday";
+  if(days < 7) return days + " days ago";
+  return "on " + then.toLocaleDateString(undefined, {month:"short", day:"numeric"});
+}
+
 /* ================= COURSE ================= */
 const PHASES = [
   {n:1,  name:"Core Python",              months:"Months 1–3",  weeks:[1,2,3,4,5,6,7,8,9,10,11,12,13], blurb:"Syntax, data structures, functions, and your first real application."},
@@ -2959,13 +3013,78 @@ function progressBar(done, total, small){
   return `<div class="pbar ${small?'small':''}"><div class="pbar-fill" style="width:${pct}%"></div></div>`;
 }
 
+/* The card at the top of the course. Three states: pick up a day, pick up
+   a lesson, or - before anything has been opened - start at the first day
+   that has no tick against it. */
+function currentSpotWeek(){
+  const spot = DB.lastSeen;
+  if(spot && spot.kind === "day" && weekByNum(spot.week)) return spot.week;
+  return firstIncompleteDay().week;
+}
+
+function resumeCard(){
+  const spot = DB.lastSeen;
+
+  if(spot && spot.kind === "day" && weekByNum(spot.week)){
+    const parts = dayParts(spot.week + "." + spot.dayIdx);
+    const total = parts ? parts.length : 1;
+    const pi = spot.part || 0;
+    const partLabel = total > 1 ? " \u00b7 Part " + (pi + 1) + " of " + total : "";
+    const title = spot.title || dayTitleFor(spot.week, spot.dayIdx) || "Your last page";
+    return `<div class="today-card">
+      <div class="tc-eyebrow">Continue where you left off</div>
+      <div class="tc-title">${escapeHtml(title)}</div>
+      <div class="tc-meta">Week ${spot.week} \u00b7 Day ${spot.dayIdx + 1}${partLabel} \u00b7 ${escapeHtml(sinceText(spot.at))}</div>
+      <button type="button" class="btn" id="goResumeBtn">Pick up here \u2192</button>
+    </div>`;
+  }
+
+  if(spot && spot.kind === "lesson" && LESSONS.some(function(l){ return l.id === spot.id; })){
+    return `<div class="today-card">
+      <div class="tc-eyebrow">Continue where you left off</div>
+      <div class="tc-title">${escapeHtml(spot.title || "")}</div>
+      <div class="tc-meta">Lessons \u00b7 ${escapeHtml(sinceText(spot.at))}</div>
+      <button type="button" class="btn" id="goResumeLesson">Pick up here \u2192</button>
+    </div>`;
+  }
+
+  const first = firstIncompleteDay();
+  const title = dayTitleFor(first.week, first.dayIdx) || "Review & rest";
+  return `<div class="today-card">
+    <div class="tc-eyebrow">Start here</div>
+    <div class="tc-title">${escapeHtml(title)}</div>
+    <div class="tc-meta">Week ${first.week} \u00b7 Day ${first.dayIdx + 1} \u00b7 your first unfinished day</div>
+    <button type="button" class="btn" id="goResumeBtn" data-week="${first.week}" data-day="${first.dayIdx}">Open it \u2192</button>
+  </div>`;
+}
+
+function wireResumeCard(){
+  const day = document.getElementById("goResumeBtn");
+  if(day) day.onclick = ()=>{
+    const spot = DB.lastSeen;
+    const week = day.dataset.week ? Number(day.dataset.week) : spot.week;
+    const dayIdx = day.dataset.day ? Number(day.dataset.day) : spot.dayIdx;
+    const part = day.dataset.week ? 0 : (spot.part || 0);
+    courseView = { mode:"day", week:week, dayIdx:dayIdx, part:part };
+    window.scrollTo(0,0);
+    renderCourse();
+  };
+  const les = document.getElementById("goResumeLesson");
+  if(les) les.onclick = ()=>{
+    practiceState = null;
+    activeLessonId = DB.lastSeen.id;
+    switchView("lessons");
+    window.scrollTo(0,0);
+    renderLessons();
+  };
+}
+
 function renderCourseOverview(){
   const el = document.getElementById("courseBody");
   const done = totalDone();
-  const gd = currentDayNumber();
-  const curWeek = Math.min(52, Math.ceil(gd/7));
-  const curDayIdx = (gd-1) % 7;
-  const w = weekByNum(curWeek);
+  /* Driven by progress, not by the calendar: this course is studied at the
+     reader's own pace, so the date says nothing about where they are. */
+  const curWeek = currentSpotWeek();
   const phase = phaseForWeek(curWeek);
 
   el.innerHTML = `
@@ -2973,15 +3092,10 @@ function renderCourseOverview(){
       <div class="ch-label">Your progress</div>
       <div class="ch-big"><b>${done}</b> <span>/ 364 lessons complete</span></div>
       ${progressBar(done, 364)}
-      <div class="ch-sub">Day ${gd} of the course · Week ${curWeek} of 52 · ${phase ? phase.name : ""}</div>
+      <div class="ch-sub">Week ${curWeek} of 52 · ${phase ? escapeHtml(phase.name) : ""}</div>
     </div>
 
-    <div class="today-card">
-      <div class="tc-eyebrow">Today's lesson</div>
-      <div class="tc-title">${escapeHtml(w ? w[4][curDayIdx] ? w[4][curDayIdx][0] : "Review & rest" : "")}</div>
-      <div class="tc-meta">Week ${curWeek} · ${escapeHtml(w ? w[2] : "")}</div>
-      <button type="button" class="btn" id="goTodayBtn">Open today's lesson →</button>
-    </div>
+    ${resumeCard()}
 
     <div class="phase-list">
       ${PHASES.map(p=>{
@@ -3018,10 +3132,7 @@ function renderCourseOverview(){
     </div>
   `;
 
-  document.getElementById("goTodayBtn").onclick = ()=>{
-    courseView = { mode:"day", week:curWeek, dayIdx:curDayIdx };
-    renderCourse();
-  };
+  wireResumeCard();
   el.querySelectorAll("[data-week]").forEach(b=>{
     b.onclick = ()=>{ courseView = {mode:"week", week:parseInt(b.dataset.week), dayIdx:null}; renderCourse(); };
   });
@@ -9020,6 +9131,9 @@ function renderCourseDay(){
   const link = DAY_LESSON_LINK[teachKey];
   const probs = weekProblems(wn);
 
+  rememberSpot({ kind:"day", week:wn, dayIdx:di,
+                 part:(courseView.part || 0), title:day[0] });
+
   const parts = dayParts(teachKey);
   if(parts){
     /* One part is one sitting. The day is only "done" when all of them are,
@@ -9158,9 +9272,23 @@ document.getElementById("coursePracticeBtn").addEventListener("click", ()=>{
   window.scrollTo(0,0);
   renderCourse();
 });
+/* Resume, not Today: it returns you to the page you were actually on. */
 document.getElementById("courseTodayBtn").addEventListener("click", ()=>{
-  const gd = currentDayNumber();
-  courseView = {mode:"day", week:Math.min(52,Math.ceil(gd/7)), dayIdx:(gd-1)%7};
+  const spot = DB.lastSeen;
+  if(spot && spot.kind === "lesson" && LESSONS.some(function(l){ return l.id === spot.id; })){
+    practiceState = null;
+    activeLessonId = spot.id;
+    switchView("lessons");
+    window.scrollTo(0,0);
+    renderLessons();
+    return;
+  }
+  const at = (spot && spot.kind === "day" && weekByNum(spot.week))
+    ? { week:spot.week, dayIdx:spot.dayIdx, part:(spot.part || 0) }
+    : Object.assign(firstIncompleteDay(), { part:0 });
+  courseView = { mode:"day", week:at.week, dayIdx:at.dayIdx, part:at.part };
+  switchView("course");
+  window.scrollTo(0,0);
   renderCourse();
 });
 
@@ -10999,6 +11127,8 @@ function renderLessonDetail(){
   const el = document.getElementById("lessonsBody");
   const L = LESSONS.find(x=> x.id === activeLessonId);
   if(!L){ activeLessonId = null; return renderLessons(); }
+
+  rememberSpot({ kind:"lesson", id:L.id, title:L.title });
 
   tryCount = 0; solCount = 0;
   const body = renderSections(L.sections, "l" + L.id);
