@@ -420,6 +420,43 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .ls-new-lab b{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; letter-spacing:0; font-size:12px; }
 .ls-new-text{ font-size:14.5px; line-height:1.6; color:var(--text); }
 
+/* ---------- Your own note beside a heading ---------- */
+.hn-head{ display:flex; align-items:baseline; gap:8px; }
+.hn-head .ls-h{ flex:1; min-width:0; }
+.hn-btn{
+  flex-shrink:0; background:none; border:1px solid var(--border);
+  border-radius:8px; width:32px; height:32px; font-size:14px;
+  color:var(--text-dim); line-height:1; margin-top:14px;
+}
+.hn-btn:hover{ border-color:var(--accent); color:var(--accent); }
+/* Filled when a note exists, so you can see at a glance which sections
+   you have annotated without opening anything. */
+.hn-btn.has{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+.hn-btn.open{ background:var(--accent); border-color:var(--accent); color:var(--accent-text); }
+.hn-box{ margin:0 0 14px; }
+.hn-text{
+  width:100%; min-height:84px; resize:vertical;
+  background:var(--bg-elev); border:1px solid var(--border);
+  border-left:3px solid var(--accent); border-radius:0 10px 10px 0;
+  padding:10px 12px; font-size:14.5px; line-height:1.6; font-family:var(--font-ui);
+}
+.hn-text:focus{ outline:2px solid var(--accent); outline-offset:-1px; }
+.hn-saved{ font-size:11.5px; color:var(--good); min-height:15px; padding:2px 2px 0; }
+.hn-bar{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  margin:0 0 14px; padding-bottom:10px; border-bottom:1px solid var(--border);
+}
+.hn-bar-lab{
+  font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--text-dim); margin-right:auto;
+}
+.hn-all{
+  background:var(--bg-soft); border:1px solid var(--border); border-radius:999px;
+  padding:5px 12px; font-size:12px; font-weight:700; color:var(--text-dim);
+}
+.hn-all:hover{ border-color:var(--accent); color:var(--accent); }
+@media (pointer:coarse){ .hn-btn{ width:40px; height:40px; } }
+
 /* ---------- Multi-part days ---------- */
 .part-chips{ display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
 .part-chip{
@@ -1133,6 +1170,7 @@ function applyDefaults(d){
   d.journal = d.journal || {};
   d.lessonsDone = d.lessonsDone || {};   // lessonId -> ISO completion date
   d.lessonQuizScores = d.lessonQuizScores || {};  // lessonId -> best quiz %
+  d.headNotes = d.headNotes || {};   // "context|heading-slug" -> your own note
   d.wisdom = d.wisdom || [];
   d.lastBackup = d.lastBackup || null;
   return d;
@@ -1141,7 +1179,7 @@ function applyDefaults(d){
 /* Every key that holds progress, listed once. Used by the merge below so a
    new key can never be forgotten by one restore path but not another. */
 const ARRAY_KEYS = ["notes","decks","cards","todos","quizzes","wisdom"];
-const MAP_KEYS   = ["journal","lessonsDone","lessonQuizScores"];
+const MAP_KEYS   = ["journal","lessonsDone","lessonQuizScores","headNotes"];
 
 /* Union merge: nothing already on this device is ever removed. Items are
    matched by id; map entries already held locally win, because that is the
@@ -9005,7 +9043,7 @@ function renderCourseDay(){
           <div class="part-count">Part ${pi+1} of ${total}</div>
           ${part.title ? `<div class="part-title">${escapeHtml(part.title)}</div>` : ""}
         </div>` : ""}
-      <div class="day-teach">${renderSections(part.sections)}</div>
+      <div class="day-teach">${renderSections(part.sections, "d" + wn + "." + di + "." + pi)}</div>
       ${total > 1 ? `<div class="part-nav">
           <button type="button" class="btn secondary btn-sm" id="partPrev"${pi===0?" disabled":""}>\u2190 ${pi===0 ? "Previous" : "Part " + pi}</button>
           <button type="button" class="btn${partDone?" secondary":""} btn-sm" id="partDoneBtn">${partDone ? "\u2713 Part done \u2014 undo" : "Mark part " + (pi+1) + " done"}</button>
@@ -9074,6 +9112,7 @@ function renderCourseDay(){
   document.getElementById("backWeek").onclick = ()=>{ courseView={mode:"week",week:wn,dayIdx:null}; renderCourse(); };
   document.getElementById("dayDoneBtn").onclick = ()=>{ toggleDone(wn,di); renderCourse(); renderSideStats(); };
   wireRevealButtons(el);
+  wireHeadNotes(el);
   const toLesson = document.getElementById("dayToLesson");
   if(toLesson && link) toLesson.onclick = ()=>{
     activeLessonId = link.id; switchView("lessons"); window.scrollTo(0,0); renderLessons();
@@ -10783,13 +10822,119 @@ function renderLessons(){
   });
 }
 
+/* ---- Your own note beside a heading ----
+   Keyed on the heading's TEXT, not its position, so content added or moved
+   later cannot detach a note from the heading it was written against. A
+   counter disambiguates the rare case of two identical headings on a page. */
+function hnSlug(text){
+  return String(text).toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48) || "heading";
+}
+
+let hnCount = 0;          // DOM ids for the boxes on the page being built
+let hnSeen = {};          // how many times each slug has appeared here
+let hnCtx = null;         // which day or lesson we are rendering
+
+function hnKey(text){
+  const slug = hnSlug(text);
+  hnSeen[slug] = (hnSeen[slug] || 0) + 1;
+  const n = hnSeen[slug];
+  return hnCtx + "|" + slug + (n > 1 ? "~" + n : "");
+}
+
+function hnNote(key){ return DB.headNotes[key] || ""; }
+
+/* The toolbar that opens and closes every note on the page at once. */
+function hnToolbar(sections){
+  const headings = sections.filter(function(x){ return x.t === "h"; }).length;
+  if(!headings) return "";
+  return '<div class="hn-bar">'
+    + '<span class="hn-bar-lab">\u270e Your notes</span>'
+    + '<button type="button" class="hn-all" data-hn-all="open">Show all</button>'
+    + '<button type="button" class="hn-all" data-hn-all="close">Hide all</button>'
+    + '</div>';
+}
+
+/* Binds the note buttons and textareas inside a container. Scoped to `el`
+   for the same reason wireRevealButtons is: a course day and a lesson can
+   both sit in the DOM at once. */
+function wireHeadNotes(el){
+  let timer = null;
+
+  el.querySelectorAll("[data-hn]").forEach(function(btn){
+    btn.onclick = function(){
+      const box = el.querySelector("#hnBox" + btn.dataset.hnBox);
+      if(!box) return;
+      box.hidden = !box.hidden;
+      btn.classList.toggle("open", !box.hidden);
+      if(!box.hidden){
+        const ta = box.querySelector("textarea");
+        if(ta) ta.focus();
+      }
+    };
+  });
+
+  el.querySelectorAll(".hn-text").forEach(function(ta){
+    ta.addEventListener("input", function(){
+      clearTimeout(timer);
+      timer = setTimeout(function(){
+        const key = ta.dataset.hnKey;
+        const text = ta.value;
+        if(text.trim()) DB.headNotes[key] = text;
+        else delete DB.headNotes[key];
+        save();
+        // keep the pencil marked while there is something written
+        const btn = el.querySelector('[data-hn="' + key.replace(/"/g, '\\"') + '"]');
+        if(btn) btn.classList.toggle("has", !!text.trim());
+        const saved = ta.parentNode.querySelector(".hn-saved");
+        if(saved){
+          saved.textContent = "saved";
+          setTimeout(function(){ saved.textContent = ""; }, 1200);
+        }
+      }, 500);
+    });
+  });
+
+  el.querySelectorAll("[data-hn-all]").forEach(function(btn){
+    btn.onclick = function(){
+      const open = btn.dataset.hnAll === "open";
+      el.querySelectorAll(".hn-box").forEach(function(box){ box.hidden = !open; });
+      el.querySelectorAll("[data-hn]").forEach(function(b){ b.classList.toggle("open", open); });
+    };
+  });
+}
+
 /* Shared renderer: turns a list of sections into HTML.
    Used by both the Lessons tab and the day pages inside the Course. */
 let tryCount = 0;
 let solCount = 0;
-function renderSections(sections){
-  return sections.map(s=>{
-    if(s.t==="h")    return `<h3 class="ls-h">${escapeHtml(s.v)}</h3>`;
+function renderSections(sections, ctx){
+  /* ctx names the day or lesson. It is supplied only by the two teaching
+     call sites, so practice sets and the mistakes list stay unchanged. */
+  hnCtx = ctx || null;
+  if(hnCtx){ hnSeen = {}; }
+  const lead = hnCtx ? hnToolbar(sections) : "";
+
+  return lead + sections.map(s=>{
+    if(s.t==="h"){
+      if(!hnCtx) return `<h3 class="ls-h">${escapeHtml(s.v)}</h3>`;
+      const key = hnKey(s.v);
+      const note = hnNote(key);
+      const i = hnCount++;
+      return `<div class="hn-head">
+        <h3 class="ls-h">${escapeHtml(s.v)}</h3>
+        <button type="button" class="hn-btn${note.trim() ? " has" : ""}"
+          data-hn="${escapeAttr(key)}" data-hn-box="${i}"
+          title="Write your own note for this section">\u270e</button>
+      </div>
+      <div class="hn-box" id="hnBox${i}" hidden>
+        <textarea class="hn-text" data-hn-key="${escapeAttr(key)}"
+          placeholder="Your note on this section - what clicked, what to come back to">${escapeHtml(note)}</textarea>
+        <div class="hn-saved"></div>
+      </div>`;
+    }
     if(s.t==="p")    return `<p class="ls-p">${escapeHtml(s.v).replace(/\n/g,"<br>")}</p>`;
     if(s.t==="code") return `<div class="ls-code"><div class="ls-code-tag">python</div><pre><code>${highlightPy(s.v)}</code></pre></div>`;
     if(s.t==="sh")   return `<div class="ls-code ls-sh"><div class="ls-code-tag">terminal</div><pre><code>${highlightShell(s.v)}</code></pre></div>`;
@@ -10856,7 +11001,7 @@ function renderLessonDetail(){
   if(!L){ activeLessonId = null; return renderLessons(); }
 
   tryCount = 0; solCount = 0;
-  const body = renderSections(L.sections);
+  const body = renderSections(L.sections, "l" + L.id);
   const nb = lessonNeighbours(L.id);
   const doneCount = LESSONS.filter(function(x){ return lessonDone(x.id); }).length;
 
@@ -10909,6 +11054,7 @@ function renderLessonDetail(){
 
   document.getElementById("backLessons").onclick = ()=>{ activeLessonId=null; window.scrollTo(0,0); renderLessons(); };
   wireRevealButtons(el);
+  wireHeadNotes(el);
   wireLessonQuiz(el, L);
   const goLesson = (t)=>{ if(!t) return; activeLessonId = t.id; window.scrollTo(0,0); renderLessons(); };
   document.getElementById("lessonPrev").onclick = ()=> goLesson(nb.prev);
