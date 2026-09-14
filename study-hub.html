@@ -457,6 +457,61 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .hn-all:hover{ border-color:var(--accent); color:var(--accent); }
 @media (pointer:coarse){ .hn-btn{ width:40px; height:40px; } }
 
+/* ---------- I Liked ---------- */
+.liked-wrap{ padding:4px 18px 28px; max-width:760px; }
+.liked-langs{ margin-bottom:10px; }
+.liked-n{
+  display:inline-block; min-width:18px; padding:0 5px; margin-left:4px;
+  border-radius:999px; font-size:11px; background:var(--bg-soft); color:var(--text-dim);
+}
+.wz-chip.active .liked-n{ background:rgba(255,255,255,0.25); color:inherit; }
+.liked-eras{ display:flex; gap:6px; margin:0 0 16px; flex-wrap:wrap; }
+.liked-era{
+  background:none; border:1px solid var(--border); border-radius:8px;
+  padding:7px 14px; font-size:13px; font-weight:700; color:var(--text-dim);
+}
+.liked-era:hover{ border-color:var(--accent); color:var(--text); }
+.liked-era.active{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+.liked-add{
+  background:var(--bg-elev); border:1px solid var(--border); border-radius:12px;
+  padding:12px 14px; margin:0 0 16px;
+}
+.liked-add-lab{ font-size:12.5px; color:var(--text-dim); margin-bottom:8px; }
+.liked-add-lab b{ color:var(--text); }
+.liked-add-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.liked-add-row input{
+  flex:1 1 180px; min-width:0; padding:9px 11px; font-size:14px;
+  border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text);
+}
+.liked-add-row input:focus{ outline:2px solid var(--accent); outline-offset:-1px; }
+.liked-err{ font-size:12.5px; color:var(--danger); min-height:16px; padding-top:6px; }
+.liked-list{ display:flex; flex-direction:column; gap:8px; }
+.liked-song{
+  display:flex; align-items:stretch; gap:6px;
+  background:var(--bg-elev); border:1px solid var(--border); border-radius:11px;
+}
+.liked-song:hover{ border-color:var(--accent); }
+.liked-link{
+  flex:1; min-width:0; display:flex; align-items:center; gap:12px;
+  padding:11px 12px; text-decoration:none; color:var(--text);
+}
+.liked-play{
+  flex-shrink:0; width:34px; height:34px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--accent-soft); color:var(--accent); font-size:12px;
+}
+.liked-text{ min-width:0; display:flex; flex-direction:column; }
+.liked-name{ font-size:15px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.liked-site{ font-size:12px; color:var(--text-dim); }
+.liked-del{
+  flex-shrink:0; background:none; border:none; border-left:1px solid var(--border);
+  width:44px; font-size:14px; color:var(--text-dim); border-radius:0 11px 11px 0;
+}
+.liked-del:hover{ color:var(--danger); background:var(--bg-soft); }
+.liked-empty{ padding:28px 10px; }
+.liked-foot{ margin-top:22px; padding-top:14px; border-top:1px solid var(--border); }
+@media (max-width:760px){ .liked-wrap{ padding:4px 14px 24px; } }
+
 /* ---------- Multi-part days ---------- */
 .part-chips{ display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
 .part-chip{
@@ -955,7 +1010,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
   <button type="button" data-view="lessons"><span class="ic">📖</span>Lessons</button>
   <button type="button" data-view="journal"><span class="ic">📔</span>Journal</button>
   <button type="button" data-view="wisdom"><span class="ic">🌱</span>Life</button>
-  <button type="button" data-view="notes"><span class="ic">📝</span>Notes</button>
+  <button type="button" data-view="liked"><span class="ic">❤️</span>I Liked</button>
   <button type="button" data-view="timer"><span class="ic">⏱️</span>Timer</button>
   <button type="button" data-view="flashcards"><span class="ic">🗂️</span>Cards</button>
   <button type="button" data-view="todo"><span class="ic">✅</span>To-Do</button>
@@ -970,7 +1025,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
     <button type="button" class="nav-item" data-view="lessons"><span class="ic">📖</span>Lessons</button>
     <button type="button" class="nav-item" data-view="journal"><span class="ic">📔</span>Journal</button>
     <button type="button" class="nav-item" data-view="wisdom"><span class="ic">🌱</span>Life Lessons</button>
-    <button type="button" class="nav-item" data-view="notes"><span class="ic">📝</span>Notes</button>
+    <button type="button" class="nav-item" data-view="liked"><span class="ic">❤️</span>I Liked</button>
     <button type="button" class="nav-item" data-view="timer"><span class="ic">⏱️</span>Timer</button>
     <button type="button" class="nav-item" data-view="flashcards"><span class="ic">🗂️</span>Flashcards</button>
     <button type="button" class="nav-item" data-view="todo"><span class="ic">✅</span>To-Do</button>
@@ -1036,6 +1091,14 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
     </div>
 
     <!-- NOTES VIEW -->
+    <!-- I LIKED VIEW -->
+    <div class="view" id="view-liked">
+      <div class="pane-header">
+        <h1>I Liked</h1>
+      </div>
+      <div id="likedBody"></div>
+    </div>
+
     <div class="view" id="view-notes">
       <div class="split" id="notesSplit">
         <div class="list-col" id="notesList"></div>
@@ -1172,6 +1235,7 @@ function applyDefaults(d){
   d.lessonQuizScores = d.lessonQuizScores || {};  // lessonId -> best quiz %
   d.headNotes = d.headNotes || {};   // "context|heading-slug" -> your own note
   d.lastSeen = d.lastSeen || null;   // the exact page you were last reading
+  d.likedSongs = d.likedSongs || [];   // {id, title, url, lang, era, added}
   d.wisdom = d.wisdom || [];
   d.lastBackup = d.lastBackup || null;
   return d;
@@ -1179,7 +1243,7 @@ function applyDefaults(d){
 
 /* Every key that holds progress, listed once. Used by the merge below so a
    new key can never be forgotten by one restore path but not another. */
-const ARRAY_KEYS = ["notes","decks","cards","todos","quizzes","wisdom"];
+const ARRAY_KEYS = ["notes","decks","cards","todos","quizzes","wisdom","likedSongs"];
 const MAP_KEYS   = ["journal","lessonsDone","lessonQuizScores","headNotes"];
 
 /* Union merge: nothing already on this device is ever removed. Items are
@@ -1309,19 +1373,20 @@ function confirmDialog(message, onYes){
 }
 
 /* ============ Navigation ============ */
-const views = ["course","lessons","journal","wisdom","notes","timer","flashcards","todo","quiz"];
+const views = ["course","lessons","journal","wisdom","liked","notes","timer","flashcards","todo","quiz"];
 function switchView(name){
   views.forEach(v=>{
     document.getElementById("view-"+v).classList.toggle("active", v===name);
   });
   document.querySelectorAll("#sidebar .nav-item").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
   document.querySelectorAll("#tabnav button").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
-  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Lessons", journal:"Daily Journal", wisdom:"Life Lessons", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Quizzes"}[name];
+  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Lessons", journal:"Daily Journal", wisdom:"Life Lessons", liked:"I Liked", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Quizzes"}[name];
   document.getElementById("backBtn").style.display = "none";
   if(name==="course") renderCourse();
   if(name==="lessons") renderLessons();
   if(name==="journal") renderJournal();
   if(name==="wisdom") renderWisdom();
+  if(name==="liked") renderLiked();
   if(name==="notes") renderNotesList();
   if(name==="timer") renderTimer();
   if(name==="flashcards") renderDecks();
@@ -1377,6 +1442,177 @@ function renderSideStats(){
   const lessons = (DB.course && DB.course.done) ? Object.keys(DB.course.done).length : 0;
   document.getElementById("sideStats").innerHTML =
     `${lessons}/364 lessons<br>${dueCards} cards due · ${openTodos} tasks`;
+}
+
+/* ================= I LIKED (songs) =================
+   Songs you like, by language, and for Hindi and Nepali by era. Each one is
+   a name and a link; clicking the name opens the link in a new tab. */
+
+const LIKED_GROUPS = [
+  { id:"hindi",   label:"Hindi Songs",   eras:["evergreen","fresh"] },
+  { id:"nepali",  label:"Nepali Songs",  eras:["evergreen","fresh"] },
+  { id:"english", label:"English Songs", eras:[] }
+];
+const ERA_LABEL = { evergreen:"Evergreen", fresh:"Fresh" };
+
+let likedView = { lang:"hindi", era:"evergreen" };
+try{
+  const kept = JSON.parse(localStorage.getItem("studyHubLikedView"));
+  if(kept && LIKED_GROUPS.some(function(g){ return g.id === kept.lang; })) likedView = kept;
+}catch(e){}
+
+function keepLikedView(){
+  try{ localStorage.setItem("studyHubLikedView", JSON.stringify(likedView)); }catch(e){}
+}
+
+/* Only ever open http or https. A pasted "javascript:" link would otherwise
+   run code when clicked, so anything that is not a real web address is
+   refused. A bare "youtube.com/..." is accepted and given https://. */
+function safeSongUrl(raw){
+  let text = String(raw || "").trim();
+  if(!text) return null;
+  if(!/^https?:\/\//i.test(text)) text = "https://" + text;
+  try{
+    const u = new URL(text);
+    if(u.protocol !== "http:" && u.protocol !== "https:") return null;
+    if(!u.hostname || u.hostname.indexOf(".") === -1) return null;
+    return u.href;
+  }catch(e){
+    return null;
+  }
+}
+
+function songSite(url){
+  try{ return new URL(url).hostname.replace(/^www\./, ""); }
+  catch(e){ return ""; }
+}
+
+function likedGroup(){
+  return LIKED_GROUPS.find(function(g){ return g.id === likedView.lang; }) || LIKED_GROUPS[0];
+}
+
+function renderLiked(){
+  const el = document.getElementById("likedBody");
+  if(!el) return;
+
+  const group = likedGroup();
+  const era = group.eras.length ? (group.eras.indexOf(likedView.era) !== -1 ? likedView.era : group.eras[0]) : null;
+  likedView.era = era;
+
+  const inHere = DB.likedSongs.filter(function(song){
+    return song.lang === group.id && (era ? song.era === era : true);
+  }).sort(function(a, b){ return (b.added || "").localeCompare(a.added || ""); });
+
+  const countFor = function(lang){
+    return DB.likedSongs.filter(function(x){ return x.lang === lang; }).length;
+  };
+  const eraCount = function(e){
+    return DB.likedSongs.filter(function(x){ return x.lang === group.id && x.era === e; }).length;
+  };
+
+  const where = group.label + (era ? " \u00b7 " + ERA_LABEL[era] : "");
+
+  el.innerHTML = `
+    <div class="liked-wrap">
+      <div class="wz-filters liked-langs">
+        ${LIKED_GROUPS.map(function(g){
+          return `<button type="button" class="wz-chip${g.id === group.id ? " active" : ""}" data-liked-lang="${g.id}">
+            ${escapeHtml(g.label)} <span class="liked-n">${countFor(g.id)}</span></button>`;
+        }).join("")}
+      </div>
+
+      ${group.eras.length ? `<div class="liked-eras">
+        ${group.eras.map(function(e){
+          return `<button type="button" class="liked-era${e === era ? " active" : ""}" data-liked-era="${e}">
+            ${ERA_LABEL[e]} <span class="liked-n">${eraCount(e)}</span></button>`;
+        }).join("")}
+      </div>` : ""}
+
+      <div class="liked-add">
+        <div class="liked-add-lab">Add a song to <b>${escapeHtml(where)}</b></div>
+        <div class="liked-add-row">
+          <input type="text" id="likedTitle" placeholder="Song name" autocomplete="off">
+          <input type="url" id="likedUrl" placeholder="Paste the link" autocomplete="off" inputmode="url">
+          <button type="button" class="btn" id="likedAddBtn">Add</button>
+        </div>
+        <div class="liked-err" id="likedErr"></div>
+      </div>
+
+      <div class="liked-list">
+        ${inHere.length ? inHere.map(function(song){
+          return `<div class="liked-song">
+            <a class="liked-link" href="${escapeAttr(song.url)}" target="_blank" rel="noopener noreferrer">
+              <span class="liked-play">\u25b6</span>
+              <span class="liked-text">
+                <span class="liked-name">${escapeHtml(song.title)}</span>
+                <span class="liked-site">${escapeHtml(songSite(song.url))}</span>
+              </span>
+            </a>
+            <button type="button" class="liked-del" data-liked-del="${escapeAttr(song.id)}"
+              aria-label="Remove ${escapeAttr(song.title)}">\u2715</button>
+          </div>`;
+        }).join("") : `<div class="empty-state liked-empty">
+          <div class="big">\u{1F3B5}</div>
+          <div>No songs in ${escapeHtml(where)} yet. Add your first one above.</div>
+        </div>`}
+      </div>
+
+      <div class="liked-foot">
+        <button type="button" class="btn secondary btn-sm" data-view="notes">\u{1F4DD} My old notes</button>
+      </div>
+    </div>`;
+
+  el.querySelectorAll("[data-liked-lang]").forEach(function(b){
+    b.onclick = function(){
+      likedView.lang = b.dataset.likedLang;
+      const g = likedGroup();
+      likedView.era = g.eras.length ? g.eras[0] : null;
+      keepLikedView();
+      renderLiked();
+    };
+  });
+  el.querySelectorAll("[data-liked-era]").forEach(function(b){
+    b.onclick = function(){
+      likedView.era = b.dataset.likedEra;
+      keepLikedView();
+      renderLiked();
+    };
+  });
+
+  const titleEl = document.getElementById("likedTitle");
+  const urlEl = document.getElementById("likedUrl");
+  const errEl = document.getElementById("likedErr");
+  const clearErr = function(){ errEl.textContent = ""; };
+  titleEl.addEventListener("input", clearErr);
+  urlEl.addEventListener("input", clearErr);
+
+  const add = function(){
+    const title = titleEl.value.trim();
+    const url = safeSongUrl(urlEl.value);
+    if(!title){ errEl.textContent = "Type the song name first."; titleEl.focus(); return; }
+    if(!url){ errEl.textContent = "That link doesn't look right. Paste a full web link, for example from YouTube."; urlEl.focus(); return; }
+    DB.likedSongs.push({ id: uid(), title: title, url: url, lang: group.id, era: era, added: nowISO() });
+    save();
+    toast("Added to " + where);
+    renderLiked();
+    const next = document.getElementById("likedTitle");
+    if(next) next.focus();
+  };
+  document.getElementById("likedAddBtn").onclick = add;
+  urlEl.addEventListener("keydown", function(ev){ if(ev.key === "Enter") add(); });
+  titleEl.addEventListener("keydown", function(ev){ if(ev.key === "Enter") urlEl.focus(); });
+
+  el.querySelectorAll("[data-liked-del]").forEach(function(b){
+    b.onclick = function(){
+      const song = DB.likedSongs.find(function(x){ return x.id === b.dataset.likedDel; });
+      if(!song) return;
+      confirmDialog("Remove <b>" + escapeHtml(song.title) + "</b> from I Liked?", function(){
+        DB.likedSongs = DB.likedSongs.filter(function(x){ return x.id !== song.id; });
+        save();
+        renderLiked();
+      });
+    };
+  });
 }
 
 /* ================= NOTES ================= */
@@ -12504,7 +12740,7 @@ if(transferBtnEl) transferBtnEl.addEventListener("click", openTransfer);
    transfer, cloud pull) so no stale view is left on screen. */
 function renderEverything(){
   [renderCourse, renderLessons, renderJournal, renderWisdom, renderNotesList,
-   renderNoteDetail, renderTimer, renderDecks, renderTodos, renderQuizList,
+   renderNoteDetail, renderLiked, renderTimer, renderDecks, renderTodos, renderQuizList,
    renderQuizDetail, renderSideStats].forEach(function(fn){
     try{ fn(); }catch(e){ console.error("re-render failed", e); }
   });
@@ -12528,6 +12764,7 @@ function boot(){
   step("lessons", renderLessons);
   step("journal", renderJournal);
   step("wisdom", renderWisdom);
+  step("liked", renderLiked);
   step("notes", renderNotesList);
   step("note detail", renderNoteDetail);
   step("timer", renderTimer);
