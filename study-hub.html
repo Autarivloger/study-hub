@@ -1017,8 +1017,13 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
   padding:26px 28px; cursor:text; box-shadow:var(--shadow); }
 .ty-box.focused{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
 .ty-proxy{ position:absolute; opacity:0; width:1px; height:1px; top:0; left:0; border:0; padding:0; pointer-events:none; }
-.ty-window{ font-family:ui-monospace,"Cascadia Code","JetBrains Mono",Consolas,monospace; font-size:22px; line-height:1.8;
-  height:calc(1.8em * 4); overflow:hidden; position:relative; }
+.ty-window{ font-family:ui-monospace,"Cascadia Code","JetBrains Mono",Consolas,monospace; font-size:26px; line-height:1.8;
+  height:calc(1.8em * 6); overflow:hidden; position:relative; }
+/* Full: height is set in whole lines by tySizeBox() */
+.ty-box.size-full{ padding:32px 36px; }
+.ty-card.wide{ grid-column:1 / -1; }
+.ty-card.wide b{ display:flex; flex-wrap:wrap; justify-content:center; gap:4px 12px; font-size:16px; }
+.ty-best i{ font-style:normal; font-size:11px; color:var(--text-dim); margin-right:4px; }
 .ty-text{ position:relative; white-space:pre-wrap; word-break:break-word; color:var(--text-dim); opacity:.9;
   transition:transform .18s cubic-bezier(.2,0,0,1); }
 .ty-ch{ border-radius:2px; }
@@ -1061,7 +1066,7 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .ty-goal-bar{ height:8px; background:var(--bg-soft); border-radius:8px; overflow:hidden; margin:10px 0; }
 .ty-goal-bar div{ height:100%; background:var(--good); }
 .ty-goal-set{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12.5px; color:var(--text-dim); }
-.ty-cards{ display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }
+.ty-cards{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
 .ty-card{ background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius); padding:12px 8px; text-align:center; }
 .ty-card b{ display:block; font-family:ui-monospace,Consolas,monospace; font-size:20px; color:var(--text); word-break:break-word; }
 .ty-card.gold b{ color:var(--warn); }
@@ -1089,7 +1094,9 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
   .ty-cards{ grid-template-columns:repeat(2,1fr); }
   .ty-res-grid{ grid-template-columns:repeat(2,1fr); }
   .ty-box{ padding:16px; }
-  .ty-window{ font-size:17px; }
+  .ty-window{ font-size:19px; }
+  .ty-box.size-full{ padding:18px; }
+
   .ty-hints{ display:none; }        /* phones have no Tab or Esc key */
   .ty-controls{ justify-content:flex-end; }
 }
@@ -1801,16 +1808,18 @@ const TY_CATS = [
   { id:"weak",      label:"\u{1F3AF} Weak keys" },
   { id:"custom",    label:"\u270F\uFE0F Custom" }
 ];
-const TY_DURATIONS = [15, 30, 60, 120];
+const TY_DURATIONS = [15, 30, 60, 120, 300, 600, 900];
+function tyDurLabel(s){ return s >= 60 && s % 60 === 0 && s > 120 ? (s / 60) + " min" : s + "s"; }
 const TY_PREF_KEY = "studyHubTypingPrefs";
 const TY_HISTORY_MAX = 300;
 
-let tyPrefs = { duration:60, category:"medium", sound:true, autoIndent:true, goal:10, custom:"" };
+let tyPrefs = { duration:60, category:"medium", sound:true, autoIndent:true, goal:10, custom:"", boxSize:"full" };
 try{
   const kept = JSON.parse(localStorage.getItem(TY_PREF_KEY));
   if(kept && typeof kept === "object") Object.assign(tyPrefs, kept);
 }catch(e){}
 if(TY_DURATIONS.indexOf(tyPrefs.duration) === -1) tyPrefs.duration = 60;
+if(tyPrefs.boxSize !== "half") tyPrefs.boxSize = "full";
 if(!TY_CATS.some(function(c){ return c.id === tyPrefs.category; })) tyPrefs.category = "medium";
 
 function keepTyPrefs(){
@@ -1958,6 +1967,40 @@ function typingLeave(){
   }
 }
 
+/* Half = six lines. Full = as many WHOLE lines as fit on the screen below
+   the sticky header, with the live stats still visible above the box. */
+function tyHeaderBottom(){
+  let bottom = 0;
+  ["topbar", "tabnav"].forEach(function(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    const pos = getComputedStyle(el).position;
+    if((pos === "sticky" || pos === "fixed") && el.offsetHeight) bottom = Math.max(bottom, el.getBoundingClientRect().bottom);
+  });
+  return bottom;
+}
+function tySizeBox(scroll){
+  const tb = document.getElementById("tyBox");
+  const win = tb && tb.querySelector(".ty-window");
+  if(!win) return;
+  if(tyPrefs.boxSize !== "full" || tb.hidden || !window.innerHeight){
+    win.style.height = "";
+    tyPlaceCaret();
+    return;
+  }
+  const stats = document.querySelector("#view-typing .ty-stats");
+  const head = tyHeaderBottom();
+  if(scroll && stats){
+    const y = window.scrollY + stats.getBoundingClientRect().top - head - 8;
+    window.scrollTo({ top: Math.max(0, y) });
+  }
+  const lh = parseFloat(getComputedStyle(win).lineHeight) || 40;
+  const above = stats ? win.getBoundingClientRect().top - stats.getBoundingClientRect().top : 0;
+  const room = window.innerHeight - head - 8 - above - 40;
+  win.style.height = (Math.max(6, Math.floor(room / lh)) * lh) + "px";
+  tyPlaceCaret();
+}
+
 function tyReset(sameText){
   tyStopTimer();
   if(!sameText || !ty.text){
@@ -1980,7 +2023,7 @@ function tyReset(sameText){
   tyRenderText();
   tySkipIndent();
   tyUpdateStats();
-  tyPlaceCaret();
+  tySizeBox(false);
   tyFocus();
 }
 
@@ -2372,7 +2415,7 @@ function tyRenderDash(){
       <div class="ty-card"><b>${recent.length ? avg(recent, "acc") + "%" : "-"}</b><span>Avg accuracy</span></div>
       <div class="ty-card"><b>${all.length}</b><span>Tests done</span></div>
       <div class="ty-card"><b>${fmtTime(totalSecs)}</b><span>Practice time</span></div>
-      <div class="ty-card"><b>${bests.map(function(b){ return b.v || "-"; }).join(" / ")}</b><span>Best at 15/30/60/120s</span></div>
+      <div class="ty-card wide"><b>${bests.map(function(b){ return `<span class="ty-best"><i>${tyDurLabel(b.d)}</i>${b.v || "-"}</span>`; }).join("")}</b><span>Best WPM by test length</span></div>
     </div>
 
     <div class="ty-panel">
@@ -2393,7 +2436,7 @@ function tyRenderDash(){
         <thead><tr><th>When</th><th>WPM</th><th>Acc</th><th>Time</th><th>Text</th><th>Mistakes</th></tr></thead>
         <tbody>${rows.map(function(r){
           return `<tr><td>${escapeHtml(new Date(r.at).toLocaleString(undefined, { month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" }))}</td>
-            <td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td>${r.duration}s</td>
+            <td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td>${tyDurLabel(r.duration)}</td>
             <td>${escapeHtml(catLabel(r.cat))}</td><td class="num">${r.mistakes}</td></tr>`;
         }).join("")}</tbody></table></div>
         <button type="button" class="btn secondary btn-sm ty-clear" id="tyClearBtn">Clear typing history</button>`
@@ -2423,7 +2466,7 @@ function renderTyping(){
       <div class="ty-bar">
         <div class="ty-group"><span class="ty-lab">Time</span>
           <div class="ty-pills">${TY_DURATIONS.map(function(s){
-            return `<button type="button" class="ty-pill${tyPrefs.duration === s ? " active" : ""}" data-ty-dur="${s}">${s}s</button>`;
+            return `<button type="button" class="ty-pill${tyPrefs.duration === s ? " active" : ""}" data-ty-dur="${s}">${tyDurLabel(s)}</button>`;
           }).join("")}</div>
         </div>
         <div class="ty-group"><span class="ty-lab">Text</span>
@@ -2433,6 +2476,10 @@ function renderTyping(){
         </div>
         <div class="ty-group ty-opts">
           <label class="ty-check"><input type="checkbox" id="tyIndent"${tyPrefs.autoIndent ? " checked" : ""}> Skip code indentation</label>
+          <div class="ty-pills" role="group" aria-label="Typing box size">
+            <button type="button" class="ty-pill${tyPrefs.boxSize === "half" ? " active" : ""}" data-ty-size="half">◧ Half</button>
+            <button type="button" class="ty-pill${tyPrefs.boxSize === "full" ? " active" : ""}" data-ty-size="full">⬛ Full</button>
+          </div>
           <button type="button" class="ty-pill" id="tySound" aria-pressed="${tyPrefs.sound}">${tyPrefs.sound ? "\u{1F50A} Sound on" : "\u{1F507} Sound off"}</button>
         </div>
       </div>
@@ -2447,7 +2494,7 @@ function renderTyping(){
       <div class="ty-progress"><div id="tyFill"></div></div>
 
       <div class="ty-source" id="tySource"></div>
-      <div class="ty-box" id="tyBox">
+      <div class="ty-box size-${tyPrefs.boxSize}" id="tyBox">
         <input type="text" id="tyProxy" class="ty-proxy" value=" " autocomplete="off" autocorrect="off"
           autocapitalize="off" spellcheck="false" enterkeyhint="enter" aria-label="Type the text shown here">
         <div class="ty-window"><div class="ty-text" id="tyText"></div></div>
@@ -2476,6 +2523,18 @@ function renderTyping(){
   });
   el.querySelectorAll(".ty-bar [data-ty-cat]").forEach(function(b){
     b.onclick = function(){ tySetCategory(b.dataset.tyCat); };
+  });
+  el.querySelectorAll("[data-ty-size]").forEach(function(b){
+    b.onclick = function(){
+      tyPrefs.boxSize = b.dataset.tySize;
+      keepTyPrefs();
+      el.querySelectorAll("[data-ty-size]").forEach(function(x){ x.classList.toggle("active", x === b); });
+      const tb = document.getElementById("tyBox");
+      tb.classList.remove("size-half", "size-full");
+      tb.classList.add("size-" + tyPrefs.boxSize);
+      tySizeBox(tyPrefs.boxSize === "full");
+      tyFocus();
+    };
   });
   document.getElementById("tyIndent").onchange = function(ev){
     tyPrefs.autoIndent = ev.target.checked;
@@ -2510,7 +2569,7 @@ function renderTyping(){
 
 /* Re-measure the caret when the window changes width, since lines re-wrap. */
 window.addEventListener("resize", function(){
-  if(document.getElementById("tyText")) tyPlaceCaret();
+  if(document.getElementById("tyText")) tySizeBox(false);
 });
 
 /* ================= NOTES ================= */
