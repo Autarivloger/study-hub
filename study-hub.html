@@ -985,6 +985,114 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
   #topbar #brandTitle{ display:none; }
 }
 #backBtn{ display:none; }
+
+/* ---------- Typing trainer ---------- */
+#typingHeadBtn{ font-size:18px; }
+@media (max-width:760px){ #typingHeadBtn{ display:none; } }   /* phones: it is in the tab bar */
+.ty-wrap{ max-width:980px; padding:4px 24px 32px; display:flex; flex-direction:column; gap:14px; }
+.ty-bar{ display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center;
+  background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; }
+.ty-group{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.ty-lab{ font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--text-dim); }
+.ty-pills{ display:flex; flex-wrap:wrap; gap:6px; }
+.ty-pill{ background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:6px 12px;
+  font:inherit; font-size:12.5px; font-weight:700; color:var(--text-dim); cursor:pointer; min-height:34px; }
+.ty-pill:hover{ color:var(--text); }
+.ty-pill.active{ background:var(--accent); border-color:var(--accent); color:var(--accent-text); }
+.ty-pill.sm{ padding:3px 10px; min-height:28px; font-size:12px; }
+.ty-opts{ margin-left:auto; }
+.ty-check{ display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-dim); cursor:pointer; }
+.ty-stats{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+.ty-stat{ background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius); padding:10px 8px; text-align:center; }
+.ty-stat b{ display:block; font-family:ui-monospace,"Cascadia Code",Consolas,monospace; font-size:26px; line-height:1.15;
+  color:var(--text); font-variant-numeric:tabular-nums; }
+.ty-stat span{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); }
+.ty-stat.wpm b{ color:var(--accent); }
+.ty-stat.acc b{ color:var(--good); }
+.ty-stat.miss b{ color:var(--danger); }
+.ty-progress{ height:6px; background:var(--bg-soft); border-radius:6px; overflow:hidden; }
+.ty-progress div{ height:100%; width:0; background:var(--accent); transition:width .15s ease-out; }
+.ty-source{ font-size:12.5px; color:var(--text-dim); min-height:1em; }
+.ty-box{ position:relative; background:var(--bg-elev); border:1px solid var(--border); border-radius:16px;
+  padding:26px 28px; cursor:text; box-shadow:var(--shadow); }
+.ty-box.focused{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+.ty-proxy{ position:absolute; opacity:0; width:1px; height:1px; top:0; left:0; border:0; padding:0; pointer-events:none; }
+.ty-window{ font-family:ui-monospace,"Cascadia Code","JetBrains Mono",Consolas,monospace; font-size:22px; line-height:1.8;
+  height:calc(1.8em * 4); overflow:hidden; position:relative; }
+.ty-text{ position:relative; white-space:pre-wrap; word-break:break-word; color:var(--text-dim); opacity:.9;
+  transition:transform .18s cubic-bezier(.2,0,0,1); }
+.ty-ch{ border-radius:2px; }
+.ty-ch.ok{ color:var(--text); }
+.ty-ch.bad{ color:var(--danger); background:color-mix(in srgb, var(--danger) 20%, transparent);
+  text-decoration:underline 2px var(--danger); }
+.ty-ch.nl::before{ content:"\21B5"; opacity:.35; }
+.ty-ch.nl.bad::before{ opacity:1; }
+.ty-caret{ position:absolute; width:2px; background:var(--accent); border-radius:2px; pointer-events:none;
+  transition:left .07s ease-out, top .07s ease-out; animation:tyBlink 1.05s infinite; }
+.ty-box.running .ty-caret{ animation:none; }
+@keyframes tyBlink{ 50%{ opacity:0; } }
+.ty-overlay{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; border-radius:16px;
+  background:color-mix(in srgb, var(--bg-elev) 70%, transparent); backdrop-filter:blur(2px);
+  font-weight:700; color:var(--text); opacity:0; pointer-events:none; transition:opacity .2s; }
+.ty-box:not(.focused) .ty-overlay{ opacity:1; }
+.ty-controls{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+.ty-hints{ display:flex; gap:14px; flex-wrap:wrap; font-size:12.5px; color:var(--text-dim); }
+.ty-wrap kbd{ font-family:ui-monospace,Consolas,monospace; font-size:12px; background:var(--bg-soft);
+  border:1px solid var(--border); border-bottom-width:2px; border-radius:5px; padding:1px 6px; color:var(--text); }
+.ty-ctl-btns{ display:flex; gap:8px; }
+.ty-result{ background:var(--bg-elev); border:1px solid var(--accent); border-radius:16px; padding:22px; text-align:center;
+  box-shadow:var(--shadow); outline:none; }
+.ty-res-badge{ display:inline-block; padding:5px 14px; border-radius:20px; font-weight:800; font-size:14px;
+  background:var(--accent-soft); color:var(--text); }
+.ty-res-badge.best{ background:color-mix(in srgb, var(--warn) 25%, transparent); }
+.ty-res-line{ color:var(--text-dim); margin:8px 0 16px; }
+.ty-res-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }
+.ty-res-box{ background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:10px 6px; }
+.ty-res-box b{ display:block; font-family:ui-monospace,Consolas,monospace; font-size:22px; }
+.ty-res-box.main b{ font-size:32px; color:var(--accent); }
+.ty-res-box span{ font-size:11px; color:var(--text-dim); text-transform:uppercase; }
+.ty-res-meta{ margin:14px 0; font-size:13px; color:var(--text-dim); }
+.ty-res-actions{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+.ty-hint-small{ margin-top:10px; font-size:12px; color:var(--text-dim); }
+.ty-h2{ font-size:17px; margin:18px 0 0; }
+.ty-goal, .ty-panel{ background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius); padding:14px; }
+.ty-goal-top{ display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; font-size:14px; }
+.ty-streak{ font-weight:800; }
+.ty-goal-bar{ height:8px; background:var(--bg-soft); border-radius:8px; overflow:hidden; margin:10px 0; }
+.ty-goal-bar div{ height:100%; background:var(--good); }
+.ty-goal-set{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12.5px; color:var(--text-dim); }
+.ty-cards{ display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }
+.ty-card{ background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius); padding:12px 8px; text-align:center; }
+.ty-card b{ display:block; font-family:ui-monospace,Consolas,monospace; font-size:20px; color:var(--text); word-break:break-word; }
+.ty-card.gold b{ color:var(--warn); }
+.ty-card span{ font-size:11px; color:var(--text-dim); text-transform:uppercase; }
+.ty-panel-title{ font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); margin-bottom:10px; }
+.ty-trend{ width:100%; height:auto; display:block; overflow:visible; }
+.ty-axis{ stroke:var(--border); }
+.ty-area{ fill:var(--accent); opacity:.12; }
+.ty-line{ fill:none; stroke:var(--accent); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+.ty-dot{ fill:var(--accent); stroke:var(--bg-elev); stroke-width:2; }
+.ty-val{ fill:var(--text-dim); font-size:11px; text-anchor:middle; font-family:ui-monospace,Consolas,monospace; }
+.ty-weak{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+.ty-weak-key{ font-size:13px; color:var(--text-dim); }
+.ty-empty{ color:var(--text-dim); font-size:13.5px; }
+.ty-table-wrap{ overflow-x:auto; }
+.ty-table{ width:100%; border-collapse:collapse; font-size:13px; }
+.ty-table th{ text-align:left; font-size:11px; text-transform:uppercase; color:var(--text-dim); padding:6px 8px; border-bottom:1px solid var(--border); }
+.ty-table td{ padding:7px 8px; border-bottom:1px solid var(--border); white-space:nowrap; }
+.ty-table td.num{ font-family:ui-monospace,Consolas,monospace; font-weight:700; }
+.ty-clear{ margin-top:10px; }
+@media (max-width:760px){
+  .ty-wrap{ padding:4px 14px 24px; }
+  .ty-opts{ margin-left:0; }
+  .ty-stats{ grid-template-columns:repeat(3,1fr); }
+  .ty-cards{ grid-template-columns:repeat(2,1fr); }
+  .ty-res-grid{ grid-template-columns:repeat(2,1fr); }
+  .ty-box{ padding:16px; }
+  .ty-window{ font-size:17px; }
+  .ty-hints{ display:none; }        /* phones have no Tab or Esc key */
+  .ty-controls{ justify-content:flex-end; }
+}
 </style>
 </head>
 <body>
@@ -995,6 +1103,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
 <div id="topbar">
   <button type="button" id="backBtn" class="icon-btn" title="Back">←</button>
   <div class="brand"><span class="dot"></span><span id="brandTitle">Study Hub</span></div>
+  <button type="button" class="icon-btn" id="typingHeadBtn" data-view="typing" title="Typing practice">⌨️</button>
   <button type="button" class="icon-btn" id="searchBtn" title="Search all lessons (press /)">🔍</button>
   <button type="button" class="icon-btn" id="syncBtn" title="Sync across devices">☁</button>
   <button type="button" class="icon-btn" id="exportBtn" title="Export backup">⇩</button>
@@ -1011,6 +1120,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
   <button type="button" data-view="journal"><span class="ic">📔</span>Journal</button>
   <button type="button" data-view="wisdom"><span class="ic">🌱</span>Life</button>
   <button type="button" data-view="liked"><span class="ic">❤️</span>I Liked</button>
+  <button type="button" data-view="typing"><span class="ic">⌨️</span>Typing</button>
   <button type="button" data-view="timer"><span class="ic">⏱️</span>Timer</button>
   <button type="button" data-view="flashcards"><span class="ic">🗂️</span>Cards</button>
   <button type="button" data-view="todo"><span class="ic">✅</span>To-Do</button>
@@ -1026,6 +1136,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
     <button type="button" class="nav-item" data-view="journal"><span class="ic">📔</span>Journal</button>
     <button type="button" class="nav-item" data-view="wisdom"><span class="ic">🌱</span>Life Lessons</button>
     <button type="button" class="nav-item" data-view="liked"><span class="ic">❤️</span>I Liked</button>
+    <button type="button" class="nav-item" data-view="typing"><span class="ic">⌨️</span>Typing</button>
     <button type="button" class="nav-item" data-view="timer"><span class="ic">⏱️</span>Timer</button>
     <button type="button" class="nav-item" data-view="flashcards"><span class="ic">🗂️</span>Flashcards</button>
     <button type="button" class="nav-item" data-view="todo"><span class="ic">✅</span>To-Do</button>
@@ -1097,6 +1208,14 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
         <h1>I Liked</h1>
       </div>
       <div id="likedBody"></div>
+    </div>
+
+    <!-- TYPING VIEW -->
+    <div class="view" id="view-typing">
+      <div class="pane-header">
+        <h1>⌨️ Typing</h1>
+      </div>
+      <div id="typingBody"></div>
     </div>
 
     <div class="view" id="view-notes">
@@ -1236,6 +1355,7 @@ function applyDefaults(d){
   d.headNotes = d.headNotes || {};   // "context|heading-slug" -> your own note
   d.lastSeen = d.lastSeen || null;   // the exact page you were last reading
   d.likedSongs = d.likedSongs || [];   // {id, title, url, lang, era, added}
+  d.typingHistory = d.typingHistory || [];   // {id, at, wpm, acc, duration, cat, missed, ...}
   d.wisdom = d.wisdom || [];
   d.lastBackup = d.lastBackup || null;
   return d;
@@ -1243,7 +1363,7 @@ function applyDefaults(d){
 
 /* Every key that holds progress, listed once. Used by the merge below so a
    new key can never be forgotten by one restore path but not another. */
-const ARRAY_KEYS = ["notes","decks","cards","todos","quizzes","wisdom","likedSongs"];
+const ARRAY_KEYS = ["notes","decks","cards","todos","quizzes","wisdom","likedSongs","typingHistory"];
 const MAP_KEYS   = ["journal","lessonsDone","lessonQuizScores","headNotes"];
 
 /* Union merge: nothing already on this device is ever removed. Items are
@@ -1373,20 +1493,22 @@ function confirmDialog(message, onYes){
 }
 
 /* ============ Navigation ============ */
-const views = ["course","lessons","journal","wisdom","liked","notes","timer","flashcards","todo","quiz"];
+const views = ["course","lessons","journal","wisdom","liked","typing","notes","timer","flashcards","todo","quiz"];
 function switchView(name){
   views.forEach(v=>{
     document.getElementById("view-"+v).classList.toggle("active", v===name);
   });
   document.querySelectorAll("#sidebar .nav-item").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
   document.querySelectorAll("#tabnav button").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
-  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Lessons", journal:"Daily Journal", wisdom:"Life Lessons", liked:"I Liked", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Quizzes"}[name];
+  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Lessons", journal:"Daily Journal", wisdom:"Life Lessons", liked:"I Liked", typing:"Typing", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Quizzes"}[name];
   document.getElementById("backBtn").style.display = "none";
+  if(name!=="typing") typingLeave();
   if(name==="course") renderCourse();
   if(name==="lessons") renderLessons();
   if(name==="journal") renderJournal();
   if(name==="wisdom") renderWisdom();
   if(name==="liked") renderLiked();
+  if(name==="typing") renderTyping();
   if(name==="notes") renderNotesList();
   if(name==="timer") renderTimer();
   if(name==="flashcards") renderDecks();
@@ -1614,6 +1736,782 @@ function renderLiked(){
     };
   });
 }
+
+/* ================= TYPING (touch-typing trainer) =================
+   A typing test inside Study Hub. Results are saved in DB.typingHistory, so
+   they travel with backups and cloud sync. Per-device choices (time, text
+   kind, sound) live in their own small localStorage key. Keys are read only
+   from the hidden input inside the typing box, so typing anywhere else in
+   the app - notes, search, the journal - is never intercepted. */
+
+const TY_TEXTS = {
+  easy: [
+    "The quick brown fox jumps over the lazy dog on a bright sunny afternoon.",
+    "Learning to type fast and accurately takes regular practice every single day.",
+    "A journey of a thousand miles begins with a single step forward.",
+    "She found a small quiet corner in the library to read her favorite book.",
+    "The morning sun cast a warm golden light across the calm blue ocean waves.",
+    "Good friends bring laughter and happiness whenever they spend time together.",
+    "Fresh air and daily walking can help keep your body and mind feeling healthy.",
+    "Practice makes progress when you stay patient and focus on steady improvement.",
+    "The blue sky was clear with just a few soft white clouds drifting slowly by.",
+    "Simple daily habits can lead to incredible long term success over time."
+  ],
+  medium: [
+    "Software engineering is the systematic application of engineering approaches to the development of software. It combines creative problem solving with disciplined structure to build reliable computer applications.",
+    "Artificial intelligence is transforming industries around the world by automating routine tasks, discovering hidden patterns in data, and assisting human researchers in solving complex scientific questions.",
+    "Typography plays a crucial role in modern user experience design. When text is easy to read, appropriately sized, and well spaced, readers can absorb information with far less cognitive strain.",
+    "The human brain is remarkably adaptable, capable of neuroplasticity even well into adulthood. Learning a new skill, such as touch typing or playing an instrument, builds new neural pathways.",
+    "Open source software powers the modern digital economy. Millions of developers across the globe collaborate transparently on operating systems, web frameworks, and programming languages.",
+    "Clean code reads like well-written prose. It is purposeful, straightforward, and clearly expresses the author's intent without requiring excessive mental gymnastics to decipher."
+  ],
+  difficult: [
+    "Quintessentially, the juxtaposition of serendipitous epiphanies and meticulous empiricism catalyzes breakthroughs in scientific epistemology across interdisciplinary paradigms.",
+    "In 1984, the consensus among 85.4% of computational theorists was that P versus NP remained the quintessential unresolved dilemma in algorithmic complexity theory.",
+    "Syntactically speaking, nested closures with asynchronous callback cascades often precipitate egregious race conditions, necessitating idempotent state management protocols!",
+    "The socioeconomic ramifications of hyperinflation (e.g., Weimar Republic c. 1923, Zimbabwe c. 2008) elucidate the fragile psychological substrate underpinning fiat currencies.",
+    "Microarchitectural vulnerabilities, such as Spectre and Meltdown, exploit speculative execution branches in modern pipelined superscalar central processing units (CPUs)."
+  ],
+  code: [
+    "def binary_search(array, target):\n    low, high = 0, len(array) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if array[mid] == target:\n            return mid\n        elif array[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1",
+    "class DataPipeline:\n    def __init__(self, source_url):\n        self.source = source_url\n        self.records = []\n\n    def ingest(self, raw_data):\n        cleaned = [item.strip() for item in raw_data if item]\n        self.records.extend(cleaned)\n        return len(self.records)",
+    "import asyncio\nimport aiohttp\n\nasync def fetch_endpoint(session, url):\n    async with session.get(url) as response:\n        data = await response.json()\n        return data.get('status', 'unknown')",
+    "def quicksort(numbers):\n    if len(numbers) <= 1:\n        return numbers\n    pivot = numbers[len(numbers) // 2]\n    left = [x for x in numbers if x < pivot]\n    middle = [x for x in numbers if x == pivot]\n    right = [x for x in numbers if x > pivot]\n    return quicksort(left) + middle + quicksort(right)",
+    "with open(\"scores.txt\", encoding=\"utf-8\") as f:\n    scores = [int(line) for line in f if line.strip()]\n\nprint(f\"average: {sum(scores) / len(scores):.1f}\")\nprint(f\"best: {max(scores)}\")"
+  ],
+  tech: [
+    "Zero Trust architecture enforces strict identity verification for every user and device attempting to access resources on a private network, regardless of whether they sit inside or outside the network perimeter.",
+    "Asymmetric cryptography utilizes paired mathematical keys: a public key for encryption and a private key for decryption. The security of algorithms like RSA relies on the computational difficulty of factoring large composite integers.",
+    "Containerization with Docker encapsulates applications and their system dependencies into lightweight portable units, ensuring consistent execution across development, staging, and cloud production environments.",
+    "End-to-end encryption guarantees that data is encrypted on the sender's device and only decrypted by the intended recipient. Intermediary servers, internet service providers, and eavesdroppers cannot inspect plaintext payloads.",
+    "Buffer overflow vulnerabilities occur when a program writes data beyond the allocated boundary of a memory buffer, potentially overwriting adjacent memory and allowing malicious arbitrary code execution."
+  ]
+};
+
+/* Words for the weak-key drill: common, lower-case, varied letters. */
+const TY_WORDS = ("about above across after again against along also always among answer around away back because become before began begin behind being below best better between black body book both bring build built call came carry cause change check child city class close come common could country course cover cross dark day deep does done door down draw dream drive during each early earth easy eight enough even every example eye face fact family far fast father feel field figure final find fire first fish five follow food force form found four free friend from front full game gave give good great green ground group grow half hand happen hard have head hear heart heavy help here high hold home hope horse hour house idea important inside island jump just keep kind king know land language large last late learn leave left less letter life light line list little live long look love made make many mark matter mean might mind minute miss money month more morning most mother move much music must name near need never next night north nothing notice number object often only open order other over page paper part pass past pattern people perhaps person picture piece place plain plan plant play point power problem produce public pull question quick quiet quite rain reach read ready real reason record remember rest right river road rock room round rule said same school science second seem sentence serve several shape short should show side simple since size small snow some song soon sound south space speak special spell stand start state stay step still stood story street strong study such sudden summer system table take talk teach test than thing think those though thought three through time today together told took toward travel tree true try turn under unit until upon usual value very voice vowel walk want warm watch water wave week weight well went were west what wheel where which while white whole why wide wild will wind window winter wish with without woman wonder wood word work world would write wrong year yellow young zero zone jazz quiz fix box join joke just jar vex wax").split(" ");
+
+const TY_CATS = [
+  { id:"easy",      label:"Easy" },
+  { id:"medium",    label:"Medium" },
+  { id:"difficult", label:"Difficult" },
+  { id:"code",      label:"Python code" },
+  { id:"lessons",   label:"\u{1F4DA} My lessons" },
+  { id:"tech",      label:"Tech" },
+  { id:"weak",      label:"\u{1F3AF} Weak keys" },
+  { id:"custom",    label:"\u270F\uFE0F Custom" }
+];
+const TY_DURATIONS = [15, 30, 60, 120];
+const TY_PREF_KEY = "studyHubTypingPrefs";
+const TY_HISTORY_MAX = 300;
+
+let tyPrefs = { duration:60, category:"medium", sound:true, autoIndent:true, goal:10, custom:"" };
+try{
+  const kept = JSON.parse(localStorage.getItem(TY_PREF_KEY));
+  if(kept && typeof kept === "object") Object.assign(tyPrefs, kept);
+}catch(e){}
+if(TY_DURATIONS.indexOf(tyPrefs.duration) === -1) tyPrefs.duration = 60;
+if(!TY_CATS.some(function(c){ return c.id === tyPrefs.category; })) tyPrefs.category = "medium";
+
+function keepTyPrefs(){
+  try{ localStorage.setItem(TY_PREF_KEY, JSON.stringify(tyPrefs)); }catch(e){}
+}
+
+const ty = {
+  status:"idle", text:"", source:"", states:[], spans:[], idx:0,
+  start:0, timer:null, elapsed:0, typed:0, correct:0, wrong:0, mistakes:0, missed:{}
+};
+
+/* ---- sound: one AudioContext, created on the first key press ---- */
+let tyAudio = null;
+function tyBeep(ok){
+  if(!tyPrefs.sound) return;
+  try{
+    if(!tyAudio){
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if(!Ctx) return;
+      tyAudio = new Ctx();
+    }
+    const t = tyAudio.currentTime;
+    const osc = tyAudio.createOscillator();
+    const gain = tyAudio.createGain();
+    osc.type = ok ? "sine" : "sawtooth";
+    osc.frequency.setValueAtTime(ok ? 600 + Math.random() * 120 : 180, t);
+    gain.gain.setValueAtTime(ok ? 0.04 : 0.05, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + (ok ? 0.04 : 0.08));
+    osc.connect(gain); gain.connect(tyAudio.destination);
+    osc.start(t); osc.stop(t + (ok ? 0.04 : 0.08));
+  }catch(e){}
+}
+
+/* ---- where the practice text comes from ---- */
+function tyShuffle(list){
+  const a = list.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+let tyLessonCache = null;
+function tyLessonSnippets(){
+  if(tyLessonCache) return tyLessonCache;
+  const out = [];
+  Object.keys(DAY_TEACH).forEach(function(key){
+    const day = DAY_TEACH[key];
+    const parts = Array.isArray(day) ? [{ sections: day }] : ((day && day.parts) || []);
+    parts.forEach(function(p){
+      (p.sections || []).forEach(function(s){
+        const code = s.t === "code" ? s.v : (s.t === "sol" && !s.sh ? s.code : null);
+        if(typeof code !== "string") return;
+        const clean = code.replace(/\t/g, "    ").replace(/[ \t]+$/gm, "").trim();
+        if(clean.length < 60 || clean.length > 520) return;
+        if(!/^[\x20-\x7e\n]+$/.test(clean)) return;      // only keys on a normal keyboard
+        const bits = key.split(".");
+        out.push({ code: clean, where: "Week " + bits[0] + " \u00b7 Day " + (Number(bits[1]) + 1) });
+      });
+    });
+  });
+  tyLessonCache = out;
+  return out;
+}
+
+/* The letters you miss most, from your recent tests. */
+function tyWeakKeys(limit){
+  const recent = DB.typingHistory.slice(-30);
+  const miss = {};
+  recent.forEach(function(r){
+    Object.keys(r.missed || {}).forEach(function(ch){ miss[ch] = (miss[ch] || 0) + r.missed[ch]; });
+  });
+  return Object.keys(miss)
+    .map(function(ch){ return { ch: ch, n: miss[ch] }; })
+    .sort(function(a, b){ return b.n - a.n || a.ch.localeCompare(b.ch); })
+    .slice(0, limit || 8);
+}
+
+function tyBuildText(){
+  const cat = tyPrefs.category;
+  const target = Math.max(tyPrefs.duration * 9, 300);
+
+  if(cat === "custom" && tyPrefs.custom){
+    return { text: tyPrefs.custom, source: "Your own text" };
+  }
+
+  if(cat === "lessons"){
+    const pool = tyLessonSnippets();
+    if(pool.length){
+      const picked = [];
+      let len = 0;
+      tyShuffle(pool).some(function(s){
+        picked.push(s); len += s.code.length + 2;
+        return len >= target * 0.6;          // code is slower to type than prose
+      });
+      return {
+        text: picked.map(function(s){ return s.code; }).join("\n\n"),
+        source: "From your course: " + picked.map(function(s){ return s.where; }).join(", ")
+      };
+    }
+  }
+
+  if(cat === "weak"){
+    const weak = tyWeakKeys(6).map(function(w){ return w.ch.toLowerCase(); })
+      .filter(function(ch){ return /^[a-z]$/.test(ch); });   // letters only, not "space" or "enter"
+    if(weak.length){
+      const pool = TY_WORDS.filter(function(w){ return weak.some(function(ch){ return w.indexOf(ch) !== -1; }); });
+      const words = [];
+      let len = 0;
+      while(len < target && pool.length){
+        const w = pool[Math.floor(Math.random() * pool.length)];
+        words.push(w); len += w.length + 1;
+      }
+      return { text: words.join(" "), source: "Drilling the letters you miss most: " + weak.join(" ") };
+    }
+    const words = tyShuffle(TY_WORDS).slice(0, 60);
+    return { text: words.join(" "), source: "No weak keys yet - finish a few tests first. Common words for now." };
+  }
+
+  const key = TY_TEXTS[cat] ? cat : "medium";
+  const joiner = key === "code" ? "\n\n" : " ";
+  const bits = [];
+  let len = 0, i = 0;
+  const pool = tyShuffle(TY_TEXTS[key]);
+  while(len < (key === "code" ? target * 0.6 : target)){
+    const item = pool[i % pool.length];
+    bits.push(item); len += item.length + joiner.length; i++;
+  }
+  const label = (TY_CATS.find(function(c){ return c.id === key; }) || {}).label;
+  return { text: bits.join(joiner), source: label + " text" };
+}
+
+/* ---- the test itself ---- */
+function tyStopTimer(){
+  if(ty.timer){ clearInterval(ty.timer); ty.timer = null; }
+}
+
+/* Leaving the Typing tab abandons a running test rather than letting the
+   clock keep running out of sight. */
+function typingLeave(){
+  if(ty.status === "running"){
+    tyStopTimer();
+    ty.status = "idle";
+  }
+}
+
+function tyReset(sameText){
+  tyStopTimer();
+  if(!sameText || !ty.text){
+    const built = tyBuildText();
+    ty.text = built.text.replace(/\r\n?/g, "\n").replace(/\t/g, "    ");
+    ty.source = built.source;
+  }
+  ty.status = "idle";
+  ty.states = new Array(ty.text.length).fill("");
+  ty.idx = 0; ty.start = 0; ty.elapsed = 0;
+  ty.typed = 0; ty.correct = 0; ty.wrong = 0; ty.mistakes = 0; ty.missed = {};
+
+  const res = document.getElementById("tyResult");
+  if(res) res.hidden = true;
+  const box = document.getElementById("tyBox");
+  if(box){ box.hidden = false; box.classList.remove("running"); }
+  const src = document.getElementById("tySource");
+  if(src) src.textContent = ty.source;
+
+  tyRenderText();
+  tySkipIndent();
+  tyUpdateStats();
+  tyPlaceCaret();
+  tyFocus();
+}
+
+function tyRenderText(){
+  const holder = document.getElementById("tyText");
+  if(!holder) return;
+  holder.innerHTML = "";
+  ty.spans = [];
+  const frag = document.createDocumentFragment();
+  for(let i = 0; i < ty.text.length; i++){
+    const ch = ty.text[i];
+    const span = document.createElement("span");
+    span.className = "ty-ch" + (ch === "\n" ? " nl" : "") + (ch === " " ? " sp" : "");
+    span.textContent = ch;
+    frag.appendChild(span);
+    ty.spans.push(span);
+  }
+  const caret = document.createElement("span");
+  caret.className = "ty-caret";
+  caret.id = "tyCaret";
+  frag.appendChild(caret);
+  holder.appendChild(frag);
+}
+
+function tyPaint(i){
+  const span = ty.spans[i];
+  if(!span) return;
+  const st = ty.states[i];
+  span.className = "ty-ch" + (ty.text[i] === "\n" ? " nl" : "") + (ty.text[i] === " " ? " sp" : "")
+    + (st === "ok" || st === "auto" ? " ok" : st === "bad" ? " bad" : "");
+}
+
+/* In code, jump over the indentation at the start of a line so you only
+   type what matters. Skipped spaces are shown as done but never counted. */
+function tySkipIndent(){
+  if(!tyPrefs.autoIndent || ty.text.indexOf("\n") === -1) return;
+  const atLineStart = ty.idx === 0 || ty.text[ty.idx - 1] === "\n";
+  if(!atLineStart) return;
+  while(ty.idx < ty.text.length && ty.text[ty.idx] === " "){
+    ty.states[ty.idx] = "auto";
+    tyPaint(ty.idx);
+    ty.idx++;
+  }
+}
+
+function tyStart(){
+  ty.status = "running";
+  ty.start = Date.now();
+  const box = document.getElementById("tyBox");
+  if(box) box.classList.add("running");
+  ty.timer = setInterval(tyTick, 100);
+}
+
+function tyTick(){
+  if(ty.status !== "running") return;
+  if(!document.getElementById("tyBox")){ tyStopTimer(); return; }
+  ty.elapsed = (Date.now() - ty.start) / 1000;
+  tyUpdateStats();
+  if(ty.elapsed >= tyPrefs.duration) tyFinish();
+}
+
+function tyInput(ch){
+  if(ty.status === "finished") return;
+  if(ty.idx >= ty.text.length) return;
+  if(ty.status === "idle") tyStart();
+
+  const want = ty.text[ty.idx];
+  ty.typed++;
+  if(ch === want){
+    ty.states[ty.idx] = "ok";
+    ty.correct++;
+    tyBeep(true);
+  }else{
+    ty.states[ty.idx] = "bad";
+    ty.wrong++;
+    ty.mistakes++;
+    const label = want === " " ? "space" : want === "\n" ? "enter" : want;
+    ty.missed[label] = (ty.missed[label] || 0) + 1;
+    tyBeep(false);
+  }
+  tyPaint(ty.idx);
+  ty.idx++;
+  if(want === "\n") tySkipIndent();
+  tyPlaceCaret();
+  tyUpdateStats();
+  if(ty.idx >= ty.text.length) tyFinish();
+}
+
+function tyBack(){
+  if(ty.status === "finished" || ty.idx === 0) return;
+  // step back over auto-skipped indentation as one unit
+  while(ty.idx > 0 && ty.states[ty.idx - 1] === "auto"){
+    ty.idx--;
+    ty.states[ty.idx] = "";
+    tyPaint(ty.idx);
+  }
+  if(ty.idx === 0){ tySkipIndent(); tyPlaceCaret(); return; }
+  ty.idx--;
+  if(ty.states[ty.idx] === "ok") ty.correct = Math.max(0, ty.correct - 1);
+  if(ty.states[ty.idx] === "bad") ty.wrong = Math.max(0, ty.wrong - 1);
+  ty.states[ty.idx] = "";
+  tyPaint(ty.idx);
+  tyPlaceCaret();
+  tyUpdateStats();
+}
+
+function tyPlaceCaret(){
+  const caret = document.getElementById("tyCaret");
+  const holder = document.getElementById("tyText");
+  if(!caret || !holder || !ty.spans.length) return;
+  let left, top, height;
+  if(ty.idx < ty.spans.length){
+    const s = ty.spans[ty.idx];
+    left = s.offsetLeft; top = s.offsetTop; height = s.offsetHeight;
+  }else{
+    const s = ty.spans[ty.spans.length - 1];
+    left = s.offsetLeft + s.offsetWidth; top = s.offsetTop; height = s.offsetHeight;
+  }
+  caret.style.left = left + "px";
+  caret.style.top = (top + 3) + "px";
+  caret.style.height = Math.max(8, height - 6) + "px";
+
+  // keep the current line as the second visible line, scrolling by whole
+  // lines (a letter's own height is shorter than the line it sits on)
+  const lineH = parseFloat(getComputedStyle(holder).lineHeight) || 30;
+  const line = Math.round((top - ty.spans[0].offsetTop) / lineH);
+  const shift = Math.max(0, line - 1) * lineH;
+  holder.style.transform = "translateY(-" + shift + "px)";
+}
+
+function tyNumbers(){
+  const secs = ty.status === "finished" ? ty.elapsed : (ty.status === "running" ? (Date.now() - ty.start) / 1000 : 0);
+  const mins = secs / 60;
+  const ok = mins > 0.015;
+  return {
+    secs: secs,
+    wpm: ok ? Math.round(ty.correct / 5 / mins) : 0,
+    raw: ok ? Math.round(ty.typed / 5 / mins) : 0,
+    cpm: ok ? Math.round(ty.correct / mins) : 0,
+    // every key press counts, so a mistake you later fix still lowers accuracy
+    acc: ty.typed ? Math.max(0, Math.round((ty.typed - ty.mistakes) / ty.typed * 100)) : 100
+  };
+}
+
+function tyUpdateStats(){
+  const n = tyNumbers();
+  const left = Math.max(0, Math.ceil(tyPrefs.duration - n.secs));
+  const typedCount = ty.states.filter(function(s){ return s; }).length;
+  const progress = ty.text.length ? Math.min(100, Math.round(typedCount / ty.text.length * 100)) : 0;
+  const set = function(id, v){ const el = document.getElementById(id); if(el) el.textContent = v; };
+  set("tyWpm", n.wpm);
+  set("tyAcc", n.acc + "%");
+  set("tyTime", String(Math.floor(left / 60)).padStart(2, "0") + ":" + String(left % 60).padStart(2, "0"));
+  set("tyProg", progress + "%");
+  set("tyMiss", ty.mistakes);
+  const fill = document.getElementById("tyFill");
+  if(fill) fill.style.width = progress + "%";
+}
+
+function tyFinish(){
+  if(ty.status === "finished") return;
+  const wasRunning = ty.status === "running";
+  tyStopTimer();
+  ty.elapsed = wasRunning ? Math.min(tyPrefs.duration, (Date.now() - ty.start) / 1000) : 0;
+  ty.status = "finished";
+  const box = document.getElementById("tyBox");
+  if(box) box.classList.remove("running");
+  if(!wasRunning || ty.typed === 0) return;
+
+  const n = tyNumbers();
+  const previousBest = DB.typingHistory
+    .filter(function(r){ return r.duration === tyPrefs.duration; })
+    .reduce(function(m, r){ return Math.max(m, r.wpm || 0); }, 0);
+  const record = {
+    id: uid(), at: nowISO(),
+    wpm: n.wpm, raw: n.raw, cpm: n.cpm, acc: n.acc,
+    secs: Math.max(1, Math.round(ty.elapsed)), duration: tyPrefs.duration,
+    cat: tyPrefs.category, typed: ty.typed, correct: ty.correct, wrong: ty.wrong,
+    mistakes: ty.mistakes, missed: ty.missed
+  };
+  const isBest = n.wpm > previousBest && n.wpm >= 10;
+  DB.typingHistory.push(record);
+  if(DB.typingHistory.length > TY_HISTORY_MAX){
+    DB.typingHistory = DB.typingHistory.slice(-TY_HISTORY_MAX);
+  }
+  save();
+  tyShowResult(record, isBest, previousBest);
+  tyRenderDash();
+}
+
+function tyShowResult(r, isBest, previousBest){
+  const el = document.getElementById("tyResult");
+  const box = document.getElementById("tyBox");
+  if(!el) return;
+  let badge, line;
+  if(isBest){
+    badge = "\u{1F3C6} New personal best!";
+    line = previousBest ? "Up from " + previousBest + " WPM at " + r.duration + "s." : "Your first record at " + r.duration + "s.";
+  }else if(r.acc < 90){
+    badge = "\u{1F3AF} Focus on accuracy";
+    line = "Slow down a little. Speed follows accuracy.";
+  }else if(r.wpm >= 60){
+    badge = "\u26A1 Excellent speed";
+    line = "Fast and accurate. Keep the rhythm.";
+  }else{
+    badge = "\u{1F44D} Solid practice";
+    line = "Every session builds muscle memory.";
+  }
+  const worst = Object.keys(r.missed).sort(function(a, b){ return r.missed[b] - r.missed[a]; }).slice(0, 5);
+  el.innerHTML = `
+    <div class="ty-res-badge${isBest ? " best" : ""}">${badge}</div>
+    <div class="ty-res-line">${escapeHtml(line)}</div>
+    <div class="ty-res-grid">
+      <div class="ty-res-box main"><b>${r.wpm}</b><span>WPM</span></div>
+      <div class="ty-res-box main"><b>${r.acc}%</b><span>Accuracy</span></div>
+      <div class="ty-res-box"><b>${r.raw}</b><span>Raw WPM</span></div>
+      <div class="ty-res-box"><b>${r.cpm}</b><span>Chars / min</span></div>
+      <div class="ty-res-box"><b>${r.correct}</b><span>Correct</span></div>
+      <div class="ty-res-box"><b>${r.wrong}</b><span>Wrong now</span></div>
+    </div>
+    <div class="ty-res-meta">${r.secs}s typed \u00b7 ${r.mistakes} mistake(s) in total${worst.length ? " \u00b7 missed most: " + worst.map(function(k){ return "<kbd>" + escapeHtml(k) + "</kbd>"; }).join(" ") : ""}</div>
+    <div class="ty-res-actions">
+      <button type="button" class="btn" id="tyResAgain">\u21BB Same text again</button>
+      <button type="button" class="btn secondary" id="tyResNext">Next text \u2192</button>
+      ${worst.length ? `<button type="button" class="btn secondary" id="tyResWeak">\u{1F3AF} Drill weak keys</button>` : ""}
+    </div>
+    <div class="ty-hint-small">Press <kbd>Tab</kbd> for the same text or <kbd>Esc</kbd> for a new one.</div>`;
+  el.hidden = false;
+  if(box) box.hidden = true;
+  document.getElementById("tyResAgain").onclick = function(){ tyReset(true); };
+  document.getElementById("tyResNext").onclick = function(){ tyReset(false); };
+  const weakBtn = document.getElementById("tyResWeak");
+  if(weakBtn) weakBtn.onclick = function(){ tySetCategory("weak"); };
+  el.tabIndex = -1;
+  el.focus();
+}
+
+function tyFocus(){
+  const p = document.getElementById("tyProxy");
+  if(p){
+    try{ p.focus({ preventScroll: true }); }catch(e){ p.focus(); }
+  }
+}
+
+function tySetCategory(id){
+  if(id === "custom"){ tyCustomDialog(); return; }
+  tyPrefs.category = id;
+  keepTyPrefs();
+  document.querySelectorAll("[data-ty-cat]").forEach(function(b){
+    b.classList.toggle("active", b.dataset.tyCat === id);
+  });
+  tyReset(false);
+}
+
+function tyCustomDialog(){
+  openModal(`
+    <h2>Custom practice text</h2>
+    <p style="color:var(--text-dim);font-size:14px;margin-top:0;">Paste an article, notes, or your own code. Line breaks are kept, and Enter types them.</p>
+    <textarea id="tyCustomText" rows="8" style="width:100%;font-family:ui-monospace,Consolas,monospace;font-size:13px;" maxlength="5000">${escapeHtml(tyPrefs.custom)}</textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;">
+      <span id="tyCustomCount" style="color:var(--text-dim);font-size:12px;"></span>
+      <span><button type="button" class="btn secondary" id="tyCustomCancel">Cancel</button>
+      <button type="button" class="btn" id="tyCustomUse">Use this text</button></span>
+    </div>`);
+  const area = document.getElementById("tyCustomText");
+  const count = document.getElementById("tyCustomCount");
+  const upd = function(){ count.textContent = area.value.length + " / 5000 characters"; };
+  upd();
+  area.addEventListener("input", upd);
+  setTimeout(function(){ area.focus(); }, 50);
+  document.getElementById("tyCustomCancel").onclick = function(){ closeModal(); tyFocus(); };
+  document.getElementById("tyCustomUse").onclick = function(){
+    const text = area.value.replace(/\r\n?/g, "\n").replace(/[ \t]+$/gm, "").trim();
+    if(!text){ count.textContent = "Type or paste some text first."; area.focus(); return; }
+    tyPrefs.custom = text.slice(0, 5000);
+    closeModal();
+    tyPrefs.category = "custom";
+    keepTyPrefs();
+    document.querySelectorAll("[data-ty-cat]").forEach(function(b){
+      b.classList.toggle("active", b.dataset.tyCat === "custom");
+    });
+    tyReset(false);
+  };
+}
+
+function tyKeydown(ev){
+  if(ev.key === "Tab"){ ev.preventDefault(); tyReset(true); return; }
+  if(ev.key === "Escape"){ ev.preventDefault(); tyReset(false); return; }
+  if(ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  if(ty.status === "finished") return;
+  if(ev.key === "Backspace"){ ev.preventDefault(); tyBack(); return; }
+  if(ev.key === "Enter"){ ev.preventDefault(); tyInput("\n"); return; }
+  if(ev.key && ev.key.length === 1){ ev.preventDefault(); tyInput(ev.key); }
+}
+
+/* Phones send soft-keyboard text through "input" rather than keydown. The
+   box always holds one space, so a backspace on a phone has something to
+   delete and arrives as deleteContentBackward. */
+function tyPhoneInput(ev){
+  const p = ev.target;
+  if(ev.inputType === "deleteContentBackward"){
+    tyBack();
+  }else if(ev.data){
+    for(const ch of ev.data) tyInput(ch);
+  }else if(ev.inputType === "insertLineBreak"){
+    tyInput("\n");
+  }
+  p.value = " ";
+}
+
+/* ---- progress dashboard ---- */
+function tyDayKey(iso){
+  const d = new Date(iso);
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+
+function tyStreak(){
+  const days = new Set(DB.typingHistory.map(function(r){ return tyDayKey(r.at); }));
+  const d = new Date();
+  if(!days.has(tyDayKey(d.toISOString()))) d.setDate(d.getDate() - 1);   // today not done yet: count up to yesterday
+  let n = 0;
+  while(days.has(tyDayKey(d.toISOString()))){ n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+
+function tyTrendSvg(list){
+  if(list.length < 2){
+    return `<div class="ty-empty">Finish 2 or more tests to see your speed curve.</div>`;
+  }
+  const W = 600, H = 130, px = 26, py = 20;
+  const w = list.map(function(r){ return r.wpm; });
+  const max = Math.max.apply(null, w.concat([40]));
+  const min = Math.max(0, Math.min.apply(null, w) - 10);
+  const pts = list.map(function(r, i){
+    return {
+      x: px + i / (list.length - 1) * (W - px * 2),
+      y: H - py - (r.wpm - min) / ((max - min) || 1) * (H - py * 2),
+      v: r.wpm
+    };
+  });
+  const line = pts.map(function(p, i){ return (i ? "L" : "M") + p.x.toFixed(1) + " " + p.y.toFixed(1); }).join(" ");
+  const area = line + " L" + pts[pts.length - 1].x.toFixed(1) + " " + (H - py) + " L" + pts[0].x.toFixed(1) + " " + (H - py) + " Z";
+  return `<svg class="ty-trend" viewBox="0 0 ${W} ${H}" role="img" aria-label="Words per minute over your last ${list.length} tests">
+    <line x1="${px}" y1="${H - py}" x2="${W - px}" y2="${H - py}" class="ty-axis"/>
+    <path d="${area}" class="ty-area"/>
+    <path d="${line}" class="ty-line"/>
+    ${pts.map(function(p){ return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" class="ty-dot"/><text x="${p.x.toFixed(1)}" y="${(p.y - 8).toFixed(1)}" class="ty-val">${p.v}</text>`; }).join("")}
+  </svg>`;
+}
+
+function tyRenderDash(){
+  const el = document.getElementById("tyDash");
+  if(!el) return;
+  const all = DB.typingHistory;
+  const recent = all.slice(-10);
+  const avg = function(list, k){ return list.length ? Math.round(list.reduce(function(s, r){ return s + (r[k] || 0); }, 0) / list.length) : 0; };
+  const best = all.reduce(function(m, r){ return Math.max(m, r.wpm || 0); }, 0);
+  const totalSecs = all.reduce(function(s, r){ return s + (r.secs || 0); }, 0);
+  const todayKey = tyDayKey(new Date().toISOString());
+  const todaySecs = all.filter(function(r){ return tyDayKey(r.at) === todayKey; })
+    .reduce(function(s, r){ return s + (r.secs || 0); }, 0);
+  const goalSecs = tyPrefs.goal * 60;
+  const goalPct = Math.min(100, Math.round(todaySecs / goalSecs * 100));
+  const fmtTime = function(s){ const m = Math.floor(s / 60); return m ? m + "m " + (s % 60) + "s" : s + "s"; };
+  const bests = TY_DURATIONS.map(function(d){
+    return { d: d, v: all.filter(function(r){ return r.duration === d; }).reduce(function(m, r){ return Math.max(m, r.wpm || 0); }, 0) };
+  });
+  const weak = tyWeakKeys(8);
+  const rows = all.slice(-15).reverse();
+  const catLabel = function(id){ const c = TY_CATS.find(function(x){ return x.id === id; }); return c ? c.label : id; };
+
+  el.innerHTML = `
+    <h2 class="ty-h2">\u{1F3C6} Your typing progress</h2>
+
+    <div class="ty-goal">
+      <div class="ty-goal-top">
+        <span><b>Today:</b> ${fmtTime(todaySecs)} of ${tyPrefs.goal} min goal ${goalPct >= 100 ? "\u2705" : ""}</span>
+        <span class="ty-streak">\u{1F525} ${tyStreak()} day streak</span>
+      </div>
+      <div class="ty-goal-bar"><div style="width:${goalPct}%"></div></div>
+      <div class="ty-goal-set">Daily goal:
+        ${[5, 10, 15, 20, 30].map(function(g){ return `<button type="button" class="ty-pill sm${tyPrefs.goal === g ? " active" : ""}" data-ty-goal="${g}">${g} min</button>`; }).join("")}
+      </div>
+    </div>
+
+    <div class="ty-cards">
+      <div class="ty-card gold"><b>${best}</b><span>Best WPM</span></div>
+      <div class="ty-card"><b>${avg(recent, "wpm")}</b><span>Avg WPM (last 10)</span></div>
+      <div class="ty-card"><b>${recent.length ? avg(recent, "acc") + "%" : "-"}</b><span>Avg accuracy</span></div>
+      <div class="ty-card"><b>${all.length}</b><span>Tests done</span></div>
+      <div class="ty-card"><b>${fmtTime(totalSecs)}</b><span>Practice time</span></div>
+      <div class="ty-card"><b>${bests.map(function(b){ return b.v || "-"; }).join(" / ")}</b><span>Best at 15/30/60/120s</span></div>
+    </div>
+
+    <div class="ty-panel">
+      <div class="ty-panel-title">Speed over your last ${Math.min(all.length, 20)} tests</div>
+      ${tyTrendSvg(all.slice(-20))}
+    </div>
+
+    <div class="ty-panel">
+      <div class="ty-panel-title">\u{1F3AF} Keys you miss most (last 30 tests)</div>
+      ${weak.length ? `<div class="ty-weak">${weak.map(function(w){ return `<span class="ty-weak-key"><kbd>${escapeHtml(w.ch)}</kbd> ${w.n}\u00d7</span>`; }).join("")}</div>
+        <button type="button" class="btn secondary btn-sm" data-ty-cat="weak" id="tyDrillBtn">Practise these keys</button>`
+        : `<div class="ty-empty">No mistakes recorded yet.</div>`}
+    </div>
+
+    <div class="ty-panel">
+      <div class="ty-panel-title">Recent tests</div>
+      ${rows.length ? `<div class="ty-table-wrap"><table class="ty-table">
+        <thead><tr><th>When</th><th>WPM</th><th>Acc</th><th>Time</th><th>Text</th><th>Mistakes</th></tr></thead>
+        <tbody>${rows.map(function(r){
+          return `<tr><td>${escapeHtml(new Date(r.at).toLocaleString(undefined, { month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" }))}</td>
+            <td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td>${r.duration}s</td>
+            <td>${escapeHtml(catLabel(r.cat))}</td><td class="num">${r.mistakes}</td></tr>`;
+        }).join("")}</tbody></table></div>
+        <button type="button" class="btn secondary btn-sm ty-clear" id="tyClearBtn">Clear typing history</button>`
+        : `<div class="ty-empty">No tests yet. Click the text above and start typing - the clock starts on your first key.</div>`}
+    </div>`;
+
+  el.querySelectorAll("[data-ty-goal]").forEach(function(b){
+    b.onclick = function(){ tyPrefs.goal = Number(b.dataset.tyGoal); keepTyPrefs(); tyRenderDash(); };
+  });
+  const drill = document.getElementById("tyDrillBtn");
+  if(drill) drill.onclick = function(){ tySetCategory("weak"); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const clear = document.getElementById("tyClearBtn");
+  if(clear) clear.onclick = function(){
+    confirmDialog("Delete all <b>" + all.length + "</b> saved typing results on this device? Export a backup first if you want to keep them.", function(){
+      DB.typingHistory = [];
+      save();
+      tyRenderDash();
+    });
+  };
+}
+
+function renderTyping(){
+  const el = document.getElementById("typingBody");
+  if(!el) return;
+  el.innerHTML = `
+    <div class="ty-wrap">
+      <div class="ty-bar">
+        <div class="ty-group"><span class="ty-lab">Time</span>
+          <div class="ty-pills">${TY_DURATIONS.map(function(s){
+            return `<button type="button" class="ty-pill${tyPrefs.duration === s ? " active" : ""}" data-ty-dur="${s}">${s}s</button>`;
+          }).join("")}</div>
+        </div>
+        <div class="ty-group"><span class="ty-lab">Text</span>
+          <div class="ty-pills">${TY_CATS.map(function(c){
+            return `<button type="button" class="ty-pill${tyPrefs.category === c.id ? " active" : ""}" data-ty-cat="${c.id}">${c.label}</button>`;
+          }).join("")}</div>
+        </div>
+        <div class="ty-group ty-opts">
+          <label class="ty-check"><input type="checkbox" id="tyIndent"${tyPrefs.autoIndent ? " checked" : ""}> Skip code indentation</label>
+          <button type="button" class="ty-pill" id="tySound" aria-pressed="${tyPrefs.sound}">${tyPrefs.sound ? "\u{1F50A} Sound on" : "\u{1F507} Sound off"}</button>
+        </div>
+      </div>
+
+      <div class="ty-stats">
+        <div class="ty-stat wpm"><b id="tyWpm">0</b><span>WPM</span></div>
+        <div class="ty-stat acc"><b id="tyAcc">100%</b><span>Accuracy</span></div>
+        <div class="ty-stat"><b id="tyTime">00:00</b><span>Time left</span></div>
+        <div class="ty-stat"><b id="tyProg">0%</b><span>Progress</span></div>
+        <div class="ty-stat miss"><b id="tyMiss">0</b><span>Mistakes</span></div>
+      </div>
+      <div class="ty-progress"><div id="tyFill"></div></div>
+
+      <div class="ty-source" id="tySource"></div>
+      <div class="ty-box" id="tyBox">
+        <input type="text" id="tyProxy" class="ty-proxy" value=" " autocomplete="off" autocorrect="off"
+          autocapitalize="off" spellcheck="false" enterkeyhint="enter" aria-label="Type the text shown here">
+        <div class="ty-window"><div class="ty-text" id="tyText"></div></div>
+        <div class="ty-overlay">\u{1F5B1}\uFE0F Click here, then start typing</div>
+      </div>
+      <div class="ty-result" id="tyResult" hidden></div>
+
+      <div class="ty-controls">
+        <div class="ty-hints"><span><kbd>Tab</kbd> same text again</span><span><kbd>Esc</kbd> new text</span><span><kbd>Enter</kbd> new line</span></div>
+        <div class="ty-ctl-btns">
+          <button type="button" class="btn secondary btn-sm" id="tyRestart">\u21BB Restart</button>
+          <button type="button" class="btn btn-sm" id="tyNext">Next text \u2192</button>
+        </div>
+      </div>
+
+      <div id="tyDash"></div>
+    </div>`;
+
+  el.querySelectorAll("[data-ty-dur]").forEach(function(b){
+    b.onclick = function(){
+      tyPrefs.duration = Number(b.dataset.tyDur);
+      keepTyPrefs();
+      el.querySelectorAll("[data-ty-dur]").forEach(function(x){ x.classList.toggle("active", x === b); });
+      tyReset(false);
+    };
+  });
+  el.querySelectorAll(".ty-bar [data-ty-cat]").forEach(function(b){
+    b.onclick = function(){ tySetCategory(b.dataset.tyCat); };
+  });
+  document.getElementById("tyIndent").onchange = function(ev){
+    tyPrefs.autoIndent = ev.target.checked;
+    keepTyPrefs();
+    tyReset(true);
+  };
+  document.getElementById("tySound").onclick = function(ev){
+    tyPrefs.sound = !tyPrefs.sound;
+    keepTyPrefs();
+    ev.currentTarget.textContent = tyPrefs.sound ? "\u{1F50A} Sound on" : "\u{1F507} Sound off";
+    ev.currentTarget.setAttribute("aria-pressed", String(tyPrefs.sound));
+    tyFocus();
+  };
+  document.getElementById("tyRestart").onclick = function(){ tyReset(true); };
+  document.getElementById("tyNext").onclick = function(){ tyReset(false); };
+
+  const box = document.getElementById("tyBox");
+  const proxy = document.getElementById("tyProxy");
+  box.addEventListener("click", tyFocus);
+  proxy.addEventListener("keydown", tyKeydown);
+  proxy.addEventListener("input", tyPhoneInput);
+  proxy.addEventListener("focus", function(){ box.classList.add("focused"); });
+  proxy.addEventListener("blur", function(){ box.classList.remove("focused"); });
+  document.getElementById("tyResult").addEventListener("keydown", function(ev){
+    if(ev.key === "Tab"){ ev.preventDefault(); tyReset(true); }
+    else if(ev.key === "Escape" || ev.key === "Enter"){ ev.preventDefault(); tyReset(ev.key === "Enter"); }
+  });
+
+  tyReset(false);
+  tyRenderDash();
+}
+
+/* Re-measure the caret when the window changes width, since lines re-wrap. */
+window.addEventListener("resize", function(){
+  if(document.getElementById("tyText")) tyPlaceCaret();
+});
 
 /* ================= NOTES ================= */
 let activeNoteId = null;
