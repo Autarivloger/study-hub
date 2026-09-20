@@ -1839,7 +1839,7 @@ const JP_WEEKS = [
   [16,"N3","そうだ, ようだ, みたい: appearance","Read an observation diary","Express uncertainty"],
   [17,"N3","はず, かもしれない, に違いない","Read predictions and notices","Make careful guesses"],
   [18,"N3","ばかり, ところ, うちに: time and aspect","Read a work diary","Say when events happened"],
-  [19,"N3","のに, くせに, おかげで, せいで","Read contrasting opinions","Explain a surprising result"],
+  [19,"N3","のに, くせに, おかげで, せいで · contrast and cause","Read contrasting opinions","Explain a surprising result"],
   [20,"N3","について, に対して, によって","Read a short news report","State and support an opinion"],
   [21,"N3","わけ, というわけ: reasoning","Read an explanation text","Clarify why something happened"],
   [22,"N3","べき, ことだ, ほうがいい: advice","Read a problem column","Give tactful advice"],
@@ -1984,6 +1984,47 @@ const JP_LESSONS = [
    quiz:[["What did the friend do?",["写真をくれました","作り方を教えてくれました","店に行きました"],1,"The text says the friend taught the speaker how to make it."],["Why will the speaker cook again?",["楽しかったので","寒かったので","忙しかったので"],0,"It was enjoyable, so the speaker intends to cook again."]]}
 ];
 
+/* Adapted from the user's Day 16/17 notes. These are optional previews: the
+   N5→N4 Continue path stays in order, and its progress denominator is stable. */
+JP_LESSONS.push(
+  {id:"19.1",sourceDay:16,optional:true,title:"Despite, addition and continuing change",goal:"Use にもかかわらず, 上に and 一方だ in context; distinguish 一方で.",
+   explain:"यो तपाईंको पुरानो Day 16 सामग्री हो। N4 पूरा भयो भन्ने अनुमान नगरी यहाँ पछि पढ्न मिल्ने गरी राखिएको छ। पहिला अर्थ र उदाहरण बुझ; आफ्नै ३ वाक्य बनाएपछि मात्र quiz गर। JLPT ले निश्चित grammar/kanji सूची प्रकाशित गर्दैन, त्यसैले level लाई मार्गदर्शन मात्र मान।",
+   syntax:"普通形／名詞 + にもかかわらず · 普通形／な形容詞+な + 上に · 動詞辞書形 + 一方だ",
+   grammar:[
+    ["〜にもかかわらず · despite (formal)","अघिल्लो तथ्यबाट अपेक्षा हुने नतिजा आएन। समाचार/लेखनमा उपयोगी; のに भन्दा प्रायः औपचारिक र कम भावनात्मक। नामसँग सीधै जोडिन्छ; な形容詞मा である पनि प्रयोग हुन्छ।","雨にもかかわらず、大勢の人が来ました。","पानी परे पनि धेरै मानिस आए।","体調が悪いにもかかわらず、彼女は仕事を続けました。","स्वास्थ्य राम्रो नभए पनि उनले काम जारी राखिन्।"],
+    ["〜上に（うえに）· on top of that","एउटै विषयका गुण/अवस्था थप्छ। दुई कुरा एउटै मूल्याङ्कनतिर हुँदा धेरै स्वाभाविक लाग्छ; फरक दिशा सधैँ व्याकरणिक रूपमा गलत भन्ने होइन। い形容詞 सीधै, な形容詞 + な, नाम + である।","この店は安い上に、おいしいです。","यो पसल सस्तो छ, त्यसमाथि स्वादिलो पनि छ।","今日は試験がある上に、アルバイトもあります。","आज परीक्षा छ, त्यसमाथि पार्ट टाइम काम पनि छ।"],
+    ["〜一方だ（いっぽうだ）· keeps changing in one direction","परिवर्तन निरन्तर एउटै दिशामा जाने प्रवृत्ति। 動詞को dictionary form जोडिन्छ। 一方で भने ‘अर्कोतिर/एकै समयमा’ भन्ने फरक ढाँचा हो।","最近、物価は上がる一方です。","अहिले मूल्य निरन्तर बढिरहेको छ।","便利になる一方で、費用も増えています。","एकातिर सजिलो हुँदैछ, अर्कातिर खर्च पनि बढ्दैछ।"]
+   ],
+   examples:[["雨にもかかわらず、試合は行われました。","あめにもかかわらず、しあいはおこなわれました。","Despite the rain, the match went ahead."],["この店は安い上に、おいしいです。","このみせはやすいうえに、おいしいです。","This shop is cheap and tasty too."],["最近、物価は上がる一方です。","さいきん、ぶっかはあがるいっぽうです。","Prices keep rising."]],
+   vocab:[["影響","えいきょう","effect · प्रभाव"],["状況","じょうきょう","situation · परिस्थिति"],["判断","はんだん","judgment · निर्णय"],["原則","げんそく","principle · सिद्धान्त"],["傾向","けいこう","tendency · प्रवृत्ति"],["改善","かいぜん","improvement · सुधार"],["維持","いじ","maintenance · कायम राख्नु"],["増える","ふえる","increase · बढ्नु"],["減る","へる","decrease · घट्नु"],["続く","つづく","continue · जारी रहनु"]],
+   kanji:[["急","きゅう／いそぐ","urgent; 急行（きゅうこう）"],["静","せい・じょう／しずか","quiet; 静止（せいし）, 静脈（じょうみゃく）"],["最","さい／もっとも","most; 最高（さいこう）"],["低","てい／ひくい","low; 低下（ていか）"],["高","こう／たかい","high; 高校（こうこう）"],["深","しん／ふかい","deep; 深夜（しんや）"],["浅","せん／あさい","shallow; 浅草（あさくさ）"],["広","こう／ひろい","wide; 広場（ひろば）"],["狭","きょう／せまい","narrow; 狭義（きょうぎ）"],["暖","だん／あたたかい","warm; 暖房（だんぼう）"]],
+   reading:"最近、町の人口は減る一方です。それにもかかわらず、新しい店が増えています。この店は安い上に、店員も親切です。町の状況は少しずつ変わっています。",
+   readingHelp:"The town's population keeps falling. Despite that, new shops are increasing. This shop is inexpensive and its staff are kind. The town's situation is gradually changing.",
+   dialogue:[["A","最近、日本語の勉強はどう？","हाल जापानी पढाइ कस्तो छ?"],["B","ニュースで『雨にもかかわらず』と読んだけど、意味が分からなかった。","समाचारमा ‘पानी परे पनि’ पढेँ, तर अर्थ बुझिनँ।"],["A","少し硬い表現だよ。その本は例が多い上に、説明も分かりやすいね。","यो अलि औपचारिक अभिव्यक्ति हो। त्यो किताबमा उदाहरण धेरै छन् र व्याख्या पनि सजिलो छ।"],["B","うん。読む速さも上がる一方だよ。","हो। पढ्ने गति पनि निरन्तर बढ्दैछ।"]],
+   speak:"आफ्नो शहर/काम/पढाइबारे ३ वाक्य बोल: अपेक्षाविपरीत नतिजा, दुई थपिने गुण, अनि एउटा बढ्दो वा घट्दो प्रवृत्ति।",
+   model:"雨にもかかわらず、勉強しました。この教材は分かりやすい上に、練習も多いです。最近、物価は上がる一方です。",
+   practice:[["‘पानी परे पनि धेरै मानिस आए’ लाई にもかかわらず ले भन।","雨にもかかわらず、たくさんの人が来ました。"],["‘मूल्य निरन्तर बढ्दैछ’ लाई 一方だ ले भन।","物価は上がる一方です。"],["一方だ र 一方で को फरक आफ्नै शब्दमा लेख।","一方だ = निरन्तर एउटै दिशामा परिवर्तन; 一方で = अर्कोतिर/एकै समयमा。"],["पुरानो वाक्य ‘毎日続ける一方だ’ जाँच: ‘हरेक दिन जारी राख्छु’ कसरी स्वाभाविक भन्ने?","毎日続けています。 一方だ ले परिवर्तनको प्रवृत्ति जनाउँछ; केवल दैनिक रूपमा जारी राख्ने काममा प्रयोग नगर।"]],
+   quiz:[["Which is the natural additive pair with 上に?",["高い上に、サービスも悪い。","高い上に、サービスもいい。","安い上に、値段が高い。"],0,"High price and poor service stack two negative evaluations."],["‘Prices keep rising’ needs…",["物価が上がる一方だ。","物価が上がる一方で。","物価が上がったにもかかわらず。"],0,"一方だ marks continuing change."],["Which sounds formal and neutral for ‘despite rain’?",["雨にもかかわらず","雨のくせに","雨が一方だ"],0,"にもかかわらず expresses formal concession."],["一方で in 便利になる一方で、費用も増える means…",["keeps becoming convenient","on the other hand / at the same time","despite convenience"],1,"一方で links two sides; 一方だ describes one-way change."]]},
+  {id:"19.2",sourceDay:17,optional:true,title:"Three kinds of ‘although’",goal:"Choose ものの, ながらも or つつも without treating their tendencies as absolute rules.",
+   explain:"यो तपाईंको पुरानो Day 17 सामग्री हो। पहिला Day 16 का contrast सम्झ। यहाँ तीनै रूपले अपेक्षाविपरीत कुरा जोड्छन्, तर शैली र जोड फरक छ। ‘सधैँ negative’ वा ‘सधैँ guilt’ जस्ता कडा नियम नबनाऊ।",
+   syntax:"普通形 + ものの · 動詞ます形/い形容詞 + ながらも · 動詞ます形 + つつも",
+   grammar:[
+    ["〜ものの · although (often written)","A भए पनि B। अक्सर अपेक्षित नतिजा नआएको देखाउँछ, तर B सधैँ नकारात्मक हुँदैन। नाम/な形容詞सँग である + ものの सिक्दा सुरक्षित हुन्छ।","毎日勉強したものの、なかなか上達しません。","हरेक दिन पढे पनि छिटो प्रगति भइरहेको छैन।","この店のラーメンは高いものの、おいしいです。","यहाँको ramen महँगो भए पनि स्वादिलो छ।"],
+    ["〜ながらも · even while / although","क्रिया ます-stem + ながらも; い形容詞 सीधै + ながらも। एकै समयमा रहेका अवस्था वा विपरीत नतिजा देखाउँछ। ながら मात्रले सामान्य ‘गर्दै’ भन्ने अर्थ दिन सक्छ।","悩みながらも、前に進みました。","चिन्ता हुँदै पनि अगाडि बढेँ।","小さいながらも、その店は有名です。","सानो भए पनि त्यो पसल प्रसिद्ध छ।"],
+    ["〜つつも · while, yet (formal)","क्रिया ます-stem + つつも। प्रायः मनमा थाहा भएको कुरा र वास्तविक कामबीच फरक देखाउँछ, तर ‘guilt’ अनिवार्य होइन। つつ मात्रले औपचारिक ‘गर्दै’ पनि जनाउन सक्छ।","悪いと知りつつも、やめられません。","नराम्रो हो भन्ने थाहा भए पनि छोड्न सक्दिनँ।","不安を感じつつも、挑戦しました。","चिन्ता महसुस भए पनि चुनौती लिएँ।"]
+   ],
+   examples:[["勉強したものの、まだ話せません。","べんきょうしたものの、まだはなせません。","Although I studied, I still cannot speak."],["悩みながらも、前に進みました。","なやみながらも、まえにすすみました。","I kept going despite worrying."],["難しいと思いつつも、続けています。","むずかしいとおもいつつも、つづけています。","I think it is difficult, yet I keep at it."]],
+   vocab:[["期待","きたい","expectation · अपेक्षा"],["後悔","こうかい","regret · पछुतो"],["葛藤","かっとう","inner conflict · मनको द्वन्द्व"],["迷う","まよう","hesitate / get lost · अलमलिनु"],["認める","みとめる","admit / accept · स्वीकार गर्नु"],["抵抗","ていこう","resistance · विरोध"],["矛盾","むじゅん","contradiction · विरोधाभास"],["複雑","ふくざつ","complex · जटिल"],["素直","すなお","frank / obedient · खुला मनको"],["悩む","なやむ","worry / agonize · चिन्ता गर्नु"]],
+   compare:"のに = बोलचालमा भावना जोडिन सक्छ; くせに = प्रायः आलोचना; にもかかわらず = औपचारिक ‘despite’; ものの = लेखनमा concession; ながらも = विपरीत अवस्था; つつも = अलि औपचारिक, अक्सर मनको द्वन्द्व। सन्दर्भले अर्थ तय गर्छ।",
+   reading:"毎日練習しているものの、まだ会話に自信がありません。間違いを気にしながらも、友だちと話すようにしています。難しいと思いつつも、続けていきたいです。",
+   readingHelp:"Although I practise every day, I still lack confidence in conversation. Despite worrying about mistakes, I try to talk with friends. Even though I think it is hard, I want to keep going.",
+   dialogue:[["A","日本語の会話、どう？","जापानीमा कुराकानी कस्तो छ?"],["B","文法は勉強したものの、まだうまく使えないんだ。","grammar पढे पनि अझै राम्रोसँग प्रयोग गर्न सक्दिनँ।"],["A","悩みながらも、毎日話しているのはすごいよ。","चिन्ता भए पनि हरेक दिन बोल्दैछौ, त्यो राम्रो हो।"],["B","間違えるのが怖いと思いつつも、続けるよ。","गल्ती गर्न डर लागे पनि जारी राख्छु।"]],
+   speak:"आफ्नो साँचो अनुभवबाट ३ वाक्य बनाऊ: अपेक्षा र परिणाम, डर भए पनि गरेको काम, थाहा हुँदाहुँदै गरेको काम। ठूलो स्वरमा दुईपटक भन।",
+   model:"毎日練習しているものの、まだ緊張します。緊張しながらも、友だちと話します。難しいと思いつつも、続けます。",
+   practice:[["‘सानो भए पनि त्यो पसल प्रसिद्ध छ’ लाई ながらも ले भन।","小さいながらも、その店は有名です。"],["‘नराम्रो हो भन्ने थाहा भए पनि छोड्न सक्दिनँ’ लाई つつも ले भन।","悪いと知りつつも、やめられません。"],["ものの पछि राम्रो परिणाम पनि आउन सक्छ? एउटा उदाहरण देऊ।","सक्छ: この店のラーメンは高いものの、おいしいです。"],["悩みながらも前に進む姿は、とても美しい। को अर्थ आफ्नै शब्दमा लेख।","चिन्ता/दुविधामा हुँदाहुँदै पनि अगाडि बढ्ने रूप निकै सुन्दर छ।"]],
+   quiz:[["Which pattern attaches to a verb ます-stem and often sounds formal?",["つつも","ものの","にもかかわらず"],0,"思い + つつも; 知り + つつも."],["Is a positive second clause always wrong after ものの?",["Yes, always","No; a contrasting positive outcome is possible","Only with nouns"],1,"ものの marks contrast, not mandatory disappointment."],["Complete: 小さい___、その店は有名だ。",["つつも","ながらも","一方だ"],1,"い-adjective + ながらも is possible; つつも attaches to verb stem."],["悩む is closest to…",["to worry / wrestle with a problem","to become happy","to solve a problem"],0,"悩む means worrying or struggling over something."]]},
+);
+
 /* Targeted correction and active production, kept separate from the core
    lesson data so later lessons can gain more depth without changing IDs. */
 const JP_ENRICH = {
@@ -1998,7 +2039,9 @@ const JP_ENRICH = {
   "2.3":["たい र つもり एउटै होइनन्: चाहना बनाम इरादा।","‘I want to read Japanese books, so I intend to read daily’ लेख।","日本語の本を読みたいです。毎日読むつもりです。"],
   "2.4":["विशिष्ट ‘last year’ घटना भन्न 〜たことがある मात्र प्रयोग नगरी plain past पनि सिक।","एउटा life experience र एउटा specific yesterday event बोल।","日本へ行ったことがあります。昨日、友だちに会いました。"],
   "2.5":["दिने/पाउने दिशा नहेरी あげる र くれる छान्दा अर्थ उल्टिन्छ।","तिमीले साथीलाई किताब दियौ; साथीले तिमीलाई फोटो दियो—दुवै लेख।","私は友だちに本をあげました。友だちが私に写真をくれました。"],
-  "2.6":["सारांशमा पाठका सबै वाक्य नदोहोर्‍याऊ; अनुभव, कारण, योजना समेट।","आफ्नो वास्तविक अनुभवबाट 〜たことがある, ので र つもり प्रयोग गरी ३–४ वाक्य बोल।","日本料理を作ったことがあります。楽しかったので、来週また作るつもりです。"]
+  "2.6":["सारांशमा पाठका सबै वाक्य नदोहोर्‍याऊ; अनुभव, कारण, योजना समेट।","आफ्नो वास्तविक अनुभवबाट 〜たことがある, ので र つもり प्रयोग गरी ३–४ वाक्य बोल।","日本料理を作ったことがあります。楽しかったので、来週また作るつもりです。"],
+  "19.1":["上に को दुई भाग समान मूल्याङ्कनतिर हुँदा स्वाभाविक छ; फरक दिशा देख्दैमा ‘व्याकरण गलत’ नठान। 一方だ र 一方で छुट्याऊ।","आफ्नो शहरबारे にもかかわらず, 上に, 一方だ प्रयोग गरेर तीन वाक्य लेख।","雨にもかかわらず、人が来ました。この店は安い上に、親切です。物価は上がる一方です。"],
+  "19.2":["ものの = सधैँ नराम्रो नतिजा होइन। つつも = सधैँ पछुतो होइन। 小さいつつも गलत; 小さいながらも प्रयोग गर।","ものの, ながらも र つつも बाट आफ्नै अनुभवका एक–एक वाक्य लेख।","練習したものの、まだ難しいです。悩みながらも、進みます。難しいと思いつつも、続けます。"]
 };
 
 let jpPage = {mode:"home", week:1, lesson:"1.1"};
@@ -2008,10 +2051,10 @@ function jpWeekLessons(week){
   return JP_LESSONS.filter(function(l){ return Number(l.id.split(".")[0]) === week; });
 }
 function jpNextLesson(){
-  return JP_LESSONS.find(function(l){ return !DB.japanese.done[l.id]; }) || JP_LESSONS[0];
+  return JP_LESSONS.find(function(l){ return !l.optional && !DB.japanese.done[l.id]; }) || JP_LESSONS[0];
 }
 function jpDoneCount(){
-  return JP_LESSONS.filter(function(l){ return !!DB.japanese.done[l.id]; }).length;
+  return JP_LESSONS.filter(function(l){ return !l.optional && !!DB.japanese.done[l.id]; }).length;
 }
 function jpMonth(week){ return Math.ceil(week / 4); }
 function jpProgressBar(done, total){
@@ -2024,11 +2067,15 @@ function jpRenderHome(){
   let html = '<div class="jp-hero"><div class="jp-kicker">Your 9-month route · 36 weeks</div>' +
     '<h2>From N5 basics to practical N3</h2>' +
     '<p class="jp-muted">You already know some N5, so the first two weeks repair the basics through a short diagnostic bridge. Move on when the reading and speaking tasks feel comfortable. Weeks 3–12 build N4, weeks 13–28 build N3, and the last eight weeks are for timed practice and real use.</p>' +
-    jpProgressBar(jpDoneCount(), JP_LESSONS.length) +
+    jpProgressBar(jpDoneCount(), JP_LESSONS.filter(function(l){return !l.optional;}).length) +
     '<div class="jp-actions"><button type="button" class="btn" data-jp-lesson="' + next.id + '">Continue: ' + escapeHtml(next.title) + ' →</button></div></div>' +
     '<div class="jp-panel"><h3>Your weekly rhythm</h3>' +
     '<p><b>Six study days + one review day.</b> Aim for about 2 hours: 15 min vocabulary review, 25 min grammar, 20 min kanji in context, 25 min reading, 25 min listening and shadowing, 10 min speaking or an error log. If you have less time, keep every skill and shorten each block.</p>' +
-    '<p class="jp-muted">N3 reading and listening need separate practice. The JLPT itself does not test speaking, so this course gives speaking its own daily task. Two weeks of complete lessons are available now; the later cards show the roadmap and will gain full lessons step by step.</p></div>';
+    '<p class="jp-muted">N3 reading and listening need separate practice. The JLPT itself does not test speaking, so this course gives speaking its own daily task. Two weeks of complete lessons are available now; the later cards show the roadmap and will gain full lessons step by step.</p></div>' +
+    '<div class="jp-panel"><h3>From your previous Japanese notes · advanced preview</h3>' +
+    '<p class="jp-muted">Day 16 and Day 17 are available as optional reference. They do not mean you have completed N4. Keep following the Continue path first; return here when the N4 bridge feels secure.</p>' +
+    '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-lesson="19.1">Day 16 · Contrast and change</button>' +
+    '<button type="button" class="btn secondary" data-jp-lesson="19.2">Day 17 · Three kinds of although</button></div></div>';
   for(let month=1;month<=9;month++){
     html += '<h2 class="jp-section-title">Month ' + month + '</h2><div class="jp-grid">';
     for(let w=(month-1)*4+1;w<=month*4;w++){
@@ -2060,11 +2107,11 @@ function jpRenderWeek(week){
   html += '<h2 class="jp-section-title">Daily lessons</h2>';
   lessons.forEach(function(l, i){
     html += '<button type="button" class="jp-day-card" data-jp-lesson="' + l.id + '">' +
-      '<small>Day ' + (i+1) + (DB.japanese.done[l.id] ? ' · ✓ Completed' : '') + '</small>' +
+      '<small>' + (l.sourceDay ? 'Source Day ' + l.sourceDay + ' · optional preview' : 'Day ' + (i+1)) + (DB.japanese.done[l.id] ? ' · ✓ Completed' : '') + '</small>' +
       '<strong>' + escapeHtml(l.title) + '</strong><small>' + escapeHtml(l.goal) + '</small></button>';
   });
-  return html + '<div class="jp-panel"><h3>Day 7: review</h3>' +
-    '<p>Re-read the hardest passage without translation. Redo missed questions. Speak for two minutes using this week’s patterns and write down the words you could not recall. Repeat any day that still feels shaky.</p></div>';
+  return html + (lessons.every(function(l){return l.optional;}) ? '<div class="jp-panel"><p class="jp-muted">These two imported lessons are optional previews. The other Week 19 roadmap topics will be taught in their own lessons later.</p></div>' : '<div class="jp-panel"><h3>Day 7: review</h3>' +
+    '<p>Re-read the hardest passage without translation. Redo missed questions. Speak for two minutes using this week’s patterns and write down the words you could not recall. Repeat any day that still feels shaky.</p></div>');
 }
 function jpRenderLesson(id){
   const lesson = JP_LESSONS.find(function(l){return l.id===id;});
@@ -2073,13 +2120,21 @@ function jpRenderLesson(id){
   const checks = DB.japanese.checks[id] || {};
   let html = '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-week="' + week + '">← Week ' + week + '</button>' +
     '<button type="button" class="btn secondary" data-jp-home="1">All weeks</button></div>' +
-    '<div class="jp-hero"><span class="jp-kicker">Week ' + week + ' · Day ' + id.split(".")[1] + '</span>' +
+    '<div class="jp-hero"><span class="jp-kicker">Week ' + week + ' · ' + (lesson.sourceDay ? 'Source Day ' + lesson.sourceDay + ' · optional preview' : 'Day ' + id.split(".")[1]) + '</span>' +
     '<h2>' + escapeHtml(lesson.title) + '</h2><p class="jp-muted"><b>Goal:</b> ' + escapeHtml(lesson.goal) + '</p>' +
     '<p class="jp-muted">' + (DB.japanese.done[id] ? '✓ Completed' : 'Not completed yet') +
     (DB.japanese.quizScores[id] !== undefined ? ' · Best quiz: ' + DB.japanese.quizScores[id] + '%': '') + '</p></div>' +
     '<div class="jp-panel"><h3>Understand it</h3><p>' + escapeHtml(lesson.explain) + '</p>' +
-    '<div class="jp-pattern">' + escapeHtml(lesson.syntax) + '</div></div>' +
-    '<div class="jp-panel"><h3>Examples</h3>';
+    '<div class="jp-pattern">' + escapeHtml(lesson.syntax) + '</div></div>';
+  if(lesson.grammar){
+    lesson.grammar.forEach(function(g){
+      html += '<div class="jp-panel"><h3>' + escapeHtml(g[0]) + '</h3><p>' + escapeHtml(g[1]) +
+        '</p><div class="jp-example"><div class="jp-jp" lang="ja">' + escapeHtml(g[2]) + '</div><div class="jp-gloss">' + escapeHtml(g[3]) +
+        '</div></div><div class="jp-example"><div class="jp-jp" lang="ja">' + escapeHtml(g[4]) + '</div><div class="jp-gloss">' + escapeHtml(g[5]) + '</div></div></div>';
+    });
+  }
+  if(lesson.compare) html += '<div class="jp-panel"><h3>Compare the patterns</h3><p>' + escapeHtml(lesson.compare) + '</p></div>';
+  html += '<div class="jp-panel"><h3>Examples</h3>';
   lesson.examples.forEach(function(ex){
     html += '<div class="jp-example"><div class="jp-jp" lang="ja">' + escapeHtml(ex[0]) + '</div>' +
       '<div class="jp-gloss">' + escapeHtml(ex[1]) + ' · ' + escapeHtml(ex[2]) + '</div></div>';
@@ -2089,7 +2144,18 @@ function jpRenderLesson(id){
     html += '<div><b lang="ja">' + escapeHtml(v[0]) + '</b><small>' + escapeHtml(v[1]) +
       ' · ' + escapeHtml(v[2]) + '</small></div>';
   });
-  html += '</div><div class="jp-actions"><button type="button" class="btn secondary btn-sm" data-jp-cards="1">Add these words to Flashcards</button></div></div>' +
+  html += '</div><div class="jp-actions"><button type="button" class="btn secondary btn-sm" data-jp-cards="1">Add these words to Flashcards</button></div></div>';
+  if(lesson.kanji){
+    html += '<div class="jp-panel"><h3>Kanji in context</h3><p class="jp-muted">पहिले शब्द पढ; सबै readings एकैदिन कण्ठ नगर्नु।</p><div class="jp-vocab">';
+    lesson.kanji.forEach(function(k){html += '<div><b lang="ja">' + escapeHtml(k[0]) + '</b><small>' + escapeHtml(k[1]) + ' · ' + escapeHtml(k[2]) + '</small></div>';});
+    html += '</div></div>';
+  }
+  if(lesson.dialogue){
+    html += '<div class="jp-panel"><h3>Natural conversation</h3><p class="jp-muted">पहिले जापानी मात्र पढ र भूमिका फेरेर दुईपटक बोल।</p>';
+    lesson.dialogue.forEach(function(line){html += '<div class="jp-example"><b>' + escapeHtml(line[0]) + ': </b><span class="jp-jp" lang="ja">' + escapeHtml(line[1]) + '</span><div class="jp-gloss">' + escapeHtml(line[2]) + '</div></div>';});
+    html += '</div>';
+  }
+  html +=
     '<div class="jp-panel"><h3>Common mistake</h3><p>' +
     escapeHtml(JP_ENRICH[id][0]) + '</p></div>' +
     '<div class="jp-panel"><h3>Read first, then reveal meaning</h3>' +
@@ -2101,8 +2167,13 @@ function jpRenderLesson(id){
     '<details><summary>Show a model answer</summary><p lang="ja">' + escapeHtml(lesson.model) + '</p></details>' +
     '<label class="jp-check"><input type="checkbox" data-jp-check="speak"' + (checks.speak?' checked':'') + '> I spoke before opening the model</label></div>' +
     '<div class="jp-panel"><h3>Mini challenge</h3><p>' + escapeHtml(JP_ENRICH[id][1]) + '</p>' +
-    '<details><summary>Show one possible answer</summary><p lang="ja">' + escapeHtml(JP_ENRICH[id][2]) + '</p></details></div>' +
-    '<div class="jp-panel"><h3>Check your understanding</h3>';
+    '<details><summary>Show one possible answer</summary><p lang="ja">' + escapeHtml(JP_ENRICH[id][2]) + '</p></details></div>';
+  if(lesson.practice){
+    html += '<div class="jp-panel"><h3>Write and compare · from your notes</h3><p class="jp-muted">पहिले कापीमा आफैँ उत्तर लेख, त्यसपछि मात्र नमुना खोल।</p>';
+    lesson.practice.forEach(function(p, i){html += '<div class="jp-example"><b>' + (i+1) + '. ' + escapeHtml(p[0]) + '</b><details><summary>Show one answer</summary><p lang="ja">' + escapeHtml(p[1]) + '</p></details></div>';});
+    html += '</div>';
+  }
+  html += '<div class="jp-panel"><h3>Check your understanding</h3>';
   lesson.quiz.forEach(function(q, qi){
     html += '<fieldset class="jp-q"><legend>' + (qi+1) + '. ' + escapeHtml(q[0]) + '</legend>';
     q[1].forEach(function(choice, ci){
@@ -2125,8 +2196,8 @@ function jpRenderLesson(id){
     escapeHtml(DB.japanese.notes[id] || '') + '</textarea></div>' +
     '<div class="jp-actions"><button type="button" class="btn" data-jp-done="1">' +
     (DB.japanese.done[id] ? '✓ Completed · tap to undo' : 'Mark lesson complete') + '</button>';
-  if(index>0) html += '<button type="button" class="btn secondary" data-jp-lesson="' + JP_LESSONS[index-1].id + '">← Previous</button>';
-  if(index<JP_LESSONS.length-1) html += '<button type="button" class="btn secondary" data-jp-lesson="' + JP_LESSONS[index+1].id + '">Next →</button>';
+  if(index>0 && JP_LESSONS[index-1].optional===lesson.optional) html += '<button type="button" class="btn secondary" data-jp-lesson="' + JP_LESSONS[index-1].id + '">← Previous</button>';
+  if(index<JP_LESSONS.length-1 && JP_LESSONS[index+1].optional===lesson.optional) html += '<button type="button" class="btn secondary" data-jp-lesson="' + JP_LESSONS[index+1].id + '">Next →</button>';
   return html + '</div>';
 }
 function renderJapanese(){
