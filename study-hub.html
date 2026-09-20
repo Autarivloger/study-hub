@@ -2122,6 +2122,40 @@ Object.assign(JP_LESSONS[1], {
 });
 JP_ENRICH["1.2"] = ["〜ておく (पहिले नै तयारी) र 〜てしまう (पूरा/अनिच्छित) अलग हुन्। 〜てしまう लाई सधैँ ‘गल्ती’ नसम्झ; て हटाएर しまう नजोड। बोलचालको 〜ちゃう पूर्ण रूपको विकल्प हो, हरेक अवस्थामा गल्ती होइन।","भोलिको परीक्षाका लागि आज के गर्ने? अनि हिजो के बिर्सियौ? 〜ておく र 〜てしまう ले आफ्ना दुई वाक्य लेख।","明日の試験のために、漢字を復習しておきます。昨日、ノートを忘れてしまいました。"];
 
+/* Day 3 builds two N4 patterns from forms already seen in Days 1–2.
+   Preserve the original particles lesson and all data under its old key. */
+const JP_DAY3_PARTICLE_REVIEW = Object.assign({}, JP_LESSONS[2], {enrich:JP_ENRICH["1.3"]});
+Object.assign(JP_LESSONS[2], {
+  title:"N4 Day 3 · 〜たり〜たりする and 〜ながら",
+  goal:"Give examples of activities with 〜たり〜たりする and describe two simultaneous actions with 〜ながら.",
+  progressId:"1.3.n4-actions", cardVersion:"n4-actions", previousReview:JP_DAY3_PARTICLE_REVIEW, studyNav:true,
+  explain:"हिजोको て-form सम्झ। त्यसको अन्तिम て लाई た र で लाई だ बनाउँदा धेरै verb को た-form तयार हुन्छ। आज た-form + り ले दिनभरिका केही गतिविधि उदाहरणका रूपमा बताउँछौँ। 〜ながら बनाउन verb को ます-form बाट ます हटाउँछौँ; यसले एउटै व्यक्तिले एकै समयमा गर्ने दुई काम जोड्छ। पहिले रूप बनाऊ, त्यसपछि अर्थ जाँच।",
+  syntax:"Vた + り、Vた + り + します / しました  •  Vます को ます हटाएर + ながら、मुख्य काम",
+  formGuide:[
+    ["た-form · Day 1 को て-form बाट",[["て → た","食べて→食べた / 見て→見た / 行って→行った"],["で → だ","読んで→読んだ / 飲んで→飲んだ"],["Irregular","して→した / 来て（きて）→来た（きた）"],["Then add り","読んだ→読んだり / した→したり"]]],
+    ["ます-stem · 〜ながら को लागि",[["ます हटाऊ","聞きます→聞き→聞きながら"],["Group 2","食べます→食べ→食べながら"],["する / 来る","します→しながら / 来ます→来ながら"],["Do not attach to dictionary form","聞くながら ✗ / 聞きながら ✓"]]]
+  ],
+  grammar:[
+    ["1 · 〜たり〜たりする · representative activities","‘A पनि गर्छु, B पनि गर्छु, आदि’ भन्न दुई कामलाई た-form + り मा राख र अन्त्यमा します/しました राख। दुई उदाहरण दिनु सामान्य हो; अरू काम पनि हुन सक्छन्। た-form देखेर मात्रै पुरानो घटना नठान: वाक्यको समय अन्तिम します/しました ले तय गर्छ।","週末は本を読んだり、映画を見たりします。","सप्ताहान्तमा किताब पढ्छु, फिल्म हेर्छु आदि।","昨日は散歩したり、音楽を聞いたりしました。","हिजो टहलिएँ, संगीत सुनेँ आदि।"],
+    ["2 · 〜ながら · at the same time","पहिलो कामलाई ます-stem + ながら बनाऊ। पछिको verb मुख्य काम हो। दुवै काम सामान्यतः एउटै व्यक्तिले एकै समयमा गर्छ। ながら अघि て-form वा dictionary form नराख।","音楽を聞きながら、散歩します。","संगीत सुन्दै टहलिन्छु।","青い空を見ながら、公園を歩きました。","नीलो आकाश हेर्दै पार्कमा हिँडेँ।"],
+    ["3 · अर्थ तुलना · list, simultaneous, sequence","〜たり ले विभिन्न गतिविधिका केही उदाहरण दिन्छ; 〜ながら ले एकै समयमा हुने काम देखाउँछ। Day 1 को 〜て、〜て ले क्रम बताउँछ। समयको सम्बन्ध आफैँलाई सोध: ‘पहिले–पछि?’, ‘सँगसँगै?’, कि ‘के–के गर्छु?’","音楽を聞いたり、本を読んだりします。","संगीत सुन्छु, पुस्तक पढ्छु आदि (सूची)।","音楽を聞きながら、本を読みます。","संगीत सुन्दै पुस्तक पढ्छु (सँगसँगै)।"]
+  ],
+  compare:"朝ご飯を食べて、出かけます = खाएर त्यसपछि बाहिर जान्छु (क्रम)।休みの日は食べたり、散歩したりします = खाने, टहलिने आदि गर्छु (प्रतिनिधि गतिविधि)।音楽を聞きながら散歩します = संगीत सुन्दै टहलिन्छु (एकै समयमा)। 〜たり को た-form आफैँले सम्पूर्ण वाक्य past बनाउँदैन; अन्तिम します/しました हेर।",
+  examples:[["休みの日は映画を見たり、友だちと話したりします。","やすみのひはえいがをみたり、ともだちとはなしたりします。","On days off I watch films, talk with friends, and so on · बिदामा फिल्म हेर्छु, साथीसँग बोल्छु आदि।"],["音楽を聞きながら、体を動かします。","おんがくをききながら、からだをうごかします。","I move my body while listening to music · संगीत सुन्दै शरीर चलाउँछु।"],["昨日、青い空を見ながら公園を歩きました。","きのう、あおいそらをみながらこうえんをあるきました。","Yesterday I walked in the park while looking at the blue sky · नीलो आकाश हेर्दै पार्कमा हिँडेँ।"]],
+  vocab:[["散歩する","さんぽする","take a walk · टहलिनु"],["聞く","きく","listen / ask · सुन्नु / सोध्नु"],["音楽","おんがく","music · संगीत"],["映画","えいが","film · चलचित्र"],["見る","みる","see / watch · हेर्नु"],["歩く","あるく","walk · हिँड्नु"],["秋","あき","autumn · शरद ऋतु"],["鳥","とり","bird · चरा"],["黒い","くろい","black · कालो"],["青い","あおい","blue · नीलो"]],
+  kanji:[["秋","あき","秋 · शरद ऋतु · Sheet N4"],["鳥","とり","鳥 · चरा · Sheet N4"],["黒","くろい","黒い鳥 · कालो चरा · Sheet N4"],["青","あおい","青い空 · नीलो आकाश · Sheet N4"],["体","からだ","体を動かす · शरीर चलाउनु · Sheet N4"]],
+  dialogue:[["A","休みの日は何をしますか。","बिदाको दिन के गर्नुहुन्छ?"],["B","本を読んだり、映画を見たりします。","किताब पढ्छु, फिल्म हेर्छु आदि।"],["A","今日は何をしながら歩いていますか。","आज हिँड्दै गर्दा के गर्दै हुनुहुन्छ?"],["B","音楽を聞きながら歩いています。","संगीत सुन्दै हिँड्दैछु।"]],
+  reading:"秋の日曜日です。朝、青い空を見ながら、公園を散歩しました。公園で黒い鳥を見ました。午後は友だちと映画を見たり、日本語で話したりしました。夜は音楽を聞きながら、少し体を動かしました。楽しい一日でした。",
+  readingHelp:"शरद ऋतुको आइतबार हो। बिहान नीलो आकाश हेर्दै पार्कमा टहलिएँ। पार्कमा कालो चरा देखेँ। दिउँसो साथीसँग फिल्म हेरेँ, जापानीमा कुरा गरेँ आदि। बेलुका संगीत सुन्दै केही शारीरिक गतिविधि गरेँ। रमाइलो दिन थियो। यहाँ 〜ながら का काम एकै समयमा छन्; 〜たり ले दिउँसोका गतिविधिका उदाहरण दिन्छ।",
+  readingQuestions:[["朝、何を見ながら散歩しましたか。","青い空を見ながら散歩しました。"],["公園で何を見ましたか。","黒い鳥を見ました。"],["午後、友だちと何をしましたか。","映画を見たり、日本語で話したりしました。"],["夜、何を聞きながら体を動かしましたか。","音楽を聞きながら体を動かしました。"]],
+  speak:"आफ्नो बिदाको दिनमा गर्ने दुई काम 〜たり〜たりします ले भन। त्यसपछि अहिले वा हिजो एउटै समयमा गरेका दुई काम 〜ながら ले भन। प्रत्येक वाक्य दुईपटक ठूलो स्वरमा पढ।",
+  model:"休みの日は本を読んだり、散歩したりします。音楽を聞きながら、散歩します。",
+  practice:[["Day 1 रूपलाई た-form बनाऊ: 読んで・見て・行って・して।","読んだ・見た・行った・した。"],["読む र 見る बाट ‘किताब पढ्छु, फिल्म हेर्छु आदि’ लेख।","本を読んだり、映画を見たりします。"],["聞きます बाट 〜ながら बनाऊ।","聞きながら。ます हटाएर ながら थप।"],["‘संगीत सुन्दै हिँड्छु’ लेख।","音楽を聞きながら歩きます。"],["〜たり को た-form देखेर वाक्य past हुन्छ? उदाहरणसहित बताऊ।","सधैँ हुँदैन: 読んだり見たりします = nonpast; 読んだり見たりしました = past।"],["तीन अर्थ छुट्याऊ: 食べて出かけます / 食べたり散歩したりします / 食べながら話します।","क्रम / गतिविधिका उदाहरण / एकै समयमा गर्ने काम।"]],
+  summary:["आज १० उपयोगी शब्द र ५ kanji लाई शब्दसँगै चिन; सबै on/kun reading एकैदिन कण्ठ गर्नुपर्दैन।","〜たり〜たりする: た-form + り; गतिविधिका केही उदाहरण। समय अन्तिम します/しました ले देखाउँछ।","〜ながら: ます हटाएको आधार + ながら; एउटै व्यक्तिका सँगसँगै हुने काम।","Day 1 को 〜て、〜て = कामको क्रम। यी तीन अर्थ आफ्नै जीवनका वाक्य बनाएर छुट्याऊ।"],
+  quiz:[["読む → 〜たり",["読みたり","読んだり","読んでり"],1,"読む→読んで→読んだ→読んだり。"],["見る → 〜たり",["見たり","見てり","見りたり"],0,"見る→見て→見た→見たり。"],["聞きます → 〜ながら",["聞くながら","聞いてながら","聞きながら"],2,"ます हटाएको stem 聞き + ながら।"],["休みの日は本を___、映画を見たりします。",["読んだり","読んで","読みながら"],0,"दुवै उदाहरण た-form + り मा छन्।"],["音楽を聞きながら歩きます मा कामहरू कहिले हुन्छन्?",["पहिले–पछि","एकै समयमा","कहिल्यै हुँदैन"],1,"〜ながら ले एउटै समयका काम जोड्छ।"],["昨日、本を読んだり、映画を見たり___。",["します","しました","しながら"],1,"昨日 सँग past しました।"],["読んだり、見たりします past हो?",["हो, た-form भएकाले","होइन, अन्तिम します nonpast हो","यो अनुमति हो"],1,"〜たり का た-form मात्रले sentence tense तय गर्दैन।"],["Reading: 午後、友だちと何をしましたか。",["映画を見たり、日本語で話したりしました","鳥を見ながら歩きました","ホテルを予約しました"],0,"Reading को दिउँसोको भागमा यिनै दुई गतिविधि छन्।"]]
+});
+JP_ENRICH["1.3"] = ["〜たり को た-form लाई वाक्यको past tense नठान; अन्तिम します/しました हेर। 〜ながら मा 聞くながら होइन, 聞きながら हो। यी दुईलाई Day 1 को कामको क्रम जनाउने 〜て、〜て सँग पनि नझुक्क।","आफ्नो वास्तविक बिदाका दुई काम 〜たり ले, सँगसँगै गर्ने दुई काम 〜ながら ले लेख। ‘दुवै वाक्यको समय एउटै छ?’ आफैँ जाँच।","休みの日は散歩したり、映画を見たりします。音楽を聞きながら、散歩します。"];
+
 let jpPage = {mode:"home", week:1, lesson:"1.1"};
 let jpQuizFeedback = null;
 let jpEventsBound = false;
@@ -2227,7 +2261,7 @@ function jpRenderLesson(id){
   if(!lesson) return jpRenderHome();
   const index = JP_LESSONS.indexOf(lesson), week = Number(id.split(".")[0]), stateId=jpStateId(lesson);
   const checks = DB.japanese.checks[stateId] || {};
-  const studyPrefix=lesson.teRules ? 'jp-day1-' : lesson.studyNav ? 'jp-day2-' : '';
+  const studyPrefix=(lesson.teRules || lesson.studyNav) ? 'jp-day' + id.split('.')[1] + '-' : '';
   let html = '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-week="' + week + '">← Week ' + week + '</button>' +
     '<button type="button" class="btn secondary" data-jp-home="1">All weeks</button>' +
     '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div>' +
@@ -2236,7 +2270,7 @@ function jpRenderLesson(id){
     '<p class="jp-muted">' + (DB.japanese.done[stateId] ? '✓ Completed' : 'Not completed yet') +
     (DB.japanese.quizScores[stateId] !== undefined ? ' · Best quiz: ' + DB.japanese.quizScores[stateId] + '%': '') + '</p></div>' +
     (studyPrefix ? '<nav class="jp-lesson-nav" aria-label="Day ' + id.split('.')[1] + ' study sections">' +
-      (lesson.teRules ? [["Words","vocab"],["Kanji","kanji"],["Te-form rules","rules"],["Three uses","uses"],["Reading","reading"],["Practice","practice"],["Quiz","quiz"],["Summary","summary"]] : [["Words","vocab"],["Kanji","kanji"],["Grammar","uses"],["Reading","reading"],["Practice","practice"],["Quiz","quiz"],["Summary","summary"]]).map(function(x){
+      (lesson.teRules ? [["Words","vocab"],["Kanji","kanji"],["Te-form rules","rules"],["Three uses","uses"],["Reading","reading"],["Practice","practice"],["Quiz","quiz"],["Summary","summary"]] : lesson.formGuide ? [["Words","vocab"],["Kanji","kanji"],["Build the forms","forms"],["Grammar","uses"],["Reading","reading"],["Practice","practice"],["Quiz","quiz"],["Summary","summary"]] : [["Words","vocab"],["Kanji","kanji"],["Grammar","uses"],["Reading","reading"],["Practice","practice"],["Quiz","quiz"],["Summary","summary"]]).map(function(x){
         return '<button type="button" class="btn secondary btn-sm" data-jp-jump="' + studyPrefix + x[1] + '">' + x[0] + '</button>';
       }).join('') + '</nav>' : '') +
     '<div class="jp-panel"><h3>Understand it</h3><p>' + escapeHtml(lesson.explain) + '</p>' +
@@ -2250,6 +2284,15 @@ function jpRenderLesson(id){
       html += '</div>';
     });
     html += '</div><div class="jp-pattern">Memory: む・ぶ・ぬ → んで · く → いて · Group 2: る → て · 行く → 行って</div></div>';
+  }
+  if(lesson.formGuide){
+    html += '<div class="jp-panel" id="' + studyPrefix + 'forms"><h3>Build the forms · पहिले रूप बनाऊ</h3><div class="jp-rule-grid">';
+    lesson.formGuide.forEach(function(group){
+      html += '<div class="jp-rule-card"><h4>' + escapeHtml(group[0]) + '</h4>';
+      group[1].forEach(function(row){html += '<p><b>' + escapeHtml(row[0]) + '</b><br><span lang="ja">' + escapeHtml(row[1]) + '</span></p>';});
+      html += '</div>';
+    });
+    html += '</div></div>';
   }
   if(lesson.grammar){
     lesson.grammar.forEach(function(g,i){
@@ -2303,8 +2346,8 @@ function jpRenderLesson(id){
   }
   if(lesson.kanaReview || lesson.previousReview){
     const old=lesson.kanaReview || lesson.previousReview;
-    const reviewTitle=lesson.kanaReview ? 'Earlier Day 1 · kana and small っ review (your original lesson)' : 'Earlier Day 2 · は / が review (your original lesson)';
-    html += '<details class="jp-panel jp-old-review"><summary>' + reviewTitle + '</summary>' +
+    const reviewTitle='Earlier Day ' + old.id.split('.')[1] + ' · ' + old.title + ' (your original lesson)';
+    html += '<details class="jp-panel jp-old-review"><summary>' + escapeHtml(reviewTitle) + '</summary>' +
       '<p class="jp-muted">Earlier progress: ' + (DB.japanese.done[old.id] ? '✓ Completed' : 'Not completed') +
       (DB.japanese.quizScores[old.id] !== undefined ? ' · Best quiz: ' + DB.japanese.quizScores[old.id] + '%' : '') + '</p>' +
       '<p>' + escapeHtml(old.explain) + '</p><div class="jp-pattern">' + escapeHtml(old.syntax) + '</div>';
