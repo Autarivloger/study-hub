@@ -122,8 +122,45 @@ async function main(){
   }
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).lastBackup"),"Export did not finish");
   assert(await evalJs("!!document.querySelector('#exportBtn') && !!document.querySelector('#importBtn')"),"Backup controls missing");
+  await evalJs("document.querySelector('#syncBtn').click()");
+  assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1"),"Sync dialog overflows on mobile");
+  assert(await evalJs("!document.querySelector('#syRemember').checked"),"New tokens should default to session-only storage");
+  assert(await evalJs("document.querySelector('#syTok').getAttribute('value') === null"),"Token should not appear in HTML markup");
+  await evalJs("document.querySelector('#syTok').value='synthetic-test-token-123456';document.querySelector('#syClose').click()");
+  assert(await evalJs("!JSON.parse(localStorage.studyHubSync).token"),"Session-only token leaked into persistent storage");
+  assert(await evalJs("sessionStorage.studyHubSyncSessionToken === 'synthetic-test-token-123456'"),"Session token was not available for sync");
+  await evalJs("window.__syncBody='';window.fetch=async(url,opts)=>{const method=opts.method;if(method==='POST'){window.__syncBody=opts.body;return new Response(JSON.stringify({id:'0123456789abcdef0123456789abcdef'}),{status:201,headers:{'Content-Type':'application/json'}});}if(method==='GET'){const remote={notes:[{id:'remote-note',title:'From another phone',body:'Hello'}]};return new Response(JSON.stringify({files:{'study-hub-progress.json':{content:JSON.stringify({data:remote})}}}),{status:200,headers:{'Content-Type':'application/json'}});}return new Response(JSON.stringify({id:'0123456789abcdef0123456789abcdef'}),{status:200,headers:{'Content-Type':'application/json'}});}");
+  await evalJs("document.querySelector('#syncBtn').click();document.querySelector('#syPush').click()");
+  for(let i=0;i<30;i++){
+    if(await evalJs("JSON.parse(localStorage.studyHubSync).gistId === '0123456789abcdef0123456789abcdef'")) break;
+    await sleep(100);
+  }
+  assert(await evalJs("JSON.parse(localStorage.studyHubSync).gistId === '0123456789abcdef0123456789abcdef'"),"First Push did not create a Gist");
+  assert(await evalJs("window.__syncBody.includes('old-note') && !window.__syncBody.includes('synthetic-test-token-123456')"),"Push payload lost notes or contained token");
+  await evalJs("document.querySelector('#syPull').click()");
+  for(let i=0;i<30;i++){
+    if(await evalJs("JSON.parse(localStorage.studyHubData_v1).notes.some(x=>x.id==='remote-note')")) break;
+    await sleep(100);
+  }
+  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).notes.some(x=>x.id==='remote-note')"),"Pull did not merge remote writing");
+  assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1']"),"Pull erased local progress");
+  await evalJs("window.fetch=async()=>new Response('{}',{status:403,headers:{'Content-Type':'application/json'}});document.querySelector('#syncBtn').click();document.querySelector('#syPush').click()");
+  for(let i=0;i<30;i++){
+    if(await evalJs("document.querySelector('#syStatus').textContent.includes('Gists')")) break;
+    await sleep(100);
+  }
+  assert(await evalJs("document.querySelector('#syStatus').textContent.includes('Gists')"),"403 did not show an actionable error");
+  await evalJs("document.querySelector('#syClose').click();localStorage.studyHubSync=JSON.stringify({token:'synthetic-legacy-token-123456',gistId:'0123456789abcdef0123456789abcdef',auto:false});sessionStorage.removeItem('studyHubSyncSessionToken')");
+  await evalJs("document.querySelector('#syncBtn').click()");
+  assert(await evalJs("document.querySelector('#syRemember').checked"),"Existing saved token stopped working");
+  await evalJs("document.querySelector('#syRemember').click();document.querySelector('#syClose').click()");
+  assert(await evalJs("!JSON.parse(localStorage.studyHubSync).token && sessionStorage.studyHubSyncSessionToken === 'synthetic-legacy-token-123456'"),"Unchecking Remember did not remove persistent token");
+  await evalJs("document.querySelector('#syncBtn').click();document.querySelector('#syForget').click()");
+  assert(await evalJs("!JSON.parse(localStorage.studyHubSync).token && !sessionStorage.studyHubSyncSessionToken"),"Forget did not clear token");
+  assert(await evalJs("JSON.parse(localStorage.studyHubSync).gistId === '0123456789abcdef0123456789abcdef'"),"Forget erased Gist ID");
+  assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1']"),"Forget erased writing");
   assert(errors.length===0,"JavaScript errors: "+errors.join("; "));
-  console.log("PASS: 36-week roadmap, 12 daily lessons and quizzes, notes, progress, reload, Python, Typing, theme, 375px mobile, legacy backup merge and export, no JS exceptions");
+  console.log("PASS: lessons, notes, progress, mobile, dark mode, backup, mock Gist Push/Pull, session-only token, legacy token, Forget, 403 guidance, no JS exceptions");
   ws.close();
 }
 main().catch(err=>{console.error(err);process.exitCode=1;}).finally(()=>{browser.kill();});

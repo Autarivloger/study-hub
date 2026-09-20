@@ -14139,14 +14139,38 @@ document.addEventListener("keydown", function(ev){
    can never end up inside an exported backup or a synced payload. */
 
 const SYNC_KEY = "studyHubSync";
+const SYNC_SESSION_KEY = "studyHubSyncSessionToken";
 const SYNC_FILE = "study-hub-progress.json";
+let syncMemoryToken = "";
 
 function syncCfg(){
-  try{ return JSON.parse(localStorage.getItem(SYNC_KEY)) || {}; }
-  catch(e){ return {}; }
+  let c = {};
+  try{ c = JSON.parse(localStorage.getItem(SYNC_KEY)) || {}; }catch(e){}
+  /* Existing saved tokens keep working. New users can choose session-only
+     storage, which clears on closing the browser and is never in backups. */
+  if(c.rememberToken === false){
+    let sessionToken = "";
+    try{ sessionToken = sessionStorage.getItem(SYNC_SESSION_KEY) || ""; }catch(e){}
+    c.token = syncMemoryToken || sessionToken;
+  }else{
+    c.rememberToken = !!c.token;
+  }
+  return c;
 }
 function saveSyncCfg(c){
-  try{ localStorage.setItem(SYNC_KEY, JSON.stringify(c)); }catch(e){}
+  const stored = Object.assign({}, c);
+  if(c.rememberToken){
+    syncMemoryToken = "";
+    try{ sessionStorage.removeItem(SYNC_SESSION_KEY); }catch(e){}
+  }else{
+    syncMemoryToken = c.token || "";
+    try{
+      if(syncMemoryToken) sessionStorage.setItem(SYNC_SESSION_KEY, syncMemoryToken);
+      else sessionStorage.removeItem(SYNC_SESSION_KEY);
+    }catch(e){}
+    delete stored.token;
+  }
+  try{ localStorage.setItem(SYNC_KEY, JSON.stringify(stored)); }catch(e){}
 }
 function syncReady(){ const c = syncCfg(); return !!(c.token && c.token.length > 10); }
 
@@ -14162,11 +14186,14 @@ async function gistRequest(method, url, body){
     body: body ? JSON.stringify(body) : undefined
   });
   if(!res.ok){
-    let detail = "";
-    try{ detail = (await res.json()).message || ""; }catch(e){}
-    if(res.status === 401) throw new Error("Token rejected. Check it has the Gists permission.");
-    if(res.status === 404) throw new Error("Gist not found. Use Push first to create it.");
-    throw new Error("GitHub said " + res.status + (detail ? ": " + detail : ""));
+    if(res.status === 401) throw new Error("GitHub rejected the token (401). Use a Gist access token, not your GitHub password; check whether the token expired.");
+    if(res.status === 403){
+      if(res.headers.get("x-ratelimit-remaining") === "0") throw new Error("GitHub rate limit reached (403). Try again after the limit resets.");
+      throw new Error("GitHub refused access (403). Give the token Account permissions → Gists → Read and write.");
+    }
+    if(res.status === 404) throw new Error("Gist not found (404). Check the Gist ID and token. On the first device only, leave the Gist ID blank before Push.");
+    if(res.status === 413 || res.status === 422) throw new Error("GitHub could not accept this backup (" + res.status + "). Export a local backup, then check its size.");
+    throw new Error("GitHub sync failed (HTTP " + res.status + ").");
   }
   return res.json();
 }
@@ -14187,11 +14214,14 @@ async function syncPush(quiet){
       c.gistId = gist.id;
     }
     c.lastSync = nowISO();
+    delete c.lastError;
     saveSyncCfg(c);
     if(!quiet) toast("Progress saved to your cloud");
     return true;
   }catch(err){
-    if(!quiet) toast(String(err.message || err));
+    c.lastError = String(err.message || err);
+    saveSyncCfg(c);
+    if(!quiet) toast(c.lastError);
     return false;
   }
 }
@@ -14209,18 +14239,21 @@ async function syncPull(){
     const parsed = JSON.parse(raw);
     const incoming = parsed && parsed.data ? parsed.data : parsed;
 
-    const before = totalDone() + Object.keys(DB.lessonsDone).length;
+    const before = JSON.stringify(DB);
     mergeIntoDB(incoming);
-    const after = totalDone() + Object.keys(DB.lessonsDone).length;
+    const changed = JSON.stringify(DB) !== before;
 
     c.lastSync = nowISO();
+    delete c.lastError;
     saveSyncCfg(c);
     save();
     renderEverything();
-    toast(after > before ? ("Merged in " + (after - before) + " new completions") : "Already up to date");
+    toast(changed ? "Data merged from cloud" : "Already up to date");
     return true;
   }catch(err){
-    toast(String(err.message || err));
+    c.lastError = String(err.message || err);
+    saveSyncCfg(c);
+    toast(c.lastError);
     return false;
   }
 }
@@ -14241,29 +14274,49 @@ function openSyncSettings(){
   openModal(
     '<h2>Sync across your devices</h2>'
     + '<p style="color:var(--text-dim);font-size:13.5px;line-height:1.6;margin:0 0 14px;">'
-    + 'Your progress is kept in a <b>private</b> GitHub Gist that only you can read. '
-    + 'The app still works completely offline \u2014 this only runs when you tap Push or Pull.</p>'
-    + '<div class="form-row"><label>GitHub token</label>'
-    + '<input type="password" id="syTok" placeholder="github_pat_..." value="' + escapeAttr(c.token || "") + '"></div>'
-    + '<div class="tf-hint" style="margin:-4px 0 12px;">Make a <b>fine-grained token</b> at github.com/settings/tokens '
-    + 'with the <b>Gists</b> permission set to Read and write. Nothing else. '
-    + 'It is stored only on this device and is never included in your backups.</div>'
+    + 'Your progress is sent to an <b>unlisted</b> GitHub Gist. Anyone with its link may read it, '
+    + 'so do not put passwords in Study Hub notes or share the Gist ID. '
+    + 'Writing saves on this device immediately. Tap <b>Push</b> to send it, then <b>Pull</b> on your other phone. '
+    + 'The app works offline; Push and Pull require internet.</p>'
+    + '<div class="form-row"><label>Gist access token (never your GitHub password)</label>'
+    + '<input type="password" id="syTok" name="studyhub-gist-token" autocomplete="new-password" placeholder="Paste a Gist-scoped token"></div>'
+    + '<div class="tf-hint" style="margin:-4px 0 12px;">Create a fine-grained token with '
+    + '<b>Account permissions → Gists → Read and write</b>. Give it no repository permissions. '
+    + 'The token is never included in your backup or Gist data.</div>'
+    + '<label style="display:flex;gap:9px;align-items:center;font-size:14px;margin:6px 0 12px;">'
+    + '<input type="checkbox" id="syRemember"' + (c.rememberToken ? " checked" : "") + '> Remember token on this device'
+    + ' (leave off for more privacy; you may need to paste it again later)</label>'
+    + '<button type="button" class="btn secondary btn-sm" id="syForget" style="margin-bottom:12px;">Forget token on this device</button>'
     + '<div class="form-row"><label>Gist ID <span style="font-weight:400;color:var(--text-dim);">(leave blank on your first device)</span></label>'
     + '<input type="text" id="syGist" placeholder="created automatically" value="' + escapeAttr(c.gistId || "") + '"></div>'
     + '<label style="display:flex;gap:9px;align-items:center;font-size:14px;margin:6px 0 4px;">'
     + '<input type="checkbox" id="syAuto"' + (c.auto ? " checked" : "") + '> Push automatically after changes</label>'
     + (c.lastSync ? '<div class="tf-hint">Last synced ' + escapeHtml(fmtDate(c.lastSync)) + '</div>' : '')
+    + '<div class="tf-hint" id="syStatus" role="status" style="margin-top:8px;"></div>'
     + '<div class="modal-actions">'
     + '<button type="button" class="btn secondary" id="syClose">Close</button>'
     + '<button type="button" class="btn secondary" id="syPull">\u2193 Pull</button>'
     + '<button type="button" class="btn" id="syPush">\u2191 Push</button>'
     + '</div>', true);
 
+  document.getElementById("syTok").value = c.token || "";
+  if(c.lastError) document.getElementById("syStatus").textContent = "Last sync problem: " + c.lastError;
+  document.getElementById("syForget").onclick = function(){
+    const forgotten = syncCfg();
+    forgotten.token = "";
+    forgotten.rememberToken = false;
+    delete forgotten.lastError;
+    saveSyncCfg(forgotten);
+    document.getElementById("syTok").value = "";
+    document.getElementById("syRemember").checked = false;
+    document.getElementById("syStatus").textContent = "Token forgotten on this device. Your writing and Gist ID are unchanged.";
+  };
   function collect(){
     const c2 = syncCfg();
     c2.token = document.getElementById("syTok").value.trim();
     c2.gistId = document.getElementById("syGist").value.trim();
     c2.auto = document.getElementById("syAuto").checked;
+    c2.rememberToken = document.getElementById("syRemember").checked;
     saveSyncCfg(c2);
     return c2;
   }
@@ -14276,7 +14329,10 @@ function openSyncSettings(){
     btn.disabled = true; btn.textContent = "Pushing\u2026";
     const ok = await syncPush(false);
     if(ok){ closeModal(); openSyncSettings(); }   // reopen so the new Gist ID shows
-    else { btn.disabled = false; btn.textContent = "\u2191 Push"; }
+    else {
+      btn.disabled = false; btn.textContent = "\u2191 Push";
+      document.getElementById("syStatus").textContent = "Push failed: " + (syncCfg().lastError || "Check your connection.");
+    }
   };
   document.getElementById("syPull").onclick = async ()=>{
     collect();
@@ -14284,7 +14340,10 @@ function openSyncSettings(){
     btn.disabled = true; btn.textContent = "Pulling\u2026";
     const ok = await syncPull();
     if(ok) closeModal();
-    else { btn.disabled = false; btn.textContent = "\u2193 Pull"; }
+    else {
+      btn.disabled = false; btn.textContent = "\u2193 Pull";
+      document.getElementById("syStatus").textContent = "Pull failed: " + (syncCfg().lastError || "Check your connection.");
+    }
   };
 }
 

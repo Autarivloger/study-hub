@@ -110,12 +110,15 @@ passwords or other secrets in Study Hub notes.
    Grant nothing else.
 3. Copy the token.
 4. In Study Hub, tap **☁** in the top bar, paste the token, and press **↑ Push**.
-   A private Gist is created and its ID appears in the dialog.
+   An unlisted Gist is created and its ID appears in the dialog.
 5. On your other device, open Study Hub, tap **☁**, paste the **same token** and
    the **Gist ID**, then press **↓ Pull**.
 
 Tick **Push automatically after changes** to have it upload in the background
 (debounced, so it will not spam the network while you type).
+GitHub repository pushes only publish website code; personal writing needs
+Study Hub's own Push/Pull. If a sync fails, the dialog keeps the last error
+visible so you can check it later.
 
 ### How merging works
 
@@ -132,11 +135,18 @@ using wins. Move one direction at a time if you want to be certain.
 
 ### About the token
 
-- It is stored under its own key, `studyHubSync`, and is **never** part of `DB`.
-  It therefore never appears in an exported backup or in the synced payload.
-- It lives only in that browser, on that device.
-- It only has permission to read and write your Gists — nothing else in your
-  GitHub account.
+- New tokens stay in browser session storage by default. Closing the browser
+  may require you to paste the token again. You can opt into **Remember token
+  on this device** for convenience. Tokens saved by older versions remain
+  remembered until you uncheck that option.
+- The token is **never** part of `DB`, so it never appears in an exported
+  backup or the synced Gist payload. It still exists in that browser while
+  sync is available and can be read by code running in the same browser
+  origin; do not treat a public static site as a password vault.
+- **Forget token on this device** removes the saved/session token while
+  keeping your notes, progress and Gist ID.
+- Give the token only the Gists permission. A token with broader permissions
+  can access more of your GitHub account; do not use one here.
 - If you ever lose the device, revoke the token on GitHub and it is dead.
 
 If you would rather not use a token at all, the **⇄ Transfer** button does the
