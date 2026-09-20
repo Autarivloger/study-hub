@@ -2092,6 +2092,36 @@ Object.assign(JP_LESSONS[0], {
 });
 JP_ENRICH["1.1"] = ["〜いる/〜える मा सकिने सबै verb Group 2 होइनन्। 帰る→帰って; 行く→行って अपवाद। 〜ています ले चलिरहेको कामसँगै हालको अवस्था पनि जनाउन सक्छ।","आफ्नो बिहानबारे तीन verb जोडेर बोल; त्यसपछि साथीलाई ‘कृपया पर्ख’ भन।","朝、起きて、水を飲んで、会社に行きます。ちょっと待ってください。"];
 
+/* The original は/が Day 2 remains available for review with its original
+   completion, score and notes. New N4 work has its own progress and cards. */
+const JP_DAY2_TOPIC_REVIEW = Object.assign({}, JP_LESSONS[1], {enrich:JP_ENRICH["1.2"]});
+Object.assign(JP_LESSONS[1], {
+  title:"N4 Day 2 · 〜ておく and 〜てしまう",
+  goal:"Use yesterday's て-form to prepare for something and to describe a completed or regretted action.",
+  progressId:"1.2.n4-te", cardVersion:"n4-te", previousReview:JP_DAY2_TOPIC_REVIEW, studyNav:true,
+  explain:"आजको दुई pattern दुवै Day 1 को て-form पछि जोडिन्छन्। 〜ておく ले भविष्यका लागि अहिले नै तयारी गर्ने अर्थ दिन्छ। 〜てしまう ले काम पूरै सकिएको, वा सन्दर्भअनुसार गल्ती/दुःख लागेको कुरा देखाउँछ। एउटै て-form बाट फरक अर्थ आउँछ, त्यसैले वाक्यको परिस्थिति पढ।",
+  syntax:"Verb て-form + おく / おきます  •  Verb て-form + しまう / しまいました",
+  grammar:[
+    ["1 · 〜ておく · do it in advance","भोलि चाहिने कुरा आज तयार गर्‍यौ भने यो pattern प्रयोग गर। polite form 〜ておきます हो। ‘अघि नै’ भन्ने नेपाली अर्थ सम्झ, तर वाक्यमा भविष्यको उद्देश्य बुझ।","明日のために、資料を読んでおきます。","भोलिका लागि सामग्री पहिले नै पढेर राख्छु।","旅行の前に、ホテルを予約しておきました。","यात्राअघि होटल बुक गरेर राखेँ।"],
+    ["2 · 〜てしまう · finish completely","पूरै सकिनु जनाउँदा यो pattern तटस्थ वा सकारात्मक पनि हुन सक्छ। ‘अफसोस’ अर्थ सधैँ हुँदैन। polite past 〜てしまいました हो।","宿題を全部してしまいました。","गृहकार्य सबै सकाएँ।","この本を今日中に読んでしまいます。","यो किताब आजभित्र पूरै पढिसक्छु।"],
+    ["3 · 〜てしまう · unintended / regret","गल्ती वा नचाहेको नतिजा आएमा पनि यही रूप प्रयोग हुन्छ। भावना वाक्यको सन्दर्भबाट आउँछ। बोलचालमा 〜ちゃう/〜じゃう सुनिन्छ; पहिले पूरा रूप सिक।","大切な鍵をなくしてしまいました。","महत्त्वपूर्ण साँचो हराएँ—नराम्रो भयो।","電車で寝てしまいました。","रेलमा अनायास निदाएँ।"]
+  ],
+  compare:"明日の試験のために、漢字を復習しておきます = परीक्षा अघि तयारी।漢字を全部復習してしまいました = सबै पुनरावृत्ति पूरा भयो।大事なノートを忘れてしまいました = नोट बिर्सिएँ, अफसोस। 〜ておく को おく लाई 置く ‘राख्नु’ सँग जोडेर सम्झन सकिन्छ, तर यसलाई केवल वस्तु राख्ने अर्थमा सीमित नगर।",
+  examples:[["明日の試験のために、漢字を復習しておきます。","あしたのしけんのために、かんじをふくしゅうしておきます。","I will review kanji beforehand for tomorrow's exam · भोलिको परीक्षाका लागि पहिल्यै दोहोर्‍याउँछु।"],["宿題を全部してしまいました。","しゅくだいをぜんぶしてしまいました。","I finished all my homework · सबै गृहकार्य सकाएँ।"],["財布を忘れてしまいました。","さいふをわすれてしまいました。","I accidentally forgot my wallet · पर्स बिर्सिएछु।"]],
+  vocab:[["準備する","じゅんびする","prepare · तयारी गर्नु"],["予約する","よやくする","reserve · बुक गर्नु"],["復習する","ふくしゅうする","review · पुनरावृत्ति गर्नु"],["宿題","しゅくだい","homework · गृहकार्य"],["全部","ぜんぶ","all of it · सबै"],["忘れる","わすれる","forget · बिर्सनु"],["なくす","なくす","lose · हराउनु"],["鍵","かぎ","key · साँचो"],["始まる","はじまる","begin · सुरु हुनु"],["答える","こたえる","answer · उत्तर दिनु"]],
+  kanji:[["始","はじまる","始まる · सुरु हुनु · Sheet N4"],["答","こたえる","答える · जवाफ दिनु · Sheet N4"],["仕","し","仕事（しごと）· काम · Sheet N4"],["進","すすむ","進む · अघि बढ्नु · Sheet N4"],["回","かい","一回（いっかい）· एक पटक · Sheet N4"]],
+  dialogue:[["A","明日の試験の準備はしましたか。","भोलिको परीक्षाको तयारी गर्नुभयो?"],["B","はい、漢字を復習しておきました。でも、ノートを家に忘れてしまいました。","हो, kanji पहिले नै दोहोर्‍याएँ। तर नोट घरमा बिर्सिएँ।"],["A","そうですか。私のノートを見てください。","ए हो? मेरो नोट हेर्नुस्।"]],
+  reading:"明日は日本語の試験です。今日は仕事の後で、漢字を復習しておきました。宿題も全部してしまいました。でも、大切なノートを会社に忘れてしまいました。友だちに電話して、ノートの写真を送ってもらいました。これで安心です。",
+  readingHelp:"भोलि जापानीको परीक्षा छ। आज कामपछि kanji पहिल्यै दोहोर्‍याएँ। सबै गृहकार्य पनि सकाएँ। तर महत्त्वपूर्ण नोट अफिसमा बिर्सिएँ। साथीलाई फोन गरेर नोटको फोटो पठाउन लगाएँ। अब ढुक्क छु। अन्तिम 〜てもらいました को अर्थ ‘साथीबाट गराइपाएँ/पठाइदिए’ हो; यसलाई अर्को पाठमा विस्तारमा सिक्नेछौँ।",
+  readingQuestions:[["試験はいつですか。","明日です。"],["仕事の後で、何をしておきましたか。","漢字を復習しておきました。"],["何を忘れてしまいましたか。","大切なノートを会社に忘れてしまいました。"]],
+  speak:"भोलि गर्नुपर्ने एउटा काम सोच। त्यसका लागि आज के 〜ておく? अनि आफूसँग भएको सानो गल्ती 〜てしまいました प्रयोग गरेर दुई वाक्य ठूलो स्वरमा बोल। वास्तविक कुरा भए अझ राम्रो।",
+  model:"明日のために、漢字を復習しておきます。昨日、鍵をなくしてしまいました。",
+  practice:[["Day 1 सम्झ: 読む・する・忘れる को て-form बनाऊ।","読んで・して・忘れて。"],["‘भोलिका लागि होटल पहिले नै बुक गर्छु’ लेख।","明日のために、ホテルを予約しておきます。"],["‘सबै गृहकार्य सकाएँ’ लेख।","宿題を全部してしまいました。"],["‘साँचो हराएँ’ भनेर अफसोस देखाऊ।","鍵をなくしてしまいました。"],["読んでおきました र 読んでしまいました को फरक आफ्नै शब्दमा भन।","読んでおきました = पहिल्यै पढेर तयारी गरेँ; 読んでしまいました = पूरै पढिसकेँ (वा सन्दर्भले अनिच्छा देखाउन सक्छ)।"],["पाठको reading मा के तयारी थियो र के गल्ती भयो? जापानीमा दुई वाक्य लेख।","漢字を復習しておきました。ノートを会社に忘れてしまいました。"]],
+  summary:["आज १० शब्द र Sheet बाट छानेका ५ kanji सन्दर्भसहित पढ; ५ वटै reading एकैचोटि कण्ठ गर्नुपर्ने छैन।","〜ておく = भविष्यका लागि अहिले नै तयारी; 〜てしまう = काम पूरै सकिनु वा सन्दर्भअनुसार अफसोस।","पढाइको क्रम: Day 1 दोहोर्‍याऊ → शब्द/kanji → दुई grammar pattern → reading → आफ्नो दुई वाक्य → quiz।","भोलि १० मिनेटपछि, तीन दिनपछि र एक हप्तापछि कठिन शब्द फेरि हेर्न Hard to remember प्रयोग गर।"],
+  quiz:[["明日のために、資料を読んで___。",["しまいます","おきます","います"],1,"भविष्यका लागि तयारी = 〜ておく।"],["宿題を全部して___。",["おきました","います","しまいました"],2,"全部 + 〜てしまう = सबै सकियो।"],["財布を忘れてしまいました मा कस्तो अर्थ प्रायः हुन्छ?",["बिर्सिएँ, अफसोस","पहिले नै बुक गरेँ","अहिले पढ्दैछु"],0,"अनिच्छित घटना / अफसोस सन्दर्भबाट देखिन्छ।"],["予約する → तयारीको polite present",["予約しておきます","予約するおきます","予約しまっておきます"],0,"する → して, त्यसपछि おきます।"],["読んでおきました को मुख्य अर्थ?",["पूरै पढिसकेँ मात्र","अघि नै पढेर तयारी गरेँ","पढ्न अनुमति छ"],1,"〜ておく ले उद्देश्यका लागि अग्रिम काम देखाउँछ।"],["〜てしまう ले सधैँ regret जनाउँछ?",["हो, सधैँ","होइन, पूरा भएको काम पनि जनाउन सक्छ","ते-form चाहिँदैन"],1,"Completion पनि मुख्य प्रयोग हो।"],["Reading: 何を忘れてしまいましたか。",["財布","鍵","大切なノート"],2,"पाठमा नोट कम्पनीमा बिर्सिएको छ।"],["Sheet का पाँच kanji मध्ये ‘answer’ कुन हो?",["始","答","回"],1,"答える（こたえる） = उत्तर दिनु।"]]
+});
+JP_ENRICH["1.2"] = ["〜ておく (पहिले नै तयारी) र 〜てしまう (पूरा/अनिच्छित) अलग हुन्। 〜てしまう लाई सधैँ ‘गल्ती’ नसम्झ; て हटाएर しまう नजोड। बोलचालको 〜ちゃう पूर्ण रूपको विकल्प हो, हरेक अवस्थामा गल्ती होइन।","भोलिको परीक्षाका लागि आज के गर्ने? अनि हिजो के बिर्सियौ? 〜ておく र 〜てしまう ले आफ्ना दुई वाक्य लेख।","明日の試験のために、漢字を復習しておきます。昨日、ノートを忘れてしまいました。"];
+
 let jpPage = {mode:"home", week:1, lesson:"1.1"};
 let jpQuizFeedback = null;
 let jpEventsBound = false;
@@ -2148,6 +2178,8 @@ function jpRenderHome(){
     '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div></div>' +
     '<div class="jp-panel"><h3>Your weekly rhythm</h3>' +
     '<p><b>Six study days + one review day.</b> Aim for about 2 hours: 15 min vocabulary review, 25 min grammar, 20 min kanji in context, 25 min reading, 25 min listening and shadowing, 10 min speaking or an error log. If you have less time, keep every skill and shorten each block.</p>' +
+    '<p><b>Daily target from Day 2:</b> 8–10 useful words, 4–5 new kanji in words, and 1–2 related grammar patterns. Review 10–15 older words. Read one short passage, listen and repeat aloud, and make two sentences about your own life. Day 7 is for review, mistakes and a small check; do not force new material on that day.</p>' +
+    '<p><b>Nine-month checkpoints:</b> Months 1–3 build N4 accuracy; months 4–7 build N3 reading, listening and grammar; months 8–9 focus on weak points, timed practice and everyday conversation. Move at the speed of understanding—repeat a day when needed.</p>' +
     '<p class="jp-muted">N3 reading and listening need separate practice. The JLPT itself does not test speaking, so this course gives speaking its own daily task. Two weeks of complete lessons are available now; the later cards show the roadmap and will gain full lessons step by step.</p></div>' +
     '<div class="jp-panel"><h3>From your previous Japanese notes · advanced preview</h3>' +
     '<p class="jp-muted">Day 16 and Day 17 are available as optional reference. They do not mean you have completed N4. Keep following the Continue path first; return here when the N4 bridge feels secure.</p>' +
@@ -2195,6 +2227,7 @@ function jpRenderLesson(id){
   if(!lesson) return jpRenderHome();
   const index = JP_LESSONS.indexOf(lesson), week = Number(id.split(".")[0]), stateId=jpStateId(lesson);
   const checks = DB.japanese.checks[stateId] || {};
+  const studyPrefix=lesson.teRules ? 'jp-day1-' : lesson.studyNav ? 'jp-day2-' : '';
   let html = '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-week="' + week + '">← Week ' + week + '</button>' +
     '<button type="button" class="btn secondary" data-jp-home="1">All weeks</button>' +
     '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div>' +
@@ -2202,9 +2235,9 @@ function jpRenderLesson(id){
     '<h2>' + escapeHtml(lesson.title) + '</h2><p class="jp-muted"><b>Goal:</b> ' + escapeHtml(lesson.goal) + '</p>' +
     '<p class="jp-muted">' + (DB.japanese.done[stateId] ? '✓ Completed' : 'Not completed yet') +
     (DB.japanese.quizScores[stateId] !== undefined ? ' · Best quiz: ' + DB.japanese.quizScores[stateId] + '%': '') + '</p></div>' +
-    (lesson.teRules ? '<nav class="jp-lesson-nav" aria-label="Day 1 study sections">' +
-      [["Words","vocab"],["Kanji","kanji"],["Te-form rules","rules"],["Three uses","uses"],["Reading","reading"],["Practice","practice"],["Quiz","quiz"],["Summary","summary"]].map(function(x){
-        return '<button type="button" class="btn secondary btn-sm" data-jp-jump="jp-day1-' + x[1] + '">' + x[0] + '</button>';
+    (studyPrefix ? '<nav class="jp-lesson-nav" aria-label="Day ' + id.split('.')[1] + ' study sections">' +
+      (lesson.teRules ? [["Words","vocab"],["Kanji","kanji"],["Te-form rules","rules"],["Three uses","uses"],["Reading","reading"],["Practice","practice"],["Quiz","quiz"],["Summary","summary"]] : [["Words","vocab"],["Kanji","kanji"],["Grammar","uses"],["Reading","reading"],["Practice","practice"],["Quiz","quiz"],["Summary","summary"]]).map(function(x){
+        return '<button type="button" class="btn secondary btn-sm" data-jp-jump="' + studyPrefix + x[1] + '">' + x[0] + '</button>';
       }).join('') + '</nav>' : '') +
     '<div class="jp-panel"><h3>Understand it</h3><p>' + escapeHtml(lesson.explain) + '</p>' +
     '<div class="jp-pattern">' + escapeHtml(lesson.syntax) + '</div></div>';
@@ -2220,7 +2253,7 @@ function jpRenderLesson(id){
   }
   if(lesson.grammar){
     lesson.grammar.forEach(function(g,i){
-      html += '<div class="jp-panel"' + (lesson.teRules && i===0 ? ' id="jp-day1-uses"' : '') + '><h3>' + escapeHtml(g[0]) + '</h3><p>' + escapeHtml(g[1]) +
+      html += '<div class="jp-panel"' + (studyPrefix && i===0 ? ' id="' + studyPrefix + 'uses"' : '') + '><h3>' + escapeHtml(g[0]) + '</h3><p>' + escapeHtml(g[1]) +
         '</p><div class="jp-example"><div class="jp-jp" lang="ja">' + escapeHtml(g[2]) + '</div><div class="jp-gloss">' + escapeHtml(g[3]) +
         '</div></div><div class="jp-example"><div class="jp-jp" lang="ja">' + escapeHtml(g[4]) + '</div><div class="jp-gloss">' + escapeHtml(g[5]) + '</div></div></div>';
     });
@@ -2231,13 +2264,13 @@ function jpRenderLesson(id){
     html += '<div class="jp-example"><div class="jp-jp" lang="ja">' + escapeHtml(ex[0]) + '</div>' +
       '<div class="jp-gloss">' + escapeHtml(ex[1]) + ' · ' + escapeHtml(ex[2]) + '</div></div>';
   });
-  html += '</div><div class="jp-panel"' + (lesson.teRules ? ' id="jp-day1-vocab"' : '') + '><h3>Words to review</h3><div class="jp-vocab">';
+  html += '</div><div class="jp-panel"' + (studyPrefix ? ' id="' + studyPrefix + 'vocab"' : '') + '><h3>Words to review</h3><div class="jp-vocab">';
   lesson.vocab.forEach(function(v){
     html += jpStudyItemHtml("v",v);
   });
   html += '</div><div class="jp-actions"><button type="button" class="btn secondary btn-sm" data-jp-cards="1">Add these words to Flashcards</button></div></div>';
   if(lesson.kanji){
-    html += '<div class="jp-panel"' + (lesson.teRules ? ' id="jp-day1-kanji"' : '') + '><h3>Kanji in context</h3><p class="jp-muted">पहिले शब्द पढ; सबै readings एकैदिन कण्ठ नगर्नु।</p><div class="jp-vocab">';
+    html += '<div class="jp-panel"' + (studyPrefix ? ' id="' + studyPrefix + 'kanji"' : '') + '><h3>Kanji in context</h3><p class="jp-muted">पहिले शब्द पढ; सबै readings एकैदिन कण्ठ नगर्नु।</p><div class="jp-vocab">';
     lesson.kanji.forEach(function(k){html += jpStudyItemHtml("k",k);});
     html += '</div></div>';
   }
@@ -2249,7 +2282,7 @@ function jpRenderLesson(id){
   html +=
     '<div class="jp-panel"><h3>Common mistake</h3><p>' +
     escapeHtml(JP_ENRICH[id][0]) + '</p></div>' +
-    '<div class="jp-panel"' + (lesson.teRules ? ' id="jp-day1-reading"' : '') + '><h3>Read first, then reveal meaning</h3>' +
+    '<div class="jp-panel"' + (studyPrefix ? ' id="' + studyPrefix + 'reading"' : '') + '><h3>Read first, then reveal meaning</h3>' +
     '<div class="jp-reading" lang="ja">' + escapeHtml(lesson.reading) + '</div>' +
     '<details><summary>Show meaning</summary><p class="jp-muted">' + escapeHtml(lesson.readingHelp) + '</p></details>';
   if(lesson.readingQuestions){
@@ -2264,13 +2297,14 @@ function jpRenderLesson(id){
     '<div class="jp-panel"><h3>Mini challenge</h3><p>' + escapeHtml(JP_ENRICH[id][1]) + '</p>' +
     '<details><summary>Show one possible answer</summary><p lang="ja">' + escapeHtml(JP_ENRICH[id][2]) + '</p></details></div>';
   if(lesson.practice){
-    html += '<div class="jp-panel"' + (lesson.teRules ? ' id="jp-day1-practice"' : '') + '><h3>Write and compare · from your notes</h3><p class="jp-muted">पहिले कापीमा आफैँ उत्तर लेख, त्यसपछि मात्र नमुना खोल।</p>';
+    html += '<div class="jp-panel"' + (studyPrefix ? ' id="' + studyPrefix + 'practice"' : '') + '><h3>Write and compare · from your notes</h3><p class="jp-muted">पहिले कापीमा आफैँ उत्तर लेख, त्यसपछि मात्र नमुना खोल।</p>';
     lesson.practice.forEach(function(p, i){html += '<div class="jp-example"><b>' + (i+1) + '. ' + escapeHtml(p[0]) + '</b><details><summary>Show one answer</summary><p lang="ja">' + escapeHtml(p[1]) + '</p></details></div>';});
     html += '</div>';
   }
-  if(lesson.kanaReview){
-    const old=lesson.kanaReview;
-    html += '<details class="jp-panel jp-old-review"><summary>Earlier Day 1 · kana and small っ review (your original lesson)</summary>' +
+  if(lesson.kanaReview || lesson.previousReview){
+    const old=lesson.kanaReview || lesson.previousReview;
+    const reviewTitle=lesson.kanaReview ? 'Earlier Day 1 · kana and small っ review (your original lesson)' : 'Earlier Day 2 · は / が review (your original lesson)';
+    html += '<details class="jp-panel jp-old-review"><summary>' + reviewTitle + '</summary>' +
       '<p class="jp-muted">Earlier progress: ' + (DB.japanese.done[old.id] ? '✓ Completed' : 'Not completed') +
       (DB.japanese.quizScores[old.id] !== undefined ? ' · Best quiz: ' + DB.japanese.quizScores[old.id] + '%' : '') + '</p>' +
       '<p>' + escapeHtml(old.explain) + '</p><div class="jp-pattern">' + escapeHtml(old.syntax) + '</div>';
@@ -2286,7 +2320,7 @@ function jpRenderLesson(id){
     old.quiz.forEach(function(q,i){html += '<div class="jp-example"><b>' + (i+1) + '. ' + escapeHtml(q[0]) + '</b><details><summary>Show answer</summary><p>' + escapeHtml(q[1][q[2]]) + ' · ' + escapeHtml(q[3]) + '</p></details></div>';});
     html += '</details>';
   }
-  html += '<div class="jp-panel"' + (lesson.teRules ? ' id="jp-day1-quiz"' : '') + '><h3>Check your understanding</h3>';
+  html += '<div class="jp-panel"' + (studyPrefix ? ' id="' + studyPrefix + 'quiz"' : '') + '><h3>Check your understanding</h3>';
   lesson.quiz.forEach(function(q, qi){
     html += '<fieldset class="jp-q"><legend>' + (qi+1) + '. ' + escapeHtml(q[0]) + '</legend>';
     q[1].forEach(function(choice, ci){
@@ -2306,7 +2340,7 @@ function jpRenderLesson(id){
   }
   html += '</div>';
   if(lesson.summary){
-    html += '<div class="jp-panel" id="jp-day1-summary"><h3>Day 1 summary · अब सम्झनुपर्ने कुरा</h3>';
+    html += '<div class="jp-panel" id="' + studyPrefix + 'summary"><h3>Day ' + id.split('.')[1] + ' summary · अब सम्झनुपर्ने कुरा</h3>';
     lesson.summary.forEach(function(point){html += '<p>✓ ' + escapeHtml(point) + '</p>';});
     html += '</div>';
   }
