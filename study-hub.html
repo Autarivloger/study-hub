@@ -1100,6 +1100,52 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
   .ty-hints{ display:none; }        /* phones have no Tab or Esc key */
   .ty-controls{ justify-content:flex-end; }
 }
+
+/* ---------- Japanese Language ---------- */
+.jp-wrap{max-width:1040px;margin:auto;padding:18px 24px 40px}
+.jp-hero,.jp-panel,.jp-week-card,.jp-day-card{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.jp-hero{padding:22px;margin-bottom:18px}
+.jp-hero h2{margin:0 0 8px;font-size:24px}
+.jp-muted{color:var(--text-dim);line-height:1.65}
+.jp-kicker{font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+.jp-actions{display:flex;gap:9px;flex-wrap:wrap;margin:15px 0 0}
+.jp-progress{height:10px;border-radius:10px;background:var(--bg-soft);overflow:hidden;margin:14px 0 5px}
+.jp-progress span{display:block;height:100%;background:var(--good)}
+.jp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px}
+.jp-week-card{padding:15px;text-align:left;color:var(--text);width:100%;min-height:120px}
+.jp-week-card:hover,.jp-day-card:hover{border-color:var(--accent)}
+.jp-week-card strong,.jp-day-card strong{display:block;font-size:15px;margin:5px 0}
+.jp-week-card small,.jp-day-card small{color:var(--text-dim);line-height:1.4}
+.jp-section-title{font-size:17px;margin:24px 0 12px}
+.jp-panel{padding:18px 20px;margin:14px 0}
+.jp-panel h3{margin:0 0 10px;font-size:17px}
+.jp-panel p{line-height:1.75;margin:8px 0}
+.jp-day-card{display:block;padding:14px 16px;margin:9px 0;width:100%;text-align:left;color:var(--text)}
+.jp-example{border-left:3px solid var(--accent);padding:7px 12px;margin:10px 0;background:var(--bg-soft);border-radius:0 8px 8px 0}
+.jp-jp{font-size:20px;line-height:1.65;font-family:"Yu Gothic","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif}
+.jp-reading{font-size:20px;line-height:2;font-family:"Yu Gothic","Noto Sans JP",sans-serif;white-space:pre-wrap}
+.jp-gloss{font-size:13px;color:var(--text-dim)}
+.jp-pattern{font-size:16px;font-weight:700;background:var(--accent-soft);padding:12px;border-radius:8px;line-height:1.6}
+.jp-q{padding:13px 0;border-top:1px solid var(--border)}
+.jp-q legend{font-weight:700;margin-bottom:8px;line-height:1.5}
+.jp-choice{display:block;margin:7px 0;padding:8px;border:1px solid var(--border);border-radius:8px;cursor:pointer}
+.jp-choice:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.jp-choice input{margin-right:7px}
+.jp-result{padding:12px;border-radius:8px;background:var(--accent-soft);line-height:1.6;margin-top:12px}
+.jp-notes{width:100%;min-height:110px;padding:12px;background:var(--bg-elev);border:1px solid var(--border);border-radius:8px;font-size:15px;line-height:1.6;resize:vertical}
+.jp-check{display:block;margin:10px 0;line-height:1.5}
+.jp-check input{margin-right:8px}
+.jp-vocab{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:7px}
+.jp-vocab div{padding:8px 10px;border-radius:8px;background:var(--bg-soft)}
+.jp-vocab small{display:block;color:var(--text-dim)}
+@media(max-width:760px){
+  .jp-wrap{padding:14px 14px 32px}
+  .jp-hero{padding:17px}
+  .jp-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .jp-week-card{min-height:130px;padding:12px}
+  .jp-panel{padding:15px}
+}
+@media(max-width:380px){.jp-grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -1128,6 +1174,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
   <button type="button" data-view="wisdom"><span class="ic">🌱</span>Life</button>
   <button type="button" data-view="liked"><span class="ic">❤️</span>I Liked</button>
   <button type="button" data-view="typing"><span class="ic">⌨️</span>Typing</button>
+  <button type="button" data-view="japanese"><span class="ic">🇯🇵</span>Japanese</button>
   <button type="button" data-view="timer"><span class="ic">⏱️</span>Timer</button>
   <button type="button" data-view="flashcards"><span class="ic">🗂️</span>Cards</button>
   <button type="button" data-view="todo"><span class="ic">✅</span>To-Do</button>
@@ -1144,6 +1191,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
     <button type="button" class="nav-item" data-view="wisdom"><span class="ic">🌱</span>Life Lessons</button>
     <button type="button" class="nav-item" data-view="liked"><span class="ic">❤️</span>I Liked</button>
     <button type="button" class="nav-item" data-view="typing"><span class="ic">⌨️</span>Typing</button>
+    <button type="button" class="nav-item" data-view="japanese"><span class="ic">🇯🇵</span>Japanese Language</button>
     <button type="button" class="nav-item" data-view="timer"><span class="ic">⏱️</span>Timer</button>
     <button type="button" class="nav-item" data-view="flashcards"><span class="ic">🗂️</span>Flashcards</button>
     <button type="button" class="nav-item" data-view="todo"><span class="ic">✅</span>To-Do</button>
@@ -1223,6 +1271,11 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
         <h1>⌨️ Typing</h1>
       </div>
       <div id="typingBody"></div>
+    </div>
+
+    <div class="view" id="view-japanese">
+      <div class="pane-header"><h1>🇯🇵 Japanese Language</h1></div>
+      <div id="japaneseBody"></div>
     </div>
 
     <div class="view" id="view-notes">
@@ -1363,6 +1416,11 @@ function applyDefaults(d){
   d.lastSeen = d.lastSeen || null;   // the exact page you were last reading
   d.likedSongs = d.likedSongs || [];   // {id, title, url, lang, era, added}
   d.typingHistory = d.typingHistory || [];   // {id, at, wpm, acc, duration, cat, missed, ...}
+  d.japanese = d.japanese || {done:{}, quizScores:{}, notes:{}, checks:{}};
+  d.japanese.done = d.japanese.done || {};
+  d.japanese.quizScores = d.japanese.quizScores || {};
+  d.japanese.notes = d.japanese.notes || {};
+  d.japanese.checks = d.japanese.checks || {};
   d.wisdom = d.wisdom || [];
   d.lastBackup = d.lastBackup || null;
   return d;
@@ -1425,6 +1483,20 @@ function mergeIntoDB(incoming){
       DB.lastSeen = incoming.lastSeen;
     }
   }
+
+  /* Japanese progress uses the same non-destructive union as the Python course.
+     Local writing wins; the best quiz score and every completion survive sync. */
+  Object.keys(incoming.japanese.done).forEach(function(k){
+    if(!DB.japanese.done[k]) DB.japanese.done[k] = incoming.japanese.done[k];
+  });
+  Object.keys(incoming.japanese.quizScores).forEach(function(k){
+    DB.japanese.quizScores[k] = Math.max(DB.japanese.quizScores[k] || 0, incoming.japanese.quizScores[k] || 0);
+  });
+  ["notes", "checks"].forEach(function(key){
+    Object.keys(incoming.japanese[key]).forEach(function(k){
+      if(DB.japanese[key][k] === undefined) DB.japanese[key][k] = incoming.japanese[key][k];
+    });
+  });
 
   applyDefaults(DB);
 }
@@ -1500,14 +1572,14 @@ function confirmDialog(message, onYes){
 }
 
 /* ============ Navigation ============ */
-const views = ["course","lessons","journal","wisdom","liked","typing","notes","timer","flashcards","todo","quiz"];
+const views = ["course","lessons","journal","wisdom","liked","typing","japanese","notes","timer","flashcards","todo","quiz"];
 function switchView(name){
   views.forEach(v=>{
     document.getElementById("view-"+v).classList.toggle("active", v===name);
   });
   document.querySelectorAll("#sidebar .nav-item").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
   document.querySelectorAll("#tabnav button").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
-  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Lessons", journal:"Daily Journal", wisdom:"Life Lessons", liked:"I Liked", typing:"Typing", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Quizzes"}[name];
+  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Lessons", journal:"Daily Journal", wisdom:"Life Lessons", liked:"I Liked", typing:"Typing", japanese:"Japanese Language", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Quizzes"}[name];
   document.getElementById("backBtn").style.display = "none";
   if(name!=="typing") typingLeave();
   if(name==="course") renderCourse();
@@ -1516,6 +1588,7 @@ function switchView(name){
   if(name==="wisdom") renderWisdom();
   if(name==="liked") renderLiked();
   if(name==="typing") renderTyping();
+  if(name==="japanese") renderJapanese();
   if(name==="notes") renderNotesList();
   if(name==="timer") renderTimer();
   if(name==="flashcards") renderDecks();
@@ -1742,6 +1815,400 @@ function renderLiked(){
       });
     };
   });
+}
+
+/* ================= JAPANESE LANGUAGE =================
+   Original lessons and a 36-week roadmap. The first two weeks are taught in
+   full; later weeks are honest roadmaps until their lessons are authored. */
+const JP_WEEKS = [
+  [1,"N5 bridge","Kana, particles, verb forms","Read short everyday sentences","Introduce yourself and your routine"],
+  [2,"N5 → N4","Adjectives, reasons, plans and experience","Read a short diary","Explain plans and past experiences"],
+  [3,"N4","Plain forms and casual speech","Read a message between friends","Switch between polite and casual speech"],
+  [4,"N4","ている, てもいい, てはいけない","Read signs and instructions","Ask permission and explain rules"],
+  [5,"N4","Comparisons and preferences","Read product descriptions","Compare two choices"],
+  [6,"N4","Potential form: can and cannot","Read a service notice","Describe abilities and obstacles"],
+  [7,"N4","Giving and receiving help","Read a thank-you note","Ask for and offer help"],
+  [8,"N4","Conditions: と, たら, ば, なら","Read simple advice","Discuss what you would do"],
+  [9,"N4","Transitive and intransitive verbs","Read a lost-property notice","Explain what happened"],
+  [10,"N4","Passive and causative introduction","Read a short personal account","Describe events from your viewpoint"],
+  [11,"N4","Quoting, explaining and reported speech","Read a news summary","Report what somebody said"],
+  [12,"N4 review","Integrated N4 reading and listening","Read a 300-character story","Give a two-minute summary"],
+  [13,"N3 bridge","N3 sentence structure and connectors","Read a longer everyday article","Link ideas naturally"],
+  [14,"N3","ように, ために: purpose and goals","Read study advice","Explain a personal goal"],
+  [15,"N3","ようになる, ことになる: change","Read a personal journey","Describe changes over time"],
+  [16,"N3","そうだ, ようだ, みたい: appearance","Read an observation diary","Express uncertainty"],
+  [17,"N3","はず, かもしれない, に違いない","Read predictions and notices","Make careful guesses"],
+  [18,"N3","ばかり, ところ, うちに: time and aspect","Read a work diary","Say when events happened"],
+  [19,"N3","のに, くせに, おかげで, せいで","Read contrasting opinions","Explain a surprising result"],
+  [20,"N3","について, に対して, によって","Read a short news report","State and support an opinion"],
+  [21,"N3","わけ, というわけ: reasoning","Read an explanation text","Clarify why something happened"],
+  [22,"N3","べき, ことだ, ほうがいい: advice","Read a problem column","Give tactful advice"],
+  [23,"N3","ても, どんなに〜ても: concession","Read an interview","Respond to opposing ideas"],
+  [24,"N3","Formal and casual register","Read emails and messages","Adjust politeness to the listener"],
+  [25,"N3","Kanji in context: people and society","Read a community notice","Discuss a local issue"],
+  [26,"N3","Kanji in context: work and study","Read workplace information","Explain a task and deadline"],
+  [27,"N3","Kanji in context: health and travel","Read a travel notice","Describe a problem and ask for help"],
+  [28,"N3","Longer reading: main idea and detail","Read a 500-character article","Summarize without translating"],
+  [29,"N3 practice","Timed vocabulary and grammar","Read under a time limit","Answer follow-up questions"],
+  [30,"N3 practice","Timed reading: notices and essays","Read for purpose and inference","Present a three-minute summary"],
+  [31,"N3 practice","Listening: task and key points","Follow natural-speed directions","Repeat and confirm instructions"],
+  [32,"N3 practice","Listening: conversation and gist","Track speakers' intentions","Role-play a conversation"],
+  [33,"N3 review","Weak areas from error log","Re-read difficult passages","Repair recurring speaking errors"],
+  [34,"N3 review","Mixed practice set 1","Timed N3 reading set","Speak for five minutes on one topic"],
+  [35,"N3 review","Mixed practice set 2","Timed N3 reading set","Answer spontaneous questions"],
+  [36,"N3 readiness","Final review and next-step plan","Independent N3-level reading","Give a clear self-introduction and opinion"]
+];
+
+/* Each taught day has its own explanation, examples, short reading, speaking
+   task and checked questions. Keys stay stable so progress survives edits. */
+const JP_LESSONS = [
+  {id:"1.1",title:"Kana and sounds that change meaning",goal:"Read kana confidently; hear long vowels and the small っ.",
+   explain:"तिमीलाई N5 को आधार थाहा छ भने यो छिटो diagnostic जस्तै गर। Japanese मा एउटा सानो sound फरक हुँदा शब्द बदलिन्छ। っ ले अगाडिको consonant रोक्छ; long vowel ले vowel लामो बनाउँछ। Romaji मा भर नपर—kana बाटै पढ।",
+   syntax:"きて (ki-te) ≠ きって (kit-te)  •  おばさん ≠ おばあさん",
+   examples:[["来てください。","きてください。","Please come."],["切手を買いました。","きってをかいました。","I bought a stamp."],["おばあさんは元気です。","おばあさんはげんきです。","Grandmother is well."]],
+   vocab:[["切手","きって","stamp"],["来る","くる","to come"],["元気","げんき","well / energetic"]],
+   reading:"今日は日曜日です。朝、切手を買いました。午後、おばあさんの家に行きます。",
+   readingHelp:"Today is Sunday. I bought a stamp in the morning. In the afternoon I will go to my grandmother's house.",
+   speak:"यो reading kana हेरेर दुई पटक पढ। きて र きって अलग-अलग स्पष्ट बोल।",
+   model:"きて → ki-te; きって → kit-te (बीचमा छोटो pause)।",
+   quiz:[["Which word means a postage stamp?",["きて","きって","きいって"],1,"The small っ creates the consonant pause in きって."],["Grandmother is…",["おばさん","おばあさん","おばあ"],1,"The long あ changes aunt (おばさん) to grandmother (おばあさん)."]]},
+  {id:"1.2",title:"は and が: topic and new information",goal:"Choose は for a topic and が when identifying new or focused information.",
+   explain:"は (wa भनेर पढिन्छ) ले ‘अब म यो विषयबारे बोल्दैछु’ भन्छ। が ले ‘यही व्यक्ति/चीज हो’ भन्ने focus दिन्छ। यो पूर्ण नियम होइन; सन्दर्भ धेरै महत्त्वपूर्ण छ। सुरुमा प्रश्नको focus हेर: だれが？ को उत्तरमा प्रायः が आउँछ।",
+   syntax:"[topic] は [comment]。  •  だれが 来ましたか。→ 田中さんが 来ました。",
+   examples:[["私はネパール人です。","わたしはネパールじんです。","As for me, I am Nepali."],["だれが来ましたか。田中さんが来ました。","だれがきましたか。たなかさんがきました。","Who came? Tanaka came."],["この本はおもしろいです。","このほんはおもしろいです。","This book is interesting."]],
+   vocab:[["来る","くる","to come"],["本","ほん","book"],["おもしろい","おもしろい","interesting"]],
+   reading:"私は日本語を勉強しています。先生はやさしいです。今日は新しい学生が来ました。",
+   readingHelp:"I study Japanese. The teacher is kind. Today a new student came.",
+   speak:"आफ्नो बारेमा は प्रयोग गरेर एक वाक्य बोल। त्यसपछि ‘Who came?’ को जवाफ が प्रयोग गरेर देऊ।",
+   model:"私は日本語を勉強しています。友だちが来ました。",
+   quiz:[["だれ___来ましたか。",["は","が","を"],1,"The question asks who; が marks that focus."],["___はネパール人です。 (speaking about yourself)",["私","私を","私が"],0,"私は makes yourself the topic of the sentence."]]},
+  {id:"1.3",title:"に・で・を・へ: place and action",goal:"Tell destination, action location and object apart.",
+   explain:"に destination वा time को point हो: 学校に行く। で action हुने ठाउँ हो: 学校で勉強する। を direct object हो: 本を読む। へ (e भनेर पढिन्छ) direction जनाउँछ; destination को अर्थमा に सँग मिल्न सक्छ।",
+   syntax:"place に 行く  •  place で action  •  object を verb  •  direction へ 行く",
+   examples:[["学校に行きます。","がっこうにいきます。","I go to school."],["学校で勉強します。","がっこうでべんきょうします。","I study at school."],["図書館で本を読みます。","としょかんでほんをよみます。","I read a book at the library."]],
+   vocab:[["学校","がっこう","school"],["図書館","としょかん","library"],["読む","よむ","to read"]],
+   reading:"七時に家を出ます。電車で学校に行きます。学校で日本語を勉強します。",
+   readingHelp:"I leave home at seven. I go to school by train. I study Japanese at school. Note: 家を出る is an exit-point use of を.",
+   speak:"आज तिमी कहाँ जान्छौ र त्यहाँ के गर्छौ? に र で सहित दुई वाक्य बोल।",
+   model:"図書館に行きます。図書館で本を読みます。",
+   quiz:[["図書館___本を読みます。",["に","で","を"],1,"Reading happens at the library, so で marks the action location."],["学校___行きます。",["に","で","を"],0,"学校 is the destination, so に fits."]]},
+  {id:"1.4",title:"Polite verbs across time",goal:"Use ます, ません, ました and ませんでした accurately.",
+   explain:"Japanese polite verb ending ले समय र positive/negative दुवै देखाउँछ। ‘आज पढ्छु’ र ‘भोलि पढ्छु’ मा ます नै हुन्छ; past मा ました। Negative past ませんでした हो।",
+   syntax:"勉強します / 勉強しません / 勉強しました / 勉強しませんでした",
+   examples:[["毎日、日本語を勉強します。","まいにち、にほんごをべんきょうします。","I study Japanese every day."],["昨日は勉強しませんでした。","きのうはべんきょうしませんでした。","I did not study yesterday."],["明日、友だちに会います。","あした、ともだちにあいます。","I will meet a friend tomorrow."]],
+   vocab:[["毎日","まいにち","every day"],["昨日","きのう","yesterday"],["明日","あした","tomorrow"]],
+   reading:"昨日は忙しかったです。日本語を勉強しませんでした。でも、今日は三十分勉強します。",
+   readingHelp:"Yesterday I was busy and did not study Japanese. But I will study for 30 minutes today.",
+   speak:"हिजो के गर्‍यौ वा गरेनौ? भोलि के गर्नेछौ? तीन वाक्य बोल।",
+   model:"昨日、本を読みました。テレビを見ませんでした。明日、勉強します。",
+   quiz:[["I did not study yesterday.",["昨日、勉強しません。","昨日、勉強しませんでした。","昨日、勉強します。"],1,"ませんでした is polite negative past."],["明日、学校に___。",["行きました","行きませんでした","行きます"],2,"明日 is tomorrow, so the nonpast ます form fits."]]},
+  {id:"1.5",title:"て-form: connect, request and sequence",goal:"Form common て-forms and use 〜てください.",
+   explain:"て-form एउटा bridge हो: request, sequence र धेरै N4/N3 pattern यहीँबाट सुरु हुन्छन्। Group 2 (食べる→食べて), する→して, 来る→来て। Group 1 मा う/つ/る→って, む/ぶ/ぬ→んで, く→いて, ぐ→いで, す→して। अपवाद: 行く→行って। आज सबै कण्ठ नगरे पनि ५ मुख्य verb बोल्दै अभ्यास गर।",
+   syntax:"verb て-form + ください  •  verb て-form、next action",
+   examples:[["ちょっと待ってください。","ちょっとまってください。","Please wait a moment."],["朝ご飯を食べて、学校に行きます。","あさごはんをたべて、がっこうにいきます。","I eat breakfast and go to school."],["この本を読んでください。","このほんをよんでください。","Please read this book."]],
+   vocab:[["待つ","まつ","to wait"],["食べる","たべる","to eat"],["読む","よむ","to read"],["行く","いく","to go"]],
+   reading:"朝起きて、水を飲んで、学校に行きます。先生に会って、日本語で話します。",
+   readingHelp:"I wake up, drink water and go to school. I meet the teacher and speak in Japanese.",
+   speak:"आफ्नो बिहानका ३ काम て-form ले जोडेर बोल।",
+   model:"朝起きて、顔を洗って、朝ご飯を食べます。",
+   quiz:[["行く → て-form",["行いて","行って","行くて"],1,"行く is the important exception: 行って."],["読む → て-form",["読んで","読って","読みて"],0,"む/ぶ/ぬ become んで."]]},
+  {id:"1.6",title:"Week 1 reading and conversation",goal:"Read a connected paragraph and give a 30-second spoken summary.",
+   explain:"आज नयाँ grammar थोरै मात्र छ। पढ्दा प्रत्येक शब्द English मा नफेर। पहिले को/कहाँ/कहिले/के भयो चिन। त्यसपछि आफ्नो शब्दमा बोल। गल्ती भएको वाक्य note मा लेख।",
+   syntax:"読む → だれ？ いつ？ どこ？ なに？ → 1–2 sentence summary",
+   examples:[["昨日、友だちと図書館に行きました。","きのう、ともだちととしょかんにいきました。","Yesterday I went to the library with a friend."],["そこで本を読んで、日本語を勉強しました。","そこでほんをよんで、にほんごをべんきょうしました。","There I read a book and studied Japanese."]],
+   vocab:[["友だち","ともだち","friend"],["そこで","そこで","there"],["午後","ごご","afternoon"]],
+   reading:"昨日、友だちと図書館に行きました。午前中は本を読んで、午後は日本語を勉強しました。友だちは漢字が上手です。私はまだ漢字が難しいですが、毎日少しずつ練習します。",
+   readingHelp:"Yesterday I went to the library with a friend. In the morning I read; in the afternoon I studied Japanese. My friend is good at kanji. Kanji is still hard for me, but I practise a little every day.",
+   speak:"Reading नहेरी ३० सेकेन्डमा ‘कससँग, कहाँ, के गर्‍यो, कस्तो लाग्यो’ भन्ने बोल। अनि आफ्नो हिजोको दिन २ वाक्यमा भन।",
+   model:"友だちと図書館に行きました。本を読んで、日本語を勉強しました。",
+   quiz:[["Where did the speaker go?",["学校","図書館","家"],1,"図書館に行きました says they went to the library."],["What is difficult for the speaker?",["漢字","本","午後"],0,"私はまだ漢字が難しいです."]]},
+  {id:"2.1",title:"い-adjectives and な-adjectives",goal:"Describe things in present, negative and past forms.",
+   explain:"い-adjective मा い हटाएर くない (negative), かった (past) राख। たかい→たかくない→たかかった। な-adjective noun अगाडि な लिन्छ; polite sentence मा です। しずかです→しずかじゃありません→しずかでした। きれい अन्त्यमा い भए पनि な-adjective हो।",
+   syntax:"高い → 高くない → 高かった  •  静かです → 静かじゃありません → 静かでした",
+   examples:[["この店は高くないです。","このみせはたかくないです。","This shop is not expensive."],["昨日は寒かったです。","きのうはさむかったです。","It was cold yesterday."],["静かな町に住んでいます。","しずかなまちにすんでいます。","I live in a quiet town."]],
+   vocab:[["高い","たかい","expensive / high"],["寒い","さむい","cold"],["静か","しずか","quiet"],["きれい","きれい","beautiful / clean"]],
+   reading:"昨日は寒かったですが、今日は暖かいです。私の町は静かで、きれいです。",
+   readingHelp:"Yesterday was cold, but today is warm. My town is quiet and beautiful.",
+   speak:"आजको मौसम र आफ्नो सहरबारे ३ adjective प्रयोग गरेर बोल।",
+   model:"今日は暖かいです。私の町は静かです。でも、駅はにぎやかです。",
+   quiz:[["高い past form?",["高いでした","高かった","高くない"],1,"い-adjective past: remove い, add かった."],["静か___町",["い","な","で"],1,"静か is a な-adjective before a noun."]]},
+  {id:"2.2",title:"から and ので: giving a reason",goal:"Explain a reason and choose a softer form when useful.",
+   explain:"から र ので दुवै ‘because’ हुन्। から सीधा, बोलचालमा सामान्य छ। ので कहिलेकाहीँ नरम वा औपचारिक सुनिन्छ। ‘から सधैँ rude’ भन्ने होइन। Sentence को अन्त्यमा explanation पछि consequence राख।",
+   syntax:"reason + から / ので、result",
+   examples:[["雨が降っているから、家にいます。","あめがふっているから、いえにいます。","Because it is raining, I will stay home."],["電車が遅れたので、少し遅れます。","でんしゃがおくれたので、すこしおくれます。","The train was delayed, so I will be a little late."],["忙しいので、今日は行けません。","いそがしいので、きょうはいけません。","I am busy, so I cannot go today."]],
+   vocab:[["雨","あめ","rain"],["遅れる","おくれる","to be late"],["忙しい","いそがしい","busy"]],
+   reading:"今日は雨が降っています。外に行けないので、家で日本語の本を読みます。",
+   readingHelp:"It is raining today. Because I cannot go outside, I will read a Japanese book at home.",
+   speak:"आजको योजनामा एउटा ‘because’ वाक्य बनाऊ। कसैलाई ढिलो हुने खबर पनि नरम रूपमा भन।",
+   model:"電車が遅れたので、十分ほど遅れます。すみません。",
+   quiz:[["Which gives a softer reason for arriving late?",["遅れたので、すみません。","遅れたを、すみません。","遅れたに、すみません。"],0,"ので links the reason to the apology."],["雨が降っている___、家にいます。",["から","を","が"],0,"から introduces the reason."]]},
+  {id:"2.3",title:"たい and つもり: desire versus intention",goal:"Say what you want to do and what you intend to do.",
+   explain:"〜たいです इच्छा हो। 〜つもりです योजना वा intention हो। Verb ます बाट ます हटाएर たい जोड; つもり अगाडि plain dictionary form राख। ‘जान मन छ’ र ‘जाने योजना छ’ छुट्ट्याउन अभ्यास गर।",
+   syntax:"行きます → 行きたいです  •  行く + つもりです",
+   examples:[["日本へ行きたいです。","にほんへいきたいです。","I want to go to Japan."],["来年、日本へ行くつもりです。","らいねん、にほんへいくつもりです。","I intend to go to Japan next year."],["今日は外食しないつもりです。","きょうはがいしょくしないつもりです。","I intend not to eat out today."]],
+   vocab:[["来年","らいねん","next year"],["外食する","がいしょくする","to eat out"],["旅行","りょこう","travel"]],
+   reading:"私は日本語をもっと話したいです。来月から毎日十分、友だちと話すつもりです。",
+   readingHelp:"I want to speak more Japanese. Starting next month, I intend to speak with a friend for ten minutes daily.",
+   speak:"एउटा इच्छा र त्यसलाई पूरा गर्ने एउटा ठोस योजना बोल।",
+   model:"日本語で本を読みたいです。毎朝二十分読むつもりです。",
+   quiz:[["Which means 'I intend to study'?",["勉強したいです","勉強するつもりです","勉強しますたい"],1,"Dictionary form + つもりです expresses intention."],["行きます → I want to go",["行くたいです","行きたいです","行きますたい"],1,"Remove ます and add たいです."]]},
+  {id:"2.4",title:"〜たことがある: life experience",goal:"Ask and answer whether somebody has ever done something.",
+   explain:"Verb को plain past た-form + ことがあります = ‘पहिले कहिल्यै गरेको छु’। विशिष्ट समयको घटना भन्न खोज्दा साधारण past प्रयोग गर। ‘去年行きました’ एउटा घटना हो; ‘行ったことがあります’ जीवन अनुभव हो।",
+   syntax:"verb た-form + ことがありますか。→ はい、あります / いいえ、ありません",
+   examples:[["日本へ行ったことがありますか。","にほんへいったことがありますか。","Have you ever been to Japan?"],["富士山を見たことがあります。","ふじさんをみたことがあります。","I have seen Mount Fuji."],["納豆を食べたことがありません。","なっとうをたべたことがありません。","I have never eaten natto."]],
+   vocab:[["富士山","ふじさん","Mount Fuji"],["納豆","なっとう","natto"],["経験","けいけん","experience"]],
+   reading:"私は日本に行ったことがあります。京都でお寺を見ました。でも、北海道には行ったことがありません。",
+   readingHelp:"I have been to Japan. I saw temples in Kyoto. But I have never been to Hokkaido.",
+   speak:"आफूले गरेको दुई कुरा र नगरेको एउटा कुरा अनुभवको रूपमा बोल।",
+   model:"日本料理を食べたことがあります。京都に行ったことはありません。",
+   quiz:[["Have you ever eaten sushi?",["すしを食べることがありますか。","すしを食べたことがありますか。","すしを食べていますか。"],1,"Past plain form + ことがありますか asks about experience."],["Which describes one specific event last year?",["去年行きました。","行ったことがあります。","行くことがあります。"],0,"去年 gives a specific time, so simple past fits."]]},
+  {id:"2.5",title:"あげる・くれる・もらう: who benefits?",goal:"Track the giver, receiver and speaker's point of view.",
+   explain:"あげる: मैले/कसैले अर्को व्यक्तिलाई दियो। くれる: अरूले मलाई वा मेरो समूहलाई दियो। もらう: मैले कसैबाट पाएँ। Japanese मा direction बदलिएसँगै verb बदलिन्छ। Diagram सोच: me → other = あげる; other → me = くれる/もらう (focus फरक)।",
+   syntax:"私が友だちに本をあげる。友だちが私に本をくれる。私は友だちに本をもらう。",
+   examples:[["私は妹に本をあげました。","わたしはいもうとにほんをあげました。","I gave my younger sister a book."],["友だちが私に写真をくれました。","ともだちがわたしにしゃしんをくれました。","My friend gave me a photo."],["私は先生に本をもらいました。","わたしはせんせいにほんをもらいました。","I received a book from my teacher."]],
+   vocab:[["妹","いもうと","younger sister"],["写真","しゃしん","photo"],["先生","せんせい","teacher"]],
+   reading:"昨日、友だちが私に写真をくれました。私は友だちに手紙をあげました。友だちはとても喜びました。",
+   readingHelp:"Yesterday my friend gave me a photo. I gave my friend a letter. My friend was very happy.",
+   speak:"उपहार दिने र पाउने दुई घटना बनाऊ। प्रत्येकमा arrow को दिशा पहिले सोच।",
+   model:"友だちが私に本をくれました。私は友だちにお菓子をあげました。",
+   quiz:[["My friend gave me a photo: 友だちが私に写真を___。",["あげました","くれました","もらいました"],1,"The gift comes toward me, so くれました."],["I received a book from my teacher: 私は先生に本を___。",["くれました","あげました","もらいました"],2,"The subject is the receiver, so もらいました."]]},
+  {id:"2.6",title:"Week 2 reading, explanation and speaking",goal:"Read a connected account and speak about a plan with reasons.",
+   explain:"अब अलग grammar लाई एउटा कथा/कुराकानीमा जोड। Reading मा सबै अपरिचित kanji मा रोकिनु पर्दैन। पहिले मुख्य अर्थ समात, त्यसपछि जाँच। Speaking मा perfect हुन खोज्दा धेरै नअड्क; एउटै विचार २–३ जोडिएका वाक्यमा भन।",
+   syntax:"experience → reason → plan  •  〜たことがある。〜ので、〜つもりです。",
+   examples:[["日本料理を作ったことがあります。","にほんりょうりをつくったことがあります。","I have cooked Japanese food."],["もっと上手になりたいので、毎週作るつもりです。","もっとじょうずになりたいので、まいしゅうつくるつもりです。","I want to get better, so I plan to cook every week."]],
+   vocab:[["料理","りょうり","cooking / dish"],["毎週","まいしゅう","every week"],["上手","じょうず","skilled"]],
+   reading:"去年、私は友だちと日本料理を作りました。私はその前に作ったことがありませんでした。友だちが私に作り方を教えてくれました。楽しかったので、来週また作るつもりです。",
+   readingHelp:"Last year I cooked Japanese food with a friend. I had not made it before. My friend taught me how to make it. It was fun, so I plan to do it again next week.",
+   speak:"आफ्नो अनुभव, त्यसको कारण/भावना, अर्को हप्ताको योजना—कम्तीमा ४ वाक्यमा बोल।",
+   model:"日本料理を作ったことがあります。楽しかったです。もっと上手になりたいので、来週また作るつもりです。",
+   quiz:[["What did the friend do?",["写真をくれました","作り方を教えてくれました","店に行きました"],1,"The text says the friend taught the speaker how to make it."],["Why will the speaker cook again?",["楽しかったので","寒かったので","忙しかったので"],0,"It was enjoyable, so the speaker intends to cook again."]]}
+];
+
+/* Targeted correction and active production, kept separate from the core
+   lesson data so later lessons can gain more depth without changing IDs. */
+const JP_ENRICH = {
+  "1.1":["っ लाई पूरा つ जस्तै नपढ। छोटो pause हो; きて र きって एउटै होइन।","‘Come here, please’ र ‘I bought a stamp’ kana मा लेख।","きてください。 / きってをかいました。"],
+  "1.2":["は लाई ‘subject marker’ मात्र नसम्झ। यो topic marker हो; focus बदलिँदा が चाहिन्छ।","‘Who came?’ र ‘Tanaka came’ भन्ने दुई वाक्य लेख।","だれが来ましたか。田中さんが来ました。"],
+  "1.3":["Destination लाई で र action location लाई に लगाउने बानी नबसाल।","‘I go to the library and study Japanese there’ लाई दुई वाक्यमा लेख।","図書館に行きます。図書館で日本語を勉強します。"],
+  "1.4":["昨日 सँग ません राख्दा समय नमिल्छ। Negative past = ませんでした।","हिजो पढेनौ, तर भोलि पढ्नेछौ—दुई वाक्य बनाऊ।","昨日は勉強しませんでした。明日は勉強します。"],
+  "1.5":["行く को て-form 行いて होइन—अपवाद 行って हो।","読む, 行く, 食べる लाई て-form मा बदल र ‘Please read’ बनाऊ।","読んで、行って、食べて。読んでください。"],
+  "1.6":["पढ्दा हरेक शब्दमा रोकिने होइन; पहिले मुख्य घटना समात।","Reading नहेरी ३० सेकेन्ड सारांश बोल। त्यसपछि ‘मलाई kanji गाह्रो छ’ लेख।","友だちと図書館に行きました。漢字は難しいです。"],
+  "2.1":["きれい को अन्त्यमा い छ तर यो な-adjective हो: きれいな町।","高い को negative/past र 静か को noun-before form लेख।","高くない、高かった、静かな町。"],
+  "2.2":["ので लाई ‘सधैँ polite’ र から लाई ‘सधैँ rude’ नसम्झ। Context हेर।","‘Rain is falling, so I will stay home’ から र ので दुवैमा लेख।","雨が降っているから、家にいます。 / 雨が降っているので、家にいます。"],
+  "2.3":["たい र つもり एउटै होइनन्: चाहना बनाम इरादा।","‘I want to read Japanese books, so I intend to read daily’ लेख।","日本語の本を読みたいです。毎日読むつもりです。"],
+  "2.4":["विशिष्ट ‘last year’ घटना भन्न 〜たことがある मात्र प्रयोग नगरी plain past पनि सिक।","एउटा life experience र एउटा specific yesterday event बोल।","日本へ行ったことがあります。昨日、友だちに会いました。"],
+  "2.5":["दिने/पाउने दिशा नहेरी あげる र くれる छान्दा अर्थ उल्टिन्छ।","तिमीले साथीलाई किताब दियौ; साथीले तिमीलाई फोटो दियो—दुवै लेख।","私は友だちに本をあげました。友だちが私に写真をくれました。"],
+  "2.6":["सारांशमा पाठका सबै वाक्य नदोहोर्‍याऊ; अनुभव, कारण, योजना समेट।","आफ्नो वास्तविक अनुभवबाट 〜たことがある, ので र つもり प्रयोग गरी ३–४ वाक्य बोल।","日本料理を作ったことがあります。楽しかったので、来週また作るつもりです。"]
+};
+
+let jpPage = {mode:"home", week:1, lesson:"1.1"};
+let jpQuizFeedback = null;
+let jpEventsBound = false;
+function jpWeekLessons(week){
+  return JP_LESSONS.filter(function(l){ return Number(l.id.split(".")[0]) === week; });
+}
+function jpNextLesson(){
+  return JP_LESSONS.find(function(l){ return !DB.japanese.done[l.id]; }) || JP_LESSONS[0];
+}
+function jpDoneCount(){
+  return JP_LESSONS.filter(function(l){ return !!DB.japanese.done[l.id]; }).length;
+}
+function jpMonth(week){ return Math.ceil(week / 4); }
+function jpProgressBar(done, total){
+  return '<div class="jp-progress" role="progressbar" aria-valuenow="' + done +
+    '" aria-valuemax="' + total + '"><span style="width:' + Math.round(100 * done / total) + '%"></span></div>' +
+    '<small class="jp-muted">' + done + ' / ' + total + ' detailed lessons completed</small>';
+}
+function jpRenderHome(){
+  const next = jpNextLesson();
+  let html = '<div class="jp-hero"><div class="jp-kicker">Your 9-month route · 36 weeks</div>' +
+    '<h2>From N5 basics to practical N3</h2>' +
+    '<p class="jp-muted">You already know some N5, so the first two weeks repair the basics through a short diagnostic bridge. Move on when the reading and speaking tasks feel comfortable. Weeks 3–12 build N4, weeks 13–28 build N3, and the last eight weeks are for timed practice and real use.</p>' +
+    jpProgressBar(jpDoneCount(), JP_LESSONS.length) +
+    '<div class="jp-actions"><button type="button" class="btn" data-jp-lesson="' + next.id + '">Continue: ' + escapeHtml(next.title) + ' →</button></div></div>' +
+    '<div class="jp-panel"><h3>Your weekly rhythm</h3>' +
+    '<p><b>Six study days + one review day.</b> Aim for about 2 hours: 15 min vocabulary review, 25 min grammar, 20 min kanji in context, 25 min reading, 25 min listening and shadowing, 10 min speaking or an error log. If you have less time, keep every skill and shorten each block.</p>' +
+    '<p class="jp-muted">N3 reading and listening need separate practice. The JLPT itself does not test speaking, so this course gives speaking its own daily task. Two weeks of complete lessons are available now; the later cards show the roadmap and will gain full lessons step by step.</p></div>';
+  for(let month=1;month<=9;month++){
+    html += '<h2 class="jp-section-title">Month ' + month + '</h2><div class="jp-grid">';
+    for(let w=(month-1)*4+1;w<=month*4;w++){
+      const item = JP_WEEKS[w-1], lessons = jpWeekLessons(w);
+      const done = lessons.filter(function(l){ return DB.japanese.done[l.id]; }).length;
+      html += '<button type="button" class="jp-week-card" data-jp-week="' + w + '">' +
+        '<span class="jp-kicker">Week ' + w + ' · ' + escapeHtml(item[1]) + '</span>' +
+        '<strong>' + escapeHtml(item[2]) + '</strong><small>' +
+        (lessons.length ? done + ' / ' + lessons.length + ' lessons done' : 'Roadmap · lessons to come') +
+        '</small></button>';
+    }
+    html += '</div>';
+  }
+  return html;
+}
+function jpRenderWeek(week){
+  const item = JP_WEEKS[week-1], lessons = jpWeekLessons(week);
+  let html = '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-home="1">← All 36 weeks</button></div>' +
+    '<div class="jp-hero"><span class="jp-kicker">Month ' + jpMonth(week) + ' · Week ' + week + ' · ' + escapeHtml(item[1]) + '</span>' +
+    '<h2>' + escapeHtml(item[2]) + '</h2>' +
+    '<p class="jp-muted"><b>Reading:</b> ' + escapeHtml(item[3]) + '<br><b>Speaking:</b> ' + escapeHtml(item[4]) + '</p>' +
+    (lessons.length ? jpProgressBar(lessons.filter(function(l){return DB.japanese.done[l.id];}).length, lessons.length) : '') +
+    '</div>';
+  if(!lessons.length){
+    return html + '<div class="jp-panel"><h3>Weekly direction</h3>' +
+      '<p>Focus on <b>' + escapeHtml(item[2]) + '</b>. Use six study days: learn the pattern in context, collect new words, read a short passage, listen and shadow, speak about the topic, then review errors.</p>' +
+      '<p class="jp-muted">Detailed teaching for this week is being added gradually. This roadmap is not a completed lesson. Until then, use the topic and speaking goal to guide independent practice.</p></div>';
+  }
+  html += '<h2 class="jp-section-title">Daily lessons</h2>';
+  lessons.forEach(function(l, i){
+    html += '<button type="button" class="jp-day-card" data-jp-lesson="' + l.id + '">' +
+      '<small>Day ' + (i+1) + (DB.japanese.done[l.id] ? ' · ✓ Completed' : '') + '</small>' +
+      '<strong>' + escapeHtml(l.title) + '</strong><small>' + escapeHtml(l.goal) + '</small></button>';
+  });
+  return html + '<div class="jp-panel"><h3>Day 7: review</h3>' +
+    '<p>Re-read the hardest passage without translation. Redo missed questions. Speak for two minutes using this week’s patterns and write down the words you could not recall. Repeat any day that still feels shaky.</p></div>';
+}
+function jpRenderLesson(id){
+  const lesson = JP_LESSONS.find(function(l){return l.id===id;});
+  if(!lesson) return jpRenderHome();
+  const index = JP_LESSONS.indexOf(lesson), week = Number(id.split(".")[0]);
+  const checks = DB.japanese.checks[id] || {};
+  let html = '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-week="' + week + '">← Week ' + week + '</button>' +
+    '<button type="button" class="btn secondary" data-jp-home="1">All weeks</button></div>' +
+    '<div class="jp-hero"><span class="jp-kicker">Week ' + week + ' · Day ' + id.split(".")[1] + '</span>' +
+    '<h2>' + escapeHtml(lesson.title) + '</h2><p class="jp-muted"><b>Goal:</b> ' + escapeHtml(lesson.goal) + '</p>' +
+    '<p class="jp-muted">' + (DB.japanese.done[id] ? '✓ Completed' : 'Not completed yet') +
+    (DB.japanese.quizScores[id] !== undefined ? ' · Best quiz: ' + DB.japanese.quizScores[id] + '%': '') + '</p></div>' +
+    '<div class="jp-panel"><h3>Understand it</h3><p>' + escapeHtml(lesson.explain) + '</p>' +
+    '<div class="jp-pattern">' + escapeHtml(lesson.syntax) + '</div></div>' +
+    '<div class="jp-panel"><h3>Examples</h3>';
+  lesson.examples.forEach(function(ex){
+    html += '<div class="jp-example"><div class="jp-jp" lang="ja">' + escapeHtml(ex[0]) + '</div>' +
+      '<div class="jp-gloss">' + escapeHtml(ex[1]) + ' · ' + escapeHtml(ex[2]) + '</div></div>';
+  });
+  html += '</div><div class="jp-panel"><h3>Words to review</h3><div class="jp-vocab">';
+  lesson.vocab.forEach(function(v){
+    html += '<div><b lang="ja">' + escapeHtml(v[0]) + '</b><small>' + escapeHtml(v[1]) +
+      ' · ' + escapeHtml(v[2]) + '</small></div>';
+  });
+  html += '</div><div class="jp-actions"><button type="button" class="btn secondary btn-sm" data-jp-cards="1">Add these words to Flashcards</button></div></div>' +
+    '<div class="jp-panel"><h3>Common mistake</h3><p>' +
+    escapeHtml(JP_ENRICH[id][0]) + '</p></div>' +
+    '<div class="jp-panel"><h3>Read first, then reveal meaning</h3>' +
+    '<div class="jp-reading" lang="ja">' + escapeHtml(lesson.reading) + '</div>' +
+    '<details><summary>Show meaning</summary><p class="jp-muted">' + escapeHtml(lesson.readingHelp) + '</p></details>' +
+    '<label class="jp-check"><input type="checkbox" data-jp-check="read"' + (checks.read?' checked':'') + '> I read this before opening the meaning</label></div>' +
+    '<div class="jp-panel"><h3>Speak out loud</h3><p>' + escapeHtml(lesson.speak) + '</p>' +
+    '<button type="button" class="btn secondary btn-sm" data-jp-sound="1">▶ Listen if an offline Japanese voice is installed</button>' +
+    '<details><summary>Show a model answer</summary><p lang="ja">' + escapeHtml(lesson.model) + '</p></details>' +
+    '<label class="jp-check"><input type="checkbox" data-jp-check="speak"' + (checks.speak?' checked':'') + '> I spoke before opening the model</label></div>' +
+    '<div class="jp-panel"><h3>Mini challenge</h3><p>' + escapeHtml(JP_ENRICH[id][1]) + '</p>' +
+    '<details><summary>Show one possible answer</summary><p lang="ja">' + escapeHtml(JP_ENRICH[id][2]) + '</p></details></div>' +
+    '<div class="jp-panel"><h3>Check your understanding</h3>';
+  lesson.quiz.forEach(function(q, qi){
+    html += '<fieldset class="jp-q"><legend>' + (qi+1) + '. ' + escapeHtml(q[0]) + '</legend>';
+    q[1].forEach(function(choice, ci){
+      html += '<label class="jp-choice"><input type="radio" name="jpq' + qi + '" value="' + ci +
+        '"> ' + escapeHtml(choice) + '</label>';
+    });
+    html += '</fieldset>';
+  });
+  html += '<button type="button" class="btn" data-jp-quiz="1">Check answers</button>';
+  if(jpQuizFeedback && jpQuizFeedback.id === id){
+    html += '<div class="jp-result"><b>' + jpQuizFeedback.score + ' / ' + lesson.quiz.length + ' correct</b>';
+    lesson.quiz.forEach(function(q, i){
+      html += '<p>' + (jpQuizFeedback.answers[i] === q[2] ? '✓ ' : '→ ') +
+        escapeHtml(q[1][q[2]]) + ' — ' + escapeHtml(q[3]) + '</p>';
+    });
+    html += '</div>';
+  }
+  html += '</div><div class="jp-panel"><h3>My note / mistake log</h3>' +
+    '<textarea class="jp-notes" id="jpNotes" placeholder="Write what was difficult, a new sentence, or a question…">' +
+    escapeHtml(DB.japanese.notes[id] || '') + '</textarea></div>' +
+    '<div class="jp-actions"><button type="button" class="btn" data-jp-done="1">' +
+    (DB.japanese.done[id] ? '✓ Completed · tap to undo' : 'Mark lesson complete') + '</button>';
+  if(index>0) html += '<button type="button" class="btn secondary" data-jp-lesson="' + JP_LESSONS[index-1].id + '">← Previous</button>';
+  if(index<JP_LESSONS.length-1) html += '<button type="button" class="btn secondary" data-jp-lesson="' + JP_LESSONS[index+1].id + '">Next →</button>';
+  return html + '</div>';
+}
+function renderJapanese(){
+  const body = document.getElementById("japaneseBody");
+  if(!body) return;
+  if(!jpEventsBound){
+    body.addEventListener("click", function(ev){
+      const el = ev.target.closest("button");
+      if(!el || !body.contains(el)) return;
+      if(el.dataset.jpHome){
+        jpPage.mode="home";
+      }else if(el.dataset.jpWeek){
+        jpPage={mode:"week",week:Number(el.dataset.jpWeek),lesson:jpPage.lesson};
+      }else if(el.dataset.jpLesson){
+        jpPage={mode:"lesson",week:Number(el.dataset.jpLesson.split(".")[0]),lesson:el.dataset.jpLesson};
+        jpQuizFeedback=null;
+      }else if(el.dataset.jpDone){
+        const id=jpPage.lesson;
+        if(DB.japanese.done[id]) delete DB.japanese.done[id];
+        else DB.japanese.done[id]=nowISO();
+        save();
+      }else if(el.dataset.jpQuiz){
+        const lesson=JP_LESSONS.find(function(l){return l.id===jpPage.lesson;});
+        const answers=lesson.quiz.map(function(q,i){
+          const checked=body.querySelector('input[name="jpq'+i+'"]:checked');
+          return checked ? Number(checked.value) : -1;
+        });
+        if(answers.indexOf(-1)!==-1){toast("Answer every question first");return;}
+        const score=answers.filter(function(a,i){return a===lesson.quiz[i][2];}).length;
+        jpQuizFeedback={id:lesson.id,answers:answers,score:score};
+        DB.japanese.quizScores[lesson.id]=Math.max(DB.japanese.quizScores[lesson.id] || 0,Math.round(100*score/lesson.quiz.length));
+        save();
+      }else if(el.dataset.jpCards){
+        const lesson=JP_LESSONS.find(function(l){return l.id===jpPage.lesson;});
+        const deckId="jp-vocabulary-v1";
+        if(!DB.decks.some(function(d){return d.id===deckId;})){
+          DB.decks.push({id:deckId,name:"Japanese · Words in context",created:nowISO()});
+        }
+        let added=0;
+        lesson.vocab.forEach(function(v,i){
+          const cardId="jp-"+lesson.id+"-"+i;
+          if(DB.cards.some(function(c){return c.id===cardId;})) return;
+          DB.cards.push({id:cardId,deckId:deckId,front:v[0]+"（"+v[1]+"）",
+            back:v[2],ease:2.5,interval:0,reps:0,due:nowISO()});
+          added++;
+        });
+        save();
+        toast(added ? added+" words added to Flashcards" : "These words are already in Flashcards");
+        return;
+      }else if(el.dataset.jpSound){
+        const lesson=JP_LESSONS.find(function(l){return l.id===jpPage.lesson;});
+        if(!("speechSynthesis" in window)){toast("Speech is unavailable on this device");return;}
+        const voice=speechSynthesis.getVoices().find(function(v){return /^ja/i.test(v.lang) && v.localService;});
+        if(!voice){toast("No offline Japanese voice is installed on this device");return;}
+        speechSynthesis.cancel();
+        const utterance=new SpeechSynthesisUtterance(lesson.reading);
+        utterance.voice=voice;utterance.lang="ja-JP";utterance.rate=.82;
+        speechSynthesis.speak(utterance);
+        return;
+      }else return;
+      renderJapanese();
+      if(el.dataset.jpLesson || el.dataset.jpWeek || el.dataset.jpHome) window.scrollTo(0,0);
+    });
+    body.addEventListener("input", function(ev){
+      if(ev.target.id==="jpNotes"){
+        DB.japanese.notes[jpPage.lesson]=ev.target.value;
+        save();
+      }
+    });
+    body.addEventListener("change", function(ev){
+      const key=ev.target.dataset.jpCheck;
+      if(!key) return;
+      const id=jpPage.lesson;
+      DB.japanese.checks[id]=DB.japanese.checks[id] || {};
+      DB.japanese.checks[id][key]=ev.target.checked;
+      save();
+    });
+    jpEventsBound=true;
+  }
+  body.innerHTML='<div class="jp-wrap">' +
+    (jpPage.mode==="lesson" ? jpRenderLesson(jpPage.lesson) :
+     jpPage.mode==="week" ? jpRenderWeek(jpPage.week) : jpRenderHome()) + '</div>';
 }
 
 /* ================= TYPING (touch-typing trainer) =================
@@ -14033,7 +14500,7 @@ if(transferBtnEl) transferBtnEl.addEventListener("click", openTransfer);
    transfer, cloud pull) so no stale view is left on screen. */
 function renderEverything(){
   [renderCourse, renderLessons, renderJournal, renderWisdom, renderNotesList,
-   renderNoteDetail, renderLiked, renderTimer, renderDecks, renderTodos, renderQuizList,
+   renderNoteDetail, renderLiked, renderJapanese, renderTimer, renderDecks, renderTodos, renderQuizList,
    renderQuizDetail, renderSideStats].forEach(function(fn){
     try{ fn(); }catch(e){ console.error("re-render failed", e); }
   });
@@ -14058,6 +14525,7 @@ function boot(){
   step("journal", renderJournal);
   step("wisdom", renderWisdom);
   step("liked", renderLiked);
+  step("japanese", renderJapanese);
   step("notes", renderNotesList);
   step("note detail", renderNoteDetail);
   step("timer", renderTimer);

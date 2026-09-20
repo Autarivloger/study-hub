@@ -1,8 +1,9 @@
 # Study Hub
 
 An offline-first Python learning platform. One self-contained HTML file holding a
-12-month, 364-lesson curriculum, plus notes, a daily journal, flashcards with
-spaced repetition, quizzes, a Pomodoro timer, and a Life Lessons journal.
+12-month, 364-lesson Python curriculum, plus a Japanese learning section, typing,
+notes, a daily journal, flashcards with spaced repetition, quizzes, a Pomodoro
+timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
@@ -51,7 +52,8 @@ Teaching content lives in two places in `study-hub.html`:
 
 - **`DAY_TEACH`** — the body of a single course day, keyed `"week.dayIndex"`
   where the day index is **0-based**, so Day 1 of Week 1 is `"1.0"`. Weeks 1–13
-  are written; weeks 14–52 currently render from the week skeleton only.
+  are written, as are weeks 14-18; weeks 19-52 currently render from the week
+  skeleton only.
 - **`LESSONS`** — the long-form lessons in the Lessons tab.
 
 Both are rendered by the same function, `renderSections()`, which understands
@@ -71,12 +73,34 @@ practice-set builders look for.
 
 ---
 
+## Japanese Language
+
+Open Japanese in the sidebar or mobile tab bar. The section has a 36-week,
+nine-month roadmap from an N5 review to N3 reading and conversation practice.
+Weeks 1 and 2 currently contain 12 complete lessons, each with a goal,
+explanation, examples, vocabulary, reading, speaking prompt, quiz and personal
+note. Later weeks are clearly marked as roadmap topics until full teaching
+content is written. Each lesson can add its vocabulary to the existing
+spaced-repetition Flashcards deck without creating duplicate cards.
+
+Completions, best quiz scores, notes and reading/speaking checks are saved in
+the existing Study Hub backup under the japanese key and merge with device
+sync. The page and lessons work offline. Listening playback is only offered
+when the device has an offline Japanese voice installed.
+
+Run the browser smoke test on Windows with Chrome installed:
+node tests/japanese-smoke.cjs
+
+---
+
 ## Syncing between your phone and computer
 
 The app is offline-first. Sync is entirely optional and, when it is not set up,
 no network code ever runs.
 
-Progress is stored in a **private GitHub Gist** that only you can read.
+Progress is stored in an **unlisted GitHub Gist**. Anyone who learns its Gist
+ID/link may be able to read it, so keep that ID private and do not put
+passwords or other secrets in Study Hub notes.
 
 ### One-time setup
 
