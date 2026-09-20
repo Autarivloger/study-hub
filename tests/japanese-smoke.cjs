@@ -29,7 +29,10 @@ async function main(){
   const pending=new Map(), errors=[];
   ws.onmessage = ev=>{
     const msg=JSON.parse(ev.data);
-    if(msg.method==="Runtime.exceptionThrown") errors.push(msg.params.exceptionDetails.text);
+    if(msg.method==="Runtime.exceptionThrown"){
+      const e=msg.params.exceptionDetails;
+      errors.push((e.exception && e.exception.description) || (e.text+" at "+e.url+":"+e.lineNumber));
+    }
     if(msg.id && pending.has(msg.id)){
       const p=pending.get(msg.id);pending.delete(msg.id);
       if(msg.error) p.reject(new Error(JSON.stringify(msg.error))); else p.resolve(msg.result);
@@ -43,7 +46,7 @@ async function main(){
   }
   async function evalJs(expression){
     const r=await send("Runtime.evaluate",{expression,returnByValue:true,awaitPromise:true});
-    if(r.exceptionDetails) throw new Error(r.exceptionDetails.text);
+    if(r.exceptionDetails) throw new Error((r.exceptionDetails.exception && r.exceptionDetails.exception.description) || r.exceptionDetails.text);
     return r.result.value;
   }
   function assert(value,message){if(!value)throw new Error(message);}
@@ -53,11 +56,18 @@ async function main(){
     if(await evalJs("Boolean(window.__studyHubBooted)")) break;
     await sleep(100);
   }
-  assert(await evalJs("window.__studyHubBooted"),"App did not boot");
+  assert(await evalJs("window.__studyHubBooted"),"App did not boot: "+errors.join("; "));
   assert(await evalJs("document.querySelectorAll('#tabnav [data-view]').length === 11"),"Navigation lost a tab");
+  await evalJs("localStorage.studyHubData_v1=JSON.stringify({japanese:{done:{'1.1':'2025-01-01T00:00:00.000Z'},quizScores:{'1.1':100},notes:{'1.1':'Old kana note'},checks:{}},decks:[{id:'jp-vocabulary-v1',name:'Japanese',created:'2025-01-01'}],cards:[{id:'jp-1.1-0',deckId:'jp-vocabulary-v1',front:'切手（きって）',back:'stamp',ease:2.5,interval:0,reps:0,due:'2025-01-01'}]})");
+  await send("Page.reload",{ignoreCache:true});
+  for(let i=0;i<50;i++){
+    if(await evalJs("Boolean(window.__studyHubBooted)")) break;
+    await sleep(100);
+  }
   await evalJs("document.querySelector('#sidebar [data-view=japanese]').click()");
   assert(await evalJs("document.querySelector('#view-japanese').classList.contains('active')"),"Japanese view did not open");
   assert(await evalJs("document.querySelectorAll('.jp-week-card').length === 36"),"Roadmap is incomplete");
+  assert(await evalJs("document.querySelector('.jp-hero [data-jp-lesson=\"1.1\"]') !== null && document.querySelector('.jp-progress').getAttribute('aria-valuenow') === '0'"),"Old kana completion falsely completed new Day 1");
   if(process.env.JP_SHOTS){
     const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
     fs.writeFileSync(path.join(os.tmpdir(),"studyhub-japanese-desktop.png"),Buffer.from(shot.data,"base64"));
@@ -65,29 +75,42 @@ async function main(){
   await evalJs("document.querySelector('[data-jp-week=\"1\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length === 6"),"Week 1 lessons missing");
   await evalJs("document.querySelector('[data-jp-lesson=\"1.1\"]').click()");
-  assert(await evalJs("document.querySelectorAll('.jp-q').length === 2"),"Lesson quiz missing");
+  assert(await evalJs("document.querySelector('h2').textContent.includes('て-form') || document.querySelector('.jp-hero h2').textContent.includes('て-form')"),"Day 1 did not become te-form");
+  assert(await evalJs("document.querySelectorAll('.jp-q').length === 8 && document.querySelectorAll('.jp-vocab')[0].children.length === 10 && document.querySelectorAll('.jp-vocab')[1].children.length === 11"),"Day 1 vocabulary, kanji or quiz missing");
+  assert(await evalJs("document.querySelectorAll('.jp-rule-card').length === 3 && document.querySelectorAll('.jp-old-review .jp-example').length >= 3 && document.querySelectorAll('.jp-reading').length === 2"),"Te-form rules or old kana content missing");
+  assert(await evalJs("[...document.querySelectorAll('[data-jp-jump]')].length === 8 && [...document.querySelectorAll('[data-jp-jump]')].every(x=>document.getElementById(x.dataset.jpJump)) && !!document.querySelector('#jp-day1-summary')"),"Day 1 section navigation or summary missing");
+  assert(await evalJs("document.querySelector('.jp-old-review').textContent.includes('Old kana note') && document.querySelector('.jp-old-review').textContent.includes('Best quiz: 100%')"),"Old Kana note or score is not visible");
+  await evalJs("document.querySelector('.jp-vocab [data-jp-hard-type=v]').click()");
+  assert(await evalJs("Object.values(JSON.parse(localStorage.studyHubData_v1).japanese.checks).filter(x=>x && x.hard).length === 1"),"Hard vocabulary did not save");
+  await evalJs("document.querySelector('[data-jp-hard-folder]').click()");
+  assert(await evalJs("document.querySelector('.jp-hero h2').textContent === 'Hard to remember' && document.querySelectorAll('.jp-study-item').length === 1"),"Hard folder did not show item");
+  await evalJs("document.querySelector('.jp-study-item [data-jp-hard-type]').click()");
+  assert(await evalJs("Object.values(JSON.parse(localStorage.studyHubData_v1).japanese.checks).filter(x=>x && x.hard).length === 0 && document.querySelectorAll('.jp-study-item').length === 0"),"Remembered word did not leave folder");
+  await evalJs("document.querySelector('[data-jp-lesson=\"1.1\"]').click();document.querySelector('.jp-vocab [data-jp-hard-type=k]').click()");
+  assert(await evalJs("Object.values(JSON.parse(localStorage.studyHubData_v1).japanese.checks).filter(x=>x && x.hard && x.type==='k').length === 1"),"Hard kanji did not save");
   await evalJs("document.querySelector('[data-jp-cards]').click();document.querySelector('[data-jp-cards]').click()");
-  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).cards.filter(x=>x.deckId==='jp-vocabulary-v1').length === 3"),"Vocabulary cards missing or duplicated");
+  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).cards.filter(x=>x.id.startsWith('jp-1.1-te-')).length === 10 && JSON.parse(localStorage.studyHubData_v1).cards.some(x=>x.id==='jp-1.1-0' && x.front.includes('切手'))"),"New cards missing or old cards overwritten");
   await evalJs("document.querySelector('#jpNotes').value='My Japanese practice';document.querySelector('#jpNotes').dispatchEvent(new Event('input',{bubbles:true}))");
   await evalJs("document.querySelector('[data-jp-check=read]').click()");
-  await evalJs("document.querySelector('input[name=jpq0][value=\"1\"]').click();document.querySelector('input[name=jpq1][value=\"1\"]').click()");
+  await evalJs("[1,0,2,1,1,0,1,0].forEach((a,i)=>document.querySelector('input[name=jpq'+i+'][value=\"'+a+'\"]').click())");
   await evalJs("document.querySelector('[data-jp-quiz]').click()");
-  assert(await evalJs("document.querySelector('.jp-result').textContent.includes('2 / 2 correct')"),"Quiz score wrong");
+  assert(await evalJs("document.querySelector('.jp-result').textContent.includes('8 / 8 correct')"),"Day 1 quiz score wrong");
   await evalJs("document.querySelector('[data-jp-done]').click()");
-  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1'] !== undefined"),"Completion did not save");
-  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.quizScores['1.1'] === 100"),"Quiz did not save");
+  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1.te'] !== undefined && JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1'] === '2025-01-01T00:00:00.000Z'"),"New completion lost or overwrote old completion");
+  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.quizScores['1.1.te'] === 100 && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores['1.1'] === 100"),"New or old quiz score lost");
   await send("Page.reload",{ignoreCache:true});
   for(let i=0;i<50;i++){
     if(await evalJs("Boolean(window.__studyHubBooted)")) break;
     await sleep(100);
   }
-  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.notes['1.1'] === 'My Japanese practice'"),"Note did not survive reload");
+  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.notes['1.1.te'] === 'My Japanese practice' && JSON.parse(localStorage.studyHubData_v1).japanese.notes['1.1'] === 'Old kana note'"),"New or old note did not survive reload");
+  assert(await evalJs("Object.values(JSON.parse(localStorage.studyHubData_v1).japanese.checks).filter(x=>x && x.hard && x.type==='k').length === 1"),"Hard kanji did not survive reload");
   await evalJs("document.querySelector('#sidebar [data-view=japanese]').click();document.querySelector('[data-jp-week=\"1\"]').click();document.querySelector('[data-jp-lesson=\"1.1\"]').click()");
   assert(await evalJs("document.querySelector('#jpNotes').value === 'My Japanese practice'"),"Note did not render after reload");
-  const answers=[[1,1],[1,0],[1,0],[1,2],[1,0],[1,0],[1,1],[0,0],[1,1],[1,0],[1,2],[1,0]];
+  const answers=[[1,0,2,1,1,0,1,0],[1,0],[1,0],[1,2],[1,0],[1,0],[1,1],[0,0],[1,1],[1,0],[1,2],[1,0]];
   for(let i=0;i<12;i++){
-    await evalJs("document.querySelector('input[name=jpq0][value=\""+answers[i][0]+"\"]').click();document.querySelector('input[name=jpq1][value=\""+answers[i][1]+"\"]').click();document.querySelector('[data-jp-quiz]').click()");
-    assert(await evalJs("document.querySelector('.jp-result').textContent.includes('2 / 2 correct')"),"Quiz failed for lesson "+(i+1));
+    await evalJs("["+answers[i].join(",")+"].forEach((a,j)=>document.querySelector('input[name=jpq'+j+'][value=\"'+a+'\"]').click());document.querySelector('[data-jp-quiz]').click()");
+    assert(await evalJs("document.querySelector('.jp-result').textContent.includes('"+answers[i].length+" / "+answers[i].length+" correct')"),"Quiz failed for lesson "+(i+1));
     if(i<11) await evalJs("document.querySelector('.jp-actions [data-jp-lesson]:last-child').click()");
   }
   assert(await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"19.1\"]') === null"),"Core path unexpectedly jumps to advanced preview");
@@ -128,6 +151,13 @@ async function main(){
   assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1"),"Mobile layout overflows horizontally");
   await evalJs("document.querySelector('[data-jp-week=\"1\"]').click();document.querySelector('[data-jp-lesson=\"1.1\"]').click()");
   assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1"),"Mobile lesson overflows horizontally");
+  await evalJs("document.querySelector('[data-jp-hard-folder]').click()");
+  assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1"),"Mobile hard folder overflows horizontally");
+  if(process.env.JP_SHOTS){
+    const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
+    fs.writeFileSync(path.join(os.tmpdir(),"studyhub-japanese-hard-mobile.png"),Buffer.from(shot.data,"base64"));
+  }
+  await evalJs("document.querySelector('[data-jp-lesson=\"1.1\"]').click()");
   await evalJs("document.querySelector('[data-jp-home]').click();document.querySelector('[data-jp-lesson=\"19.1\"]').click()");
   assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1"),"Mobile advanced lesson overflows horizontally");
   if(process.env.JP_SHOTS){
@@ -139,7 +169,7 @@ async function main(){
     const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
     fs.writeFileSync(path.join(os.tmpdir(),"studyhub-japanese-mobile.png"),Buffer.from(shot.data,"base64"));
   }
-  await evalJs("(()=>{const data={notes:[{id:'old-note',title:'Old note',body:'preserved'}],course:{done:{'1.0':'2024-01-01'}}};const f=new File([JSON.stringify(data)],'old-backup.json',{type:'application/json'});const dt=new DataTransfer();dt.items.add(f);const input=document.querySelector('#importFile');input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}));})()");
+  await evalJs("(()=>{const data={notes:[{id:'old-note',title:'Old note',body:'preserved'}],course:{done:{'1.0':'2024-01-01'}},japanese:{checks:{'hard:v:起きる':{type:'v',word:'起きる',reading:'おきる',meaning:'wake up',hard:true,at:'2020-01-01T00:00:00.000Z'},'hard:k:起':{type:'k',word:'起',reading:'おきる',meaning:'wake up',hard:false,at:'2099-01-01T00:00:00.000Z'}}}};const f=new File([JSON.stringify(data)],'old-backup.json',{type:'application/json'});const dt=new DataTransfer();dt.items.add(f);const input=document.querySelector('#importFile');input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}));})()");
   for(let i=0;i<30;i++){
     if(await evalJs("!!document.querySelector('#impMerge')")) break;
     await sleep(100);
@@ -148,6 +178,8 @@ async function main(){
   await evalJs("document.querySelector('#impMerge').click()");
   assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).notes.some(x=>x.id==='old-note')"),"Old backup did not merge");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1']"),"Import erased Japanese progress");
+  assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1.te']"),"Import erased new Day 1 progress");
+  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:v:起きる'].hard === false && JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:k:起'].hard === false"),"Hard removal failed to merge or stale mark returned");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['19.1']"),"Import erased imported lesson progress");
   await evalJs("document.querySelector('#exportBtn').click()");
   for(let i=0;i<20;i++){
@@ -163,7 +195,7 @@ async function main(){
   await evalJs("document.querySelector('#syTok').value='synthetic-test-token-123456';document.querySelector('#syClose').click()");
   assert(await evalJs("!JSON.parse(localStorage.studyHubSync).token"),"Session-only token leaked into persistent storage");
   assert(await evalJs("sessionStorage.studyHubSyncSessionToken === 'synthetic-test-token-123456'"),"Session token was not available for sync");
-  await evalJs("window.__syncBody='';window.fetch=async(url,opts)=>{const method=opts.method;if(method==='POST'){window.__syncBody=opts.body;return new Response(JSON.stringify({id:'0123456789abcdef0123456789abcdef'}),{status:201,headers:{'Content-Type':'application/json'}});}if(method==='GET'){const remote={notes:[{id:'remote-note',title:'From another phone',body:'Hello'}]};return new Response(JSON.stringify({files:{'study-hub-progress.json':{content:JSON.stringify({data:remote})}}}),{status:200,headers:{'Content-Type':'application/json'}});}return new Response(JSON.stringify({id:'0123456789abcdef0123456789abcdef'}),{status:200,headers:{'Content-Type':'application/json'}});}");
+  await evalJs("window.__syncBody='';window.fetch=async(url,opts)=>{const method=opts.method;if(method==='POST'){window.__syncBody=opts.body;return new Response(JSON.stringify({id:'0123456789abcdef0123456789abcdef'}),{status:201,headers:{'Content-Type':'application/json'}});}if(method==='GET'){const remote={notes:[{id:'remote-note',title:'From another phone',body:'Hello'}],japanese:{checks:{'hard:v:寝る':{type:'v',word:'寝る',reading:'ねる',meaning:'sleep',hard:true,at:'2020-01-01T00:00:00.000Z'}}}};return new Response(JSON.stringify({files:{'study-hub-progress.json':{content:JSON.stringify({data:remote})}}}),{status:200,headers:{'Content-Type':'application/json'}});}return new Response(JSON.stringify({id:'0123456789abcdef0123456789abcdef'}),{status:200,headers:{'Content-Type':'application/json'}});}");
   await evalJs("document.querySelector('#syncBtn').click();document.querySelector('#syPush').click()");
   for(let i=0;i<30;i++){
     if(await evalJs("JSON.parse(localStorage.studyHubSync).gistId === '0123456789abcdef0123456789abcdef'")) break;
@@ -177,6 +209,7 @@ async function main(){
     await sleep(100);
   }
   assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).notes.some(x=>x.id==='remote-note')"),"Pull did not merge remote writing");
+  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:v:寝る'].hard === true"),"Pull did not merge remote Hard word");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1']"),"Pull erased local progress");
   await evalJs("window.fetch=async()=>new Response('{}',{status:403,headers:{'Content-Type':'application/json'}});document.querySelector('#syncBtn').click();document.querySelector('#syPush').click()");
   for(let i=0;i<30;i++){
@@ -194,7 +227,7 @@ async function main(){
   assert(await evalJs("JSON.parse(localStorage.studyHubSync).gistId === '0123456789abcdef0123456789abcdef'"),"Forget erased Gist ID");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1']"),"Forget erased writing");
   assert(errors.length===0,"JavaScript errors: "+errors.join("; "));
-  console.log("PASS: lessons, notes, progress, mobile, dark mode, backup, mock Gist Push/Pull, session-only token, legacy token, Forget, 403 guidance, no JS exceptions");
+  console.log("PASS: Day 1 te-form, old kana progress, hard-word folder and sync, lessons, notes, mobile, dark mode, backup, mock Gist Push/Pull, token handling, no JS exceptions");
   ws.close();
 }
 main().catch(err=>{console.error(err);process.exitCode=1;}).finally(()=>{browser.kill();});

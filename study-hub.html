@@ -1136,8 +1136,19 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .jp-check{display:block;margin:10px 0;line-height:1.5}
 .jp-check input{margin-right:8px}
 .jp-vocab{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:7px}
-.jp-vocab div{padding:8px 10px;border-radius:8px;background:var(--bg-soft)}
+.jp-vocab>div{padding:8px 10px;border-radius:8px;background:var(--bg-soft);min-width:0}
 .jp-vocab small{display:block;color:var(--text-dim)}
+.jp-study-item{overflow-wrap:anywhere}
+.jp-study-item b{font-size:18px}
+.jp-hard-btn{margin-top:8px;padding:5px 9px;background:var(--bg-elev);color:var(--text);border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:12px;font-weight:700}
+.jp-hard-btn:hover,.jp-hard-btn.is-hard{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.jp-rule-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:14px}
+.jp-rule-card{background:var(--bg-soft);border:1px solid var(--border);border-radius:9px;padding:12px;min-width:0;overflow-wrap:anywhere}
+.jp-rule-card h4{margin:0 0 9px}
+.jp-rule-card p{margin:7px 0;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.jp-old-review>summary{font-weight:700;cursor:pointer}
+.jp-lesson-nav{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 16px}
+.jp-lesson-nav .btn{font-size:12px}
 @media(max-width:760px){
   .jp-wrap{padding:14px 14px 32px}
   .jp-hero{padding:17px}
@@ -1494,7 +1505,10 @@ function mergeIntoDB(incoming){
   });
   ["notes", "checks"].forEach(function(key){
     Object.keys(incoming.japanese[key]).forEach(function(k){
-      if(DB.japanese[key][k] === undefined) DB.japanese[key][k] = incoming.japanese[key][k];
+      if(key === "checks" && k.startsWith("hard:")){
+        const mine=DB.japanese.checks[k], theirs=incoming.japanese.checks[k];
+        if(theirs && typeof theirs === "object" && (!mine || (theirs.at || "") > (mine.at || ""))) DB.japanese.checks[k]=theirs;
+      }else if(DB.japanese[key][k] === undefined) DB.japanese[key][k] = incoming.japanese[key][k];
     });
   });
 
@@ -1821,7 +1835,7 @@ function renderLiked(){
    Original lessons and a 36-week roadmap. The first two weeks are taught in
    full; later weeks are honest roadmaps until their lessons are authored. */
 const JP_WEEKS = [
-  [1,"N5 bridge","Kana, particles, verb forms","Read short everyday sentences","Introduce yourself and your routine"],
+  [1,"N5 → N4","Te-form, kana review, particles and verb forms","Read short everyday sentences","Introduce yourself and your routine"],
   [2,"N5 → N4","Adjectives, reasons, plans and experience","Read a short diary","Explain plans and past experiences"],
   [3,"N4","Plain forms and casual speech","Read a message between friends","Switch between polite and casual speech"],
   [4,"N4","ている, てもいい, てはいけない","Read signs and instructions","Ask permission and explain rules"],
@@ -2044,17 +2058,79 @@ const JP_ENRICH = {
   "19.2":["ものの = सधैँ नराम्रो नतिजा होइन। つつも = सधैँ पछुतो होइन। 小さいつつも गलत; 小さいながらも प्रयोग गर।","ものの, ながらも र つつも बाट आफ्नै अनुभवका एक–एक वाक्य लेख।","練習したものの、まだ難しいです。悩みながらも、進みます。難しいと思いつつも、続けます。"]
 };
 
+/* Keep the old 1.1 kana lesson and its progress intact. The visible Day 1 now
+   teaches te-form; a revision key prevents an old kana completion/score from
+   claiming the new lesson has been mastered. No new top-level storage field. */
+const JP_DAY1_KANA_REVIEW = Object.assign({}, JP_LESSONS[0], {enrich:JP_ENRICH["1.1"]});
+Object.assign(JP_LESSONS[0], {
+  title:"N4 Day 1 · て-form from the beginning",
+  goal:"Build the て-form and use it for requests, actions in progress and sequences.",
+  progressId:"1.1.te", cardVersion:"te", kanaReview:JP_DAY1_KANA_REVIEW,
+  explain:"N5 को आधार थाहा छ भने यहाँबाट N4 को काम सुरु गरौँ। て-form आफैँ पूर्ण वाक्य होइन; यसपछि ください, います वा अर्को काम जोडेर अर्थ बनाउँछौँ। पहिले verb कुन group हो पहिचान गर। एकै दिन सबै शब्द कण्ठ गर्ने दबाब छैन—बनाउने नियम बुझ, बोल, फेरि पढ।",
+  syntax:"辞書形 → て形  •  待つ→待って  •  食べる→食べて  •  来る→来て  •  行く→行って",
+  teRules:[
+    ["Group 1 · う-verbs",[["く → いて","書く → 書いて"],["ぐ → いで","泳ぐ → 泳いで"],["す → して","話す → 話して"],["う・つ・る → って","買う → 買って / 待つ → 待って / 帰る → 帰って"],["む・ぶ・ぬ → んで","飲む → 飲んで / 遊ぶ → 遊んで / 死ぬ → 死んで"],["Important exception","行く → 行って (not 行いて)"]]],
+    ["Group 2 · る-verbs",[["る → て","食べる → 食べて / 起きる → 起きて / 寝る → 寝て"],["Watch out","हरेक 〜いる/〜える Group 2 होइन: 帰る is Group 1 → 帰って।"]]],
+    ["Group 3 · irregular",[["する → して","勉強する → 勉強して"],["来る → 来て","くる → きて"]]]
+  ],
+  grammar:[
+    ["Use 1 · 〜てください · polite request","कसैलाई ‘कृपया ... गर्नुस्’ भन्न て-form पछि ください जोड। तिमीले दिएको 待ってください, 話してください यही नियम हुन्।","ちょっと待ってください。","कृपया एकछिन पर्खनुस्।","ゆっくり話してください。","कृपया बिस्तारै बोल्नुस्。"],
+    ["Use 2 · 〜ています · action or current situation","चलिरहेको काम जनाउन सकिन्छ: 今、食べています। तर सधैँ ‘यतिखेर गर्दै’ मात्रै होइन; 働いています ले पेशा/हालको अवस्था पनि जनाउन सक्छ।","今、ご飯を食べています。","अहिले खाना खाइरहेको छु।","日本で働いています。","जापानमा काम गर्छु / हाल काम गरिरहेको छु।"],
+    ["Use 3 · 〜て、〜て、〜ます · sequence","पहिलो कामहरू て-form मा राख; अन्तिम verb ले वाक्यको tense देखाउँछ। पहिले के भयो, त्यसपछि के भयो भनेर आफ्नै बिहान वर्णन गर।","朝、起きて、水を飲んで、会社に行きます。","बिहान उठेर पानी पिएर अफिस जान्छु।","昨日、起きて、朝ご飯を食べて、学校に行きました。","हिजो उठेर खाजा खाएर स्कूल गएँ。"]
+  ],
+  examples:[["待ってください。","まってください。","Please wait · कृपया पर्खनुस्।"],["今、食べています。","いま、たべています。","I am eating now · अहिले खाइरहेको छु।"],["起きて、食べて、会社へ行きます。","おきて、たべて、かいしゃへいきます。","I wake up, eat, then go to work · उठेर, खाएर, अफिस जान्छु।"]],
+  vocab:[["起きる","おきる","wake up · उठ्नु"],["寝る","ねる","sleep · सुत्नु"],["食べる","たべる","eat · खानु"],["飲む","のむ","drink · पिउनु"],["行く","いく","go · जानु"],["来る","くる","come · आउनु"],["勉強する","べんきょうする","study · पढ्नु"],["働く","はたらく","work · काम गर्नु"],["話す","はなす","speak · बोल्नु"],["待つ","まつ","wait · पर्खनु"]],
+  kanji:[["起","おきる","起きる · उठ्नु"],["寝","ねる","寝る · सुत्नु"],["食","たべる","食べる · खानु"],["飲","のむ","飲む · पिउनु"],["行","いく","行く · जानु"],["来","くる","来る · आउनु"],["勉","べん","勉強 · अध्ययन"],["強","きょう","勉強 · अध्ययन"],["働","はたらく","働く · काम गर्नु"],["話","はなす","話す · बोल्नु"],["待","まつ","待つ · पर्खनु"]],
+  reading:"毎朝、七時に起きます。水を飲んで、朝ご飯を食べます。それから、会社に行きます。会社で日本語を話しています。夜、家に帰って、日本語を勉強して、十一時に寝ます。",
+  readingHelp:"हरेक बिहान सात बजे उठ्छु। पानी पिएर बिहानको खाना खान्छु। त्यसपछि अफिस जान्छु। अफिसमा जापानी बोल्छु। बेलुका घर फर्केर जापानी पढ्छु र एघार बजे सुत्छु। · Every morning I get up at seven, drink water, eat breakfast, go to work, speak Japanese there, study at home and sleep at eleven.",
+  readingQuestions:[["何時に起きますか。","七時に起きます。"],["会社で何をしていますか。","日本語を話しています。"],["夜、寝る前に何をしますか。","日本語を勉強します。"]],
+  summary:["て-form बनाउनुअघि verb group पहिचान गर: Group 1 endings फेरिन्छन्, Group 2 मा る→て, irregular する→して / 来る→来て।","む・ぶ・ぬ→んで सम्झ; 行く→行って अलग्गै याद गर।","〜てください = विनम्र अनुरोध; 〜ています = चलिरहेको काम वा हालको अवस्था; 〜て、〜て、〜ます = क्रम।","आजको लक्ष्य: १० verb पढ, ४ आफ्नै て-form बनाऊ, reading बुझ, अनि तीन वाक्य बोलेपछि quiz देऊ।"],
+  speak:"आफ्नो साँच्चिकै बिहानका तीन काम て-form ले जोडेर दुई पटक ठूलो स्वरमा बोल। त्यसपछि ‘बिस्तारै बोल्नुस्’ भनेर विनम्र अनुरोध गर।",
+  model:"朝、起きて、水を飲んで、会社に行きます。ゆっくり話してください。",
+  practice:[["飲む・食べる・来る・話す लाई て-form मा बदल।","飲んで・食べて・来て（きて）・話して。"],["‘Please wait’ र ‘I am eating now’ लेख।","待ってください。今、食べています。"],["行く → 行いて किन गलत? सही रूप लेख।","行く Group 1 को अपवाद हो: 行って。"],["おきて、____て、かいしゃへいきます। आफ्नै काम राख।","起きて、食べて、会社へ行きます。 (अन्य मिल्ने verb पनि हुन्छ।)"],["आजको reading बाट ‘पानी पिएर खाना खान्छु’ लेख।","水を飲んで、朝ご飯を食べます。"]],
+  quiz:[["飲む → て-form",["飲みて","飲んで","飲って"],1,"む・ぶ・ぬ → んで।"],["食べる → て-form",["食べて","食べって","食べりて"],0,"Group 2 मा る हटाएर て थप।"],["来る → て-form",["来って","来いて","来て"],2,"Irregular: 来る（くる）→ 来て（きて）。"],["話す → て-form",["話って","話して","話んで"],1,"す → して。"],["‘Please wait’ कुन हो?",["待っています。","待ってください。","待ちます。"],1,"て-form + ください = polite request।"],["‘I am eating now’ कुन हो?",["今、食べています。","今、食べてください。","今、食べました。"],0,"て-form + います expresses an action in progress here।"],["行く को सही て-form?",["行いて","行って","行きて"],1,"行く is the important く exception।"],["Reading: 何時に起きますか。",["七時","九時","十一時"],0,"Reading says 七時に起きます।"]]
+});
+JP_ENRICH["1.1"] = ["〜いる/〜える मा सकिने सबै verb Group 2 होइनन्। 帰る→帰って; 行く→行って अपवाद। 〜ています ले चलिरहेको कामसँगै हालको अवस्था पनि जनाउन सक्छ।","आफ्नो बिहानबारे तीन verb जोडेर बोल; त्यसपछि साथीलाई ‘कृपया पर्ख’ भन।","朝、起きて、水を飲んで、会社に行きます。ちょっと待ってください。"];
+
 let jpPage = {mode:"home", week:1, lesson:"1.1"};
 let jpQuizFeedback = null;
 let jpEventsBound = false;
+function jpStateId(lesson){ return lesson.progressId || lesson.id; }
+function jpHardKey(type, word){ return "hard:" + type + ":" + word; }
+function jpHardItems(){
+  return Object.keys(DB.japanese.checks).filter(function(k){
+    const v=DB.japanese.checks[k];
+    return k.startsWith("hard:") && v && v.hard;
+  }).map(function(k){ return DB.japanese.checks[k]; });
+}
+function jpStudyItemHtml(type, item){
+  const word=item[0], saved=DB.japanese.checks[jpHardKey(type,word)];
+  const marked=!!(saved && saved.hard);
+  return '<div class="jp-study-item"><b lang="ja">' + escapeHtml(word) + '</b><small>' + escapeHtml(item[1]) + ' · ' + escapeHtml(item[2]) +
+    '</small><button type="button" class="jp-hard-btn' + (marked?' is-hard':'') + '" data-jp-hard-type="' + type +
+    '" data-jp-hard-word="' + escapeHtml(word) + '" data-jp-hard-reading="' + escapeHtml(item[1]) +
+    '" data-jp-hard-meaning="' + escapeHtml(item[2]) + '" aria-pressed="' + marked + '">' +
+    (marked ? '★ Hard · remove' : '☆ Hard') + '</button></div>';
+}
+function jpRenderHard(){
+  const items=jpHardItems();
+  let html='<div class="jp-actions"><button type="button" class="btn secondary" data-jp-home="1">← All weeks</button>' +
+    '<button type="button" class="btn secondary" data-jp-lesson="1.1">Day 1</button></div>' +
+    '<div class="jp-hero"><span class="jp-kicker">Personal review folder</span><h2>Hard to remember</h2>' +
+    '<p class="jp-muted">गाह्रो लागेको शब्द वा kanji यहाँ राख। याद भएपछि ★ बटन फेरि थिचेर हटाऊ। ' + items.length + ' ' + (items.length===1 ? 'item' : 'items') + ' marked.</p></div>';
+  if(!items.length) return html + '<div class="jp-panel"><p>अहिले सूची खाली छ। पाठका कुनै शब्दछेउको ☆ Hard थिचेर सुरु गर।</p></div>';
+  html += '<div class="jp-panel"><h3>Review these first</h3><div class="jp-vocab">';
+  items.forEach(function(item){ html += jpStudyItemHtml(item.type,[item.word,item.reading,item.meaning]); });
+  return html + '</div></div>';
+}
 function jpWeekLessons(week){
   return JP_LESSONS.filter(function(l){ return Number(l.id.split(".")[0]) === week; });
 }
 function jpNextLesson(){
-  return JP_LESSONS.find(function(l){ return !l.optional && !DB.japanese.done[l.id]; }) || JP_LESSONS[0];
+  return JP_LESSONS.find(function(l){ return !l.optional && !DB.japanese.done[jpStateId(l)]; }) || JP_LESSONS[0];
 }
 function jpDoneCount(){
-  return JP_LESSONS.filter(function(l){ return !l.optional && !!DB.japanese.done[l.id]; }).length;
+  return JP_LESSONS.filter(function(l){ return !l.optional && !!DB.japanese.done[jpStateId(l)]; }).length;
 }
 function jpMonth(week){ return Math.ceil(week / 4); }
 function jpProgressBar(done, total){
@@ -2068,7 +2144,8 @@ function jpRenderHome(){
     '<h2>From N5 basics to practical N3</h2>' +
     '<p class="jp-muted">You already know some N5, so the first two weeks repair the basics through a short diagnostic bridge. Move on when the reading and speaking tasks feel comfortable. Weeks 3–12 build N4, weeks 13–28 build N3, and the last eight weeks are for timed practice and real use.</p>' +
     jpProgressBar(jpDoneCount(), JP_LESSONS.filter(function(l){return !l.optional;}).length) +
-    '<div class="jp-actions"><button type="button" class="btn" data-jp-lesson="' + next.id + '">Continue: ' + escapeHtml(next.title) + ' →</button></div></div>' +
+    '<div class="jp-actions"><button type="button" class="btn" data-jp-lesson="' + next.id + '">Continue: ' + escapeHtml(next.title) + ' →</button>' +
+    '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div></div>' +
     '<div class="jp-panel"><h3>Your weekly rhythm</h3>' +
     '<p><b>Six study days + one review day.</b> Aim for about 2 hours: 15 min vocabulary review, 25 min grammar, 20 min kanji in context, 25 min reading, 25 min listening and shadowing, 10 min speaking or an error log. If you have less time, keep every skill and shorten each block.</p>' +
     '<p class="jp-muted">N3 reading and listening need separate practice. The JLPT itself does not test speaking, so this course gives speaking its own daily task. Two weeks of complete lessons are available now; the later cards show the roadmap and will gain full lessons step by step.</p></div>' +
@@ -2080,7 +2157,7 @@ function jpRenderHome(){
     html += '<h2 class="jp-section-title">Month ' + month + '</h2><div class="jp-grid">';
     for(let w=(month-1)*4+1;w<=month*4;w++){
       const item = JP_WEEKS[w-1], lessons = jpWeekLessons(w);
-      const done = lessons.filter(function(l){ return DB.japanese.done[l.id]; }).length;
+      const done = lessons.filter(function(l){ return DB.japanese.done[jpStateId(l)]; }).length;
       html += '<button type="button" class="jp-week-card" data-jp-week="' + w + '">' +
         '<span class="jp-kicker">Week ' + w + ' · ' + escapeHtml(item[1]) + '</span>' +
         '<strong>' + escapeHtml(item[2]) + '</strong><small>' +
@@ -2097,7 +2174,7 @@ function jpRenderWeek(week){
     '<div class="jp-hero"><span class="jp-kicker">Month ' + jpMonth(week) + ' · Week ' + week + ' · ' + escapeHtml(item[1]) + '</span>' +
     '<h2>' + escapeHtml(item[2]) + '</h2>' +
     '<p class="jp-muted"><b>Reading:</b> ' + escapeHtml(item[3]) + '<br><b>Speaking:</b> ' + escapeHtml(item[4]) + '</p>' +
-    (lessons.length ? jpProgressBar(lessons.filter(function(l){return DB.japanese.done[l.id];}).length, lessons.length) : '') +
+    (lessons.length ? jpProgressBar(lessons.filter(function(l){return DB.japanese.done[jpStateId(l)];}).length, lessons.length) : '') +
     '</div>';
   if(!lessons.length){
     return html + '<div class="jp-panel"><h3>Weekly direction</h3>' +
@@ -2107,7 +2184,7 @@ function jpRenderWeek(week){
   html += '<h2 class="jp-section-title">Daily lessons</h2>';
   lessons.forEach(function(l, i){
     html += '<button type="button" class="jp-day-card" data-jp-lesson="' + l.id + '">' +
-      '<small>' + (l.sourceDay ? 'Source Day ' + l.sourceDay + ' · optional preview' : 'Day ' + (i+1)) + (DB.japanese.done[l.id] ? ' · ✓ Completed' : '') + '</small>' +
+      '<small>' + (l.sourceDay ? 'Source Day ' + l.sourceDay + ' · optional preview' : 'Day ' + (i+1)) + (DB.japanese.done[jpStateId(l)] ? ' · ✓ Completed' : '') + '</small>' +
       '<strong>' + escapeHtml(l.title) + '</strong><small>' + escapeHtml(l.goal) + '</small></button>';
   });
   return html + (lessons.every(function(l){return l.optional;}) ? '<div class="jp-panel"><p class="jp-muted">These two imported lessons are optional previews. The other Week 19 roadmap topics will be taught in their own lessons later.</p></div>' : '<div class="jp-panel"><h3>Day 7: review</h3>' +
@@ -2116,19 +2193,34 @@ function jpRenderWeek(week){
 function jpRenderLesson(id){
   const lesson = JP_LESSONS.find(function(l){return l.id===id;});
   if(!lesson) return jpRenderHome();
-  const index = JP_LESSONS.indexOf(lesson), week = Number(id.split(".")[0]);
-  const checks = DB.japanese.checks[id] || {};
+  const index = JP_LESSONS.indexOf(lesson), week = Number(id.split(".")[0]), stateId=jpStateId(lesson);
+  const checks = DB.japanese.checks[stateId] || {};
   let html = '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-week="' + week + '">← Week ' + week + '</button>' +
-    '<button type="button" class="btn secondary" data-jp-home="1">All weeks</button></div>' +
+    '<button type="button" class="btn secondary" data-jp-home="1">All weeks</button>' +
+    '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div>' +
     '<div class="jp-hero"><span class="jp-kicker">Week ' + week + ' · ' + (lesson.sourceDay ? 'Source Day ' + lesson.sourceDay + ' · optional preview' : 'Day ' + id.split(".")[1]) + '</span>' +
     '<h2>' + escapeHtml(lesson.title) + '</h2><p class="jp-muted"><b>Goal:</b> ' + escapeHtml(lesson.goal) + '</p>' +
-    '<p class="jp-muted">' + (DB.japanese.done[id] ? '✓ Completed' : 'Not completed yet') +
-    (DB.japanese.quizScores[id] !== undefined ? ' · Best quiz: ' + DB.japanese.quizScores[id] + '%': '') + '</p></div>' +
+    '<p class="jp-muted">' + (DB.japanese.done[stateId] ? '✓ Completed' : 'Not completed yet') +
+    (DB.japanese.quizScores[stateId] !== undefined ? ' · Best quiz: ' + DB.japanese.quizScores[stateId] + '%': '') + '</p></div>' +
+    (lesson.teRules ? '<nav class="jp-lesson-nav" aria-label="Day 1 study sections">' +
+      [["Words","vocab"],["Kanji","kanji"],["Te-form rules","rules"],["Three uses","uses"],["Reading","reading"],["Practice","practice"],["Quiz","quiz"],["Summary","summary"]].map(function(x){
+        return '<button type="button" class="btn secondary btn-sm" data-jp-jump="jp-day1-' + x[1] + '">' + x[0] + '</button>';
+      }).join('') + '</nav>' : '') +
     '<div class="jp-panel"><h3>Understand it</h3><p>' + escapeHtml(lesson.explain) + '</p>' +
     '<div class="jp-pattern">' + escapeHtml(lesson.syntax) + '</div></div>';
+  if(lesson.teRules){
+    html += '<div class="jp-panel" id="jp-day1-rules"><h3>て-form builder · three verb groups</h3>' +
+      '<p class="jp-muted">हरेक group को नियम हेरेर पहिले आफैँ रूप बनाऊ, अनि उदाहरणसँग मिलाऊ।</p><div class="jp-rule-grid">';
+    lesson.teRules.forEach(function(group){
+      html += '<div class="jp-rule-card"><h4>' + escapeHtml(group[0]) + '</h4>';
+      group[1].forEach(function(row){html += '<p><b>' + escapeHtml(row[0]) + '</b><br><span lang="ja">' + escapeHtml(row[1]) + '</span></p>';});
+      html += '</div>';
+    });
+    html += '</div><div class="jp-pattern">Memory: む・ぶ・ぬ → んで · く → いて · Group 2: る → て · 行く → 行って</div></div>';
+  }
   if(lesson.grammar){
-    lesson.grammar.forEach(function(g){
-      html += '<div class="jp-panel"><h3>' + escapeHtml(g[0]) + '</h3><p>' + escapeHtml(g[1]) +
+    lesson.grammar.forEach(function(g,i){
+      html += '<div class="jp-panel"' + (lesson.teRules && i===0 ? ' id="jp-day1-uses"' : '') + '><h3>' + escapeHtml(g[0]) + '</h3><p>' + escapeHtml(g[1]) +
         '</p><div class="jp-example"><div class="jp-jp" lang="ja">' + escapeHtml(g[2]) + '</div><div class="jp-gloss">' + escapeHtml(g[3]) +
         '</div></div><div class="jp-example"><div class="jp-jp" lang="ja">' + escapeHtml(g[4]) + '</div><div class="jp-gloss">' + escapeHtml(g[5]) + '</div></div></div>';
     });
@@ -2139,15 +2231,14 @@ function jpRenderLesson(id){
     html += '<div class="jp-example"><div class="jp-jp" lang="ja">' + escapeHtml(ex[0]) + '</div>' +
       '<div class="jp-gloss">' + escapeHtml(ex[1]) + ' · ' + escapeHtml(ex[2]) + '</div></div>';
   });
-  html += '</div><div class="jp-panel"><h3>Words to review</h3><div class="jp-vocab">';
+  html += '</div><div class="jp-panel"' + (lesson.teRules ? ' id="jp-day1-vocab"' : '') + '><h3>Words to review</h3><div class="jp-vocab">';
   lesson.vocab.forEach(function(v){
-    html += '<div><b lang="ja">' + escapeHtml(v[0]) + '</b><small>' + escapeHtml(v[1]) +
-      ' · ' + escapeHtml(v[2]) + '</small></div>';
+    html += jpStudyItemHtml("v",v);
   });
   html += '</div><div class="jp-actions"><button type="button" class="btn secondary btn-sm" data-jp-cards="1">Add these words to Flashcards</button></div></div>';
   if(lesson.kanji){
-    html += '<div class="jp-panel"><h3>Kanji in context</h3><p class="jp-muted">पहिले शब्द पढ; सबै readings एकैदिन कण्ठ नगर्नु।</p><div class="jp-vocab">';
-    lesson.kanji.forEach(function(k){html += '<div><b lang="ja">' + escapeHtml(k[0]) + '</b><small>' + escapeHtml(k[1]) + ' · ' + escapeHtml(k[2]) + '</small></div>';});
+    html += '<div class="jp-panel"' + (lesson.teRules ? ' id="jp-day1-kanji"' : '') + '><h3>Kanji in context</h3><p class="jp-muted">पहिले शब्द पढ; सबै readings एकैदिन कण्ठ नगर्नु।</p><div class="jp-vocab">';
+    lesson.kanji.forEach(function(k){html += jpStudyItemHtml("k",k);});
     html += '</div></div>';
   }
   if(lesson.dialogue){
@@ -2158,10 +2249,14 @@ function jpRenderLesson(id){
   html +=
     '<div class="jp-panel"><h3>Common mistake</h3><p>' +
     escapeHtml(JP_ENRICH[id][0]) + '</p></div>' +
-    '<div class="jp-panel"><h3>Read first, then reveal meaning</h3>' +
+    '<div class="jp-panel"' + (lesson.teRules ? ' id="jp-day1-reading"' : '') + '><h3>Read first, then reveal meaning</h3>' +
     '<div class="jp-reading" lang="ja">' + escapeHtml(lesson.reading) + '</div>' +
-    '<details><summary>Show meaning</summary><p class="jp-muted">' + escapeHtml(lesson.readingHelp) + '</p></details>' +
-    '<label class="jp-check"><input type="checkbox" data-jp-check="read"' + (checks.read?' checked':'') + '> I read this before opening the meaning</label></div>' +
+    '<details><summary>Show meaning</summary><p class="jp-muted">' + escapeHtml(lesson.readingHelp) + '</p></details>';
+  if(lesson.readingQuestions){
+    html += '<h4>Reading questions · पहिले आफैँ उत्तर देऊ</h4>';
+    lesson.readingQuestions.forEach(function(q,i){html += '<div class="jp-example"><b lang="ja">' + (i+1) + '. ' + escapeHtml(q[0]) + '</b><details><summary>Show answer</summary><p lang="ja">' + escapeHtml(q[1]) + '</p></details></div>';});
+  }
+  html += '<label class="jp-check"><input type="checkbox" data-jp-check="read"' + (checks.read?' checked':'') + '> I read this before opening the meaning</label></div>' +
     '<div class="jp-panel"><h3>Speak out loud</h3><p>' + escapeHtml(lesson.speak) + '</p>' +
     '<button type="button" class="btn secondary btn-sm" data-jp-sound="1">▶ Listen if an offline Japanese voice is installed</button>' +
     '<details><summary>Show a model answer</summary><p lang="ja">' + escapeHtml(lesson.model) + '</p></details>' +
@@ -2169,11 +2264,29 @@ function jpRenderLesson(id){
     '<div class="jp-panel"><h3>Mini challenge</h3><p>' + escapeHtml(JP_ENRICH[id][1]) + '</p>' +
     '<details><summary>Show one possible answer</summary><p lang="ja">' + escapeHtml(JP_ENRICH[id][2]) + '</p></details></div>';
   if(lesson.practice){
-    html += '<div class="jp-panel"><h3>Write and compare · from your notes</h3><p class="jp-muted">पहिले कापीमा आफैँ उत्तर लेख, त्यसपछि मात्र नमुना खोल।</p>';
+    html += '<div class="jp-panel"' + (lesson.teRules ? ' id="jp-day1-practice"' : '') + '><h3>Write and compare · from your notes</h3><p class="jp-muted">पहिले कापीमा आफैँ उत्तर लेख, त्यसपछि मात्र नमुना खोल।</p>';
     lesson.practice.forEach(function(p, i){html += '<div class="jp-example"><b>' + (i+1) + '. ' + escapeHtml(p[0]) + '</b><details><summary>Show one answer</summary><p lang="ja">' + escapeHtml(p[1]) + '</p></details></div>';});
     html += '</div>';
   }
-  html += '<div class="jp-panel"><h3>Check your understanding</h3>';
+  if(lesson.kanaReview){
+    const old=lesson.kanaReview;
+    html += '<details class="jp-panel jp-old-review"><summary>Earlier Day 1 · kana and small っ review (your original lesson)</summary>' +
+      '<p class="jp-muted">Earlier progress: ' + (DB.japanese.done[old.id] ? '✓ Completed' : 'Not completed') +
+      (DB.japanese.quizScores[old.id] !== undefined ? ' · Best quiz: ' + DB.japanese.quizScores[old.id] + '%' : '') + '</p>' +
+      '<p>' + escapeHtml(old.explain) + '</p><div class="jp-pattern">' + escapeHtml(old.syntax) + '</div>';
+    old.examples.forEach(function(ex){html += '<div class="jp-example"><div class="jp-jp" lang="ja">' + escapeHtml(ex[0]) + '</div><div class="jp-gloss">' + escapeHtml(ex[1]) + ' · ' + escapeHtml(ex[2]) + '</div></div>';});
+    html += '<h4>Old vocabulary</h4><div class="jp-vocab">';
+    old.vocab.forEach(function(v){html += jpStudyItemHtml("v",v);});
+    html += '</div><h4>Old reading</h4><div class="jp-reading" lang="ja">' + escapeHtml(old.reading) + '</div>' +
+      '<p>' + escapeHtml(old.readingHelp) + '</p><p><b>Speaking:</b> ' + escapeHtml(old.speak) + '</p><p>' + escapeHtml(old.model) + '</p>' +
+      '<p><b>Common mistake:</b> ' + escapeHtml(old.enrich[0]) + '</p><p><b>Old mini challenge:</b> ' + escapeHtml(old.enrich[1]) + '</p>' +
+      '<details><summary>Old model answer</summary><p>' + escapeHtml(old.enrich[2]) + '</p></details>' +
+      (DB.japanese.notes[old.id] ? '<p><b>My earlier note:</b> ' + escapeHtml(DB.japanese.notes[old.id]) + '</p>' : '') +
+      '<h4>Old quiz · review with answers</h4>';
+    old.quiz.forEach(function(q,i){html += '<div class="jp-example"><b>' + (i+1) + '. ' + escapeHtml(q[0]) + '</b><details><summary>Show answer</summary><p>' + escapeHtml(q[1][q[2]]) + ' · ' + escapeHtml(q[3]) + '</p></details></div>';});
+    html += '</details>';
+  }
+  html += '<div class="jp-panel"' + (lesson.teRules ? ' id="jp-day1-quiz"' : '') + '><h3>Check your understanding</h3>';
   lesson.quiz.forEach(function(q, qi){
     html += '<fieldset class="jp-q"><legend>' + (qi+1) + '. ' + escapeHtml(q[0]) + '</legend>';
     q[1].forEach(function(choice, ci){
@@ -2191,11 +2304,17 @@ function jpRenderLesson(id){
     });
     html += '</div>';
   }
-  html += '</div><div class="jp-panel"><h3>My note / mistake log</h3>' +
+  html += '</div>';
+  if(lesson.summary){
+    html += '<div class="jp-panel" id="jp-day1-summary"><h3>Day 1 summary · अब सम्झनुपर्ने कुरा</h3>';
+    lesson.summary.forEach(function(point){html += '<p>✓ ' + escapeHtml(point) + '</p>';});
+    html += '</div>';
+  }
+  html += '<div class="jp-panel"><h3>My note / mistake log</h3>' +
     '<textarea class="jp-notes" id="jpNotes" placeholder="Write what was difficult, a new sentence, or a question…">' +
-    escapeHtml(DB.japanese.notes[id] || '') + '</textarea></div>' +
+    escapeHtml(DB.japanese.notes[stateId] || '') + '</textarea></div>' +
     '<div class="jp-actions"><button type="button" class="btn" data-jp-done="1">' +
-    (DB.japanese.done[id] ? '✓ Completed · tap to undo' : 'Mark lesson complete') + '</button>';
+    (DB.japanese.done[stateId] ? '✓ Completed · tap to undo' : 'Mark lesson complete') + '</button>';
   if(index>0 && JP_LESSONS[index-1].optional===lesson.optional) html += '<button type="button" class="btn secondary" data-jp-lesson="' + JP_LESSONS[index-1].id + '">← Previous</button>';
   if(index<JP_LESSONS.length-1 && JP_LESSONS[index+1].optional===lesson.optional) html += '<button type="button" class="btn secondary" data-jp-lesson="' + JP_LESSONS[index+1].id + '">Next →</button>';
   return html + '</div>';
@@ -2207,15 +2326,30 @@ function renderJapanese(){
     body.addEventListener("click", function(ev){
       const el = ev.target.closest("button");
       if(!el || !body.contains(el)) return;
+      if(el.dataset.jpJump){
+        const target=body.querySelector('#' + el.dataset.jpJump);
+        if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
+        return;
+      }
+      const previousY=window.scrollY;
       if(el.dataset.jpHome){
         jpPage.mode="home";
+      }else if(el.dataset.jpHardFolder){
+        jpPage.mode="hard";
       }else if(el.dataset.jpWeek){
         jpPage={mode:"week",week:Number(el.dataset.jpWeek),lesson:jpPage.lesson};
       }else if(el.dataset.jpLesson){
         jpPage={mode:"lesson",week:Number(el.dataset.jpLesson.split(".")[0]),lesson:el.dataset.jpLesson};
         jpQuizFeedback=null;
+      }else if(el.dataset.jpHardType){
+        const type=el.dataset.jpHardType, word=el.dataset.jpHardWord;
+        const key=jpHardKey(type,word), old=DB.japanese.checks[key];
+        DB.japanese.checks[key]={type:type,word:word,reading:el.dataset.jpHardReading,
+          meaning:el.dataset.jpHardMeaning,hard:!(old && old.hard),at:nowISO()};
+        save();
       }else if(el.dataset.jpDone){
-        const id=jpPage.lesson;
+        const lesson=JP_LESSONS.find(function(l){return l.id===jpPage.lesson;});
+        const id=jpStateId(lesson);
         if(DB.japanese.done[id]) delete DB.japanese.done[id];
         else DB.japanese.done[id]=nowISO();
         save();
@@ -2228,7 +2362,8 @@ function renderJapanese(){
         if(answers.indexOf(-1)!==-1){toast("Answer every question first");return;}
         const score=answers.filter(function(a,i){return a===lesson.quiz[i][2];}).length;
         jpQuizFeedback={id:lesson.id,answers:answers,score:score};
-        DB.japanese.quizScores[lesson.id]=Math.max(DB.japanese.quizScores[lesson.id] || 0,Math.round(100*score/lesson.quiz.length));
+        const scoreId=jpStateId(lesson);
+        DB.japanese.quizScores[scoreId]=Math.max(DB.japanese.quizScores[scoreId] || 0,Math.round(100*score/lesson.quiz.length));
         save();
       }else if(el.dataset.jpCards){
         const lesson=JP_LESSONS.find(function(l){return l.id===jpPage.lesson;});
@@ -2238,7 +2373,7 @@ function renderJapanese(){
         }
         let added=0;
         lesson.vocab.forEach(function(v,i){
-          const cardId="jp-"+lesson.id+"-"+i;
+          const cardId="jp-"+lesson.id+(lesson.cardVersion?"-"+lesson.cardVersion:"")+"-"+i;
           if(DB.cards.some(function(c){return c.id===cardId;})) return;
           DB.cards.push({id:cardId,deckId:deckId,front:v[0]+"（"+v[1]+"）",
             back:v[2],ease:2.5,interval:0,reps:0,due:nowISO()});
@@ -2259,18 +2394,21 @@ function renderJapanese(){
         return;
       }else return;
       renderJapanese();
-      if(el.dataset.jpLesson || el.dataset.jpWeek || el.dataset.jpHome) window.scrollTo(0,0);
+      if(el.dataset.jpHardType) window.scrollTo(0,previousY);
+      else if(el.dataset.jpLesson || el.dataset.jpWeek || el.dataset.jpHome || el.dataset.jpHardFolder) window.scrollTo(0,0);
     });
     body.addEventListener("input", function(ev){
       if(ev.target.id==="jpNotes"){
-        DB.japanese.notes[jpPage.lesson]=ev.target.value;
+        const lesson=JP_LESSONS.find(function(l){return l.id===jpPage.lesson;});
+        DB.japanese.notes[jpStateId(lesson)]=ev.target.value;
         save();
       }
     });
     body.addEventListener("change", function(ev){
       const key=ev.target.dataset.jpCheck;
       if(!key) return;
-      const id=jpPage.lesson;
+      const lesson=JP_LESSONS.find(function(l){return l.id===jpPage.lesson;});
+      const id=jpStateId(lesson);
       DB.japanese.checks[id]=DB.japanese.checks[id] || {};
       DB.japanese.checks[id][key]=ev.target.checked;
       save();
@@ -2279,7 +2417,8 @@ function renderJapanese(){
   }
   body.innerHTML='<div class="jp-wrap">' +
     (jpPage.mode==="lesson" ? jpRenderLesson(jpPage.lesson) :
-     jpPage.mode==="week" ? jpRenderWeek(jpPage.week) : jpRenderHome()) + '</div>';
+     jpPage.mode==="week" ? jpRenderWeek(jpPage.week) :
+     jpPage.mode==="hard" ? jpRenderHard() : jpRenderHome()) + '</div>';
 }
 
 /* ================= TYPING (touch-typing trainer) =================
