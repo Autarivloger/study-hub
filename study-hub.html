@@ -2439,6 +2439,140 @@ JP_ENRICH["2.7"]=["Week 2 का जोडीहरू अर्थसहित 
 const jpWeek2InsertAt=JP_LESSONS.findIndex(function(l){return Number(l.id.split('.')[0])>2;});
 JP_LESSONS.splice(jpWeek2InsertAt<0?JP_LESSONS.length:jpWeek2InsertAt,0,JP_WEEK2_UPGRADES.find(function(l){return l.id==="2.7";}));
 
+/* Week 3: plain forms and safe casual speech. Each day keeps the same full
+   lesson structure and a 20-word set; Day 7 reviews rather than adding load. */
+const JP_WEEK3 = [
+ {id:"3.1",title:"Dictionary and ない forms",goal:"Use nonpast plain affirmative and negative verb forms accurately.",studyNav:true,
+  explain:"Plain form साथी, परिवार, diary र grammar patterns मा धेरै आउँछ। आज verb को nonpast affirmative dictionary form र negative ない-form बलियो बनाऊ। Casual भनेको असभ्य होइन; relationship र situation मिल्नुपर्छ। शिक्षक, ग्राहक वा अपरिचितसँग बिना कारण polite style नछोड।",
+  syntax:"行きます→行く / 行きません→行かない · 食べます→食べる / 食べません→食べない · します→する/しない · 来ます→来る/来ない",
+  formGuide:[["Group 1",[["dictionary","書きます→書く / 飲みます→飲む"],["ない-form","書く→書かない / 飲む→飲まない"],["う ending","買う→買わない"],["question","明日行く？"]]],["Group 2 / irregular",[["Group 2","食べます→食べる / 食べない"],["する","します→する / しない"],["来る","来ます→来る（くる）/来ない（こない）"],["casual answer","うん、行く。/ ううん、行かない。"]]]],
+  grammar:[["1 · nonpast plain","Present habit र future दुवै dictionary form ले देखाउन सक्छ; समय शब्दले बुझाउँछ।","毎朝、新聞を読む。","हरेक बिहान अखबार पढ्छु।","明日、学校へ行く。","भोलि स्कूल जान्छु।"],["2 · negative plain","Group 1 को अन्त्य あ-row, Group 2 る→ない, irregular अलग।","今日は肉を食べない。","आज मासु खान्नँ।","日曜日は仕事をしない。","आइतबार काम गर्दिनँ।"],["3 · casual question","बोल्दा rising intonation ले प्रश्न बन्न सक्छ। लेख्दा ? उपयोगी। वरिष्ठसँग polite ますか प्रयोग गर।","明日、映画を見る？","भोलि फिल्म हेर्छौ?","うん、見る。/ ううん、見ない。","हो, हेर्छु / होइन, हेर्दिनँ।"]],
+  compare:"友だち: 明日来る？ 先生: 明日来ますか。 अर्थ मिल्न सक्छ, social distance फरक। Plain form grammar बनाउन पनि चाहिन्छ; casual speech मात्र होइन।",
+  examples:[["毎朝、六時に起きる。","まいあさ、ろくじにおきる。","I get up at six every morning."],["今日は新聞を読まない。","きょうはしんぶんをよまない。","I will not read the paper today."],["週末、何する？","しゅうまつ、なにする？","What will you do this weekend?"]],
+  vocab:[["普通形","ふつうけい","plain form · साधारण रूप"],["丁寧形","ていねいけい","polite form · विनम्र रूप"],["辞書形","じしょけい","dictionary form · शब्दकोश रूप"],["否定","ひてい","negation · नकार"],["肯定","こうてい","affirmation · सकारात्मक"],["新聞","しんぶん","newspaper · अखबार"],["記事","きじ","article · लेख"],["読む","よむ","read · पढ्नु"],["書く","かく","write · लेख्नु"],["話す","はなす","speak · बोल्नु"],["聞く","きく","listen / ask · सुन्नु"],["会う","あう","meet · भेट्नु"],["買う","かう","buy · किन्नु"],["待つ","まつ","wait · पर्खनु"],["遊ぶ","あそぶ","play · खेल्नु"],["帰る","かえる","return home · फर्कनु"],["起きる","おきる","wake up · उठ्नु"],["寝る","ねる","sleep · सुत्नु"],["週末","しゅうまつ","weekend · सप्ताहान्त"],["約束","やくそく","promise / appointment · वाचा"]],
+  kanji:[["図","ず","地図 · नक्सा · Sheet N4"],["市","し","市/市場 · सहर/बजार · Sheet N4"],["事","こと","仕事 · काम · Sheet N4"],["飯","はん","ご飯 · खाना · Sheet N4"],["肉","にく","肉 · मासु · Sheet N4"]],
+  dialogue:[["A","週末、何する？","सप्ताहान्तमा के गर्छौ?"],["B","友だちに会う。映画も見る。","साथी भेट्छु। फिल्म पनि हेर्छु।"],["A","日曜日も仕事する？","आइतबार पनि काम गर्छौ?"],["B","ううん、仕事はしない。","अहँ, काम गर्दिनँ।"]],
+  reading:"私は毎朝六時に起きる。朝ご飯を食べて、新聞を読む。でも、忙しい日は新聞を読まない。七時半に家を出て、電車で会社へ行く。週末は仕事をしない。友だちに会ったり、家でゆっくりしたりする。",
+  readingHelp:"म हरेक बिहान ६ बजे उठ्छु। खाना खाएर अखबार पढ्छु। व्यस्त दिनमा पढ्दिनँ। साढे सातमा घरबाट निस्केर रेलमा कम्पनी जान्छु। सप्ताहान्तमा काम गर्दिनँ। साथी भेट्छु, घरमा आराम गर्छु आदि। अन्तिम 〜たりする Week 1 बाट आएको हो।",
+  readingQuestions:[["何時に起きる？","六時に起きる。"],["忙しい日は新聞を読む？","ううん、読まない。"],["週末も仕事をする？","ううん、しない。"]],
+  speak:"आफ्नो weekday routine ४ plain-form वाक्यमा बोल; एउटा negative राख। त्यसपछि साथीलाई weekend plan casual रूपमा सोध।",
+  model:"毎朝七時に起きる。朝ご飯を食べる。電車で仕事に行く。日曜日は働かない。週末、何する？",
+  practice:[["読む・買う・帰る को ない-form।","読まない・買わない・帰らない。"],["食べる・する・来る को negative।","食べない・しない・来ない。"],["明日行きますか casual बनाऊ।","明日行く？"],["polite मा फर्काऊ: 今日は働かない。","今日は働きません。"],["आफ्नो routine चार plain वाक्यमा लेख।","六時に起きる。朝ご飯を食べる。新聞を読む。日曜日は働かない。"]],
+  summary:["२० शब्दलाई form labels र daily verbs मा समूह बनाऊ।","dictionary form = affirmative nonpast; ない-form = negative nonpast।","Plain style प्रयोग relationship अनुसार गर; formal situation मा polite style राख।","routine र future दुवैमा time word हेरेर अर्थ बुझ।"],
+  quiz:[["読みます→plain",["読む","読み","読んだ"],0,"dictionary form 読む。"],["買う negative",["買あない","買わない","買ない"],1,"う→わない。"],["食べる negative",["食べらない","食べない","食べるない"],1,"Group 2 る→ない。"],["する negative",["すらない","しない","するない"],1,"irregular।"],["casual question",["明日行く？","明日行きますか。","明日行くですか。"],0,"friend-level plain question।"],["Reading: weekend work?",["する","しない","分からない"],1,"週末は仕事をしない。"]]
+ },
+ {id:"3.2",title:"Plain past and negative past",goal:"Talk casually about completed and uncompleted past actions.",studyNav:true,
+  explain:"Plain past verb = た-form; negative past = ない-form को い→かった। 食べた / 食べなかった। Casual conversation मा context ले subject धेरैपटक हटाउँछ, तर कसको कुरा हो अस्पष्ट भए subject राख। た-form Day 3 Week 1 बाट फेरि प्रयोग हुन्छ।",
+  syntax:"行く→行った / 行かない→行かなかった · 食べる→食べた / 食べない→食べなかった · する→した/しなかった",
+  grammar:[["1 · plain past","て→た, で→だ याद गर। sentence-final た casual past हो।","昨日、映画を見た。","हिजो फिल्म हेरेँ।","友だちと話した。","साथीसँग कुरा गरेँ।"],["2 · negative past","ない को い हटाएर かった: 行かなかった।","朝ご飯を食べなかった。","बिहानको खाना खाइनँ।","雨だったから、出かけなかった。","पानी परेकोले बाहिर गइनँ।"],["3 · casual Q&A","た-form + ? ले ‘गर्‍यौ?’। उत्तर छोटो हुन सक्छ।","宿題、した？","गृहकार्य गर्‍यौ?","うん、した。/ ううん、しなかった。","हो गरेँ / गरिनँ।"]],
+  compare:"行きました↔行った; 行きませんでした↔行かなかった। Politeness बदल्दा तथ्य/समय बदलिँदैन।",
+  examples:[["昨日、市場で野菜を買った。","きのう、いちばでやさいをかった。","I bought vegetables at the market yesterday."],["夜はテレビを見なかった。","よるはテレビをみなかった。","I did not watch TV at night."],["薬、飲んだ？","くすり、のんだ？","Did you take the medicine?"]],
+  vocab:[["昨日","きのう","yesterday · हिजो"],["一昨日","おととい","day before yesterday · अस्ति"],["昨夜","ゆうべ","last night · हिजो राति"],["朝","あさ","morning · बिहान"],["昼","ひる","daytime / noon · दिउँसो"],["夜","よる","night · रात"],["市場","いちば","market · बजार"],["食堂","しょくどう","dining hall · भोजनालय"],["薬","くすり","medicine · औषधि"],["飲む","のむ","drink / take medicine · पिउनु"],["忘れる","わすれる","forget · बिर्सनु"],["間違える","まちがえる","make a mistake · गल्ती गर्नु"],["終わる","おわる","finish · सकिनु"],["始まる","はじまる","begin · सुरु हुनु"],["出かける","でかける","go out · बाहिर जानु"],["戻る","もどる","return · फर्कनु"],["電話する","でんわする","call · फोन गर्नु"],["掃除する","そうじする","clean · सफा गर्नु"],["洗濯する","せんたくする","do laundry · लुगा धुनु"],["宿題","しゅくだい","homework · गृहकार्य"]],
+  kanji:[["薬","くすり","薬 · औषधि · Sheet N4"],["朝","あさ","朝 · बिहान · Sheet N4"],["動","うごく","動く · चल्नु · Sheet N4"],["楽","たのしい","楽しい · रमाइलो · Sheet N4"],["近","ちかい","近い · नजिक · Sheet N4"]],
+  dialogue:[["A","昨日、宿題した？","हिजो गृहकार्य गर्‍यौ?"],["B","うん、した。でも、漢字は復習しなかった。","हो, गरेँ। तर kanji दोहोर्‍याइनँ।"],["A","薬、飲んだ？","औषधि खायौ?"],["B","あ、忘れた。","अँ, बिर्सेँ।"]],
+  reading:"昨日は忙しかった。朝ご飯を食べなかった。会社の近くの食堂で昼ご飯を食べた。仕事は六時に終わった。帰ってから掃除したけど、洗濯はしなかった。夜、友だちに電話して、十二時に寝た。",
+  readingHelp:"हिजो व्यस्त थिएँ। बिहान खाना खाइनँ। कम्पनी नजिक भोजनालयमा दिउँसो खाएँ। काम ६ बजे सकियो। घर फर्केर सफा गरेँ तर लुगा धोइनँ। राति साथीलाई फोन गरेर १२ बजे सुतेँ। けど = तर भन्ने casual connector हो।",
+  readingQuestions:[["朝ご飯を食べた？","ううん、食べなかった。"],["仕事は何時に終わった？","六時に終わった。"],["洗濯した？","ううん、しなかった。"]],
+  speak:"हिजो गरेका ३ र नगरेका २ काम plain past मा बोल। साथीको शैलीमा ‘हिजो के गर्‍यौ?’ सोध।",
+  model:"昨日、仕事に行った。昼は食堂で食べた。夜は勉強した。でも、運動しなかった。テレビも見なかった。",
+  practice:[["行く・読む・する को plain past।","行った・読んだ・した。"],["行かない・食べない को past।","行かなかった・食べなかった。"],["宿題しましたか casual बनाऊ।","宿題、した？"],["polite मा फर्काऊ: 薬を飲まなかった。","薬を飲みませんでした。"],["हिजोको पाँच-वाक्य diary लेख।","昨日、市場に行った。野菜を買った。掃除した。でも、洗濯しなかった。早く寝た。"]],
+  summary:["plain past = た-form; negative past = なかった।","polite ↔ plain बदल्दा event उही रहन्छ।","casual speech मा particles/subject छुट्न सक्छन्, तर अस्पष्टता नबढाऊ।","२० शब्दबाट हिजोको mini diary बनाऊ।"],
+  quiz:[["行く past",["行いた","行った","行きた"],1,"exception 行った।"],["読む past",["読みた","読んだ","読った"],1,"む→んだ。"],["食べない past",["食べなかった","食べないだった","食べません"],0,"ない→なかった。"],["する negative past",["しなかった","するなかった","しなない"],0,"しない→しなかった。"],["Did homework? casual",["宿題した？","宿題しますか？","宿題するでした？"],0,"plain past question।"],["Reading: laundry",["した","しなかった","書いてない"],1,"洗濯はしなかった。"]]
+ },
+ {id:"3.3",title:"Plain adjectives and nouns",goal:"Use plain present and past forms of adjectives and nouns in casual speech.",studyNav:true,
+  explain:"Verb मात्र होइन, adjective र noun पनि plain style मा बदलिन्छन्। い-adjective मा です हट्छ; な-adjective/noun affirmative present मा だ आउन सक्छ। प्रश्न वा नरम बोलाइमा だ प्रायः नआउन सक्छ, तर form table बुझ्न だ आधार मान।",
+  syntax:"高い/高くない/高かった/高くなかった · 静かだ/静かじゃない/静かだった/静かじゃなかった · 学生だ/学生じゃない/学生だった/学生じゃなかった",
+  grammar:[["1 · い-adjective plain","polite です हटाऊ; रूप Week 2 जस्तै।","今日は暑い。","आज गर्मी छ।","昨日は暑くなかった。","हिजो गर्मी थिएन।"],["2 · な-adjective plain","affirmative present だ; negative じゃない; past だった; negative past じゃなかった।","この町は静かだ。","यो सहर शान्त छ।","前の町は静かじゃなかった。","अघिल्लो सहर शान्त थिएन।"],["3 · noun plain","な-adjective कै copula pattern। casual question मा 学生？ स्वाभाविक हुन सक्छ।","兄は会社員だ。","दाइ कर्मचारी हुन्।","去年は学生だった。","गत वर्ष विद्यार्थी थिएँ।"]],
+  compare:"きれいだ (な-adj), 高い (い-adj), 学生だ (noun)। तीनैको negative/past एउटै होइन। बोल्दा そう？ जस्तो छोटो प्रतिक्रिया relationship अनुसार प्रयोग गर।",
+  examples:[["この部屋は明るい。","このへやはあかるい。","This room is bright."],["駅の近くはにぎやかだった。","えきのちかくはにぎやかだった。","The area near the station was lively."],["去年、姉は大学生だった。","きょねん、あねはだいがくせいだった。","My sister was a university student last year."]],
+  vocab:[["会社員","かいしゃいん","company employee · कर्मचारी"],["店員","てんいん","shop clerk · पसल कर्मचारी"],["学生","がくせい","student · विद्यार्थी"],["大学生","だいがくせい","university student · विश्वविद्यालय विद्यार्थी"],["住民","じゅうみん","resident · बासिन्दा"],["親","おや","parent · आमाबाबु"],["自分","じぶん","oneself · आफैँ"],["場所","ばしょ","place · ठाउँ"],["台所","だいどころ","kitchen · भान्सा"],["近所","きんじょ","neighbourhood · छिमेक"],["明るい","あかるい","bright · उज्यालो"],["暗い","くらい","dark · अँध्यारो"],["広い","ひろい","spacious · फराकिलो"],["狭い","せまい","narrow · साँघुरो"],["静か","しずか","quiet · शान्त"],["にぎやか","にぎやか","lively · चहलपहल"],["安全","あんぜん","safe · सुरक्षित"],["危険","きけん","dangerous · खतरनाक"],["自由","じゆう","free · स्वतन्त्र"],["不安","ふあん","anxious · चिन्तित"]],
+  kanji:[["首","くび","首 · घाँटी · Sheet N4"],["不","ふ","不安 · नकार/चिन्ता · Sheet N4"],["夜","よる","夜 · रात · Sheet N4"],["洋","よう","洋服 · पश्चिमी लुगा · Sheet N4"],["自","じ","自分 · आफैँ · Sheet N4"]],
+  dialogue:[["A","この近所、静か？","यो छिमेक शान्त छ?"],["B","うん、静かだよ。でも、駅の近くはにぎやか。","हो, शान्त छ। तर स्टेशन नजिक चहलपहल छ।"],["A","前の家も便利だった？","अघिल्लो घर पनि सुविधाजनक थियो?"],["B","ううん、便利じゃなかった。","अहँ, सुविधाजनक थिएन।"]],
+  reading:"今の家は駅に近くて便利だ。部屋は広くないけど、明るい。近所は昼は静かだけど、夜は少しにぎやかだ。前の家は広かったが、駅から遠くて不便だった。どちらも安全だったので、あまり不安じゃなかった。",
+  readingHelp:"अहिलेको घर स्टेशन नजिक र सुविधाजनक छ। कोठा फराकिलो छैन तर उज्यालो छ। छिमेक दिउँसो शान्त, राति केही चहलपहल छ। अघिल्लो घर फराकिलो थियो तर स्टेशनबाट टाढा र असुविधाजनक थियो। दुवै सुरक्षित भएकाले खासै चिन्ता थिएन।",
+  readingQuestions:[["今の部屋は広い？","ううん、広くない。"],["夜の近所は静か？","少しにぎやかだ。"],["前の家は便利だった？","ううん、不便だった。"]],
+  speak:"अहिलेको र अघिल्लो घर/काम/स्कूल plain adjective/noun forms ले तुलना गर। present, past र negative प्रत्येक राख।",
+  model:"今の家は便利だ。部屋は広くない。でも、明るい。前の家は広かったが、便利じゃなかった。",
+  practice:[["静か को चार plain forms।","静かだ・静かじゃない・静かだった・静かじゃなかった。"],["学生 को चार plain forms।","学生だ・学生じゃない・学生だった・学生じゃなかった。"],["高い को चार plain forms।","高い・高くない・高かった・高くなかった。"],["‘अघिल्लो घर शान्त थिएन’ लेख।","前の家は静かじゃなかった。"],["आफ्नो ठाउँ चार plain वाक्यमा वर्णन गर।","この町は便利だ。駅は近い。夜は静かじゃない。でも、安全だ。"]],
+  summary:["い-adj plain मा です हट्छ; な-adj/noun को affirmative आधार だ।","じゃない / だった / じゃなかった pattern अभ्यास गर।","casual प्रश्नमा だ छुट्न सक्छ: 学生？","२० शब्दबाट आफ्नो ठाउँ र identity वर्णन गर।"],
+  quiz:[["静か present plain",["静かだ","静かい","静かですだ"],0,"な-adjective + だ।"],["静か negative",["静かくない","静かじゃない","静かではないですだ"],1,"plain negative।"],["学生 past",["学生した","学生だった","学生かった"],1,"noun + だった。"],["高い present",["高いだ","高い","高だ"],1,"い-adj has no だ।"],["高い negative past",["高くなかった","高いじゃなかった","高かったない"],0,"い→くなかった。"],["Reading: previous house",["便利だった","不便だった","狭かった"],1,"असुविधाजनक थियो।"]]
+ },
+ {id:"3.4",title:"Opinions and quotations",goal:"Express opinions with と思う and report speech with と言う.",studyNav:true,
+  explain:"Plain form + と思う ले ‘मलाई लाग्छ…’ भन्छ। बोलेको कुरा report गर्दा quote + と言う प्रयोग हुन्छ। と思います अगाडि です/ます होइन, plain form राख। noun र な-adjective affirmative मा だ चाहिन्छ।",
+  syntax:"plain + と思います · N/な-adj + だと思います · quote + と言いました",
+  grammar:[["1 · opinion","Verb र い-adjective plain form सिधै と। noun/な-adjective मा だ।","明日は雨が降ると思います。","भोलि पानी पर्छ जस्तो लाग्छ।","この町は便利だと思います。","यो सहर सुविधाजनक लाग्छ।"],["2 · tense and negative","と思う अघि चाहिएको plain tense राख।","田中さんは来ないと思います。","तानाका आउँदैनन् जस्तो लाग्छ।","試験は難しくなかったと思います。","परीक्षा गाह्रो थिएन जस्तो लाग्छ।"],["3 · quotation","ठ्याक्कै बोलेको कुरा 「」 भित्र राखेर と言いました।","先生は「毎日練習して」と言いました。","शिक्षकले ‘दैनिक अभ्यास गर’ भन्नुभयो।","友だちは明日来ると言いました。","साथीले भोलि आउने भन्यो।"]],
+  compare:"便利と思います ✕ → 便利だと思います ○। 便利ですと思います पनि गलत। Quote भित्र वक्ताले बोलेको style रहन सक्छ।",
+  examples:[["日本語はおもしろいと思います。","にほんごはおもしろいとおもいます。","I think Japanese is interesting."],["父はこの計画に反対だと思います。","ちちはこのけいかくにはんたいだとおもいます。","I think my father opposes this plan."],["母は「早く帰って」と言いました。","ははは「はやくかえって」といいました。","Mother said, ‘Come home early.’"]],
+  vocab:[["意見","いけん","opinion · विचार"],["考え","かんがえ","idea · सोच"],["計画","けいかく","plan · योजना"],["予定","よてい","schedule · तालिका"],["賛成","さんせい","agreement · समर्थन"],["反対","はんたい","opposition · विरोध"],["理由","りゆう","reason · कारण"],["ニュース","ニュース","news · समाचार"],["天気予報","てんきよほう","weather forecast · मौसम पूर्वानुमान"],["将来","しょうらい","future · भविष्य"],["思う","おもう","think · सोच्नु"],["考える","かんがえる","consider · विचार गर्नु"],["言う","いう","say · भन्नु"],["伝える","つたえる","convey · सुनाउनु"],["信じる","しんじる","believe · विश्वास गर्नु"],["決まる","きまる","be decided · तय हुनु"],["選ぶ","えらぶ","choose · छान्नु"],["変わる","かわる","change · बदलिनु"],["正しい","ただしい","correct · सही"],["必要だ","ひつようだ","necessary · आवश्यक"]],
+  kanji:[["開","ひらく","開く · खोल्नु · Sheet N4"],["元","もと","元気/元 · मूल · Sheet N4"],["紙","かみ","紙 · कागज · Sheet N4"],["親","おや","親 · आमाबाबु · Sheet N4"],["台","だい","台 · मेसिन/गणना · Sheet N4"]],
+  dialogue:[["A","来週の試験、難しいと思う？","अर्को हप्ताको परीक्षा गाह्रो लाग्छ?"],["B","少し難しいと思う。でも、毎日練習すれば大丈夫。","केही गाह्रो लाग्छ, तर अभ्यास गरे ठीक हुन्छ।"],["A","先生は何と言った？","शिक्षकले के भन्नुभयो?"],["B","「漢字を復習して」と言った。","‘Kanji दोहोर्‍याऊ’ भन्नुभयो।"]],
+  reading:"天気予報は、明日は雨が降ると言いました。でも、私は午後には晴れると思います。友だちは山へ行きたいと言いましたが、雨なら危険だと思います。だから、朝のニュースを見てから予定を決めます。",
+  readingHelp:"पूर्वानुमानले भोलि पानी पर्ने भन्यो। मलाई दिउँसो घाम लाग्छ जस्तो लाग्छ। साथीले पहाड जान चाहेको भन्यो, तर पानी परे खतरनाक लाग्छ। बिहान समाचार हेरेर योजना तय हुन्छ।",
+  readingQuestions:[["天気予報は何と言いましたか。","明日は雨が降ると言いました。"],["午後はどうなると思っていますか。","晴れると思っています。"],["いつ予定を決めますか。","朝のニュースを見てからです。"]],
+  speak:"मौसम, जापानी पढाइ र आफ्नो भविष्यबारे तीन opinion बोल। त्यसपछि आज कसैले भनेको एउटा कुरा と言いました ले report गर।",model:"明日は晴れると思います。日本語は毎日話すことが必要だと思います。先生は「復習して」と言いました。",
+  practice:[["便利ですと思う सच्याऊ।","便利だと思う。"],["भोलि आउँदैन जस्तो लाग्छ।","明日は来ないと思います。"],["परीक्षा सजिलो थियो जस्तो लाग्छ।","試験は簡単だったと思います。"],["Teacher said ‘read this’. बोला।","先生は「これを読んで」と言いました。"],["दुई opinion लेख।","日本語は楽しいと思います。毎日の練習が必要だと思います。"]],
+  summary:["२० शब्द opinion, plan र communication मा बाँड।","と思う अघि plain form; N/な-adj affirmative मा だ।","と言う ले speech report गर्छ।","तथ्य र अनुमान छुट्याऊ।"],
+  quiz:[["convenient + think",["便利と思う","便利だと思う","便利ですと思う"],1,"な-adj + だ。"],["will not come + think",["来ないと思う","来ませんと思う","来なくと思う"],0,"plain negative।"],["was easy + think",["簡単だったと思う","簡単でしたと思う","簡単かったと思う"],0,"plain past।"],["said",["と言いました","を思いました","に考えました"],0,"quote + と言う।"],["意見",["opinion","future","news"],0,"विचार।"],["forecast",["sun","rain","snow"],1,"雨が降る。"]]
+ },
+ {id:"3.5",title:"Natural casual questions",goal:"Use の, ね, よ and かな naturally and choose the right register.",studyNav:true,
+  explain:"の？ ले explanation सोध्छ, ね ले साझा सहमति खोज्छ, よ ले नयाँ जानकारी दिन्छ, かな ले ‘होला?’ भन्ने uncertainty देखाउँछ। close friend/family सँग यी स्वाभाविक हुन्छन्; formal वा unfamiliar अवस्थामा polite style सुरक्षित हुन्छ।",
+  syntax:"plain + の？ · sentence + ね · sentence + よ · plain + かな",
+  grammar:[["1 · の？","कारण/स्थिति बुझ्ने casual question। noun/な-adj मा なの？।","どうして遅れたの？","किन ढिला भयौ?","今日は休みなの？","आज बिदा हो?"],["2 · ね / よ","ね = ‘है?’ shared feeling; よ = नयाँ जानकारी।","今日は寒いね。","आज चिसो छ है।","この店は安いよ。","यो पसल सस्तो छ नि।"],["3 · かな","आफ्नो uncertainty वा self-question।","明日、晴れるかな。","भोलि घाम लाग्ला कि?","間に合うかな。","समयमा पुगिएला कि?"]],
+  compare:"友だち: 何しているの？ / formal: 何をしていますか。 सही form भन्दा पहिले relationship र setting सोच।",
+  examples:[["どこへ行くの？","どこへいくの？","Where are you going?"],["この映画、おもしろいね。","このえいが、おもしろいね。","This film is interesting, isn't it?"],["電車はもう出たよ。","でんしゃはもうでたよ。","The train has already left."],["合格できるかな。","ごうかくできるかな。","I wonder if I can pass."]],
+  vocab:[["会話","かいわ","conversation · कुराकानी"],["返事","へんじ","reply · जवाफ"],["質問","しつもん","question · प्रश्न"],["答え","こたえ","answer · उत्तर"],["気持ち","きもち","feeling · भावना"],["冗談","じょうだん","joke · ठट्टा"],["本当","ほんとう","really · साँच्चै"],["秘密","ひみつ","secret · गोप्य कुरा"],["心配","しんぱい","worry · चिन्ता"],["安心","あんしん","relief · ढुक्क"],["遅れる","おくれる","be late · ढिला हुनु"],["間に合う","まにあう","be in time · समयमा पुग्नु"],["急ぐ","いそぐ","hurry · हतार गर्नु"],["怒る","おこる","get angry · रिसाउनु"],["笑う","わらう","laugh · हाँस्नु"],["泣く","なく","cry · रुनु"],["驚く","おどろく","be surprised · अचम्म पर्नु"],["相談する","そうだんする","consult · सल्लाह गर्नु"],["確認する","かくにんする","confirm · पुष्टि गर्नु"],["連絡する","れんらくする","contact · सम्पर्क गर्नु"]],
+  kanji:[["民","みん","住民 · बासिन्दा · Sheet N4"],["者","しゃ","医者/者 · व्यक्ति · Sheet N4"],["画","が","映画 · चलचित्र · Sheet N4"],["所","ところ","場所 · ठाउँ · Sheet N4"],["計","けい","時計/計画 · योजना · Sheet N4"]],
+  dialogue:[["A","どうして遅れたの？","किन ढिला भयौ?"],["B","電車が遅れたんだ。心配した？","रेल ढिला भयो। चिन्ता गर्‍यौ?"],["A","うん。でも、間に合ってよかったね。","हो। समयमा पुग्यौ, राम्रो भयो है।"],["B","次は早く出るよ。","अर्कोपटक चाँडै निस्कन्छु नि।"]],
+  reading:"友だちから「今どこにいるの？」と連絡が来た。私は「駅にいるよ。電車が遅れたんだ」と返事した。友だちは「試験に間に合うかな」と心配していた。開始の五分前に着いたので、二人で「よかったね」と笑った。",
+  readingHelp:"साथीले ‘अहिले कहाँ छौ?’ भन्यो। स्टेशनमा छु, रेल ढिला भयो भनेर जवाफ दिएँ। साथी समयमा पुगिएला कि भनेर चिन्तित थियो। सुरु हुनुभन्दा पाँच मिनेटअघि पुगेपछि दुवै हाँस्यौँ।",
+  readingQuestions:[["何が遅れましたか。","電車です。"],["友だちは何を心配しましたか。","試験に間に合うか心配しました。"],["何分前に着きましたか。","五分前です。"]],
+  speak:"Close friend dialogue बनाऊ: の？, ね, よ, かな प्रत्येक एकपटक। त्यसपछि teacher लाई उही कुरा polite style मा भन।",model:"明日、何するの？ 映画を見たいな。席があるかな。この映画、おもしろいよ。一緒に行こうね。",
+  practice:[["休みですか casual बनाऊ।","休みなの？"],["यो सजिलो छ नि।","これは簡単だよ。"],["आज गर्मी छ है।","今日は暑いね。"],["पुगिएला कि?","間に合うかな。"],["何しているの？ polite बनाऊ।","何をしていますか。"]],
+  summary:["२० शब्द conversation, feeling, response मा बाँड।","の？ explanation; noun/な-adj मा なの？।","ね shared feeling, よ information, かな uncertainty।","relationship अनुसार register छान।"],
+  quiz:[["holiday?",["休みの？","休みなの？","休みだの？"],1,"noun + なの？।"],["agreement",["ね","よ","かな"],0,"ね।"],["new information",["ね","よ","の"],1,"よ।"],["wonder",["かな","ね","よ"],0,"かな।"],["formal stranger",["どこ行くの？","どちらへ行きますか。","どこ行くよ。"],1,"polite।"],["arrival",["5 minutes before","late","after start"],0,"五分前。"]]
+ },
+ {id:"3.6",title:"Switching plain and polite style",goal:"Switch register while keeping meaning and tense stable.",studyNav:true,
+  explain:"आज नयाँ form होइन; सही व्यक्तिसँग सही style छान्ने दिन। साथीलाई plain, teacher/customer/stranger लाई polite। switch गर्दा tense र meaning बदलिनु हुँदैन। नबुझे politely repeat वा confirm माग।",
+  syntax:"友だち: 行く？→うん、行く · 受付: 行きますか→はい、行きます",
+  grammar:[["1 · relationship","close friend/family मा plain सम्भव; unfamiliar/status/formal service मा polite default।","友だち：明日、来る？","साथी: भोलि आउँछौ?","先生：明日、来ますか。","शिक्षक: भोलि आउनुहुन्छ?"],["2 · same meaning","register बदल्दा affirmative/negative र time नबदल।","行かなかった。→ 行きませんでした。","गइनँ।","便利だと思う。→ 便利だと思います。","सुविधाजनक लाग्छ।"],["3 · repair","नबुझेको बेला अनुमान नगर।","すみません、もう一度お願いします。","माफ गर्नुहोस्, फेरि भन्नुहोस्।","〜という意味ですか。","अर्थ ~ हो?"]],
+  compare:"Plain = rude होइन; close relation मा सामान्य। Polite = सम्मान र सुरक्षित default। बिना कारण style उफार्दा अस्वाभाविक सुनिन्छ।",
+  examples:[["部長には後で連絡します。","ぶちょうにはあとでれんらくします。","I will contact the manager later."],["友だちには今連絡するよ。","ともだちにはいまれんらくするよ。","I'll contact my friend now."],["もう一度説明してください。","もういちどせつめいしてください。","Please explain once more."]],
+  vocab:[["関係","かんけい","relationship · सम्बन्ध"],["場面","ばめん","situation · परिस्थिति"],["相手","あいて","other person · सामनेको व्यक्ति"],["丁寧","ていねい","polite · विनम्र"],["普通形","ふつうけい","plain form · साधारण रूप"],["敬語","けいご","honorific speech · आदरसूचक भाषा"],["先輩","せんぱい","senior · वरिष्ठ"],["後輩","こうはい","junior · कनिष्ठ"],["上司","じょうし","boss · हाकिम"],["同僚","どうりょう","coworker · सहकर्मी"],["受付","うけつけ","reception · स्वागत कक्ष"],["会場","かいじょう","venue · स्थल"],["確認","かくにん","confirmation · पुष्टि"],["意味","いみ","meaning · अर्थ"],["場合","ばあい","case · अवस्था"],["直す","なおす","correct · सच्याउनु"],["繰り返す","くりかえす","repeat · दोहोर्‍याउनु"],["呼ぶ","よぶ","call · बोलाउनु"],["頼む","たのむ","request · अनुरोध गर्नु"],["断る","ことわる","decline · अस्वीकार गर्नु"]],
+  kanji:[["研","けん","研究 · अनुसन्धान · Sheet N4"],["池","いけ","池 · पोखरी · Sheet N4"],["有","ゆう","有名 · प्रसिद्ध · Sheet N4"],["注","ちゅう","注意 · सावधानी · Sheet N4"],["力","ちから","力 · शक्ति · Sheet N4"]],
+  dialogue:[["受付","お名前をお願いします。","कृपया नाम भन्नुहोस्।"],["私","アウタリです。会場はどこですか。","म अउतारी हुँ। स्थल कहाँ हो?"],["受付","三階です。","तेस्रो तला हो।"],["友だち","受付で何て言われた？","reception मा के भनियो?"],["私","会場は三階だって。行こう。","स्थल तेस्रो तलामा रे। जाऔँ।"]],
+  reading:"会社の研修会で、私は受付の人に「会場はどこですか」と聞きました。一つの言葉が分からなかったので、「すみません、もう一度お願いします」と頼みました。会場で同僚に会うと、「席、どこだった？」と聞かれました。私は「前から三番目だよ」と答えました。",
+  readingHelp:"Training मा reception लाई स्थल कहाँ हो भनेर polite सोधेँ। शब्द नबुझ्दा फेरि भन्न अनुरोध गरेँ। सहकर्मीले seat कहाँ थियो भनेर casual सोध्यो। मैले अगाडिबाट तेस्रो भनेँ।",
+  readingQuestions:[["受付ではどう話しましたか。","丁寧に話しました。"],["分からない時、何と言いましたか。","もう一度お願いします、と言いました。"],["席はどこですか。","前から三番目です。"]],
+  speak:"Reception मा ४ polite turns र साथीलाई ४ casual turns role-play गर। एउटै तथ्य दुवै style मा भन।",model:"受付：会場はどこですか。もう一度お願いします。友だち：会場、どこ？ 三階だよ。一緒に行く？ うん、行こう。",
+  practice:[["来なかった polite।","来ませんでした。"],["分かりません casual।","分からない。"],["repeat politely माग।","すみません、もう一度お願いします。"],["friend लाई कहाँ थियो?","どこだった？"],["एउटै plan दुई register।","明日行く？／明日行きますか。"]],
+  summary:["२० शब्द people, setting, repair मा बाँड।","relationship र setting अनुसार style छान।","switch गर्दा tense/meaning बचाऊ।","नबुझे repeat वा confirm गर।"],
+  quiz:[["boss default",["plain","polite","no ending"],1,"polite।"],["行かなかった polite",["行きませんでした","行きません","行かなかったですか"],0,"past negative।"],["repeat politely",["もう一度お願いします","もう一度言う？","繰り返すよ"],0,"repair phrase।"],["friend casual",["どこでしたか","どこだった？","どこでございますか"],1,"plain।"],["意味",["meaning","venue","relationship"],0,"अर्थ।"],["seat",["first","third from front","outside"],1,"三番目。"]]
+ },
+ {id:"3.7",title:"Week 3 retrieval review",goal:"Retrieve Week 3 forms and switch register without notes.",reviewOnly:true,studyNav:true,
+  explain:"आज नयाँ grammar छैन। उत्तर नहेरी form chart बोल, fresh reading पढ र २० review words recall गर। friend र formal person बीच style सही switch गर्न सक्यौ भने Week 3 पूरा हुन्छ।",
+  syntax:"plain present/past/negative · と思う/と言う · の？/ね/よ/かな · register",
+  grammar:[["1 · four forms","verb, い-adj, な-adj/noun को positive/negative present/past।","行く・行かない・行った・行かなかった","जान्छु/जाँदिनँ/गएँ/गइनँ","静かだ・静かじゃない・静かだった・静かじゃなかった","शान्त छ/छैन/थियो/थिएन"],["2 · communication","opinion = plain+と思う; report = と言う; relation अनुसार endings।","便利だと思う。先生は便利だと言った。","सुविधाजनक लाग्छ। शिक्षकले पनि भन्नुभयो।","明日、来るの？ 来るよ。","भोलि आउँछौ? आउँछु नि।"]],
+  compare:"Form सही भएर register गलत भए communication असहज हुन्छ। grammar, time र relationship तीनै जाँच।",
+  examples:[["昨日は忙しかったけど、今日は忙しくない。","きのうはいそがしかったけど、きょうはいそがしくない。","Yesterday was busy, today isn't."],["先生は毎日読むことが必要だと言いました。","せんせいはまいにちよむことがひつようだといいました。","The teacher said daily reading is necessary."],["試験、大丈夫かな。きっと大丈夫だよ。","しけん、だいじょうぶかな。きっとだいじょうぶだよ。","I wonder if the test will be okay."]],
+  vocab:[["読む","よむ","read · पढ्नु"],["話す","はなす","speak · बोल्नु"],["来ない","こない","not come · नआउनु"],["行った","いった","went · गयो"],["食べなかった","たべなかった","did not eat · खाएन"],["静かだ","しずかだ","quiet · शान्त"],["便利だった","べんりだった","was convenient · सुविधाजनक थियो"],["不安じゃない","ふあんじゃない","not anxious · चिन्तित छैन"],["意見","いけん","opinion · विचार"],["理由","りゆう","reason · कारण"],["予定","よてい","plan · योजना"],["返事","へんじ","reply · जवाफ"],["質問","しつもん","question · प्रश्न"],["心配","しんぱい","worry · चिन्ता"],["安心","あんしん","relief · ढुक्क"],["相手","あいて","other person · सामनेको व्यक्ति"],["場面","ばめん","situation · परिस्थिति"],["丁寧","ていねい","polite · विनम्र"],["確認する","かくにんする","confirm · पुष्टि गर्नु"],["繰り返す","くりかえす","repeat · दोहोर्‍याउनु"]],
+  kanji:[["県","けん","県 · prefecture · Sheet N4"],["私","わたし","私 · म · Sheet N4"],["産","さん","生産 · उत्पादन · Sheet N4"],["堂","どう","食堂 · भोजनालय · Sheet N4"],["引","ひく","引く · तान्नु · Sheet N4"]],
+  dialogue:[["友だち","昨日の試験、どうだった？","हिजोको परीक्षा कस्तो थियो?"],["私","難しかった。でも、合格できると思う。","गाह्रो थियो, तर पास हुन्छु जस्तो लाग्छ।"],["友だち","先生、何て言ってた？","शिक्षकले के भन्नुभयो?"],["私","「来週、結果を出します」と言ってた。","अर्को हप्ता नतिजा आउँछ भन्नुभयो।"]],
+  reading:"朝、友だちに「今日の面接、緊張しているの？」と聞かれた。私は「少し不安だけど、大丈夫だと思う」と答えた。会社では受付の人に丁寧に話した。面接の後、友だちに「思ったより難しくなかったよ」と連絡した。結果は来週だと言われた。",
+  readingHelp:"साथीले interview ले nervous छौ भनेर सोध्यो। केही चिन्ता भए पनि ठीक हुन्छ भनेँ। कम्पनीमा reception सँग polite बोलेँ। पछि सोचेभन्दा गाह्रो थिएन भनेँ। नतिजा अर्को हप्ता भनियो।",
+  readingQuestions:[["だれが質問しましたか。","友だちです。"],["受付にはどう話しましたか。","丁寧に話しました。"],["面接はどうでしたか。","難しくなかったです。"],["結果はいつですか。","来週です。"]],
+  speak:"९० सेकेन्ड: हिजो, आज, भोलिको अनुमान र कसैले भनेको कुरा। साथीलाई plain र workplace लाई polite style छुट्याऊ।",model:"昨日、面接に行った。難しくなかった。結果は来週出ると思う。先生は「心配しないで」と言った。受付では丁寧に質問した。",
+  practice:[["行く का चार form।","行く・行かない・行った・行かなかった。"],["静か का चार form।","静かだ・静かじゃない・静かだった・静かじゃなかった。"],["Japanese useful लाग्छ।","日本語は役に立つと思います。"],["Teacher said read daily।","先生は毎日読むと言いました。"],["friend/formal एउटै question।","明日来る？／明日来ますか。"]],
+  summary:["२० review items recall गर।","verbs/adjectives/nouns का plain forms छुट्याऊ।","と思う/と言う अघि plain form।","व्यक्ति र setting अनुसार style switch गर।"],
+  quiz:[["食べる negative past",["食べなかった","食べないだった","食べません"],0,"なかった।"],["student past",["学生かった","学生だった","学生した"],1,"noun + だった।"],["quiet negative",["静かくない","静かじゃない","静かない"],1,"な-adj।"],["safe opinion",["安全と思う","安全だと思う","安全ですと思う"],1,"だと思う。"],["quote marker",["を","と","で"],1,"と。"],["holiday explanation",["休みなの？","休みだ？の","休みですの？"],0,"なの？。"],["agreement",["よ","ね","かな"],1,"ね。"],["uncertainty",["かな","よ","のだ"],0,"かな。"],["formal reception",["どこ？","どこですか。","どこだよ。"],1,"polite।"],["result",["today","next week","next month"],1,"来週。"]]
+ }
+];
+
+JP_WEEK3.forEach(function(lesson){
+  JP_ENRICH[lesson.id]=[lesson.explain,lesson.syntax,lesson.grammar,lesson.compare,lesson.examples,lesson.vocab,lesson.kanji,lesson.dialogue,lesson.reading,lesson.readingHelp,lesson.readingQuestions,lesson.speak,lesson.model,lesson.practice,lesson.summary,lesson.quiz];
+});
+const jpWeek3InsertAt=JP_LESSONS.findIndex(function(l){return Number(l.id.split('.')[0])>3;});
+JP_LESSONS.splice(jpWeek3InsertAt<0?JP_LESSONS.length:jpWeek3InsertAt,0,...JP_WEEK3);
+
 let jpPage = {mode:"home", week:1, lesson:"1.1"};
 let jpQuizFeedback = null;
 let jpEventsBound = false;
@@ -2480,6 +2614,10 @@ function jpDoneCount(){
   return JP_LESSONS.filter(function(l){ return !l.optional && !!DB.japanese.done[jpStateId(l)]; }).length;
 }
 function jpMonth(week){ return Math.ceil(week / 4); }
+function jpLessonDisplayTitle(lesson){
+  const week=Number(lesson.id.split('.')[0]);
+  return (week===2 || week===3) && !lesson.optional ? 'Day ' + lesson.id.split('.')[1] : lesson.title;
+}
 function jpProgressBar(done, total){
   return '<div class="jp-progress" role="progressbar" aria-valuenow="' + done +
     '" aria-valuemax="' + total + '"><span style="width:' + Math.round(100 * done / total) + '%"></span></div>' +
@@ -2491,13 +2629,8 @@ function jpRenderHome(){
     '<h2>From N5 basics to practical N3</h2>' +
     '<p class="jp-muted">You already know some N5, so the first two weeks repair the basics through a short diagnostic bridge. Move on when the reading and speaking tasks feel comfortable. Weeks 3–12 build N4, weeks 13–28 build N3, and the last eight weeks are for timed practice and real use.</p>' +
     jpProgressBar(jpDoneCount(), JP_LESSONS.filter(function(l){return !l.optional;}).length) +
-    '<div class="jp-actions"><button type="button" class="btn" data-jp-lesson="' + next.id + '">Continue: ' + escapeHtml(next.title) + ' →</button>' +
+    '<div class="jp-actions"><button type="button" class="btn" data-jp-lesson="' + next.id + '">Continue: ' + escapeHtml(jpLessonDisplayTitle(next)) + ' →</button>' +
     '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div></div>' +
-    '<div class="jp-panel"><h3>Your weekly rhythm</h3>' +
-    '<p><b>Six study days + one review day.</b> Aim for about 2 hours: 15 min vocabulary review, 25 min grammar, 20 min kanji in context, 25 min reading, 25 min listening and shadowing, 10 min speaking or an error log. If you have less time, keep every skill and shorten each block.</p>' +
-    '<p><b>Daily target from Day 2:</b> 8–10 useful words, 4–5 new kanji in words, and 1–2 related grammar patterns. Review 10–15 older words. Read one short passage, listen and repeat aloud, and make two sentences about your own life. Day 7 is for review, mistakes and a small check; do not force new material on that day.</p>' +
-    '<p><b>Nine-month checkpoints:</b> Months 1–3 build N4 accuracy; months 4–7 build N3 reading, listening and grammar; months 8–9 focus on weak points, timed practice and everyday conversation. Move at the speed of understanding—repeat a day when needed.</p>' +
-    '<p class="jp-muted">N3 reading and listening need separate practice. The JLPT itself does not test speaking, so this course gives speaking its own daily task. Two weeks of complete lessons are available now; the later cards show the roadmap and will gain full lessons step by step.</p></div>' +
     '<div class="jp-panel"><h3>From your previous Japanese notes · advanced preview</h3>' +
     '<p class="jp-muted">Day 16 and Day 17 are available as optional reference. They do not mean you have completed N4. Keep following the Continue path first; return here when the N4 bridge feels secure.</p>' +
     '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-lesson="19.1">Day 16 · Contrast and change</button>' +
@@ -2532,11 +2665,13 @@ function jpRenderWeek(week){
   }
   html += '<h2 class="jp-section-title">Daily lessons</h2>';
   lessons.forEach(function(l, i){
+    const done=!!DB.japanese.done[jpStateId(l)];
+    const meta=l.sourceDay ? 'Source Day ' + l.sourceDay + ' · optional preview' : ((week===2 || week===3) ? (done ? '✓ Completed' : '') : 'Day ' + (i+1) + (done ? ' · ✓ Completed' : ''));
     html += '<button type="button" class="jp-day-card" data-jp-lesson="' + l.id + '">' +
-      '<small>' + (l.sourceDay ? 'Source Day ' + l.sourceDay + ' · optional preview' : 'Day ' + (i+1)) + (DB.japanese.done[jpStateId(l)] ? ' · ✓ Completed' : '') + '</small>' +
-      '<strong>' + escapeHtml(l.title) + '</strong><small>' + escapeHtml(l.goal) + '</small></button>';
+      (meta ? '<small>' + meta + '</small>' : '') +
+      '<strong>' + escapeHtml(jpLessonDisplayTitle(l)) + '</strong><small>' + escapeHtml(l.goal) + '</small></button>';
   });
-  return html + (lessons.every(function(l){return l.optional;}) ? '<div class="jp-panel"><p class="jp-muted">These two imported lessons are optional previews. The other Week 19 roadmap topics will be taught in their own lessons later.</p></div>' : week===1 ? '<div class="jp-panel"><h3>Week 1 finish line</h3><p>Day 1–5 मा रूप र अर्थ सिक, Day 6 मा पूरा कथा पढेर आफ्नै भाषामा बुझाऊ, Day 7 मा उत्तर नहेरी सम्झ र बोल। Day 7 को quiz पछि गलत भएका दिन फेरि खोल; हतारमा Week 2 सुरु गर्नुपर्दैन।</p><button type="button" class="btn secondary" data-jp-lesson="1.7">Open Day 7 review →</button></div>' : week===2 ? '<div class="jp-panel"><h3>Week 2 finish line</h3><p>Day 1–6 मा प्रत्येक दिनका २० शब्दलाई सन्दर्भमा प्रयोग गर। Day 7 मा २० मुख्य शब्द अर्थ नहेरी सम्झ, fresh reading को सारांश देऊ र ६ वाक्य बोल। गलत भएका दिन फेरि पढेपछि Week 3 सुरु गर।</p><button type="button" class="btn secondary" data-jp-lesson="2.7">Open Day 7 review →</button></div>' : '<div class="jp-panel"><h3>Day 7: review</h3>' +
+  return html + (lessons.every(function(l){return l.optional;}) ? '<div class="jp-panel"><p class="jp-muted">These two imported lessons are optional previews. The other Week 19 roadmap topics will be taught in their own lessons later.</p></div>' : week===1 ? '<div class="jp-panel"><h3>Week 1 finish line</h3><p>Day 1–5 मा रूप र अर्थ सिक, Day 6 मा पूरा कथा पढेर आफ्नै भाषामा बुझाऊ, Day 7 मा उत्तर नहेरी सम्झ र बोल। Day 7 को quiz पछि गलत भएका दिन फेरि खोल; हतारमा Week 2 सुरु गर्नुपर्दैन।</p><button type="button" class="btn secondary" data-jp-lesson="1.7">Open Day 7 review →</button></div>' : week===2 ? '<div class="jp-panel"><h3>Week 2 finish line</h3><p>Day 1–6 मा प्रत्येक दिनका २० शब्दलाई सन्दर्भमा प्रयोग गर। Day 7 मा २० मुख्य शब्द अर्थ नहेरी सम्झ, fresh reading को सारांश देऊ र ६ वाक्य बोल। गलत भएका दिन फेरि पढेपछि Week 3 सुरु गर।</p><button type="button" class="btn secondary" data-jp-lesson="2.7">Open Day 7 review →</button></div>' : week===3 ? '<div class="jp-panel"><h3>Week 3 finish line</h3><p>Day 1–6 मा plain forms, opinions र relationship अनुसार बोल्ने style अभ्यास गर। Day 7 मा note नहेरी चार form chart बनाऊ, fresh reading बुझाऊ र एउटै कुरा friend तथा formal setting मा बोल। गलत quiz फेरि प्रयास गरेपछि मात्र अगाडि बढ।</p><button type="button" class="btn secondary" data-jp-lesson="3.7">Open Day 7 review →</button></div>' : '<div class="jp-panel"><h3>Day 7: review</h3>' +
     '<p>Re-read the hardest passage without translation. Redo missed questions. Speak for two minutes using this week’s patterns and write down the words you could not recall. Repeat any day that still feels shaky.</p></div>');
 }
 function jpRenderLesson(id){
@@ -2549,7 +2684,7 @@ function jpRenderLesson(id){
     '<button type="button" class="btn secondary" data-jp-home="1">All weeks</button>' +
     '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div>' +
     '<div class="jp-hero"><span class="jp-kicker">Week ' + week + ' · ' + (lesson.sourceDay ? 'Source Day ' + lesson.sourceDay + ' · optional preview' : 'Day ' + id.split(".")[1]) + '</span>' +
-    '<h2>' + escapeHtml(lesson.title) + '</h2><p class="jp-muted"><b>Goal:</b> ' + escapeHtml(lesson.goal) + '</p>' +
+    '<h2>' + escapeHtml(jpLessonDisplayTitle(lesson)) + '</h2><p class="jp-muted"><b>Goal:</b> ' + escapeHtml(lesson.goal) + '</p>' +
     '<p class="jp-muted">' + (DB.japanese.done[stateId] ? '✓ Completed' : 'Not completed yet') +
     (DB.japanese.quizScores[stateId] !== undefined ? ' · Best quiz: ' + DB.japanese.quizScores[stateId] + '%': '') + '</p></div>' +
     (studyPrefix ? '<nav class="jp-lesson-nav" aria-label="Day ' + id.split('.')[1] + ' study sections">' +
