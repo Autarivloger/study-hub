@@ -11640,6 +11640,19 @@ const DAY_TEACH = {
   {t:"try",q:"If Puppy inherits Dog and Dog inherits Animal, which checks are true for Puppy()?",code:"# decide before revealing",a:"isinstance(p, Puppy), isinstance(p, Dog), isinstance(p, Animal), and isinstance(p, object) are all True.",why:"An instance belongs to its concrete class and every base class along the MRO."},
   {t:"ex",v:"Create Account → SavingsAccount → StudentSavings. Add no methods. Print the MRO names and prove one StudentSavings object passes every appropriate isinstance check."},
   {t:"sol",code:"class Account: pass\nclass SavingsAccount(Account): pass\nclass StudentSavings(SavingsAccount): pass\n\ns = StudentSavings()\nprint([c.__name__ for c in StudentSavings.mro()])\nprint(all(isinstance(s, c) for c in (StudentSavings, SavingsAccount, Account, object)))",out:"['StudentSavings', 'SavingsAccount', 'Account', 'object']\nTrue",why:"mro() exposes the exact lookup path. The all() check states the inheritance promise directly."}
+ ]},
+ {title:"Attribute lookup, shadowing, and a design lab",sections:[
+  {t:"h",v:"1. Where Python looks for an attribute"},{t:"p",v:"For obj.name Python checks the instance first, then its class, then each base in the MRO. This is why an instance can override a class default without changing anyone else."},
+  {t:"code",v:"class Animal:\n    kingdom=\"animal\"\nclass Dog(Animal):\n    sound=\"woof\"\n\na,b=Dog(),Dog(); a.sound=\"quiet woof\"\nprint(a.sound,b.sound,a.kingdom)"},{t:"out",v:"quiet woof woof animal"},
+  {t:"h",v:"2. Shadowing is not mutation"},{t:"p",v:"a.sound creates an instance attribute. Dog.sound still exists and b continues to see it. Inspect __dict__ when lookup feels mysterious."},
+  {t:"code",v:"class Base:\n    rate=10\nclass Child(Base): pass\nx=Child(); x.rate=20\nprint(x.__dict__)\nprint(Child.__dict__.get(\"rate\"))\nprint(Base.rate)"},{t:"out",v:"{'rate': 20}\nNone\n10"},
+  {t:"tip",v:"Read obj.__dict__, Class.__dict__, then Class.mro() in that order when debugging attribute lookup."},
+  {t:"h",v:"3. The fragile-base warning"},{t:"warn",v:"A child may silently depend on parent details that were never promised. Keep parent interfaces small and test subclasses whenever the parent changes."},
+  {t:"ex",v:"Create Product with tax_rate=0.13 and final_price(). Make Food inherit Product but shadow tax_rate with 0.05. Prove two Food objects share the class rate until one instance shadows it."},
+  {t:"sol",code:"class Product:\n    tax_rate=0.13\n    def __init__(self,price): self.price=price\n    def final_price(self): return round(self.price*(1+self.tax_rate),2)\nclass Food(Product):\n    tax_rate=0.05\n\na,b=Food(100),Food(100)\nprint(a.final_price(),b.final_price())\na.tax_rate=0\nprint(a.final_price(),b.final_price(),Food.tax_rate)",out:"105.0 105.0\n100 105.0 0.05",why:"The inherited method uses self.tax_rate, so normal lookup selects the most specific value."},
+  {t:"ex",v:"Write a function accepting Vehicle and subclasses via isinstance, but rejecting an unrelated string with TypeError."},
+  {t:"sol",code:"class Vehicle: pass\nclass Car(Vehicle): pass\n\ndef register(item):\n    if not isinstance(item,Vehicle): raise TypeError(\"Vehicle required\")\n    return type(item).__name__+\" registered\"\nprint(register(Car()))\ntry: register(\"car\")\nexcept TypeError as e: print(e)",out:"Car registered\nVehicle required",why:"isinstance honours the is-a relationship; exact type comparison would reject valid subclasses."},
+  {t:"key",v:"Lookup follows instance → class → MRO. Understand that path before adding another inheritance level."}
  ]}
 ]},
 
@@ -11674,6 +11687,18 @@ const DAY_TEACH = {
   {t:"warn",v:"If one class in a cooperative chain forgets super(), every class after it is silently skipped. This is why multiple stateful parents demand discipline."},
   {t:"ex",v:"Build Timestamped and Owned cooperative bases, then Document(Timestamped, Owned). Initialise both attributes through one super chain."},
   {t:"sol",code:"class Timestamped:\n    def __init__(self, *, created, **kwargs):\n        super().__init__(**kwargs)\n        self.created = created\n\nclass Owned:\n    def __init__(self, *, owner, **kwargs):\n        super().__init__(**kwargs)\n        self.owner = owner\n\nclass Document(Timestamped, Owned):\n    def __init__(self, title, **kwargs):\n        super().__init__(**kwargs)\n        self.title = title\n\nd = Document(\"Plan\", created=\"2026-09-23\", owner=\"Autari\")\nprint(d.title, d.created, d.owner)",out:"Plan 2026-09-23 Autari",why:"Each class handles one responsibility and forwards the rest. The MRO controls the chain without a class naming its neighbour."}
+ ]},
+ {title:"Override contracts and debugging super",sections:[
+  {t:"h",v:"1. Keep the same public promise"},{t:"p",v:"An override may specialise the result, but callers should still know how to call it and what kind of value returns."},
+  {t:"mis",wrong:"def total(self,currency): ... # parent needed no argument",right:"def total(self): ... # same calling contract",why:"Changing required parameters breaks code written for the parent."},
+  {t:"h",v:"2. Return the parent's result when it matters"},{t:"code",v:"class Saver:\n    def save(self): return [\"saved\"]\nclass AuditedSaver(Saver):\n    def save(self):\n        events=super().save(); events.append(\"audited\"); return events\nprint(AuditedSaver().save())"},{t:"out",v:"['saved', 'audited']"},
+  {t:"h",v:"3. Diagnose a missing attribute"},{t:"p",v:"When a child lacks a parent attribute, inspect whether its __init__ overrides construction and forgot super().__init__(). Fix setup rather than catching AttributeError later."},
+  {t:"try",q:"A Manager has team but no name. What is the first line to inspect?",code:"# class Manager(Employee):\n#     def __init__(self, team): self.team=team",a:"Manager.__init__; it replaced Employee.__init__ and never called super().__init__(name).",why:"The missing attribute is a construction bug."},
+  {t:"ex",v:"Override describe() in Admin, extending User.describe() with a role instead of duplicating the parent format."},
+  {t:"sol",code:"class User:\n    def __init__(self,name): self.name=name\n    def describe(self): return f\"user={self.name}\"\nclass Admin(User):\n    def describe(self): return super().describe()+\" role=admin\"\nprint(Admin(\"Sita\").describe())",out:"user=Sita role=admin",why:"The shared format remains in one place."},
+  {t:"ex",v:"Repair a Child constructor so parent validation still runs, then add its own level attribute."},
+  {t:"sol",code:"class Member:\n    def __init__(self,name):\n        if not name.strip(): raise ValueError(\"name required\")\n        self.name=name.strip()\nclass Student(Member):\n    def __init__(self,name,level):\n        super().__init__(name); self.level=level\ns=Student(\"  Autari \",3)\nprint(s.name,s.level)",out:"Autari 3",why:"super preserves validation; the child adds only what differs."},
+  {t:"key",v:"A sound override preserves the parent's contract, setup and invariants unless it explicitly strengthens them safely."}
  ]}
 ]},
 
@@ -11706,6 +11731,17 @@ const DAY_TEACH = {
   {t:"out",v:"([250, 0, 100], 350)"},
   {t:"ex",v:"Define three exporters whose export(data) always returns a string: CSV, JSON and Lines. Process them with one loop and verify every result is str."},
   {t:"sol",code:"import json\n\nclass CsvExporter:\n    def export(self, data): return \",\".join(map(str, data))\nclass JsonExporter:\n    def export(self, data): return json.dumps(data)\nclass LinesExporter:\n    def export(self, data): return \"\\n\".join(map(str, data))\n\nresults = [x.export([1,2,3]) for x in (CsvExporter(), JsonExporter(), LinesExporter())]\nprint(results)\nprint(all(isinstance(x, str) for x in results))",out:"['1,2,3', '[1, 2, 3]', '1\\n2\\n3']\nTrue",why:"Formats differ, but the caller can rely on one return contract. That reliability is what makes polymorphism useful rather than merely clever."}
+ ]},
+ {title:"Refactor a type-check chain",sections:[
+  {t:"h",v:"1. Notice the smell"},{t:"p",v:"Repeated isinstance branches usually mean behaviour is sitting in the caller instead of the objects."},
+  {t:"code",v:"class Bird:\n    def move(self): return \"fly\"\nclass Fish:\n    def move(self): return \"swim\"\nclass Snake:\n    def move(self): return \"slither\"\nprint([x.move() for x in (Bird(),Fish(),Snake())])"},{t:"out",v:"['fly', 'swim', 'slither']"},
+  {t:"h",v:"2. Test the contract once"},{t:"p",v:"A shared behavioural test should run against every implementation. New classes join the same test list."},
+  {t:"tip",v:"Name methods by meaning, not implementation: save(), not save_to_json_file(), when callers should remain format-independent."},
+  {t:"ex",v:"Refactor shipping cost branches into Standard, Express and Pickup objects with cost(weight)."},
+  {t:"sol",code:"class Standard:\n    def cost(self,w): return 100+20*w\nclass Express:\n    def cost(self,w): return 250+40*w\nclass Pickup:\n    def cost(self,w): return 0\nfor s in (Standard(),Express(),Pickup()): print(s.cost(3))",out:"160\n370\n0",why:"The caller asks one question; each strategy owns its formula."},
+  {t:"ex",v:"Write notify_all(channels,text), verify three compatible channels return strings, and reject no subtype by name."},
+  {t:"sol",code:"class A:\n def send(self,t): return \"A:\"+t\nclass B:\n def send(self,t): return \"B:\"+t\nclass C:\n def send(self,t): return \"C:\"+t\ndef notify_all(xs,t): return [x.send(t) for x in xs]\nr=notify_all([A(),B(),C()],\"ok\")\nprint(r); print(all(isinstance(x,str) for x in r))",out:"['A:ok', 'B:ok', 'C:ok']\nTrue",why:"The function depends on behaviour alone—clean duck typing."},
+  {t:"key",v:"A polymorphic caller should become boring: loop, call one method, use one dependable result."}
  ]}
 ]},
 
@@ -11738,6 +11774,17 @@ const DAY_TEACH = {
   {t:"ex",v:"Create PrefixMixin and SuffixMixin that cooperatively transform text. Build Label(PrefixMixin, SuffixMixin, Base) and predict output before running."},
   {t:"sol",code:"class Base:\n    def render(self, text): return text\nclass PrefixMixin:\n    def render(self, text): return \"[ \" + super().render(text)\nclass SuffixMixin:\n    def render(self, text): return super().render(text) + \" ]\"\nclass Label(PrefixMixin, SuffixMixin, Base):\n    pass\n\nprint(Label().render(\"READY\"))\nprint([c.__name__ for c in Label.mro()])",out:"[ READY ]\n['Label', 'PrefixMixin', 'SuffixMixin', 'Base', 'object']",why:"Both mixins participate because neither terminates the chain. The MRO is executable design, not trivia."},
   {t:"key",v:"In cooperative multiple inheritance, super() means next in MRO. One missing call breaks every class after it."}
+ ]},
+ {title:"MRO debugging and mixin discipline",sections:[
+  {t:"h",v:"1. Print the lookup route"},{t:"p",v:"When a method surprises you, do not guess. Print Class.mro(), then locate the first class defining that method."},
+  {t:"code",v:"class Root:\n def f(self): return \"root\"\nclass Left(Root): pass\nclass Right(Root):\n def f(self): return \"right\"\nclass End(Left,Right): pass\nprint(End().f())\nprint([x.__name__ for x in End.mro()])"},{t:"out",v:"right\n['End', 'Left', 'Right', 'Root', 'object']"},
+  {t:"h",v:"2. A mixin checklist"},{t:"p",v:"One capability, a capability-style name, little or no state, no assumption about one concrete host, and cooperative super when sharing a method chain."},
+  {t:"warn",v:"If base order changes correctness in a way users cannot see, the design may be too clever. Prefer composition."},
+  {t:"ex",v:"Create DictMixin.to_dict() and NameMixin.label(); combine both with Record and inspect MRO."},
+  {t:"sol",code:"class DictMixin:\n def to_dict(self): return dict(self.__dict__)\nclass NameMixin:\n def label(self): return type(self).__name__\nclass Record(DictMixin,NameMixin):\n def __init__(self,value): self.value=value\nr=Record(7)\nprint(r.label(),r.to_dict())\nprint([x.__name__ for x in Record.mro()])",out:"Record {'value': 7}\n['Record', 'DictMixin', 'NameMixin', 'object']",why:"Each mixin contributes one independent capability."},
+  {t:"ex",v:"Make three cooperative render classes append A, B and C through super; prove every marker appears exactly once."},
+  {t:"sol",code:"class Base:\n def render(self): return \"\"\nclass A(Base):\n def render(self): return super().render()+\"A\"\nclass B(A):\n def render(self): return super().render()+\"B\"\nclass C(B):\n def render(self): return super().render()+\"C\"\ntext=C().render()\nprint(text,[text.count(x) for x in \"ABC\"])",out:"ABC [1, 1, 1]",why:"Every class forwards once and contributes once."},
+  {t:"key",v:"MRO is the answer sheet for lookup; mixin restraint keeps that answer readable."}
  ]}
 ]},
 
@@ -11771,6 +11818,17 @@ const DAY_TEACH = {
   {t:"ex",v:"Build ReportService(repository). A fake repository returns [10,20,30]; ReportService.average() must return 20 without knowing how data is stored."},
   {t:"sol",code:"class FakeRepository:\n    def values(self): return [10,20,30]\n\nclass ReportService:\n    def __init__(self, repository): self.repository=repository\n    def average(self):\n        values=self.repository.values()\n        return sum(values)/len(values)\n\nprint(ReportService(FakeRepository()).average())",out:"20.0",why:"The service depends on the values() contract. A database repository can replace the fake later without changing average()."},
   {t:"key",v:"Composition chooses collaborators; dependency injection supplies them. Together they reduce coupling and make tests simple."}
+ ]},
+ {title:"Ownership, delegation, and replacing parts",sections:[
+  {t:"h",v:"1. Decide who owns the lifetime"},{t:"p",v:"A House may create its rooms; a Service often receives a database that outlives it. Construction location expresses ownership."},
+  {t:"h",v:"2. Delegate without leaking details"},{t:"code",v:"class Counter:\n def __init__(self): self.n=0\n def add(self): self.n+=1\nclass Button:\n def __init__(self,counter): self.counter=counter\n def click(self): self.counter.add(); return self.counter.n\nc=Counter(); b=Button(c)\nprint(b.click(),b.click(),c.n)"},{t:"out",v:"1 2 2"},
+  {t:"p",v:"Button exposes click, not Counter's storage. Users depend on the meaning of a click, not internal representation."},
+  {t:"mis",wrong:"self.counter.n += 1",right:"self.counter.add()",why:"Delegating through the collaborator's method preserves its rules."},
+  {t:"ex",v:"Compose MusicPlayer with a replaceable Speaker. Swap QuietSpeaker for LoudSpeaker at runtime."},
+  {t:"sol",code:"class QuietSpeaker:\n def play(self,s): return s.lower()\nclass LoudSpeaker:\n def play(self,s): return s.upper()+\"!\"\nclass Player:\n def __init__(self,speaker): self.speaker=speaker\n def play(self,song): return self.speaker.play(song)\np=Player(QuietSpeaker()); print(p.play(\"Hello\"))\np.speaker=LoudSpeaker(); print(p.play(\"Hello\"))",out:"hello\nHELLO!",why:"Behaviour changes by replacing a part, not by changing the player's class."},
+  {t:"ex",v:"Test Cart with injected pricing object that returns a fixed total. Prove Cart calls it with its items."},
+  {t:"sol",code:"class FakePricing:\n def __init__(self): self.seen=None\n def total(self,items): self.seen=list(items); return 999\nclass Cart:\n def __init__(self,pricing): self.items=[]; self.pricing=pricing\n def checkout(self): return self.pricing.total(self.items)\nf=FakePricing(); c=Cart(f); c.items += [\"book\",\"pen\"]\nprint(c.checkout(),f.seen)",out:"999 ['book', 'pen']",why:"The fake verifies delegation without price rules or external systems."},
+  {t:"key",v:"Good composition hides a part behind a meaningful method and makes replacement cheap."}
  ]}
 ]},
 
@@ -11805,6 +11863,17 @@ const DAY_TEACH = {
   {t:"ex",v:"Write a shared check for Shape subclasses: area() must be numeric and non-negative. Test Rectangle and Circle, then show an incomplete Shape cannot be created."},
   {t:"sol",code:"from abc import ABC, abstractmethod\nimport math\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self): pass\nclass Rectangle(Shape):\n    def __init__(self,w,h): self.w,self.h=w,h\n    def area(self): return self.w*self.h\nclass Circle(Shape):\n    def __init__(self,r): self.r=r\n    def area(self): return math.pi*self.r**2\n\ndef check(shape):\n    result=shape.area()\n    assert isinstance(result,(int,float)) and result>=0\n\nfor shape in (Rectangle(3,4),Circle(2)):\n    check(shape)\nprint(\"contracts passed\")\ntry:\n    Shape()\nexcept TypeError:\n    print(\"cannot instantiate Shape\")",out:"contracts passed\ncannot instantiate Shape",why:"The test captures the behavioural promise, while @abstractmethod captures the structural promise that area exists."},
   {t:"key",v:"Final mastery: design the relationship, state the shared contract, implement each subtype, then run the same behavioural checks against all of them."}
+ ]},
+ {title:"Abstract properties and final project tests",sections:[
+  {t:"h",v:"1. Contracts can require data-like access"},{t:"new",v:"abstract property",note:"Combine @property over @abstractmethod to require subclasses to expose a read-only-looking attribute through a property."},
+  {t:"code",v:"from abc import ABC,abstractmethod\nclass Item(ABC):\n @property\n @abstractmethod\n def price(self): pass\nclass Book(Item):\n def __init__(self,p): self._price=p\n @property\n def price(self): return self._price\nprint(Book(240).price)"},{t:"out",v:"240"},
+  {t:"h",v:"2. Test every payroll implementation"},{t:"p",v:"Use one contract test for every Employee subtype: pay must be numeric, finite and non-negative. Then test Department's sum separately."},
+  {t:"warn",v:"An ABC checks that a method exists, not that its answer is sensible. Behavioural tests still matter."},
+  {t:"ex",v:"Add abstract role property to Employee and implement it in Manager and Intern; produce role:name labels polymorphically."},
+  {t:"sol",code:"from abc import ABC,abstractmethod\nclass Employee(ABC):\n def __init__(self,name): self.name=name\n @property\n @abstractmethod\n def role(self): pass\nclass Manager(Employee):\n role=property(lambda self:\"manager\")\nclass Intern(Employee):\n role=property(lambda self:\"intern\")\nprint([f\"{e.role}:{e.name}\" for e in (Manager(\"Sita\"),Intern(\"Gita\"))])",out:"['manager:Sita', 'intern:Gita']",why:"The caller gets one guaranteed data-like interface from different classes."},
+  {t:"ex",v:"Write a contract checker that catches a BadEmployee returning negative pay while two valid workers pass."},
+  {t:"sol",code:"class Fixed:\n def __init__(self,n): self.n=n\n def pay(self): return self.n\nclass Bad:\n def pay(self): return -1\ndef valid(worker):\n value=worker.pay()\n if not isinstance(value,(int,float)) or value<0: raise ValueError(\"invalid pay\")\n return True\nprint(valid(Fixed(10)),valid(Fixed(0)))\ntry: valid(Bad())\nexcept ValueError as e: print(e)",out:"True True\ninvalid pay",why:"Structural interfaces need behavioural validation at their boundaries."},
+  {t:"key",v:"The complete workflow is contract, implementations, composition, shared tests, then extension without modifying stable callers."}
  ]}
 ]},
 
