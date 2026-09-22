@@ -11609,6 +11609,205 @@ const DAY_TEACH = {
  ]},
 ]},
 
+/* ---------------- WEEK 19 · DAY 1 ---------------- */
+"19.0": { parts: [
+ { title:"Inheritance: one class specialises another", sections:[
+  {t:"key",v:"Inheritance lets a specialised class reuse a more general class. Use it only when the sentence ‘a Dog IS AN Animal’ is genuinely true."},
+  {t:"new",v:"inheritance and subclass",note:"Put a parent class in parentheses: class Dog(Animal). Dog is the subclass; Animal is the base class. A Dog receives Animal's methods and may add or replace behaviour."},
+  {t:"syn",v:"class Parent:\n    ...\n\nclass Child(Parent):\n    ...",note:"The child is also an instance of the parent for isinstance checks."},
+  {t:"code",v:"class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def eat(self):\n        return f\"{self.name} is eating\"\n\n\nclass Dog(Animal):\n    def bark(self):\n        return f\"{self.name}: woof!\"\n\n\nrex = Dog(\"Rex\")\nprint(rex.eat())\nprint(rex.bark())\nprint(isinstance(rex, Dog), isinstance(rex, Animal))"},
+  {t:"out",v:"Rex is eating\nRex: woof!\nTrue True"},
+  {t:"p",v:"Dog has no __init__ and no eat, so Python looks in Animal. The inherited __init__ creates name on the Dog object itself. bark exists only on Dog."},
+  {t:"mis",wrong:"class Dog:\n    def __init__(self, name): self.name=name\n    def eat(self): return f\"{self.name} eats\"\n\nclass Cat:\n    def __init__(self, name): self.name=name\n    def eat(self): return f\"{self.name} eats\"",right:"class Animal:\n    def __init__(self, name): self.name=name\n    def eat(self): return f\"{self.name} eats\"\n\nclass Dog(Animal): pass\nclass Cat(Animal): pass",why:"The duplicated data and behaviour belong in one honest parent. A change to eat now happens once."},
+  {t:"ex",v:"Build Vehicle with brand and move(), then Car and Bicycle subclasses. Prove each inherits move() and is a Vehicle."},
+  {t:"sol",code:"class Vehicle:\n    def __init__(self, brand):\n        self.brand = brand\n\n    def move(self):\n        return f\"{self.brand} moves\"\n\n\nclass Car(Vehicle):\n    pass\n\n\nclass Bicycle(Vehicle):\n    pass\n\n\nitems = [Car(\"Toyota\"), Bicycle(\"Giant\")]\nfor item in items:\n    print(item.move(), isinstance(item, Vehicle))",out:"Toyota moves True\nGiant moves True",why:"The parent owns what is shared. The empty subclasses are still meaningful types and can grow specialised behaviour later."}
+ ]},
+ { title:"Designing an honest is-a hierarchy", sections:[
+  {t:"h",v:"1. Put only universal behaviour in the parent"},
+  {t:"p",v:"If only birds fly, fly() does not belong on Animal. Otherwise Fish inherits a method that lies. Move specialised behaviour down to the class that guarantees it."},
+  {t:"code",v:"class Animal:\n    def __init__(self, name):\n        self.name = name\n\n\nclass Bird(Animal):\n    def move(self):\n        return f\"{self.name} flies\"\n\n\nclass Fish(Animal):\n    def move(self):\n        return f\"{self.name} swims\"\n\n\nfor animal in (Bird(\"Kali\"), Fish(\"Nemo\")):\n    print(animal.move())"},
+  {t:"out",v:"Kali flies\nNemo swims"},
+  {t:"key",v:"A useful parent describes a real shared promise. Do not inherit merely to steal code."},
+  {t:"ex",v:"Build Vehicle → Car, Truck, Motorcycle. Keep brand and wheels in Vehicle; give Truck a capacity and Motorcycle a has_sidecar flag. Print a report."},
+  {t:"sol",code:"class Vehicle:\n    def __init__(self, brand, wheels):\n        self.brand, self.wheels = brand, wheels\n\n    def report(self):\n        return f\"{self.brand}: {self.wheels} wheels\"\n\nclass Car(Vehicle):\n    pass\n\nclass Truck(Vehicle):\n    def __init__(self, brand, capacity):\n        Vehicle.__init__(self, brand, 6)\n        self.capacity = capacity\n\nclass Motorcycle(Vehicle):\n    def __init__(self, brand, has_sidecar=False):\n        Vehicle.__init__(self, brand, 2 + int(has_sidecar))\n        self.has_sidecar = has_sidecar\n\nfor v in (Car(\"Honda\",4), Truck(\"Tata\",8000), Motorcycle(\"Yamaha\",True)):\n    print(v.report())",out:"Honda: 4 wheels\nTata: 6 wheels\nYamaha: 3 wheels",why:"Every object satisfies the Vehicle promise. Tomorrow replaces the explicit Vehicle.__init__ calls with super(), which cooperates with inheritance correctly."}
+ ]},
+ { title:"Inheritance chains, object, and type checks", sections:[
+  {t:"p",v:"Inheritance can have more than one level: object → Vehicle → Car → ElectricCar. Every normal Python class ultimately inherits object, which supplies basic behaviour such as identity and a default string representation."},
+  {t:"code",v:"class Vehicle: pass\nclass Car(Vehicle): pass\nclass ElectricCar(Car): pass\n\ne = ElectricCar()\nprint(isinstance(e, ElectricCar))\nprint(isinstance(e, Car))\nprint(isinstance(e, Vehicle))\nprint(isinstance(e, object))\nprint(type(e) is Car)"},
+  {t:"out",v:"True\nTrue\nTrue\nTrue\nFalse"},
+  {t:"key",v:"Use isinstance when subclasses should count. type(x) is Car rejects an ElectricCar even though it is a valid Car."},
+  {t:"warn",v:"A chain deeper than two or three levels often becomes fragile. If you must read five parent classes to understand one object, reconsider composition."},
+  {t:"try",q:"If Puppy inherits Dog and Dog inherits Animal, which checks are true for Puppy()?",code:"# decide before revealing",a:"isinstance(p, Puppy), isinstance(p, Dog), isinstance(p, Animal), and isinstance(p, object) are all True.",why:"An instance belongs to its concrete class and every base class along the MRO."},
+  {t:"ex",v:"Create Account → SavingsAccount → StudentSavings. Add no methods. Print the MRO names and prove one StudentSavings object passes every appropriate isinstance check."},
+  {t:"sol",code:"class Account: pass\nclass SavingsAccount(Account): pass\nclass StudentSavings(SavingsAccount): pass\n\ns = StudentSavings()\nprint([c.__name__ for c in StudentSavings.mro()])\nprint(all(isinstance(s, c) for c in (StudentSavings, SavingsAccount, Account, object)))",out:"['StudentSavings', 'SavingsAccount', 'Account', 'object']\nTrue",why:"mro() exposes the exact lookup path. The all() check states the inheritance promise directly."}
+ ]}
+]},
+
+/* ---------------- WEEK 19 · DAY 2 ---------------- */
+"19.1": { parts: [
+ { title:"Override behaviour without losing the parent", sections:[
+  {t:"new",v:"method overriding",note:"A subclass defines a method with the same name as its parent. Python finds the subclass version first, so the specialised behaviour replaces the inherited one."},
+  {t:"new",v:"super()",note:"super() returns the next implementation in the class's method-resolution order. Use super().method(...) to extend inherited behaviour without naming the parent directly."},
+  {t:"code",v:"class Animal:\n    def speak(self):\n        return \"some sound\"\n\nclass Dog(Animal):\n    def speak(self):\n        return \"woof\"\n\nclass Cat(Animal):\n    def speak(self):\n        return \"meow\"\n\nfor a in (Animal(), Dog(), Cat()):\n    print(type(a).__name__, a.speak())"},
+  {t:"out",v:"Animal some sound\nDog woof\nCat meow"},
+  {t:"p",v:"The call is always a.speak(). The object's actual class decides which implementation runs."},
+  {t:"code",v:"class Employee:\n    def __init__(self, name, salary):\n        self.name = name\n        self.salary = salary\n\nclass Manager(Employee):\n    def __init__(self, name, salary, team):\n        super().__init__(name, salary)\n        self.team = list(team)\n\nmanager = Manager(\"Sita\", 90000, [\"Ram\", \"Gita\"])\nprint(manager.name, manager.salary, manager.team)"},
+  {t:"out",v:"Sita 90000 ['Ram', 'Gita']"},
+  {t:"mis",wrong:"class Manager(Employee):\n    def __init__(self, name, salary, team):\n        self.team = team  # name and salary vanish",right:"class Manager(Employee):\n    def __init__(self, name, salary, team):\n        super().__init__(name, salary)\n        self.team = list(team)",why:"Defining a child __init__ overrides the parent constructor. Python does not call both automatically; super() preserves the parent's setup."},
+  {t:"ex",v:"Create PremiumAccount(Account). Call super() in __init__, then override withdraw() to allow an overdraft limit."},
+  {t:"sol",code:"class Account:\n    def __init__(self, owner, balance=0):\n        self.owner, self.balance = owner, balance\n\n    def withdraw(self, amount):\n        if amount > self.balance:\n            raise ValueError(\"insufficient funds\")\n        self.balance -= amount\n\nclass PremiumAccount(Account):\n    def __init__(self, owner, balance=0, overdraft=100):\n        super().__init__(owner, balance)\n        self.overdraft = overdraft\n\n    def withdraw(self, amount):\n        if amount > self.balance + self.overdraft:\n            raise ValueError(\"overdraft exceeded\")\n        self.balance -= amount\n\np = PremiumAccount(\"Autari\", 50, 200)\np.withdraw(180)\nprint(p.owner, p.balance)",out:"Autari -130",why:"The child extends construction and changes exactly one rule. Everything else remains inherited."}
+ ]},
+ { title:"Extend a method with super()", sections:[
+  {t:"p",v:"An override need not replace everything. It can call the parent version, then add one specialised step."},
+  {t:"code",v:"class Report:\n    def lines(self):\n        return [\"Weekly report\"]\n\nclass SalesReport(Report):\n    def __init__(self, sales):\n        self.sales = sales\n\n    def lines(self):\n        rows = super().lines()\n        rows.append(f\"Sales: {self.sales}\")\n        return rows\n\nprint(\" | \".join(SalesReport(12500).lines()))"},
+  {t:"out",v:"Weekly report | Sales: 12500"},
+  {t:"warn",v:"Do not use super() merely because inheritance exists. Call it when the parent implementation is part of the child's correct job."},
+  {t:"ex",v:"Build Notification.send(). Override it in LoggedNotification so it records a log and still returns the parent's message."},
+  {t:"sol",code:"class Notification:\n    def send(self, text):\n        return f\"sent: {text}\"\n\nclass LoggedNotification(Notification):\n    def __init__(self):\n        self.log = []\n\n    def send(self, text):\n        result = super().send(text)\n        self.log.append(result)\n        return result\n\nn = LoggedNotification()\nprint(n.send(\"hello\"))\nprint(n.log)",out:"sent: hello\n['sent: hello']",why:"The parent performs the shared send operation; the child adds logging before returning the same public result."},
+  {t:"key",v:"Override only what changes. Use super() when the parent setup or behaviour must still happen."}
+ ]},
+ { title:"Cooperative super and constructor contracts", sections:[
+  {t:"p",v:"Writing Parent.__init__(self, ...) hard-codes one parent. super() follows the MRO, so it remains correct when a class is reused inside a larger hierarchy. For cooperative multiple inheritance, every class should call super() and accept only the arguments it owns."},
+  {t:"code",v:"class Named:\n    def __init__(self, *, name, **kwargs):\n        super().__init__(**kwargs)\n        self.name = name\n\nclass Tagged:\n    def __init__(self, *, tag, **kwargs):\n        super().__init__(**kwargs)\n        self.tag = tag\n\nclass Item(Named, Tagged):\n    pass\n\nx = Item(name=\"Book\", tag=\"study\")\nprint(x.name, x.tag)\nprint([c.__name__ for c in Item.mro()])"},
+  {t:"out",v:"Book study\n['Item', 'Named', 'Tagged', 'object']"},
+  {t:"p",v:"Named consumes name and forwards tag. Tagged consumes tag and forwards nothing to object. Keyword-only arguments make that hand-off visible and prevent positional confusion."},
+  {t:"warn",v:"If one class in a cooperative chain forgets super(), every class after it is silently skipped. This is why multiple stateful parents demand discipline."},
+  {t:"ex",v:"Build Timestamped and Owned cooperative bases, then Document(Timestamped, Owned). Initialise both attributes through one super chain."},
+  {t:"sol",code:"class Timestamped:\n    def __init__(self, *, created, **kwargs):\n        super().__init__(**kwargs)\n        self.created = created\n\nclass Owned:\n    def __init__(self, *, owner, **kwargs):\n        super().__init__(**kwargs)\n        self.owner = owner\n\nclass Document(Timestamped, Owned):\n    def __init__(self, title, **kwargs):\n        super().__init__(**kwargs)\n        self.title = title\n\nd = Document(\"Plan\", created=\"2026-09-23\", owner=\"Autari\")\nprint(d.title, d.created, d.owner)",out:"Plan 2026-09-23 Autari",why:"Each class handles one responsibility and forwards the rest. The MRO controls the chain without a class naming its neighbour."}
+ ]}
+]},
+
+/* ---------------- WEEK 19 · DAY 3 ---------------- */
+"19.2": { parts: [
+ { title:"Polymorphism: one call, many behaviours", sections:[
+  {t:"new",v:"polymorphism",note:"Different object types respond to the same operation in their own way. Calling shape.area() works for every shape even though each class calculates it differently."},
+  {t:"code",v:"class Rectangle:\n    def __init__(self, w, h): self.w, self.h = w, h\n    def area(self): return self.w * self.h\n\nclass Circle:\n    def __init__(self, r): self.r = r\n    def area(self): return 3.14159 * self.r ** 2\n\nshapes = [Rectangle(3, 4), Circle(2)]\nfor shape in shapes:\n    print(type(shape).__name__, round(shape.area(), 2))\nprint(\"total\", round(sum(s.area() for s in shapes), 2))"},
+  {t:"out",v:"Rectangle 12\nCircle 12.57\ntotal 24.57"},
+  {t:"p",v:"The loop contains no isinstance chain. Each object owns the answer. Adding Triangle does not require changing the loop."},
+  {t:"mis",wrong:"if isinstance(x, Rectangle): ...\nelif isinstance(x, Circle): ...\nelif isinstance(x, Triangle): ...",right:"for shape in shapes:\n    print(shape.area())",why:"A growing type-check chain centralises knowledge that belongs in each class and must be edited for every new type."},
+  {t:"ex",v:"Make Email, SMS and Push classes with send(message). Loop over a mixed list and collect each result."},
+  {t:"sol",code:"class Email:\n    def send(self, message): return f\"email: {message}\"\nclass SMS:\n    def send(self, message): return f\"sms: {message}\"\nclass Push:\n    def send(self, message): return f\"push: {message}\"\n\nchannels = [Email(), SMS(), Push()]\nprint([c.send(\"Server ready\") for c in channels])",out:"['email: Server ready', 'sms: Server ready', 'push: Server ready']",why:"The caller depends on a small shared interface, not on concrete types."}
+ ]},
+ { title:"Duck typing and safe interfaces", sections:[
+  {t:"new",v:"duck typing",note:"Python often cares about what an object can do, not what it inherited from. If an object has a suitable send() method, code can use it. The name comes from ‘if it walks and quacks like a duck…’."},
+  {t:"code",v:"class Console:\n    def write(self, text):\n        print(\"SCREEN:\", text)\n\nclass MemoryFile:\n    def __init__(self): self.saved = []\n    def write(self, text): self.saved.append(text)\n\ndef publish(target, text):\n    target.write(text)\n\nscreen, memory = Console(), MemoryFile()\npublish(screen, \"hello\")\npublish(memory, \"hello\")\nprint(memory.saved)"},
+  {t:"out",v:"SCREEN: hello\n['hello']"},
+  {t:"p",v:"Console and MemoryFile share no parent. Their compatible write() method is enough."},
+  {t:"warn",v:"Duck typing is not ‘call random methods and hope’. Keep the required interface small, document it, and test every implementation."},
+  {t:"ex",v:"Write total_pay(workers) using only each object's pay() method. Test a Salaried worker and an Hourly worker."},
+  {t:"sol",code:"class Salaried:\n    def __init__(self, monthly): self.monthly = monthly\n    def pay(self): return self.monthly\n\nclass Hourly:\n    def __init__(self, hours, rate): self.hours, self.rate = hours, rate\n    def pay(self): return self.hours * self.rate\n\ndef total_pay(workers):\n    return sum(w.pay() for w in workers)\n\nprint(total_pay([Salaried(5000), Hourly(20, 100)]))",out:"7000",why:"total_pay knows only the promise pay(). Neither inheritance nor type checks are needed."},
+  {t:"key",v:"Polymorphism moves decisions out of the caller and into the object that knows how to perform them."}
+ ]},
+ { title:"Designing a contract that substitutions can keep", sections:[
+  {t:"p",v:"Polymorphism works only when every implementation keeps the same meaning. If pay() returns a number for one class and prints text for another, the shared name is a lie. Parameters, return type, errors, and side effects are all part of the contract."},
+  {t:"mis",wrong:"class Volunteer:\n    def pay(self):\n        print(\"unpaid\")  # returns None",right:"class Volunteer:\n    def pay(self):\n        return 0",why:"Code that sums pay() results can substitute Volunteer only when pay still returns a number."},
+  {t:"new",v:"Liskov substitution principle",note:"If code works with the parent/interface, replacing it with any subtype should not break the caller's reasonable assumptions. In plain words: a subclass must keep the promise it inherited."},
+  {t:"code",v:"class FixedPrice:\n    def __init__(self, amount): self.amount = amount\n    def total(self): return self.amount\n\nclass Free:\n    def total(self): return 0\n\ndef receipt(items):\n    values = [item.total() for item in items]\n    return values, sum(values)\n\nprint(receipt([FixedPrice(250), Free(), FixedPrice(100)]))"},
+  {t:"out",v:"([250, 0, 100], 350)"},
+  {t:"ex",v:"Define three exporters whose export(data) always returns a string: CSV, JSON and Lines. Process them with one loop and verify every result is str."},
+  {t:"sol",code:"import json\n\nclass CsvExporter:\n    def export(self, data): return \",\".join(map(str, data))\nclass JsonExporter:\n    def export(self, data): return json.dumps(data)\nclass LinesExporter:\n    def export(self, data): return \"\\n\".join(map(str, data))\n\nresults = [x.export([1,2,3]) for x in (CsvExporter(), JsonExporter(), LinesExporter())]\nprint(results)\nprint(all(isinstance(x, str) for x in results))",out:"['1,2,3', '[1, 2, 3]', '1\\n2\\n3']\nTrue",why:"Formats differ, but the caller can rely on one return contract. That reliability is what makes polymorphism useful rather than merely clever."}
+ ]}
+]},
+
+/* ---------------- WEEK 19 · DAY 4 ---------------- */
+"19.3": { parts: [
+ { title:"Multiple inheritance and the MRO", sections:[
+  {t:"new",v:"multiple inheritance",note:"A class may inherit from more than one base: class C(A, B). Python needs a deterministic order for finding methods; that order is the MRO."},
+  {t:"new",v:"MRO (method resolution order)",note:"The ordered path Python searches for an attribute or method. Inspect it with Class.mro(). super() follows this order; it does not simply mean ‘my parent’."},
+  {t:"code",v:"class A:\n    def label(self): return \"A\"\nclass B(A):\n    def label(self): return \"B\"\nclass C(A):\n    def label(self): return \"C\"\nclass D(B, C):\n    pass\n\nprint(D().label())\nprint([cls.__name__ for cls in D.mro()])"},
+  {t:"out",v:"B\n['D', 'B', 'C', 'A', 'object']"},
+  {t:"p",v:"D finds label in B first. The MRO visits every class once and preserves a consistent left-to-right hierarchy."},
+  {t:"warn",v:"Multiple inheritance with several stateful parents becomes hard to reason about. Its cleanest use in ordinary Python is small, stateless mixins."},
+  {t:"ex",v:"Reverse the bases to class E(C, B), print E().label() and its MRO, then explain the result."},
+  {t:"sol",code:"class A:\n    def label(self): return \"A\"\nclass B(A):\n    def label(self): return \"B\"\nclass C(A):\n    def label(self): return \"C\"\nclass E(C, B):\n    pass\n\nprint(E().label())\nprint([x.__name__ for x in E.mro()])",out:"C\n['E', 'C', 'B', 'A', 'object']",why:"The base order is part of the class design. Python searches C before B because E declared C first."}
+ ]},
+ { title:"Mixins: small reusable capabilities", sections:[
+  {t:"new",v:"mixin",note:"A small class that contributes one capability but is not meant to stand alone. A mixin normally has no complex constructor and its name states the capability, such as JsonMixin."},
+  {t:"code",v:"import json\n\nclass JsonMixin:\n    def to_json(self):\n        return json.dumps(self.__dict__, sort_keys=True)\n\nclass User(JsonMixin):\n    def __init__(self, name, active):\n        self.name, self.active = name, active\n\nclass Product(JsonMixin):\n    def __init__(self, name, price):\n        self.name, self.price = name, price\n\nprint(User(\"Autari\", True).to_json())\nprint(Product(\"Book\", 240).to_json())"},
+  {t:"out",v:"{\"active\": true, \"name\": \"Autari\"}\n{\"name\": \"Book\", \"price\": 240}"},
+  {t:"p",v:"Unrelated classes gain one capability without pretending they are the same kind of thing."},
+  {t:"ex",v:"Write ReprMixin.summary() that returns ClassName(key=value, ...) from __dict__. Use it with two unrelated classes."},
+  {t:"sol",code:"class SummaryMixin:\n    def summary(self):\n        fields = \", \".join(f\"{k}={v!r}\" for k, v in self.__dict__.items())\n        return f\"{type(self).__name__}({fields})\"\n\nclass Point(SummaryMixin):\n    def __init__(self, x, y): self.x, self.y = x, y\nclass Task(SummaryMixin):\n    def __init__(self, title, done=False): self.title, self.done = title, done\n\nprint(Point(2, 5).summary())\nprint(Task(\"Study\").summary())",out:"Point(x=2, y=5)\nTask(title='Study', done=False)",why:"The mixin depends only on the universal instance dictionary and adds no state of its own."},
+  {t:"key",v:"Know the MRO so multiple inheritance is predictable. Prefer narrow, stateless mixins over tangled parent trees."}
+ ]},
+ { title:"A cooperative method chain", sections:[
+  {t:"p",v:"super() can cooperate in ordinary methods too. Each mixin adds one step and forwards to the next class. Every implementation must call super() exactly once for the chain to stay intact."},
+  {t:"code",v:"class Base:\n    def process(self, text): return text\n\nclass TrimMixin(Base):\n    def process(self, text):\n        return super().process(text).strip()\n\nclass UpperMixin(Base):\n    def process(self, text):\n        return super().process(text).upper()\n\nclass Cleaner(TrimMixin, UpperMixin):\n    pass\n\nprint(Cleaner().process(\"  hello  \"))\nprint([c.__name__ for c in Cleaner.mro()])"},
+  {t:"out",v:"HELLO\n['Cleaner', 'TrimMixin', 'UpperMixin', 'Base', 'object']"},
+  {t:"p",v:"TrimMixin calls UpperMixin through super(); UpperMixin calls Base. Changing base order changes operation order, so test the final composed class."},
+  {t:"ex",v:"Create PrefixMixin and SuffixMixin that cooperatively transform text. Build Label(PrefixMixin, SuffixMixin, Base) and predict output before running."},
+  {t:"sol",code:"class Base:\n    def render(self, text): return text\nclass PrefixMixin:\n    def render(self, text): return \"[ \" + super().render(text)\nclass SuffixMixin:\n    def render(self, text): return super().render(text) + \" ]\"\nclass Label(PrefixMixin, SuffixMixin, Base):\n    pass\n\nprint(Label().render(\"READY\"))\nprint([c.__name__ for c in Label.mro()])",out:"[ READY ]\n['Label', 'PrefixMixin', 'SuffixMixin', 'Base', 'object']",why:"Both mixins participate because neither terminates the chain. The MRO is executable design, not trivia."},
+  {t:"key",v:"In cooperative multiple inheritance, super() means next in MRO. One missing call breaks every class after it."}
+ ]}
+]},
+
+/* ---------------- WEEK 19 · DAY 5 ---------------- */
+"19.4": { parts: [
+ { title:"Composition: build objects from objects", sections:[
+  {t:"key",v:"Inheritance models IS-A. Composition models HAS-A. A Car is not an Engine; it has an Engine. Composition is usually the safer default because parts can be replaced independently."},
+  {t:"new",v:"composition over inheritance",note:"Give an object another object as an attribute and delegate work to it. This avoids claiming a false is-a relationship and keeps each class focused."},
+  {t:"code",v:"class Engine:\n    def __init__(self, fuel): self.fuel = fuel\n    def start(self): return f\"{self.fuel} engine started\"\n\nclass Car:\n    def __init__(self, brand, engine):\n        self.brand, self.engine = brand, engine\n\n    def start(self):\n        return f\"{self.brand}: {self.engine.start()}\"\n\ncar = Car(\"Toyota\", Engine(\"hybrid\"))\nprint(car.start())"},
+  {t:"out",v:"Toyota: hybrid engine started"},
+  {t:"p",v:"Car delegates engine work. A different Engine-compatible object can be plugged in without creating another Car subclass."},
+  {t:"mis",wrong:"class Car(Engine):\n    # claims every Car IS an Engine\n    pass",right:"class Car:\n    def __init__(self, engine):\n        self.engine = engine",why:"The relationship is has-a, so composition says what the domain actually means."},
+  {t:"ex",v:"Build Computer composed of Storage. Let Storage.save() remember filenames and Computer.install() delegate to it."},
+  {t:"sol",code:"class Storage:\n    def __init__(self): self.files = []\n    def save(self, name): self.files.append(name)\n\nclass Computer:\n    def __init__(self, storage): self.storage = storage\n    def install(self, app): self.storage.save(app + \".app\")\n\ndisk = Storage()\npc = Computer(disk)\npc.install(\"editor\")\npc.install(\"browser\")\nprint(disk.files)",out:"['editor.app', 'browser.app']",why:"Storage owns files; Computer coordinates installation. Each class has one clear responsibility."}
+ ]},
+ { title:"Strategy objects instead of subclass explosions", sections:[
+  {t:"p",v:"If one behaviour must vary independently, inject an object that performs that behaviour. This is composition and is often called the strategy pattern."},
+  {t:"code",v:"class PercentDiscount:\n    def __init__(self, percent): self.percent = percent\n    def apply(self, total): return total * (1 - self.percent / 100)\n\nclass NoDiscount:\n    def apply(self, total): return total\n\nclass Checkout:\n    def __init__(self, discount): self.discount = discount\n    def final(self, total): return round(self.discount.apply(total), 2)\n\nprint(Checkout(NoDiscount()).final(1000))\nprint(Checkout(PercentDiscount(15)).final(1000))"},
+  {t:"out",v:"1000\n850.0"},
+  {t:"p",v:"Checkout is unchanged when a new discount appears. Behaviour is supplied rather than inherited."},
+  {t:"ex",v:"Refactor notifications with a User that HAS a channel. Plug in EmailChannel and SMSChannel without subclassing User."},
+  {t:"sol",code:"class EmailChannel:\n    def send(self, text): return f\"EMAIL {text}\"\nclass SMSChannel:\n    def send(self, text): return f\"SMS {text}\"\n\nclass User:\n    def __init__(self, name, channel):\n        self.name, self.channel = name, channel\n    def notify(self, text):\n        return self.channel.send(f\"{self.name}: {text}\")\n\nprint(User(\"Ram\", EmailChannel()).notify(\"Welcome\"))\nprint(User(\"Sita\", SMSChannel()).notify(\"Welcome\"))",out:"EMAIL Ram: Welcome\nSMS Sita: Welcome",why:"Email and SMS vary independently from the user. Composition prevents EmailUser, SMSUser, PushUser and every future combination."},
+  {t:"key",v:"Choose inheritance for a stable is-a promise. Choose composition for has-a relationships and interchangeable behaviour."}
+ ]},
+ { title:"Dependency injection makes composition testable", sections:[
+  {t:"new",v:"dependency injection",note:"Pass a collaborating object in from outside instead of constructing it internally. The class declares what it needs, and tests can supply a small fake."},
+  {t:"mis",wrong:"class OrderService:\n    def __init__(self):\n        self.email = RealEmailServer()",right:"class OrderService:\n    def __init__(self, notifier):\n        self.notifier = notifier",why:"Hard-coding the real service couples construction, behaviour and external effects. Injection lets each concern change independently."},
+  {t:"code",v:"class FakeNotifier:\n    def __init__(self): self.messages=[]\n    def send(self, text): self.messages.append(text)\n\nclass OrderService:\n    def __init__(self, notifier): self.notifier=notifier\n    def place(self, order_id):\n        self.notifier.send(f\"order {order_id} placed\")\n        return order_id\n\nfake = FakeNotifier()\nservice = OrderService(fake)\nprint(service.place(42))\nprint(fake.messages)"},
+  {t:"out",v:"42\n['order 42 placed']"},
+  {t:"p",v:"The fake records the collaboration in memory. The test is fast, offline and proves exactly what OrderService requested."},
+  {t:"ex",v:"Build ReportService(repository). A fake repository returns [10,20,30]; ReportService.average() must return 20 without knowing how data is stored."},
+  {t:"sol",code:"class FakeRepository:\n    def values(self): return [10,20,30]\n\nclass ReportService:\n    def __init__(self, repository): self.repository=repository\n    def average(self):\n        values=self.repository.values()\n        return sum(values)/len(values)\n\nprint(ReportService(FakeRepository()).average())",out:"20.0",why:"The service depends on the values() contract. A database repository can replace the fake later without changing average()."},
+  {t:"key",v:"Composition chooses collaborators; dependency injection supplies them. Together they reduce coupling and make tests simple."}
+ ]}
+]},
+
+/* ---------------- WEEK 19 · DAY 6 ---------------- */
+"19.5": { parts: [
+ { title:"Abstract base classes define a promise", sections:[
+  {t:"new",v:"abstract base class (ABC)",note:"A class that defines required methods for subclasses and is not meant to be instantiated. Import ABC and abstractmethod from abc."},
+  {t:"new",v:"@abstractmethod",note:"Marks a method that every concrete subclass must implement. Python refuses to instantiate an incomplete subclass, turning a missing method into an early, clear error."},
+  {t:"code",v:"from abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        pass\n\nclass Rectangle(Shape):\n    def __init__(self, w, h): self.w, self.h = w, h\n    def area(self): return self.w * self.h\n\nclass Circle(Shape):\n    def __init__(self, r): self.r = r\n    def area(self): return 3.14159 * self.r ** 2\n\nfor s in (Rectangle(3,4), Circle(2)):\n    print(round(s.area(), 2))"},
+  {t:"out",v:"12\n12.57"},
+  {t:"p",v:"Shape documents and enforces the area() interface. Rectangle and Circle remain responsible for the calculation."},
+  {t:"warn",v:"Do not create an ABC for every two classes. Use one when multiple implementations must obey a stable contract and failure should be caught at construction time."},
+  {t:"ex",v:"Define abstract Payment.pay(amount), then Cash and Card implementations. Process both polymorphically."},
+  {t:"sol",code:"from abc import ABC, abstractmethod\n\nclass Payment(ABC):\n    @abstractmethod\n    def pay(self, amount): pass\n\nclass Cash(Payment):\n    def pay(self, amount): return f\"cash {amount:.2f}\"\nclass Card(Payment):\n    def __init__(self, last4): self.last4 = last4\n    def pay(self, amount): return f\"card {self.last4} {amount:.2f}\"\n\nfor method in (Cash(), Card(\"4242\")):\n    print(method.pay(250))",out:"cash 250.00\ncard 4242 250.00",why:"The ABC makes the contract explicit; the loop relies on one guaranteed method."}
+ ]},
+ { title:"Milestone: employees, payroll and a department", sections:[
+  {t:"p",v:"The final project combines the whole week: an abstract Employee, specialised subclasses, overriding, super(), polymorphic payroll, and a Department composed of employees."},
+  {t:"code",v:"from abc import ABC, abstractmethod\n\nclass Employee(ABC):\n    def __init__(self, name): self.name = name\n    @abstractmethod\n    def pay(self): pass\n\nclass Manager(Employee):\n    def __init__(self, name, monthly, bonus=0):\n        super().__init__(name); self.monthly, self.bonus = monthly, bonus\n    def pay(self): return self.monthly + self.bonus\n\nclass Engineer(Employee):\n    def __init__(self, name, hours, rate):\n        super().__init__(name); self.hours, self.rate = hours, rate\n    def pay(self): return self.hours * self.rate\n\nclass Intern(Employee):\n    def __init__(self, name, stipend):\n        super().__init__(name); self.stipend = stipend\n    def pay(self): return self.stipend\n\nclass Department:\n    def __init__(self, name): self.name, self.employees = name, []\n    def add(self, employee):\n        if not isinstance(employee, Employee): raise TypeError(\"Employee required\")\n        self.employees.append(employee)\n    def payroll(self): return sum(e.pay() for e in self.employees)\n    def report(self):\n        return [f\"{e.name}: {e.pay():.2f}\" for e in self.employees]\n\ndev = Department(\"Development\")\nfor e in (Manager(\"Sita\",5000,500), Engineer(\"Ram\",160,30), Intern(\"Gita\",1200)):\n    dev.add(e)\nprint(*dev.report(), sep=\"\\n\")\nprint(f\"TOTAL: {dev.payroll():.2f}\")"},
+  {t:"out",v:"Sita: 5500.00\nRam: 4800.00\nGita: 1200.00\nTOTAL: 11500.00"},
+  {t:"p",v:"Department HAS employees, so it uses composition. Manager, Engineer and Intern ARE employees, so they inherit. payroll() does not ask which type each employee is; polymorphism supplies the right pay()."},
+  {t:"ex",v:"Extend the project with Contractor(name, projects, price_per_project). Add one contractor and prove Department needs no change."},
+  {t:"sol",code:"from abc import ABC, abstractmethod\n\nclass Employee(ABC):\n    def __init__(self, name): self.name = name\n    @abstractmethod\n    def pay(self): pass\nclass Contractor(Employee):\n    def __init__(self, name, projects, price):\n        super().__init__(name); self.projects, self.price = projects, price\n    def pay(self): return self.projects * self.price\nclass Department:\n    def __init__(self): self.employees=[]\n    def add(self, e): self.employees.append(e)\n    def payroll(self): return sum(e.pay() for e in self.employees)\n\nd = Department(); d.add(Contractor(\"Hari\",3,800))\nprint(d.employees[0].name, d.payroll())",out:"Hari 2400",why:"A new concrete class fulfils the existing pay() contract. The composed Department stays closed to modification and open to extension."},
+  {t:"h",v:"Week 19 checkpoint"},
+  {t:"p",v:"Before Week 20, do these without notes: 1) build a small hierarchy and call super() correctly; 2) explain polymorphism with your own example; 3) defend one choice of composition over inheritance; 4) read a simple MRO; 5) define and implement an ABC."},
+  {t:"key",v:"This week in one line: inheritance models an honest is-a relationship, super() cooperates with the MRO, polymorphism removes type-check chains, mixins add narrow capabilities, composition combines replaceable parts, and an ABC enforces a shared promise."}
+ ]},
+ { title:"Validate the design, not only the happy path", sections:[
+  {t:"p",v:"A hierarchy is trustworthy only when incomplete classes fail early, invalid collaborators are rejected, and every concrete subtype passes the same contract tests."},
+  {t:"code",v:"from abc import ABC, abstractmethod\n\nclass Worker(ABC):\n    @abstractmethod\n    def pay(self): pass\n\nclass Fixed(Worker):\n    def __init__(self, amount): self.amount=amount\n    def pay(self): return self.amount\n\nclass Hourly(Worker):\n    def __init__(self, hours, rate): self.hours, self.rate=hours, rate\n    def pay(self): return self.hours*self.rate\n\ndef check_contract(worker):\n    value=worker.pay()\n    assert isinstance(value,(int,float))\n    assert value >= 0\n\nfor worker in (Fixed(1000), Hourly(10,50)):\n    check_contract(worker)\nprint(\"2 implementations passed\")\ntry:\n    Worker()\nexcept TypeError:\n    print(\"abstract class blocked\")"},
+  {t:"out",v:"2 implementations passed\nabstract class blocked"},
+  {t:"p",v:"One contract test is reused for every subtype. When a new subtype arrives, add it to the same test rather than inventing weaker expectations."},
+  {t:"ex",v:"Write a shared check for Shape subclasses: area() must be numeric and non-negative. Test Rectangle and Circle, then show an incomplete Shape cannot be created."},
+  {t:"sol",code:"from abc import ABC, abstractmethod\nimport math\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self): pass\nclass Rectangle(Shape):\n    def __init__(self,w,h): self.w,self.h=w,h\n    def area(self): return self.w*self.h\nclass Circle(Shape):\n    def __init__(self,r): self.r=r\n    def area(self): return math.pi*self.r**2\n\ndef check(shape):\n    result=shape.area()\n    assert isinstance(result,(int,float)) and result>=0\n\nfor shape in (Rectangle(3,4),Circle(2)):\n    check(shape)\nprint(\"contracts passed\")\ntry:\n    Shape()\nexcept TypeError:\n    print(\"cannot instantiate Shape\")",out:"contracts passed\ncannot instantiate Shape",why:"The test captures the behavioural promise, while @abstractmethod captures the structural promise that area exists."},
+  {t:"key",v:"Final mastery: design the relationship, state the shared contract, implement each subtype, then run the same behavioural checks against all of them."}
+ ]}
+]},
+
 };
 
 const REST_DAY = ["Review & rest",
