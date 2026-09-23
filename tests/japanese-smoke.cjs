@@ -112,8 +112,9 @@ async function main(){
     [1,0,1,1,1,0,0,1],[1,0,0,1,1,1,0,0],[1,1,0,0,0,0,0,1],[1,0,1,1,1,0,1,0],
     [1,0,0,1,2,0,0,1],[0,1,0,0,1,0,0,0,0,0],[0,1,1,0,1,0,1,1,2,0,0,0],
     [0,1,1,1,0,1],[1,1,0,0,0,1],[0,1,1,1,0,1],[1,0,0,0,0,1],[1,0,1,0,1,0],[1,0,0,1,0,1],[0,1,1,1,1,0,1,0,1,1],
-    [1,1,0,0,0,1],[0,1,1,0,1,1],[1,0,1,0,0,1],[1,0,1,1,0,1],[1,0,0,1,0,1],[0,1,1,2,0,1],[0,0,1,1,0,1,0,1,1,1]];
-  for(let i=0;i<28;i++){
+    [1,1,0,0,0,1],[0,1,1,0,1,1],[1,0,1,0,0,1],[1,0,1,1,0,1],[1,0,0,1,0,1],[0,1,1,2,0,1],[0,0,1,1,0,1,0,1,1,1],
+    [0,0,1,0,1,1],[1,1,0,0,1,1],[0,1,0,0,1,2],[0,1,0,0,0,1],[0,0,0,0,1,1],[0,0,0,0,0,1],[0,0,1,0,0,0,0,0,0,1]];
+  for(let i=0;i<35;i++){
     if(i===1){
       assert(await evalJs("document.querySelector('.jp-hero h2').textContent.includes('ておく') && document.querySelectorAll('.jp-vocab')[0].children.length === 10 && document.querySelectorAll('.jp-vocab')[1].children.length === 5 && document.querySelectorAll('.jp-q').length === 8"),"New Day 2 content missing");
       assert(await evalJs("document.querySelector('.jp-old-review').textContent.includes('Old topic note') && document.querySelector('.jp-old-review').textContent.includes('Best quiz: 50%') && [...document.querySelectorAll('[data-jp-jump]')].every(x=>document.getElementById(x.dataset.jpJump))"),"Old Day 2 data or section navigation missing");
@@ -149,6 +150,11 @@ async function main(){
       assert(await evalJs("document.querySelector('.jp-hero h2').textContent==='Day "+day+"' && document.querySelectorAll('.jp-vocab')[0].children.length===20 && document.querySelectorAll('.jp-vocab')[1].children.length===5 && document.querySelectorAll('.jp-q').length==="+expectedQuiz+" && [...document.querySelectorAll('[data-jp-jump]')].every(x=>document.getElementById(x.dataset.jpJump)) && document.querySelectorAll('.jp-panel').length>=12"),"Week 4 Day "+day+" title, teaching blocks, words, kanji or quiz missing");
       if(day===7) assert(await evalJs("!document.querySelector('[data-jp-cards]')"),"Week 4 review should not duplicate flashcards");
     }
+    if(i>=28 && i<=34){
+      const day=i-27, expectedQuiz=[6,6,6,6,6,6,10][day-1];
+      assert(await evalJs("document.querySelector('.jp-hero h2').textContent==='Day "+day+"' && document.querySelectorAll('.jp-vocab')[0].children.length===20 && document.querySelectorAll('.jp-vocab')[1].children.length===5 && document.querySelectorAll('.jp-q').length==="+expectedQuiz+" && document.body.textContent.includes('On:') && document.body.textContent.includes('Kun:')"),"Week 5 Day "+day+" content, On/Kun readings, words, kanji or quiz missing");
+      if(day===7) assert(await evalJs("!document.querySelector('[data-jp-cards]')"),"Week 5 review should not duplicate flashcards");
+    }
     await evalJs("["+answers[i].join(",")+"].forEach((a,j)=>document.querySelector('input[name=jpq'+j+'][value=\"'+a+'\"]').click());document.querySelector('[data-jp-quiz]').click()");
     assert(await evalJs("document.querySelector('.jp-result').textContent.includes('"+answers[i].length+" / "+answers[i].length+" correct')"),"Quiz failed for lesson "+(i+1));
     if(i===1){
@@ -178,11 +184,16 @@ async function main(){
       await evalJs("document.querySelector('#jpNotes').value='Week 4 note "+day+"';document.querySelector('#jpNotes').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-jp-done]').click()");
       assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['4."+day+"']"),"Week 4 Day "+day+" completion did not save");
     }
-    if(i<27) await evalJs("document.querySelector('.jp-actions [data-jp-lesson]:last-child').click()");
+    if(i>=28 && i<=34){
+      const day=i-27;
+      await evalJs("document.querySelector('#jpNotes').value='Week 5 note "+day+"';document.querySelector('#jpNotes').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-jp-done]').click()");
+      assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['5."+day+"']"),"Week 5 Day "+day+" completion did not save");
+    }
+    if(i<34) await evalJs("document.querySelector('.jp-actions [data-jp-lesson]:last-child').click()");
   }
   assert(await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"19.1\"]') === null"),"Core path unexpectedly jumps to advanced preview");
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-hero [data-jp-lesson=\"1.1\"]') !== null && document.querySelector('.jp-progress').getAttribute('aria-valuenow') === '28' && !document.body.textContent.includes('Your weekly rhythm')"),"Week 4 completion count or removed rhythm panel changed");
+  assert(await evalJs("document.querySelector('.jp-hero [data-jp-lesson=\"1.1\"]') !== null && document.querySelector('.jp-progress').getAttribute('aria-valuenow') === '35' && !document.body.textContent.includes('Your weekly rhythm')"),"Week 5 completion count or removed rhythm panel changed");
   await evalJs("document.querySelector('[data-jp-lesson=\"19.1\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-panel h3').length >= 10"),"Imported grammar sections missing");
   assert(await evalJs("document.body.textContent.includes('Natural conversation') && document.body.textContent.includes('Write and compare')"),"Imported conversation or writing practice missing");
@@ -211,6 +222,7 @@ async function main(){
   assert(await evalJs("['2.1.n4','2.2.n4','2.3.n4','2.4.n4','2.5.n4','2.6.n4','2.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 2 new note '+(i+1)) && ['2.1','2.2','2.3','2.4','2.5','2.6'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Week 2 new or original progress did not survive reload");
   assert(await evalJs("['3.1','3.2','3.3','3.4','3.5','3.6','3.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 3 note '+(i+1))"),"Week 3 progress did not survive reload");
   assert(await evalJs("['4.1','4.2','4.3','4.4','4.5','4.6','4.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 4 note '+(i+1))"),"Week 4 progress did not survive reload");
+  assert(await evalJs("['5.1','5.2','5.3','5.4','5.5','5.6','5.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 5 note '+(i+1))"),"Week 5 progress did not survive reload");
   assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.quizScores['19.2'] === 100"),"Day 17 score did not survive reload");
   await evalJs("document.querySelector('#sidebar [data-view=course]').click()");
   assert(await evalJs("document.querySelector('#view-course').classList.contains('active')"),"Python course navigation failed");
@@ -240,6 +252,13 @@ async function main(){
   for(const n of [1,2,3,4,5,6,7]){
     assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1 && document.querySelectorAll('.jp-vocab')[0].children.length===20"),"Mobile Week 2 Day "+n+" overflow or word count failure");
     if(n<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"2."+(n+1)+"\"]').click()");
+  }
+  await evalJs("document.querySelector('[data-jp-home]').click();document.querySelector('[data-jp-week=\"5\"]').click()");
+  assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1))"),"Mobile Week 5 short titles or lessons missing");
+  await evalJs("document.querySelector('[data-jp-lesson=\"5.1\"]').click()");
+  for(const n of [1,2,3,4,5,6,7]){
+    assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1 && document.querySelectorAll('.jp-vocab')[0].children.length===20 && document.querySelectorAll('.jp-vocab')[1].children.length===5"),"Mobile Week 5 Day "+n+" overflow or study count failure");
+    if(n<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"5."+(n+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click();document.querySelector('[data-jp-week=\"3\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && !!document.querySelector('[data-jp-lesson=\"3.7\"]')"),"Mobile Week 3 short titles, lessons or review missing");
@@ -291,6 +310,7 @@ async function main(){
   assert(await evalJs("['2.1.n4','2.2.n4','2.3.n4','2.4.n4','2.5.n4','2.6.n4','2.7','2.1','2.2','2.3','2.4','2.5','2.6'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 2 progress");
   assert(await evalJs("['3.1','3.2','3.3','3.4','3.5','3.6','3.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 3 progress");
   assert(await evalJs("['4.1','4.2','4.3','4.4','4.5','4.6','4.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 4 progress");
+  assert(await evalJs("['5.1','5.2','5.3','5.4','5.5','5.6','5.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 5 progress");
   assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:v:起きる'].hard === false && JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:k:起'].hard === false"),"Hard removal failed to merge or stale mark returned");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['19.1']"),"Import erased imported lesson progress");
   await evalJs("document.querySelector('#exportBtn').click()");
@@ -339,7 +359,7 @@ async function main(){
   assert(await evalJs("JSON.parse(localStorage.studyHubSync).gistId === '0123456789abcdef0123456789abcdef'"),"Forget erased Gist ID");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1']"),"Forget erased writing");
   assert(errors.length===0,"JavaScript errors: "+errors.join("; "));
-  console.log("PASS: Japanese Weeks 1–4, short titles, 20-word Week 2–4 days, progress, mobile, dark mode, backup, mock Gist sync, no JS exceptions");
+  console.log("PASS: Japanese Weeks 1–5, On/Kun readings, short titles, 20-word Week 2–5 days, progress, mobile, dark mode, backup, mock Gist sync, no JS exceptions");
   ws.close();
 }
 main().catch(err=>{console.error(err);process.exitCode=1;}).finally(()=>{browser.kill();});
