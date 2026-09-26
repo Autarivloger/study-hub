@@ -1446,6 +1446,7 @@ function applyDefaults(d){
   d.todos = d.todos||[]; d.quizzes = d.quizzes||[];
   d.timerSettings = d.timerSettings || { focus:25, short:5, long:15, longEvery:4 };
   if(d.timerSettings.sound === undefined) d.timerSettings.sound = true;
+  if(!d.timerSettings.subject) d.timerSettings.subject = "python";
   d.timerLog = d.timerLog || [];
   d.seedVersion = d.seedVersion || 0;
   d.course = d.course || { startDate:null, done:{}, notes:{} };
@@ -3724,10 +3725,10 @@ function showReviewHistory(item){
 }
 
 function renderReviewDashboard(){
-  const due=reviewDueItems(reviewView.subject),over=due.filter(function(x){return reviewStatus(x)==="overdue";}).length,py=due.filter(function(x){return x.subject==="python";}).length,jp=due.length-py,all=reviewItems(),filtered=reviewFilteredItems(),today=localDateKey(),learnPy=all.filter(function(x){return x.subject==="python"&&localDateKey(x.completedAt)===today;}).length,learnJp=all.filter(function(x){return x.subject==="japanese"&&localDateKey(x.completedAt)===today;}).length;
+  const due=reviewDueItems(reviewView.subject),over=due.filter(function(x){return reviewStatus(x)==="overdue";}).length,py=due.filter(function(x){return x.subject==="python";}).length,jp=due.length-py,all=reviewItems(),filtered=reviewFilteredItems(),today=localDateKey(),learnPy=all.filter(function(x){return x.subject==="python"&&localDateKey(x.completedAt)===today;}).length,learnJp=all.filter(function(x){return x.subject==="japanese"&&localDateKey(x.completedAt)===today;}).length,focusToday=DB.timerLog.filter(function(x){return x.type==="focus"&&x.date===today;}),minPy=focusToday.filter(function(x){return x.subject==="python";}).reduce(function(s,x){return s+(Number(x.minutes)||DB.timerSettings.focus);},0),minJp=focusToday.filter(function(x){return x.subject==="japanese";}).reduce(function(s,x){return s+(Number(x.minutes)||DB.timerSettings.focus);},0);
   return '<div class="review-wrap">'+
     '<div class="review-hero"><div class="review-kicker">LEARN → TEST → SCHEDULE → REVIEW → ADAPT</div><div class="jp-actions" style="margin:8px 0 14px"><button type="button" class="btn '+(reviewView.subject==='all'?'':'secondary')+' btn-sm" data-review-scope="all">🧠 All Reviews</button><button type="button" class="btn '+(reviewView.subject==='japanese'?'':'secondary')+' btn-sm" data-review-scope="japanese">🇯🇵 Japanese</button><button type="button" class="btn '+(reviewView.subject==='python'?'':'secondary')+' btn-sm" data-review-scope="python">🐍 Python</button></div><div class="review-count">'+due.length+' <small>due today</small></div><h2>'+(due.length?'Review Time!':'You are caught up')+'</h2><p>'+(due.length?'You learned these topics before. Recall them before they disappear from memory.':'Future reviews are scheduled automatically when you complete lessons.')+'</p><button type="button" class="btn" data-review-start="1" '+(!due.length?'disabled':'')+'>START REVIEW</button></div>'+
-    '<div class="review-stats"><div class="review-stat"><b>'+learnPy+' / '+learnJp+'</b><span>Python / Japanese learned today</span></div><div class="review-stat"><b style="color:var(--danger)">'+over+'</b><span>Overdue</span></div><div class="review-stat"><b>'+py+' / '+jp+'</b><span>Python / Japanese due</span></div><div class="review-stat"><b>'+reviewStreak()+'</b><span>Learning streak · days</span></div><div class="review-stat"><b>'+reviewMemory('python')+'% / '+reviewMemory('japanese')+'%</b><span>Python / Japanese memory</span></div></div>'+
+    '<div class="review-stats"><div class="review-stat"><b>'+minPy+'m / '+minJp+'m</b><span>Python / Japanese focus today</span></div><div class="review-stat"><b>'+learnPy+' / '+learnJp+'</b><span>Python / Japanese learned today</span></div><div class="review-stat"><b style="color:var(--danger)">'+over+'</b><span>Overdue</span></div><div class="review-stat"><b>'+py+' / '+jp+'</b><span>Python / Japanese due</span></div><div class="review-stat"><b>'+reviewStreak()+'</b><span>Learning streak · days</span></div><div class="review-stat"><b>'+reviewMemory('python')+'% / '+reviewMemory('japanese')+'%</b><span>Python / Japanese memory</span></div></div>'+
     '<div class="review-grid"><section class="review-panel"><h3>🔴 Due now</h3><div class="review-list">'+(due.length?mixedReviews(due).slice(0,10).map(reviewItemRow).join(''):'<p class="jp-muted">Nothing due today.</p>')+'</div></section><section class="review-panel"><h3>⏰ Upcoming reviews</h3>'+reviewUpcomingRows()+'</section><section class="review-panel"><h3>🔙 Recently learned</h3><div class="review-list">'+reviewRecentHtml()+'</div></section><section class="review-panel"><h3>🎯 What to learn next</h3>'+reviewNextLearningHtml()+'</section><section class="review-panel"><h3>📅 Next 28 days</h3><div class="review-calendar">'+reviewCalendarHtml()+'</div></section></div>'+
     '<section class="review-panel" style="margin-top:14px"><h3>Search all '+all.length+' saved lessons</h3><div class="review-filters"><input id="reviewSearch" placeholder="Search lesson, topic, summary…" value="'+escapeHtml(reviewView.search)+'"><select id="reviewSubject"><option value="all">All subjects</option><option value="japanese" '+(reviewView.subject==='japanese'?'selected':'')+'>Japanese</option><option value="python" '+(reviewView.subject==='python'?'selected':'')+'>Python</option></select><select id="reviewStatus"><option value="all">All statuses</option><option value="due" '+(reviewView.status==='due'?'selected':'')+'>Due today</option><option value="overdue" '+(reviewView.status==='overdue'?'selected':'')+'>Overdue</option><option value="upcoming" '+(reviewView.status==='upcoming'?'selected':'')+'>Upcoming</option><option value="mastered" '+(reviewView.status==='mastered'?'selected':'')+'>Mastered</option></select><select id="reviewDifficulty"><option value="all">All difficulty</option><option value="forgot" '+(reviewView.difficulty==='forgot'?'selected':'')+'>Forgot</option><option value="hard" '+(reviewView.difficulty==='hard'?'selected':'')+'>Hard</option><option value="good" '+(reviewView.difficulty==='good'?'selected':'')+'>Good</option><option value="easy" '+(reviewView.difficulty==='easy'?'selected':'')+'>Easy</option></select></div><div class="review-list" id="reviewSearchResults">'+(filtered.length?filtered.slice(0,50).map(reviewItemRow).join(''):'<p class="jp-muted">No matching review topics.</p>')+'</div></section></div>';
 }
@@ -4909,7 +4910,7 @@ let timerTotal = timerRemaining;
 let timerRunning = false;
 let timerInterval = null;
 
-function todayStr(){ return new Date().toISOString().slice(0,10); }
+function todayStr(){ return localDateKey(); }
 function todaysFocusCount(){
   const t = todayStr();
   return DB.timerLog.filter(e=> e.type==="focus" && e.date===t).length;
@@ -5064,7 +5065,9 @@ function completeTimer(){
   clearInterval(timerInterval); timerInterval = null; timerRunning = false;
   timerEndsAt = null; timerRemaining = 0;
 
-  DB.timerLog.push({ type: timerMode, date: todayStr(), ts: nowISO() });
+  DB.timerLog.push({ type: timerMode, date: todayStr(), ts: nowISO(),
+    subject:timerMode==="focus"?DB.timerSettings.subject:"break",
+    minutes:DB.timerSettings[timerMode] });
   if(DB.timerLog.length > 500) DB.timerLog = DB.timerLog.slice(-500);
   save();
   soundDone();
@@ -5132,6 +5135,13 @@ function renderTimer(){
     <div class="timer-modes">
       ${Object.values(MODES).map(m=>`<button type="button" data-mode="${m.key}" class="${m.key===timerMode?'active':''}">${m.label}</button>`).join("")}
     </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--text-dim)">Focus subject
+      <select id="timerSubject" ${timerRunning?'disabled':''} style="background:var(--bg-elev);border:1px solid var(--border);border-radius:8px;padding:7px 9px">
+        <option value="python" ${DB.timerSettings.subject==='python'?'selected':''}>🐍 Python</option>
+        <option value="japanese" ${DB.timerSettings.subject==='japanese'?'selected':''}>🇯🇵 Japanese</option>
+        <option value="general" ${DB.timerSettings.subject==='general'?'selected':''}>📚 General</option>
+      </select>
+    </label>
     <div class="timer-ring" id="timerRingEl" style="--pct:${pct}">
       <div class="timer-face">
         <div class="timer-digits" id="timerDigits">${fmtClock(timerRemaining)}</div>
@@ -5155,6 +5165,7 @@ function renderTimer(){
   });
   document.getElementById("timerToggleBtn").addEventListener("click", toggleTimer);
   document.getElementById("timerResetBtn").addEventListener("click", resetTimer);
+  document.getElementById("timerSubject").addEventListener("change",function(){DB.timerSettings.subject=this.value;save();});
 }
 document.getElementById("timerSettingsBtn").addEventListener("click", ()=>{
   openModal(`
@@ -5179,7 +5190,7 @@ document.getElementById("timerSettingsBtn").addEventListener("click", ()=>{
     const long = parseInt(document.getElementById("setLong").value) || 15;
     const longEvery = parseInt(document.getElementById("setLongEvery").value) || 4;
     const sound = document.getElementById("setSound").checked;
-    DB.timerSettings = { focus, short, long, longEvery, sound };
+    DB.timerSettings = { focus, short, long, longEvery, sound, subject:DB.timerSettings.subject||"python" };
     save(); closeModal();
     if(sound) ensureAudio();          // the Save click is our gesture to unlock audio
     setTimerMode(timerMode);

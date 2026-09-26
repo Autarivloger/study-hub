@@ -24,7 +24,7 @@ async function main(){
   assert(await evalJs("window.__studyHubBooted"),"App did not boot: "+errors.join("; "));
 
   /* Three old completions exercise the one-time, non-destructive migration. */
-  await evalJs(`(()=>{const d=new Date();d.setDate(d.getDate()-10);const iso=d.toISOString();localStorage.studyHubData_v1=JSON.stringify({course:{done:{'1.0':iso},notes:{},practice:{solved:{},attempts:0},partsDone:{}},lessonsDone:{strings:iso},japanese:{done:{'8.1':iso},quizScores:{},notes:{},checks:{}}});sessionStorage.clear();})()`);
+  await evalJs(`(()=>{const d=new Date();d.setDate(d.getDate()-10);const iso=d.toISOString(),n=new Date(),today=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');localStorage.studyHubData_v1=JSON.stringify({course:{done:{'1.0':iso},notes:{},practice:{solved:{},attempts:0},partsDone:{}},lessonsDone:{strings:iso},japanese:{done:{'8.1':iso},quizScores:{},notes:{},checks:{}},timerSettings:{focus:25,short:5,long:15,longEvery:4,sound:false,subject:'python'},timerLog:[{type:'focus',date:today,ts:new Date().toISOString(),subject:'python',minutes:25},{type:'focus',date:today,ts:new Date().toISOString(),subject:'japanese',minutes:20}]});sessionStorage.clear();})()`);
   await send("Page.reload",{ignoreCache:true});
   for(let i=0;i<50;i++){if(await evalJs("Boolean(window.__studyHubBooted)"))break;await sleep(100);}
   assert(await evalJs("Object.keys(JSON.parse(localStorage.studyHubData_v1).reviews.items).length===3"),"Completed lessons did not migrate into reviews");
@@ -34,6 +34,7 @@ async function main(){
   assert(await evalJs("document.querySelector('#view-course .review-hero').textContent.includes('review')"),"Today's Review is not prominent on the homepage");
   await evalJs("document.querySelector('#sidebar [data-view=reviews]').click()");
   assert(await evalJs("document.querySelector('#view-reviews').classList.contains('active') && document.querySelector('.review-count').textContent.includes('3')"),"Review dashboard did not open with due count");
+  assert(await evalJs("document.querySelector('#view-reviews').textContent.includes('25m / 20m')"),"Subject study minutes missing from daily dashboard");
   assert(await evalJs("document.querySelectorAll('.review-calendar .review-cal-day').length===28"),"28-day calendar missing");
   assert(await evalJs("document.querySelectorAll('#reviewSubject option').length===3 && document.querySelectorAll('#reviewStatus option').length===5 && document.querySelectorAll('#reviewDifficulty option').length===5"),"Search filters are incomplete");
   assert(await evalJs("document.querySelectorAll('[data-review-scope]').length===3 && document.querySelectorAll('[data-review-next]').length===2"),"Separate dashboards or next-learning guidance missing");
@@ -55,6 +56,8 @@ async function main(){
   await evalJs("document.querySelector('[data-review-history]').click()");
   assert(await evalJs("document.querySelector('#modalBox').textContent.includes('Review history') && document.querySelector('#modalBox').textContent.includes('Next review')"),"Per-lesson review history is not visible");
   await evalJs("document.querySelector('#reviewHistoryClose').click()");
+  await evalJs("document.querySelector('#sidebar [data-view=timer]').click()");
+  assert(await evalJs("document.querySelectorAll('#timerSubject option').length===3 && document.querySelector('#timerSubject').value==='python'"),"Timer subject tracking control missing");
 
   /* A new Python day completion must enroll immediately, not only on reload. */
   await evalJs("document.querySelector('#sidebar [data-view=course]').click();document.querySelector('[data-week=\"1\"]').click();document.querySelectorAll('.day-open')[1].click();document.querySelector('#dayDoneBtn').click()");
