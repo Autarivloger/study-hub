@@ -57,7 +57,7 @@ async function main(){
     await sleep(100);
   }
   assert(await evalJs("window.__studyHubBooted"),"App did not boot: "+errors.join("; "));
-  assert(await evalJs("document.querySelectorAll('#tabnav [data-view]').length === 11"),"Navigation lost a tab");
+  assert(await evalJs("document.querySelectorAll('#tabnav [data-view]').length === 12"),"Navigation lost a tab");
   await evalJs("localStorage.studyHubData_v1=JSON.stringify({japanese:{done:{'1.1':'2025-01-01T00:00:00.000Z','1.2':'2025-01-02T00:00:00.000Z','1.3':'2025-01-03T00:00:00.000Z','1.4':'2025-01-04T00:00:00.000Z','1.5':'2025-01-05T00:00:00.000Z','1.6':'2025-01-06T00:00:00.000Z','2.1':'2025-02-01','2.2':'2025-02-02','2.3':'2025-02-03','2.4':'2025-02-04','2.5':'2025-02-05','2.6':'2025-02-06'},quizScores:{'1.1':100,'1.2':50,'1.3':50,'1.4':50,'1.5':50,'1.6':50,'2.1':50,'2.2':50,'2.3':50,'2.4':50,'2.5':50,'2.6':50},notes:{'1.1':'Old kana note','1.2':'Old topic note','1.3':'Old particles note','1.4':'Old polite note','1.5':'Old te-form note','1.6':'Old reading note','2.1':'Old W2D1 note','2.2':'Old W2D2 note','2.3':'Old W2D3 note','2.4':'Old W2D4 note','2.5':'Old W2D5 note','2.6':'Old W2D6 note'},checks:{}},decks:[{id:'jp-vocabulary-v1',name:'Japanese',created:'2025-01-01'}],cards:[{id:'jp-1.1-0',deckId:'jp-vocabulary-v1',front:'切手（きって）',back:'stamp',ease:2.5,interval:0,reps:0,due:'2025-01-01'}]})");
   await send("Page.reload",{ignoreCache:true});
   for(let i=0;i<50;i++){
@@ -383,6 +383,7 @@ async function main(){
   assert(await evalJs("['6.1','6.2','6.3','6.4','6.5','6.6','6.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 6 progress");
   assert(await evalJs("['7.1','7.2','7.3','7.4','7.5','7.6','7.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 7 progress");
   assert(await evalJs("['8.1','8.2','8.3','8.4','8.5','8.6','8.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 8 progress");
+  assert(await evalJs("Object.keys(JSON.parse(localStorage.studyHubData_v1).reviews.items).length >= 56"),"Import erased spaced-review records");
   assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:v:起きる'].hard === false && JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:k:起'].hard === false"),"Hard removal failed to merge or stale mark returned");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['19.1']"),"Import erased imported lesson progress");
   await evalJs("document.querySelector('#exportBtn').click()");
@@ -406,7 +407,7 @@ async function main(){
     await sleep(100);
   }
   assert(await evalJs("JSON.parse(localStorage.studyHubSync).gistId === '0123456789abcdef0123456789abcdef'"),"First Push did not create a Gist");
-  assert(await evalJs("window.__syncBody.includes('old-note') && !window.__syncBody.includes('synthetic-test-token-123456')"),"Push payload lost notes or contained token");
+  assert(await evalJs("window.__syncBody.includes('old-note') && window.__syncBody.includes('reviews') && !window.__syncBody.includes('synthetic-test-token-123456')"),"Push payload lost notes/reviews or contained token");
   await evalJs("document.querySelector('#syPull').click()");
   for(let i=0;i<30;i++){
     if(await evalJs("JSON.parse(localStorage.studyHubData_v1).notes.some(x=>x.id==='remote-note')")) break;

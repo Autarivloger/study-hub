@@ -165,6 +165,31 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 }
 .empty-state .big{ font-size:38px; }
 
+/* ---------- Spaced repetition ---------- */
+.review-wrap{max-width:1050px;margin:0 auto;padding:18px 18px 44px}
+.review-hero{background:var(--accent-soft);border:1px solid var(--accent);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.review-hero h2{font-size:24px;margin:4px 0 8px}.review-hero p{margin:0 0 14px;line-height:1.55;color:var(--text-dim)}
+.review-kicker{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.review-count{font-size:34px;font-weight:850;line-height:1}.review-count small{font-size:14px;color:var(--text-dim);font-weight:650}
+.review-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+.review-stat{background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;padding:13px}
+.review-stat b{display:block;font-size:22px}.review-stat span{font-size:12px;color:var(--text-dim)}
+.review-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.review-panel{background:var(--bg-elev);border:1px solid var(--border);border-radius:14px;padding:16px;min-width:0}
+.review-panel h3{margin:0 0 12px;font-size:17px}.review-panel h4{margin:16px 0 7px;font-size:13px;color:var(--text-dim)}
+.review-list{display:flex;flex-direction:column;gap:7px}.review-item{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--bg-soft)}
+.review-item-main{flex:1;min-width:0}.review-item-title{font-weight:750;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.review-item-meta{font-size:11.5px;color:var(--text-dim);margin-top:2px}
+.review-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}.review-dot.python{background:#3776ab}.review-dot.japanese{background:#d85b63}
+.review-badge{font-size:10.5px;font-weight:800;padding:3px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}.review-badge.overdue{background:rgba(168,64,47,.13);color:var(--danger)}
+.review-filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.review-filters input,.review-filters select{background:var(--bg-elev);border:1px solid var(--border);border-radius:8px;padding:9px 10px;font-size:13px;min-height:40px}.review-filters input{flex:1;min-width:180px}
+.review-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.review-cal-day{min-height:60px;border:1px solid var(--border);border-radius:8px;padding:6px;background:var(--bg-soft);font-size:11px}.review-cal-day b{display:block;font-size:12px}.review-cal-day span{display:block;margin-top:8px;color:var(--accent);font-weight:800}
+.review-session{max-width:760px;margin:0 auto}.recall-card{background:var(--bg-elev);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+.recall-progress{font-size:12px;color:var(--text-dim);margin-bottom:14px}.recall-q{font-size:21px;line-height:1.5;font-weight:750;margin:10px 0 18px}.recall-type{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:4px 8px}
+.recall-answer{border-left:3px solid var(--good);background:rgba(62,122,84,.09);padding:13px 14px;border-radius:0 9px 9px 0;line-height:1.65;margin:14px 0}.recall-grade{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}.recall-grade button{border:1px solid var(--border);background:var(--bg-soft);border-radius:9px;padding:11px 6px;font-weight:800}.recall-grade button[data-grade=forgot]{color:var(--danger)}.recall-grade button[data-grade=good],.recall-grade button[data-grade=easy]{color:var(--good)}
+.memory-bar{height:6px;background:var(--bg-soft);border-radius:99px;overflow:hidden;margin-top:6px}.memory-bar span{display:block;height:100%;background:var(--good);border-radius:99px}
+.review-reminder{border:1px solid var(--warn);background:rgba(169,120,28,.1);border-radius:11px;padding:11px 13px;margin:0 0 14px;font-size:13px;line-height:1.5}
+@media(max-width:760px){.review-wrap{padding:14px 14px 34px}.review-grid{grid-template-columns:1fr}.review-stats{grid-template-columns:repeat(2,1fr)}.review-calendar{grid-template-columns:repeat(4,1fr)}.recall-grade{grid-template-columns:repeat(2,1fr)}}
+
 /* Notes */
 #noteTitle{
   width:100%; border:none; background:none; outline:none; font-size:22px; font-weight:800;
@@ -1186,6 +1211,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
   <button type="button" data-view="liked"><span class="ic">❤️</span>I Liked</button>
   <button type="button" data-view="typing"><span class="ic">⌨️</span>Typing</button>
   <button type="button" data-view="japanese"><span class="ic">🇯🇵</span>Japanese</button>
+  <button type="button" data-view="reviews"><span class="ic">🧠</span>Reviews</button>
   <button type="button" data-view="timer"><span class="ic">⏱️</span>Timer</button>
   <button type="button" data-view="flashcards"><span class="ic">🗂️</span>Cards</button>
   <button type="button" data-view="todo"><span class="ic">✅</span>To-Do</button>
@@ -1203,6 +1229,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
     <button type="button" class="nav-item" data-view="liked"><span class="ic">❤️</span>I Liked</button>
     <button type="button" class="nav-item" data-view="typing"><span class="ic">⌨️</span>Typing</button>
     <button type="button" class="nav-item" data-view="japanese"><span class="ic">🇯🇵</span>Japanese Language</button>
+    <button type="button" class="nav-item" data-view="reviews"><span class="ic">🧠</span>Today's Review</button>
     <button type="button" class="nav-item" data-view="timer"><span class="ic">⏱️</span>Timer</button>
     <button type="button" class="nav-item" data-view="flashcards"><span class="ic">🗂️</span>Flashcards</button>
     <button type="button" class="nav-item" data-view="todo"><span class="ic">✅</span>To-Do</button>
@@ -1287,6 +1314,12 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
     <div class="view" id="view-japanese">
       <div class="pane-header"><h1>🇯🇵 Japanese Language</h1></div>
       <div id="japaneseBody"></div>
+    </div>
+
+    <!-- SPACED REPETITION VIEW -->
+    <div class="view" id="view-reviews">
+      <div class="pane-header"><h1>🧠 Today's Review</h1></div>
+      <div id="reviewsBody"></div>
     </div>
 
     <div class="view" id="view-notes">
@@ -1432,6 +1465,13 @@ function applyDefaults(d){
   d.japanese.quizScores = d.japanese.quizScores || {};
   d.japanese.notes = d.japanese.notes || {};
   d.japanese.checks = d.japanese.checks || {};
+  /* Additive store: existing completion maps stay untouched. Each review item
+     owns its schedule and history, so course progress never pretends to be
+     memory strength. */
+  d.reviews = d.reviews || {items:{}, sessions:[], migrationVersion:0};
+  d.reviews.items = d.reviews.items || {};
+  d.reviews.sessions = d.reviews.sessions || [];
+  d.reviews.migrationVersion = d.reviews.migrationVersion || 0;
   d.wisdom = d.wisdom || [];
   d.lastBackup = d.lastBackup || null;
   return d;
@@ -1512,6 +1552,25 @@ function mergeIntoDB(incoming){
     });
   });
 
+  /* Review sync is conflict-safe. The most recently changed schedule wins,
+     while histories are unioned so a review performed on either device is
+     never lost. */
+  Object.keys(incoming.reviews.items).forEach(function(id){
+    const theirs=incoming.reviews.items[id], mine=DB.reviews.items[id];
+    if(!mine){ DB.reviews.items[id]=theirs; return; }
+    const histories={}, merged=[];
+    (mine.history || []).concat(theirs.history || []).forEach(function(h){
+      const sig=(h.at || h.date || "")+"|"+(h.rating || "")+"|"+(h.nextReview || "");
+      if(!histories[sig]){histories[sig]=true;merged.push(h);}
+    });
+    merged.sort(function(a,b){return String(a.at||a.date).localeCompare(String(b.at||b.date));});
+    const newer=(theirs.updatedAt || theirs.completedAt || "") > (mine.updatedAt || mine.completedAt || "") ? theirs : mine;
+    DB.reviews.items[id]=Object.assign({},newer,{history:merged});
+  });
+  const sessionSeen=new Set(DB.reviews.sessions.map(function(x){return x.id;}));
+  incoming.reviews.sessions.forEach(function(x){if(x && !sessionSeen.has(x.id)){sessionSeen.add(x.id);DB.reviews.sessions.push(x);}});
+  DB.reviews.migrationVersion=Math.max(DB.reviews.migrationVersion||0,incoming.reviews.migrationVersion||0);
+
   applyDefaults(DB);
 }
 
@@ -1586,14 +1645,14 @@ function confirmDialog(message, onYes){
 }
 
 /* ============ Navigation ============ */
-const views = ["course","lessons","journal","wisdom","liked","typing","japanese","notes","timer","flashcards","todo","quiz"];
+const views = ["course","lessons","journal","wisdom","liked","typing","japanese","reviews","notes","timer","flashcards","todo","quiz"];
 function switchView(name){
   views.forEach(v=>{
     document.getElementById("view-"+v).classList.toggle("active", v===name);
   });
   document.querySelectorAll("#sidebar .nav-item").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
   document.querySelectorAll("#tabnav button").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
-  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Lessons", journal:"Daily Journal", wisdom:"Life Lessons", liked:"I Liked", typing:"Typing", japanese:"Japanese Language", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Quizzes"}[name];
+  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Lessons", journal:"Daily Journal", wisdom:"Life Lessons", liked:"I Liked", typing:"Typing", japanese:"Japanese Language", reviews:"Today's Review", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Quizzes"}[name];
   document.getElementById("backBtn").style.display = "none";
   if(name!=="typing") typingLeave();
   if(name==="course") renderCourse();
@@ -1603,6 +1662,7 @@ function switchView(name){
   if(name==="liked") renderLiked();
   if(name==="typing") renderTyping();
   if(name==="japanese") renderJapanese();
+  if(name==="reviews") renderReviews();
   if(name==="notes") renderNotesList();
   if(name==="timer") renderTimer();
   if(name==="flashcards") renderDecks();
@@ -1656,8 +1716,9 @@ function renderSideStats(){
   const dueCards = DB.cards.filter(c => new Date(c.due) <= new Date()).length;
   const openTodos = DB.todos.filter(t=>!t.done).length;
   const lessons = (DB.course && DB.course.done) ? Object.keys(DB.course.done).length : 0;
+  const reviewsDue = typeof reviewDueItems === "function" ? reviewDueItems().length : 0;
   document.getElementById("sideStats").innerHTML =
-    `${lessons}/364 lessons<br>${dueCards} cards due · ${openTodos} tasks`;
+    `${lessons}/364 lessons<br>${reviewsDue} reviews · ${dueCards} cards due<br>${openTodos} tasks`;
 }
 
 /* ================= I LIKED (songs) =================
@@ -3184,7 +3245,7 @@ function jpProgressBar(done, total){
 }
 function jpRenderHome(){
   const next = jpNextLesson();
-  let html = '<div class="jp-hero"><div class="jp-kicker">Your 9-month route · 36 weeks</div>' +
+  let html = reviewHomeCardHtml("japanese") + '<div class="jp-hero"><div class="jp-kicker">Your 9-month route · 36 weeks</div>' +
     '<h2>From N5 basics to practical N3</h2>' +
     '<p class="jp-muted">You already know some N5, so the first two weeks repair the basics through a short diagnostic bridge. Move on when the reading and speaking tasks feel comfortable. Weeks 3–12 build N4, weeks 13–28 build N3, and the last eight weeks are for timed practice and real use.</p>' +
     jpProgressBar(jpDoneCount(), JP_LESSONS.filter(function(l){return !l.optional;}).length) +
@@ -3239,7 +3300,7 @@ function jpRenderLesson(id){
   const index = JP_LESSONS.indexOf(lesson), week = Number(id.split(".")[0]), stateId=jpStateId(lesson);
   const checks = DB.japanese.checks[stateId] || {};
   const studyPrefix=(lesson.teRules || lesson.studyNav) ? 'jp-day' + id.split('.')[1] + '-' : '';
-  let html = '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-week="' + week + '">← Week ' + week + '</button>' +
+  let html = reviewOverdueReminderHtml() + '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-week="' + week + '">← Week ' + week + '</button>' +
     '<button type="button" class="btn secondary" data-jp-home="1">All weeks</button>' +
     '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div>' +
     '<div class="jp-hero"><span class="jp-kicker">Week ' + week + ' · ' + (lesson.sourceDay ? 'Source Day ' + lesson.sourceDay + ' · optional preview' : 'Day ' + id.split(".")[1]) + '</span>' +
@@ -3408,8 +3469,14 @@ function renderJapanese(){
       }else if(el.dataset.jpDone){
         const lesson=JP_LESSONS.find(function(l){return l.id===jpPage.lesson;});
         const id=jpStateId(lesson);
-        if(DB.japanese.done[id]) delete DB.japanese.done[id];
-        else DB.japanese.done[id]=nowISO();
+        if(DB.japanese.done[id]){
+          delete DB.japanese.done[id];
+          reviewMarkSourceIncomplete(reviewId("japanese","lesson",id));
+        }
+        else {
+          DB.japanese.done[id]=nowISO();
+          reviewEnrollJapanese(lesson,DB.japanese.done[id]);
+        }
         save();
       }else if(el.dataset.jpQuiz){
         const lesson=JP_LESSONS.find(function(l){return l.id===jpPage.lesson;});
@@ -3477,6 +3544,222 @@ function renderJapanese(){
     (jpPage.mode==="lesson" ? jpRenderLesson(jpPage.lesson) :
      jpPage.mode==="week" ? jpRenderWeek(jpPage.week) :
      jpPage.mode==="hard" ? jpRenderHard() : jpRenderHome()) + '</div>';
+}
+
+/* ================= SPACED REPETITION =================
+   One adaptive engine serves Japanese and Python. Reviews are stored inside
+   the main DB, so export/import and private Gist sync carry them unchanged. */
+const REVIEW_GAPS=[1,3,3,7,16,30,60,120];
+let reviewView={mode:"dashboard",subject:"all",status:"all",difficulty:"all",search:"",queue:[],index:0,revealed:false};
+let reviewEventsBound=false;
+
+function localDateKey(value){
+  const d=value ? new Date(value) : new Date();
+  const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");
+  return y+"-"+m+"-"+day;
+}
+function reviewDateFromKey(key){const p=String(key).split("-").map(Number);return new Date(p[0],p[1]-1,p[2],12,0,0,0);}
+function addLocalDays(key,days){const d=reviewDateFromKey(key);d.setDate(d.getDate()+days);return localDateKey(d);}
+function dayDistance(a,b){return Math.round((reviewDateFromKey(b)-reviewDateFromKey(a))/86400000);}
+function reviewItems(){return Object.values(DB.reviews.items||{}).filter(function(x){return x&&x.id;});}
+function reviewStatus(item){
+  const today=localDateKey();
+  if((item.stage||0)>=7 && item.nextReview>today) return "mastered";
+  if(item.nextReview<today) return "overdue";
+  if(item.nextReview===today) return "due";
+  return "upcoming";
+}
+function reviewDueItems(subject){return reviewItems().filter(function(x){return (!subject||subject==="all"||x.subject===subject)&&x.nextReview<=localDateKey();});}
+function reviewLastRating(item){const h=item.history||[];return h.length?h[h.length-1].rating:"new";}
+function reviewStrength(item){
+  const rating=reviewLastRating(item),base=Math.min(82,(item.stage||0)*11+20);
+  return Math.max(5,Math.min(100,base+(rating==="easy"?15:rating==="good"?8:rating==="hard"?-10:rating==="forgot"?-20:0)));
+}
+function reviewStrengthLabel(item){const n=reviewStrength(item);return n>=85?"Strong":n>=60?"Growing":n>=35?"Developing":"Fragile";}
+function reviewMemory(subject){const a=reviewItems().filter(function(x){return !subject||x.subject===subject;});return a.length?Math.round(a.reduce(function(s,x){return s+reviewStrength(x);},0)/a.length):0;}
+function reviewPrettyDate(key){if(!key)return "";return reviewDateFromKey(key).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});}
+function reviewSubjectLabel(s){return s==="japanese"?"🇯🇵 Japanese":"🐍 Python";}
+function reviewId(subject,type,sourceId){return subject+":"+type+":"+sourceId;}
+function reviewMarkSourceIncomplete(id){const item=DB.reviews&&DB.reviews.items&&DB.reviews.items[id];if(item){item.sourceCompleted=false;item.updatedAt=nowISO();}}
+
+function reviewUpsert(meta){
+  const old=DB.reviews.items[meta.id];
+  if(old){
+    ["subject","courseName","lessonName","topic","summary","concepts","prompts","sourceType","sourceId"].forEach(function(k){if(meta[k]!=null)old[k]=meta[k];});
+    old.sourceCompleted=true;
+    return old;
+  }
+  const completedAt=meta.completedAt||nowISO(),learned=localDateKey(completedAt);
+  DB.reviews.items[meta.id]=Object.assign({difficulty:"new",stage:0,nextReview:addLocalDays(learned,REVIEW_GAPS[0]),history:[],createdAt:nowISO(),updatedAt:nowISO(),sourceCompleted:true},meta,{completedAt:completedAt});
+  return DB.reviews.items[meta.id];
+}
+function compactText(v,max){v=String(v||"").replace(/\s+/g," ").trim();return v.length>(max||220)?v.slice(0,(max||220)-1)+"…":v;}
+
+function japaneseReviewPrompts(L){
+  const out=[];
+  (L.vocab||[]).slice(0,2).forEach(function(v,i){
+    out.push({level:0,type:"Vocabulary · Japanese → meaning",q:"What does 「"+v[0]+"」 mean?",a:v[1]+" · "+v[2]});
+    out.push({level:1,type:"Vocabulary · meaning → Japanese",q:"Say or write this in Japanese: "+v[2],a:v[0]+"（"+v[1]+"）"});
+  });
+  (L.quiz||[]).slice(0,2).forEach(function(q){out.push({level:1,type:"Grammar recall",q:q[0],a:q[1][q[2]]+" · "+q[3]});});
+  (L.readingQuestions||[]).slice(0,1).forEach(function(q){out.push({level:2,type:"Reading recall",q:q[0],a:q[1]});});
+  if(L.syntax)out.push({level:2,type:"Grammar from memory",q:"Explain and make one new sentence with: "+L.syntax,a:compactText(L.explain,320)});
+  if(L.speak)out.push({level:3,type:"Sentence creation",q:L.speak,a:L.model||"Compare with your lesson notes."});
+  if(L.enrich&&L.enrich[1])out.push({level:4,type:"Application",q:L.enrich[1],a:L.enrich[2]||"Open the lesson and compare after answering."});
+  return out;
+}
+function pythonSectionsPrompts(sections,title){
+  const out=[];
+  (sections||[]).forEach(function(s,i){
+    if(out.length>=8)return;
+    if(s.t==="new")out.push({level:0,type:"Concept recall",q:"What is "+s.v+" and why is it used?",a:s.note||s.v});
+    else if(s.t==="key")out.push({level:1,type:"Explain in your own words",q:"Explain this key idea from “"+title+"” without looking.",a:s.v});
+    else if(s.t==="try")out.push({level:2,type:"Predict the output",q:s.q||s.v||"Predict the result.",a:s.a||s.out||s.why||"Compare with the lesson."});
+    else if(s.t==="ex"){
+      const sol=sections[i+1]&&sections[i+1].t==="sol"?sections[i+1]:null;
+      out.push({level:3,type:"Write code from memory",q:s.v,a:sol?([sol.code,sol.out,sol.why].filter(Boolean).join("\n\n")):"Open the lesson after writing your solution."});
+    }
+  });
+  return out;
+}
+function reviewEnrollJapanese(L,completedAt){
+  if(!L)return null;const sid=jpStateId(L),summary=(L.summary||[]).join(" · ")||L.explain;
+  return reviewUpsert({id:reviewId("japanese","lesson",sid),subject:"japanese",sourceType:"japanese",sourceId:L.id,courseName:"Japanese · N5 to N3",lessonName:"Week "+L.id.split(".")[0]+" · Day "+L.id.split(".")[1],topic:L.title,completedAt:completedAt,summary:compactText(summary,420),concepts:(L.summary||[]).slice(0,6),prompts:japaneseReviewPrompts(L)});
+}
+function reviewEnrollPythonDay(w,d,completedAt){
+  const wk=weekByNum(w),day=d===6?REST_DAY:(wk&&wk[4]&&wk[4][d]);if(!day)return null;
+  const title=day[0],sections=daySections(w+"."+d)||[];
+  let prompts=pythonSectionsPrompts(sections,title);
+  if(!prompts.length)prompts=[{level:0,type:"Concept recall",q:"Explain the main idea of “"+title+"”.",a:day[1]},{level:3,type:"Build from memory",q:day[2],a:"Build it first, then open the course day and compare."}];
+  return reviewUpsert({id:reviewId("python","day",w+"."+d),subject:"python",sourceType:"python-day",sourceId:w+"."+d,courseName:"Python · 12-month curriculum",lessonName:"Week "+w+" · Day "+(d+1),topic:title,completedAt:completedAt,summary:compactText(day[1],420),concepts:sections.filter(function(s){return s.t==="key"||s.t==="new";}).slice(0,6).map(function(s){return s.t==="new"?s.v+": "+s.note:s.v;}),prompts:prompts});
+}
+function reviewEnrollPythonLesson(id,completedAt){
+  const L=LESSONS.find(function(x){return x.id===id;});if(!L)return null;
+  const prompts=[];
+  (L.quiz||[]).forEach(function(q){prompts.push({level:0,type:"Recall question",q:q.q,a:q.options[q.correct]+" · "+q.why});});
+  pythonSectionsPrompts(L.sections||[],L.title).forEach(function(p){prompts.push(p);});
+  if(L.challenge)prompts.push({level:4,type:"Problem solving",q:L.challenge.brief,a:[L.challenge.code,L.challenge.out,L.challenge.why].filter(Boolean).join("\n\n")});
+  return reviewUpsert({id:reviewId("python","lesson",id),subject:"python",sourceType:"python-lesson",sourceId:id,courseName:"Python Lessons",lessonName:L.title,topic:L.subtitle||L.title,completedAt:completedAt,summary:compactText(L.objective||L.subtitle,420),concepts:(L.sections||[]).filter(function(s){return s.t==="key";}).slice(0,6).map(function(s){return s.v;}),prompts:prompts.slice(0,12)});
+}
+
+function migrateCompletedToReviews(){
+  let changed=false;
+  Object.keys(DB.course.done||{}).forEach(function(k){const p=k.split(".").map(Number),id=reviewId("python","day",k);if(!DB.reviews.items[id]){reviewEnrollPythonDay(p[0],p[1],DB.course.done[k]);changed=true;}});
+  Object.keys(DB.lessonsDone||{}).forEach(function(k){const id=reviewId("python","lesson",k);if(!DB.reviews.items[id]){reviewEnrollPythonLesson(k,DB.lessonsDone[k]);changed=true;}});
+  Object.keys(DB.japanese.done||{}).forEach(function(k){
+    const L=JP_LESSONS.find(function(x){return jpStateId(x)===k||x.id===k;});
+    const id=reviewId("japanese","lesson",k);
+    if(L&&!DB.reviews.items[id]){const item=reviewEnrollJapanese(L,DB.japanese.done[k]);if(item&&item.id!==id){DB.reviews.items[id]=Object.assign({},item,{id:id});delete DB.reviews.items[item.id];}changed=true;}
+  });
+  if((DB.reviews.migrationVersion||0)<1){DB.reviews.migrationVersion=1;changed=true;}
+  return changed;
+}
+
+function mixedReviews(items){
+  const py=items.filter(function(x){return x.subject==="python";}).sort(function(a,b){return a.nextReview.localeCompare(b.nextReview);});
+  const jp=items.filter(function(x){return x.subject==="japanese";}).sort(function(a,b){return a.nextReview.localeCompare(b.nextReview);});
+  const out=[];let turn=py.length>=jp.length?"python":"japanese";
+  while(py.length||jp.length){const src=turn==="python"?py:jp,other=turn==="python"?jp:py;(src.length?src:other).length&&out.push((src.length?src:other).shift());turn=turn==="python"?"japanese":"python";}
+  return out;
+}
+function reviewPickPrompt(item){
+  const prompts=item.prompts&&item.prompts.length?item.prompts:[{level:0,type:"Active recall",q:"Explain “"+item.topic+"” without looking.",a:item.summary}];
+  const stage=item.stage||0,target=Math.min(4,Math.floor(stage/1.5));
+  const eligible=prompts.filter(function(p){return (p.level||0)<=target;});
+  const ready=eligible.length?eligible:prompts,maxLevel=Math.max.apply(null,ready.map(function(p){return p.level||0;}));
+  const pool=ready.filter(function(p){return (p.level||0)===maxLevel;});
+  return pool[(item.history||[]).length%pool.length];
+}
+function reviewGrade(item,rating){
+  const old=item.stage||0;let stage=old,days=1;
+  if(rating==="forgot"){stage=Math.max(0,old-1);days=1;}
+  else if(rating==="hard"){stage=Math.max(0,old);days=old<2?2:Math.max(2,Math.round((REVIEW_GAPS[Math.min(old,7)]||120)*.55));}
+  else if(rating==="good"){stage=Math.min(7,old+1);days=REVIEW_GAPS[stage]||180;}
+  else {stage=Math.min(7,old+2);days=Math.max(4,Math.round((REVIEW_GAPS[stage]||180)*1.35));}
+  const today=localDateKey(),next=addLocalDays(today,days),entry={at:nowISO(),date:today,rating:rating,fromStage:old,toStage:stage,nextReview:next};
+  item.stage=stage;item.difficulty=rating;item.nextReview=next;item.updatedAt=entry.at;item.history=item.history||[];item.history.push(entry);
+  DB.reviews.sessions.push({id:uid(),at:entry.at,date:today,itemId:item.id,subject:item.subject,rating:rating});
+  save();
+}
+function reviewOpenSource(item){
+  if(item.sourceType==="japanese"){jpPage={mode:"lesson",week:Number(item.sourceId.split(".")[0]),lesson:item.sourceId};switchView("japanese");renderJapanese();}
+  else if(item.sourceType==="python-day"){const p=item.sourceId.split(".").map(Number);courseView={mode:"day",week:p[0],dayIdx:p[1],part:0};switchView("course");renderCourse();}
+  else {activeLessonId=item.sourceId;switchView("lessons");renderLessons();}
+  window.scrollTo(0,0);
+}
+function reviewStart(items){const q=mixedReviews((items&&items.length?items:reviewDueItems(reviewView.subject)).slice());if(!q.length){toast("No reviews are due in this view");return;}reviewView.mode="session";reviewView.queue=q.map(function(x){return x.id;});reviewView.index=0;reviewView.revealed=false;renderReviews();window.scrollTo(0,0);}
+
+function reviewHomeCardHtml(subject){
+  const due=reviewDueItems(subject),over=due.filter(function(x){return reviewStatus(x)==="overdue";}).length;
+  const label=subject?reviewSubjectLabel(subject):"Japanese + Python";
+  return '<div class="review-hero"><div class="review-kicker">🧠 Today’s review · '+label+'</div><h2>'+(due.length?due.length+' review'+(due.length===1?'':'s')+' waiting':'Your memory queue is clear')+'</h2><p>'+(due.length?'Recall first, then reveal the answer. '+(over?'<b>⚠ '+over+' overdue</b>':'You are on schedule.'):'The next review will appear here automatically.')+'</p><button type="button" class="btn" data-view="reviews">'+(due.length?'Start review →':'Open review dashboard')+'</button></div>';
+}
+function reviewOverdueReminderHtml(){const n=reviewDueItems().filter(function(x){return reviewStatus(x)==="overdue";}).length;return n>=5?'<div class="review-reminder">⚠️ You have <b>'+n+' overdue reviews</b>. You can continue learning, but completing a few reviews first will help prevent forgetting. <button type="button" class="btn secondary btn-sm" data-view="reviews">Review now</button></div>':'';}
+function reviewStreak(){
+  const days={};reviewItems().forEach(function(x){days[localDateKey(x.completedAt)]=true;(x.history||[]).forEach(function(h){days[h.date||localDateKey(h.at)]=true;});});
+  let n=0,d=new Date();if(!days[localDateKey(d)])d.setDate(d.getDate()-1);while(days[localDateKey(d)]){n++;d.setDate(d.getDate()-1);}return n;
+}
+function reviewUpcomingRows(){
+  const today=localDateKey(),groups={};reviewItems().filter(function(x){return x.nextReview>today&&(reviewView.subject==="all"||x.subject===reviewView.subject);}).sort(function(a,b){return a.nextReview.localeCompare(b.nextReview);}).slice(0,14).forEach(function(x){(groups[x.nextReview]=groups[x.nextReview]||[]).push(x);});
+  const keys=Object.keys(groups).slice(0,5);if(!keys.length)return '<p class="jp-muted">No upcoming reviews yet.</p>';
+  return keys.map(function(k){return '<h4>'+reviewPrettyDate(k)+(dayDistance(today,k)===1?' · Tomorrow':'')+'</h4>'+groups[k].map(reviewItemRow).join('');}).join('');
+}
+function reviewItemRow(x){const st=reviewStatus(x);return '<div class="review-item"><span class="review-dot '+x.subject+'"></span><div class="review-item-main"><div class="review-item-title">'+escapeHtml(x.topic||x.lessonName)+'</div><div class="review-item-meta">'+reviewSubjectLabel(x.subject)+' · '+escapeHtml(x.lessonName)+' · Memory '+reviewStrength(x)+'%</div><div class="memory-bar"><span style="width:'+reviewStrength(x)+'%"></span></div></div><span class="review-badge '+(st==="overdue"?'overdue':'')+'">'+(st==="due"?'Today':st==="overdue"?'Overdue':st==="mastered"?'Mastered':reviewPrettyDate(x.nextReview))+'</span><button type="button" class="btn secondary btn-sm" data-review-history="'+escapeHtml(x.id)+'">History</button><button type="button" class="btn secondary btn-sm" data-review-one="'+escapeHtml(x.id)+'">Recall</button></div>';}
+function reviewRecentHtml(){
+  const today=localDateKey();const a=reviewItems().slice().sort(function(a,b){return String(b.completedAt).localeCompare(String(a.completedAt));}).filter(function(x){return (reviewView.subject==="all"||x.subject===reviewView.subject)&&dayDistance(localDateKey(x.completedAt),today)<=7;}).slice(0,8);
+  if(!a.length)return '<p class="jp-muted">Complete a lesson and it will appear here.</p>';
+  return a.map(function(x){const n=dayDistance(localDateKey(x.completedAt),today),when=n===0?'Today':n===1?'Yesterday':n+' days ago';return '<div class="review-item"><span class="review-dot '+x.subject+'"></span><div class="review-item-main"><div class="review-item-title">'+escapeHtml(x.topic)+'</div><div class="review-item-meta">'+when+' · '+reviewSubjectLabel(x.subject)+'</div></div><button type="button" class="btn secondary btn-sm" data-review-one="'+escapeHtml(x.id)+'">Quick recall</button></div>';}).join('');
+}
+function reviewCalendarHtml(){const today=localDateKey(),counts={};reviewItems().forEach(function(x){if(x.nextReview>=today&&(reviewView.subject==="all"||x.subject===reviewView.subject))counts[x.nextReview]=(counts[x.nextReview]||0)+1;});let h='';for(let i=0;i<28;i++){const k=addLocalDays(today,i),d=reviewDateFromKey(k);h+='<div class="review-cal-day"><b>'+d.toLocaleDateString(undefined,{weekday:'short'})+' '+d.getDate()+'</b>'+(counts[k]?'<span>🧠 '+counts[k]+'</span>':'<span style="color:var(--text-dim)">—</span>')+'</div>';}return h;}
+function reviewFilteredItems(){return reviewItems().filter(function(x){const st=reviewStatus(x),q=reviewView.search.toLowerCase();return (reviewView.subject==="all"||x.subject===reviewView.subject)&&(reviewView.status==="all"||st===reviewView.status)&&(reviewView.difficulty==="all"||reviewLastRating(x)===reviewView.difficulty)&&(!q||[x.courseName,x.lessonName,x.topic,x.summary].join(' ').toLowerCase().includes(q));}).sort(function(a,b){return a.nextReview.localeCompare(b.nextReview);});}
+function reviewNextLearningHtml(){
+  let py="Python course complete",pyMeta="";try{const n=firstIncompleteDay(),w=weekByNum(n.week),d=n.dayIdx===6?REST_DAY:w[4][n.dayIdx];py=d[0];pyMeta="Week "+n.week+" · Day "+(n.dayIdx+1);}catch(e){}
+  let jp="Japanese roadmap",jpMeta="";try{const n=jpNextLesson();jp=n.title;jpMeta="Week "+n.id.split('.')[0]+" · Day "+n.id.split('.')[1];}catch(e){}
+  return '<div class="review-list"><div class="review-item"><span class="review-dot python"></span><div class="review-item-main"><div class="review-item-title">'+escapeHtml(py)+'</div><div class="review-item-meta">🐍 '+escapeHtml(pyMeta)+'</div></div><button type="button" class="btn secondary btn-sm" data-review-next="python">Learn</button></div><div class="review-item"><span class="review-dot japanese"></span><div class="review-item-main"><div class="review-item-title">'+escapeHtml(jp)+'</div><div class="review-item-meta">🇯🇵 '+escapeHtml(jpMeta)+'</div></div><button type="button" class="btn secondary btn-sm" data-review-next="japanese">Learn</button></div></div>';
+}
+function showReviewHistory(item){
+  const rows=(item.history||[]).slice().reverse().map(function(h){return '<div class="review-item"><div class="review-item-main"><div class="review-item-title">'+reviewPrettyDate(h.date||localDateKey(h.at))+' → '+escapeHtml(h.rating)+'</div><div class="review-item-meta">Stage '+h.fromStage+' → '+h.toStage+' · next '+reviewPrettyDate(h.nextReview)+'</div></div></div>';}).join('');
+  openModal('<h2>'+reviewSubjectLabel(item.subject)+' · '+escapeHtml(item.topic)+'</h2><p><b>Course progress:</b> '+(item.sourceCompleted===false?'Not currently marked complete':'✅ Completed')+'<br><b>Memory strength:</b> '+reviewStrength(item)+'% · '+reviewStrengthLabel(item)+'<br><b>Learned:</b> '+fmtDate(item.completedAt)+'<br><b>Next review:</b> '+reviewPrettyDate(item.nextReview)+'</p><h3>Review history</h3><div class="review-list">'+(rows||'<p class="jp-muted">First review has not been completed yet.</p>')+'</div><div class="modal-actions"><button type="button" class="btn secondary" id="reviewHistoryClose">Close</button><button type="button" class="btn" id="reviewHistoryStart">Quick recall</button></div>');
+  document.getElementById('reviewHistoryClose').onclick=closeModal;document.getElementById('reviewHistoryStart').onclick=function(){closeModal();reviewStart([item]);};
+}
+
+function renderReviewDashboard(){
+  const due=reviewDueItems(reviewView.subject),over=due.filter(function(x){return reviewStatus(x)==="overdue";}).length,py=due.filter(function(x){return x.subject==="python";}).length,jp=due.length-py,all=reviewItems(),filtered=reviewFilteredItems(),today=localDateKey(),learnPy=all.filter(function(x){return x.subject==="python"&&localDateKey(x.completedAt)===today;}).length,learnJp=all.filter(function(x){return x.subject==="japanese"&&localDateKey(x.completedAt)===today;}).length;
+  return '<div class="review-wrap">'+
+    '<div class="review-hero"><div class="review-kicker">LEARN → TEST → SCHEDULE → REVIEW → ADAPT</div><div class="jp-actions" style="margin:8px 0 14px"><button type="button" class="btn '+(reviewView.subject==='all'?'':'secondary')+' btn-sm" data-review-scope="all">🧠 All Reviews</button><button type="button" class="btn '+(reviewView.subject==='japanese'?'':'secondary')+' btn-sm" data-review-scope="japanese">🇯🇵 Japanese</button><button type="button" class="btn '+(reviewView.subject==='python'?'':'secondary')+' btn-sm" data-review-scope="python">🐍 Python</button></div><div class="review-count">'+due.length+' <small>due today</small></div><h2>'+(due.length?'Review Time!':'You are caught up')+'</h2><p>'+(due.length?'You learned these topics before. Recall them before they disappear from memory.':'Future reviews are scheduled automatically when you complete lessons.')+'</p><button type="button" class="btn" data-review-start="1" '+(!due.length?'disabled':'')+'>START REVIEW</button></div>'+
+    '<div class="review-stats"><div class="review-stat"><b>'+learnPy+' / '+learnJp+'</b><span>Python / Japanese learned today</span></div><div class="review-stat"><b style="color:var(--danger)">'+over+'</b><span>Overdue</span></div><div class="review-stat"><b>'+py+' / '+jp+'</b><span>Python / Japanese due</span></div><div class="review-stat"><b>'+reviewStreak()+'</b><span>Learning streak · days</span></div><div class="review-stat"><b>'+reviewMemory('python')+'% / '+reviewMemory('japanese')+'%</b><span>Python / Japanese memory</span></div></div>'+
+    '<div class="review-grid"><section class="review-panel"><h3>🔴 Due now</h3><div class="review-list">'+(due.length?mixedReviews(due).slice(0,10).map(reviewItemRow).join(''):'<p class="jp-muted">Nothing due today.</p>')+'</div></section><section class="review-panel"><h3>⏰ Upcoming reviews</h3>'+reviewUpcomingRows()+'</section><section class="review-panel"><h3>🔙 Recently learned</h3><div class="review-list">'+reviewRecentHtml()+'</div></section><section class="review-panel"><h3>🎯 What to learn next</h3>'+reviewNextLearningHtml()+'</section><section class="review-panel"><h3>📅 Next 28 days</h3><div class="review-calendar">'+reviewCalendarHtml()+'</div></section></div>'+
+    '<section class="review-panel" style="margin-top:14px"><h3>Search all '+all.length+' saved lessons</h3><div class="review-filters"><input id="reviewSearch" placeholder="Search lesson, topic, summary…" value="'+escapeHtml(reviewView.search)+'"><select id="reviewSubject"><option value="all">All subjects</option><option value="japanese" '+(reviewView.subject==='japanese'?'selected':'')+'>Japanese</option><option value="python" '+(reviewView.subject==='python'?'selected':'')+'>Python</option></select><select id="reviewStatus"><option value="all">All statuses</option><option value="due" '+(reviewView.status==='due'?'selected':'')+'>Due today</option><option value="overdue" '+(reviewView.status==='overdue'?'selected':'')+'>Overdue</option><option value="upcoming" '+(reviewView.status==='upcoming'?'selected':'')+'>Upcoming</option><option value="mastered" '+(reviewView.status==='mastered'?'selected':'')+'>Mastered</option></select><select id="reviewDifficulty"><option value="all">All difficulty</option><option value="forgot" '+(reviewView.difficulty==='forgot'?'selected':'')+'>Forgot</option><option value="hard" '+(reviewView.difficulty==='hard'?'selected':'')+'>Hard</option><option value="good" '+(reviewView.difficulty==='good'?'selected':'')+'>Good</option><option value="easy" '+(reviewView.difficulty==='easy'?'selected':'')+'>Easy</option></select></div><div class="review-list" id="reviewSearchResults">'+(filtered.length?filtered.slice(0,50).map(reviewItemRow).join(''):'<p class="jp-muted">No matching review topics.</p>')+'</div></section></div>';
+}
+function renderReviewSession(){
+  const id=reviewView.queue[reviewView.index],item=DB.reviews.items[id];if(!item){reviewView.mode="dashboard";return renderReviewDashboard();}
+  const p=reviewPickPrompt(item),total=reviewView.queue.length,n=reviewView.index+1;
+  return '<div class="review-wrap review-session"><button type="button" class="back-link" data-review-exit="1">← Review dashboard</button><div class="recall-card"><div class="recall-progress">'+n+' of '+total+' · '+reviewSubjectLabel(item.subject)+' · '+escapeHtml(item.lessonName)+'</div><span class="recall-type">'+escapeHtml(p.type)+'</span><div class="recall-q">'+escapeHtml(p.q)+'</div>'+(reviewView.revealed?'<div class="recall-answer"><b>Correct answer / model</b><br>'+escapeHtml(p.a).replace(/\n/g,'<br>')+'</div><h3>How well did you remember this?</h3><div class="recall-grade"><button type="button" data-grade="forgot">🟥 Forgot</button><button type="button" data-grade="hard">🟨 Hard</button><button type="button" data-grade="good">🟩 Good</button><button type="button" data-grade="easy">🟦 Easy</button></div>':'<p class="jp-muted">Answer aloud, on paper, or in your editor before revealing.</p><button type="button" class="btn" data-review-reveal="1">Show answer</button>')+'<div class="jp-actions" style="margin-top:18px"><button type="button" class="btn secondary btn-sm" data-review-source="'+escapeHtml(item.id)+'">Open original lesson</button></div></div></div>';
+}
+function renderReviews(){
+  const body=document.getElementById("reviewsBody");if(!body)return;
+  body.innerHTML=reviewView.mode==="session"?renderReviewSession():renderReviewDashboard();
+  if(reviewEventsBound)return;reviewEventsBound=true;
+  body.addEventListener("click",function(ev){const b=ev.target.closest("button");if(!b)return;
+    if(b.dataset.reviewStart){reviewStart();return;}
+    if(b.dataset.reviewScope){reviewView.subject=b.dataset.reviewScope;reviewView.status="all";reviewView.difficulty="all";renderReviews();return;}
+    if(b.dataset.reviewOne){const item=DB.reviews.items[b.dataset.reviewOne];if(item)reviewStart([item]);return;}
+    if(b.dataset.reviewHistory){const item=DB.reviews.items[b.dataset.reviewHistory];if(item)showReviewHistory(item);return;}
+    if(b.dataset.reviewReveal){reviewView.revealed=true;renderReviews();return;}
+    if(b.dataset.grade){const item=DB.reviews.items[reviewView.queue[reviewView.index]];reviewGrade(item,b.dataset.grade);reviewView.index++;reviewView.revealed=false;if(reviewView.index>=reviewView.queue.length){reviewView.mode="dashboard";toast("Review session complete");}renderReviews();return;}
+    if(b.dataset.reviewExit){reviewView.mode="dashboard";renderReviews();return;}
+    if(b.dataset.reviewSource){const item=DB.reviews.items[b.dataset.reviewSource];if(item)reviewOpenSource(item);}
+    if(b.dataset.reviewNext==="python"){const n=firstIncompleteDay();courseView={mode:"day",week:n.week,dayIdx:n.dayIdx,part:0};switchView("course");renderCourse();window.scrollTo(0,0);}
+    if(b.dataset.reviewNext==="japanese"){const n=jpNextLesson();jpPage={mode:"lesson",week:Number(n.id.split('.')[0]),lesson:n.id};switchView("japanese");renderJapanese();window.scrollTo(0,0);}
+  });
+  body.addEventListener("input",function(ev){if(ev.target.id==="reviewSearch"){reviewView.search=ev.target.value;const box=document.getElementById("reviewSearchResults"),a=reviewFilteredItems();if(box)box.innerHTML=a.length?a.slice(0,50).map(reviewItemRow).join(''):'<p class="jp-muted">No matching review topics.</p>';}});
+  body.addEventListener("change",function(ev){if(ev.target.id==="reviewSubject")reviewView.subject=ev.target.value;else if(ev.target.id==="reviewStatus")reviewView.status=ev.target.value;else if(ev.target.id==="reviewDifficulty")reviewView.difficulty=ev.target.value;else return;renderReviews();});
+}
+function showReviewNotice(){
+  const due=reviewDueItems(),today=localDateKey();if(!due.length||sessionStorage.getItem("studyHubReviewNotice")===today)return;sessionStorage.setItem("studyHubReviewNotice",today);
+  const over=due.filter(function(x){return reviewStatus(x)==="overdue";}).length;
+  openModal('<h2>🧠 Review Time!</h2><p>You learned these topics before. Let’s recall them before they disappear from memory.</p><div class="review-count">'+due.length+' <small>reviews today</small></div>'+(over?'<p style="color:var(--danger)"><b>⚠️ '+over+' overdue reviews</b></p>':'')+'<div class="modal-actions"><button type="button" class="btn secondary" id="reviewLater">Later</button><button type="button" class="btn" id="reviewNow">START REVIEW</button></div>');
+  document.getElementById("reviewLater").onclick=closeModal;document.getElementById("reviewNow").onclick=function(){closeModal();reviewStart(due);switchView("reviews");};
 }
 
 /* ================= TYPING (touch-typing trainer) =================
@@ -5913,8 +6196,14 @@ function dayKey(weekNum, dayIdx){ return weekNum + "." + dayIdx; }
 function isDone(weekNum, dayIdx){ return !!DB.course.done[dayKey(weekNum, dayIdx)]; }
 function toggleDone(weekNum, dayIdx){
   const k = dayKey(weekNum, dayIdx);
-  if(DB.course.done[k]) delete DB.course.done[k];
-  else DB.course.done[k] = nowISO();
+  if(DB.course.done[k]){
+    delete DB.course.done[k];
+    reviewMarkSourceIncomplete(reviewId("python","day",k));
+  }
+  else {
+    DB.course.done[k] = nowISO();
+    reviewEnrollPythonDay(weekNum, dayIdx, DB.course.done[k]);
+  }
   save();
 }
 function weekDoneCount(weekNum){
@@ -6016,6 +6305,7 @@ function renderCourseOverview(){
   const phase = phaseForWeek(curWeek);
 
   el.innerHTML = `
+    ${reviewHomeCardHtml()}
     <div class="course-hero">
       <div class="ch-label">Your progress</div>
       <div class="ch-big"><b>${done}</b> <span>/ 364 lessons complete</span></div>
@@ -12390,8 +12680,14 @@ function togglePartDone(w, d, i){
   let all = parts.length > 0;
   for(let n = 0; n < parts.length; n++) if(!isPartDone(w, d, n)) all = false;
   const dk = dayKey(w, d);
-  if(all && !DB.course.done[dk]) DB.course.done[dk] = nowISO();
-  if(!all && DB.course.done[dk]) delete DB.course.done[dk];
+  if(all && !DB.course.done[dk]){
+    DB.course.done[dk] = nowISO();
+    reviewEnrollPythonDay(w, d, DB.course.done[dk]);
+  }
+  if(!all && DB.course.done[dk]){
+    delete DB.course.done[dk];
+    reviewMarkSourceIncomplete(reviewId("python","day",dk));
+  }
   save();
 }
 
@@ -12726,6 +13022,7 @@ function renderCourseDay(){
 
   el.innerHTML = `
     <button type="button" class="back-link" id="backWeek">← Week ${wn}</button>
+    ${reviewOverdueReminderHtml()}
     <div class="day-header">
       <div class="dh-eyebrow">Week ${wn} · ${DAY_NAMES[di]} · ${date.toLocaleDateString(undefined,{weekday:"long", month:"long", day:"numeric"})}</div>
       <h2>${escapeHtml(day[0])}</h2>
@@ -14326,8 +14623,14 @@ let activeLessonId = null;
    (DB.course.done), because one Lessons entry covers a whole week of days. */
 function lessonDone(id){ return !!DB.lessonsDone[id]; }
 function toggleLessonDone(id){
-  if(DB.lessonsDone[id]) delete DB.lessonsDone[id];
-  else DB.lessonsDone[id] = nowISO();
+  if(DB.lessonsDone[id]){
+    delete DB.lessonsDone[id];
+    reviewMarkSourceIncomplete(reviewId("python","lesson",id));
+  }
+  else {
+    DB.lessonsDone[id] = nowISO();
+    reviewEnrollPythonLesson(id, DB.lessonsDone[id]);
+  }
   save();
 }
 
@@ -14673,6 +14976,7 @@ function renderLessonDetail(){
      challenge -> quiz -> mark complete -> previous/next. */
   el.innerHTML = `
     <button type="button" class="back-link" id="backLessons">← All lessons</button>
+    ${reviewOverdueReminderHtml()}
     <div class="lesson-header">
       <div class="lh-eyebrow">${escapeHtml(L.level)} · ${L.minutes} min · Week ${L.week}</div>
       <h2>${escapeHtml(L.title)}</h2>
@@ -16095,7 +16399,7 @@ if(transferBtnEl) transferBtnEl.addEventListener("click", openTransfer);
    transfer, cloud pull) so no stale view is left on screen. */
 function renderEverything(){
   [renderCourse, renderLessons, renderJournal, renderWisdom, renderNotesList,
-   renderNoteDetail, renderLiked, renderJapanese, renderTimer, renderDecks, renderTodos, renderQuizList,
+   renderNoteDetail, renderLiked, renderJapanese, renderReviews, renderTimer, renderDecks, renderTodos, renderQuizList,
    renderQuizDetail, renderSideStats].forEach(function(fn){
     try{ fn(); }catch(e){ console.error("re-render failed", e); }
   });
@@ -16114,6 +16418,7 @@ function boot(){
 
   step("seed", function(){ if(seedPythonCourse()) save(); });
   step("extras", function(){ if(seedDictExtras()) save(); });
+  step("review migration", function(){ if(migrateCompletedToReviews()) save(); });
   step("course start", courseStart);
   step("course", renderCourse);
   step("lessons", renderLessons);
@@ -16121,6 +16426,7 @@ function boot(){
   step("wisdom", renderWisdom);
   step("liked", renderLiked);
   step("japanese", renderJapanese);
+  step("reviews", renderReviews);
   step("notes", renderNotesList);
   step("note detail", renderNoteDetail);
   step("timer", renderTimer);
@@ -16130,6 +16436,7 @@ function boot(){
   step("quiz detail", renderQuizDetail);
   step("stats", renderSideStats);
   step("backup reminder", showBackupReminder);
+  step("review reminder", showReviewNotice);
 
   window.__studyHubBooted = true;
 
