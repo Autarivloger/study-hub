@@ -1193,7 +1193,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
   <button type="button" id="backBtn" class="icon-btn" title="Back">←</button>
   <div class="brand"><span class="dot"></span><span id="brandTitle">Study Hub</span></div>
   <button type="button" class="icon-btn" id="typingHeadBtn" data-view="typing" title="Typing practice">⌨️</button>
-  <button type="button" class="icon-btn" id="searchBtn" title="Search all lessons (press /)">🔍</button>
+  <button type="button" class="icon-btn" id="searchBtn" title="Search Python and Japanese (press /)">🔍</button>
   <button type="button" class="icon-btn" id="syncBtn" title="Sync across devices">☁</button>
   <button type="button" class="icon-btn" id="exportBtn" title="Export backup">⇩</button>
   <button type="button" class="icon-btn" id="importBtn" title="Import backup">⇧</button>
@@ -3256,6 +3256,7 @@ function jpRenderHome(){
     '<p class="jp-muted">You already know some N5, so the first two weeks repair the basics through a short diagnostic bridge. Move on when the reading and speaking tasks feel comfortable. Weeks 3–12 build N4, weeks 13–28 build N3, and the last eight weeks are for timed practice and real use.</p>' +
     jpProgressBar(jpDoneCount(), JP_LESSONS.filter(function(l){return !l.optional;}).length) +
     '<div class="jp-actions"><button type="button" class="btn" data-jp-lesson="' + next.id + '">Continue: ' + escapeHtml(jpLessonDisplayTitle(next)) + ' →</button>' +
+    '<button type="button" class="btn secondary" data-jp-search="1">🔎 Search Japanese</button>' +
     '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div></div>' +
     '<div class="jp-panel"><h3>From your previous Japanese notes · advanced preview</h3>' +
     '<p class="jp-muted">Day 16 and Day 17 are available as optional reference. They do not mean you have completed N4. Keep following the Continue path first; return here when the N4 bridge feels secure.</p>' +
@@ -3278,7 +3279,7 @@ function jpRenderHome(){
 }
 function jpRenderWeek(week){
   const item = JP_WEEKS[week-1], lessons = jpWeekLessons(week);
-  let html = '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-home="1">← All 36 weeks</button></div>' +
+  let html = '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-home="1">← All 36 weeks</button><button type="button" class="btn secondary" data-jp-search="1">🔎 Search Japanese</button></div>' +
     '<div class="jp-hero"><span class="jp-kicker">Month ' + jpMonth(week) + ' · Week ' + week + ' · ' + escapeHtml(item[1]) + '</span>' +
     '<h2>' + escapeHtml(item[2]) + '</h2>' +
     '<p class="jp-muted"><b>Reading:</b> ' + escapeHtml(item[3]) + '<br><b>Speaking:</b> ' + escapeHtml(item[4]) + '</p>' +
@@ -3308,6 +3309,7 @@ function jpRenderLesson(id){
   const studyPrefix=(lesson.teRules || lesson.studyNav) ? 'jp-day' + id.split('.')[1] + '-' : '';
   let html = reviewOverdueReminderHtml() + '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-week="' + week + '">← Week ' + week + '</button>' +
     '<button type="button" class="btn secondary" data-jp-home="1">All weeks</button>' +
+    '<button type="button" class="btn secondary" data-jp-search="1">🔎 Search Japanese</button>' +
     '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div>' +
     '<div class="jp-hero"><span class="jp-kicker">Week ' + week + ' · ' + (lesson.sourceDay ? 'Source Day ' + lesson.sourceDay + ' · optional preview' : 'Day ' + id.split(".")[1]) + '</span>' +
     '<h2>' + escapeHtml(jpLessonDisplayTitle(lesson)) + '</h2><p class="jp-muted"><b>Goal:</b> ' + escapeHtml(lesson.goal) + '</p>' +
@@ -3454,6 +3456,10 @@ function renderJapanese(){
       if(el.dataset.jpJump){
         const target=body.querySelector('#' + el.dataset.jpJump);
         if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
+        return;
+      }
+      if(el.dataset.jpSearch){
+        openSearch("japanese");
         return;
       }
       const previousY=window.scrollY;
@@ -15831,11 +15837,11 @@ function buildSearchIndex(){
       if(!SEARCHABLE[sec.t]) return;
       const text = sectionText(sec);
       if(!text) return;
-      idx.push({ kind:"lesson", label:"Lesson \u00b7 " + L.title,
+      idx.push({ kind:"lesson", subject:"python", label:"Lesson \u00b7 " + L.title,
                  title:heading, text:text, lessonId:L.id });
     });
     // the lesson itself, so its title/subtitle are findable
-    idx.push({ kind:"lesson", label:"Lesson", title:L.title,
+    idx.push({ kind:"lesson", subject:"python", label:"Lesson", title:L.title,
                text:L.subtitle + " " + L.title, lessonId:L.id });
   });
 
@@ -15849,14 +15855,38 @@ function buildSearchIndex(){
       if(!SEARCHABLE[sec.t]) return;
       const text = sectionText(sec);
       if(!text) return;
-      idx.push({ kind:"day", label:"Week " + wn + " \u00b7 Day " + (di+1) + " \u00b7 " + dayTitle,
+      idx.push({ kind:"day", subject:"python", label:"Week " + wn + " \u00b7 Day " + (di+1) + " \u00b7 " + dayTitle,
                  title:heading, text:text, week:wn, dayIdx:di });
     });
   });
 
   ALL_WEEKS.forEach(w=>{
-    idx.push({ kind:"week", label:"Course \u00b7 Week " + w[0],
+    idx.push({ kind:"week", subject:"python", label:"Course \u00b7 Week " + w[0],
                title:w[2], text:w[2] + " " + (w[3] || ""), week:w[0] });
+  });
+
+  /* Japanese is indexed from the same lesson objects used by the renderer,
+     so new weeks become searchable automatically without a second content
+     list. Keep useful sections separate so the result explains what matched. */
+  JP_LESSONS.forEach(function(L){
+    const week=Number(L.id.split(".")[0]), day=L.id.split(".")[1];
+    const label="Japanese · Week " + week + " · Day " + day;
+    function add(title, values){
+      const text=(values || []).flat(Infinity).filter(function(v){return typeof v==="string";}).join(" ");
+      if(text) idx.push({kind:"japanese",subject:"japanese",label:label,title:title,text:text,lessonId:L.id});
+    }
+    add(L.title,[L.title,L.goal,L.explain,L.syntax,L.compare]);
+    (L.vocab || []).forEach(function(v){add("Word · " + v[0],v);});
+    (L.kanji || []).forEach(function(k){add("Kanji · " + k[0],k);});
+    add("Build the forms",L.formGuide);
+    (L.grammar || []).forEach(function(g){add("Grammar · " + g[0],g);});
+    add("Examples",L.examples);
+    add("Conversation",L.dialogue);
+    add("Reading",[L.reading,L.readingHelp,L.readingQuestions]);
+    add("Speaking",[L.speak,L.model]);
+    add("Practice",L.practice);
+    add("Summary",[L.summary,L.enrich]);
+    add("Quiz",L.quiz);
   });
 
   return idx;
@@ -15876,9 +15906,9 @@ function snippetFor(text, q){
     + (at + q.length + 75 < flat.length ? "\u2026" : "");
 }
 
-function searchAll(query){
+function searchAll(query, scope){
   const q = query.trim().toLowerCase();
-  if(q.length < 2) return [];
+  if(q.length < 1) return [];
   if(!searchIndex) searchIndex = buildSearchIndex();
 
   /* One heading owns many sections, so several entries can share a
@@ -15888,6 +15918,7 @@ function searchAll(query){
   const byPlace = new Map();
   for(let i = 0; i < searchIndex.length; i++){
     const e = searchIndex[i];
+    if(scope && scope!=="all" && e.subject!==scope) continue;
     const inTitle = e.title.toLowerCase().indexOf(q) !== -1;
     const inText  = e.text.toLowerCase().indexOf(q) !== -1;
     if(!inTitle && !inText) continue;
@@ -15909,7 +15940,12 @@ function searchAll(query){
 function gotoSearchHit(e){
   closeModal();
   window.scrollTo(0,0);
-  if(e.kind === "lesson"){
+  if(e.kind === "japanese"){
+    jpPage={mode:"lesson",week:Number(e.lessonId.split(".")[0]),lesson:e.lessonId};
+    jpQuizFeedback=null;
+    switchView("japanese");
+    renderJapanese();
+  }else if(e.kind === "lesson"){
     practiceState = null;
     activeLessonId = e.lessonId;
     switchView("lessons");
@@ -15923,15 +15959,15 @@ function gotoSearchHit(e){
   }
 }
 
-function renderSearchResults(query){
+function renderSearchResults(query, scope){
   const list = document.getElementById("searchResults");
   if(!list) return;
   const q = query.trim();
-  if(q.length < 2){
-    list.innerHTML = '<div class="sr-empty">Type at least two characters.</div>';
+  if(q.length < 1){
+    list.innerHTML = '<div class="sr-empty">Type a word, letter, or sentence.</div>';
     return;
   }
-  const hits = searchAll(q);
+  const hits = searchAll(q, scope);
   if(!hits.length){
     list.innerHTML = '<div class="sr-empty">Nothing found for \u201c' + escapeHtml(q) + '\u201d.</div>';
     return;
@@ -15948,19 +15984,21 @@ function renderSearchResults(query){
   });
 }
 
-function openSearch(){
+function openSearch(scope){
+  scope=scope || "all";
+  const japaneseOnly=scope==="japanese";
   openModal(
-    '<h2>Search the course</h2>'
-    + '<input type="search" id="searchInput" placeholder="Try: dictionary, zip, IndexError, f-string" '
+    '<h2>' + (japaneseOnly ? 'Search Japanese' : 'Search Study Hub') + '</h2>'
+    + '<input type="search" id="searchInput" placeholder="' + (japaneseOnly ? 'Try: 財布, てしまう, हराउनु, transitive' : 'Try: dictionary, 財布, IndexError, て-form') + '" '
     + 'autocomplete="off" autocorrect="off" spellcheck="false">'
-    + '<div class="sr-hint">Searches every lesson and every written course day \u2014 including code and output.</div>'
+    + '<div class="sr-hint">' + (japaneseOnly ? 'Searches Japanese words, readings, kanji, grammar, examples, conversations and full sentences.' : 'Searches Python and Japanese lessons, including code, words, kanji and sentences.') + '</div>'
     + '<div class="sr-list" id="searchResults"></div>', true);
 
   const input = document.getElementById("searchInput");
   let t;
   input.addEventListener("input", function(){
     clearTimeout(t);
-    t = setTimeout(function(){ renderSearchResults(input.value); }, 120);
+    t = setTimeout(function(){ renderSearchResults(input.value, scope); }, 120);
   });
   input.addEventListener("keydown", function(ev){
     if(ev.key === "Escape") closeModal();
@@ -15969,13 +16007,13 @@ function openSearch(){
       if(first) first.click();
     }
   });
-  renderSearchResults("");
+  renderSearchResults("", scope);
   // Phones open the keyboard on focus, which is what we want here.
   setTimeout(function(){ try{ input.focus(); }catch(e){} }, 30);
 }
 
 var searchBtnEl = document.getElementById("searchBtn");
-if(searchBtnEl) searchBtnEl.addEventListener("click", openSearch);
+if(searchBtnEl) searchBtnEl.addEventListener("click", function(){openSearch("all");});
 
 /* "/" opens search, the way it does in developer docs — but never while the
    user is typing into a field. */
@@ -15984,7 +16022,7 @@ document.addEventListener("keydown", function(ev){
   var a = document.activeElement;
   if(a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.isContentEditable)) return;
   ev.preventDefault();
-  openSearch();
+  openSearch("all");
 });
 
 /* ================= CLOUD SYNC (private GitHub Gist) =================

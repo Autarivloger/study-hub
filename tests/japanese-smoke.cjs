@@ -66,6 +66,23 @@ async function main(){
   }
   await evalJs("document.querySelector('#sidebar [data-view=japanese]').click()");
   assert(await evalJs("document.querySelector('#view-japanese').classList.contains('active')"),"Japanese view did not open");
+  assert(await evalJs("!!document.querySelector('[data-jp-search]')"),"Japanese search button is missing");
+  await evalJs("document.querySelector('[data-jp-search]').click();document.querySelector('#searchInput').value='開';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
+  await sleep(220);
+  assert(await evalJs("document.querySelectorAll('#searchResults .sr-item').length>0 && [...document.querySelectorAll('#searchResults .sr-kind')].every(x=>x.textContent.includes('Japanese'))"),"Japanese single-character search failed or leaked Python results");
+  await evalJs("document.querySelector('#searchInput').value='銀色の水筒';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
+  await sleep(220);
+  assert(await evalJs("document.querySelectorAll('#searchResults .sr-item').length>0 && document.querySelector('#searchResults').textContent.includes('Week 9')"),"Japanese sentence search did not find Week 9");
+  await evalJs("document.querySelector('#searchResults .sr-item').click()");
+  assert(await evalJs("document.querySelector('#view-japanese').classList.contains('active') && document.querySelector('.jp-hero h2').textContent==='Day 7' && document.body.textContent.includes('銀色の水筒')"),"Japanese search result did not open its lesson");
+  await evalJs("document.querySelector('[data-jp-home]').click()");
+  await evalJs("document.querySelector('#searchBtn').click();document.querySelector('#searchInput').value='dictionary';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
+  await sleep(220);
+  assert(await evalJs("[...document.querySelectorAll('#searchResults .sr-kind')].some(x=>!x.textContent.includes('Japanese'))"),"Global search stopped finding Python content");
+  await evalJs("document.querySelector('#searchInput').value='財布';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
+  await sleep(220);
+  assert(await evalJs("[...document.querySelectorAll('#searchResults .sr-kind')].some(x=>x.textContent.includes('Japanese'))"),"Global search does not include Japanese content");
+  await evalJs("document.querySelector('#modalOverlay').click()");
   assert(await evalJs("document.querySelectorAll('.jp-week-card').length === 36"),"Roadmap is incomplete");
   assert(await evalJs("document.querySelector('.jp-hero [data-jp-lesson=\"1.1\"]') !== null && document.querySelector('.jp-progress').getAttribute('aria-valuenow') === '0'"),"Old kana completion falsely completed new Day 1");
   if(process.env.JP_SHOTS){
@@ -282,6 +299,14 @@ async function main(){
   await evalJs("document.querySelector('#tabnav [data-view=japanese]').click()");
   assert(await evalJs("document.querySelector('#view-japanese').classList.contains('active')"),"Mobile Japanese navigation failed");
   assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1"),"Mobile layout overflows horizontally");
+  await evalJs("document.querySelector('[data-jp-search]').click();document.querySelector('#searchInput').value='てある';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
+  await sleep(220);
+  assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1 && document.querySelector('#modalBox').getBoundingClientRect().right<=window.innerWidth && document.querySelectorAll('#searchResults .sr-item').length>0"),"Japanese search modal overflows or has no mobile results");
+  if(process.env.JP_SHOTS){
+    const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
+    fs.writeFileSync(path.join(os.tmpdir(),"studyhub-japanese-search-mobile.png"),Buffer.from(shot.data,"base64"));
+  }
+  await evalJs("document.querySelector('#modalOverlay').click()");
   await evalJs("document.querySelector('[data-jp-week=\"1\"]').click();document.querySelector('[data-jp-lesson=\"1.1\"]').click()");
   assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1"),"Mobile lesson overflows horizontally");
   await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"1.2\"]').click()");
@@ -456,7 +481,7 @@ async function main(){
   assert(await evalJs("JSON.parse(localStorage.studyHubSync).gistId === '0123456789abcdef0123456789abcdef'"),"Forget erased Gist ID");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1']"),"Forget erased writing");
   assert(errors.length===0,"JavaScript errors: "+errors.join("; "));
-  console.log("PASS: Japanese Weeks 1–9, On/Kun readings, short titles, 20-word Week 2–9 days, progress, mobile, dark mode, backup, mock Gist sync, no JS exceptions");
+  console.log("PASS: Japanese Weeks 1–9, full-content search, On/Kun readings, short titles, 20-word Week 2–9 days, progress, mobile, dark mode, backup, mock Gist sync, no JS exceptions");
   ws.close();
 }
 main().catch(err=>{console.error(err);process.exitCode=1;}).finally(()=>{browser.kill();});
