@@ -258,9 +258,9 @@ async function main(){
     const expectedQuiz=day===7?10:6;
     assert(await evalJs("document.querySelector('.jp-hero h2').textContent==='Day "+day+"' && document.querySelectorAll('.jp-vocab')[0].children.length===20 && document.querySelectorAll('.jp-vocab')[1].children.length===5 && document.querySelectorAll('.jp-q').length==="+expectedQuiz+" && document.body.textContent.includes('On:') && document.body.textContent.includes('Kun:')"),"Week 10 Day "+day+" content, words, kanji or quiz missing");
     if(day===1){
-      assert(await evalJs("!!document.querySelector('[data-jp-furigana]') && document.querySelectorAll('ruby').length===0"),"Furigana button missing or started unexpectedly");
-      await evalJs("document.querySelector('[data-jp-furigana]').click()");
-      assert(await evalJs("localStorage.studyHubJapaneseFurigana==='1' && document.querySelector('[data-jp-furigana]').getAttribute('aria-pressed')==='true' && document.querySelectorAll('ruby rt').length>5"),"Furigana did not render or save");
+      assert(await evalJs("!!document.querySelector('[data-jp-furigana]') && getComputedStyle(document.querySelector('[data-jp-furigana]')).position==='fixed' && document.querySelectorAll('ruby').length===0"),"Floating Furigana button missing or started unexpectedly");
+      await evalJs("document.scrollingElement.scrollTop=Math.min(1400,document.scrollingElement.scrollHeight-window.innerHeight);window.__furiganaY=document.scrollingElement.scrollTop;document.querySelector('[data-jp-furigana]').click()");
+      assert(await evalJs("localStorage.studyHubJapaneseFurigana==='1' && document.querySelector('[data-jp-furigana]').getAttribute('aria-pressed')==='true' && document.querySelectorAll('ruby rt').length>5 && window.__furiganaY>500 && Math.abs(document.scrollingElement.scrollTop-window.__furiganaY)<10 && document.querySelector('[data-jp-furigana]').getBoundingClientRect().top>=55"),"Floating Furigana did not render, save, or preserve reading position");
     }
     await evalJs("Array.from({length:"+expectedQuiz+"},(_,j)=>document.querySelector('input[name=jpq'+j+'][value=\"0\"]')).forEach(x=>x.click());document.querySelector('[data-jp-quiz]').click()");
     assert(await evalJs("document.querySelector('.jp-result').textContent.includes('"+expectedQuiz+" / "+expectedQuiz+" correct')"),"Week 10 Day "+day+" quiz failed");
@@ -356,6 +356,8 @@ async function main(){
   for(const n of [1,2,3,4,5,6,7]){
     assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1 && document.querySelectorAll('.jp-vocab')[0].children.length===20 && document.querySelectorAll('.jp-vocab')[1].children.length===5 && document.body.textContent.includes('On:') && document.body.textContent.includes('Kun:')"),"Mobile Week 6 Day "+n+" overflow, reading or study count failure");
     if(process.env.JP_SHOTS && n===1){
+      await evalJs("(()=>{const r=document.querySelector('.jp-reading').getBoundingClientRect();window.scrollTo(0,Math.max(0,window.scrollY+r.top-190));})() ");
+      assert(await evalJs("document.querySelector('[data-jp-furigana]').getBoundingClientRect().top>=120 && document.querySelector('[data-jp-furigana]').getBoundingClientRect().bottom<window.innerHeight"),"Mobile floating Furigana control is not visible while reading");
       const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
       fs.writeFileSync(path.join(os.tmpdir(),"studyhub-japanese-week6-mobile.png"),Buffer.from(shot.data,"base64"));
     }

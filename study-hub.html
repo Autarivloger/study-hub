@@ -1169,6 +1169,8 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .jp-study-item b{font-size:18px}
 .jp-hard-btn{margin-top:8px;padding:5px 9px;background:var(--bg-elev);color:var(--text);border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:12px;font-weight:700}
 .jp-hard-btn:hover,.jp-hard-btn.is-hard{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.jp-furigana-float{position:fixed;top:66px;right:18px;z-index:38;box-shadow:0 8px 24px rgba(0,0,0,.22);background:color-mix(in srgb,var(--bg-elev) 92%,transparent);backdrop-filter:blur(8px)}
+.jp-furigana-float[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 .jp-rule-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:14px}
 .jp-rule-card{background:var(--bg-soft);border:1px solid var(--border);border-radius:9px;padding:12px;min-width:0;overflow-wrap:anywhere}
 .jp-rule-card h4{margin:0 0 9px}
@@ -1182,6 +1184,7 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
   .jp-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .jp-week-card{min-height:130px;padding:12px}
   .jp-panel{padding:15px}
+  .jp-furigana-float{top:136px;right:12px;padding:8px 11px;font-size:12px}
 }
 @media(max-width:380px){.jp-grid{grid-template-columns:1fr 1fr}}
 </style>
@@ -3345,7 +3348,7 @@ function jpRenderLesson(id){
   let html = reviewOverdueReminderHtml() + '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-week="' + week + '">← Week ' + week + '</button>' +
     '<button type="button" class="btn secondary" data-jp-home="1">All weeks</button>' +
     '<button type="button" class="btn secondary" data-jp-search="1">🔎 Search Japanese</button>' +
-    '<button type="button" class="btn secondary" data-jp-furigana="1" aria-pressed="' + jpFuriganaOn + '">あ Furigana ' + (jpFuriganaOn?'ON':'OFF') + '</button>' +
+    '<button type="button" class="btn secondary jp-furigana-float" data-jp-furigana="1" aria-pressed="' + jpFuriganaOn + '" title="Show or hide readings without losing your place">あ Furigana ' + (jpFuriganaOn?'ON':'OFF') + '</button>' +
     '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div>' +
     '<div class="jp-hero"><span class="jp-kicker">Week ' + week + ' · ' + (lesson.sourceDay ? 'Source Day ' + lesson.sourceDay + ' · optional preview' : 'Day ' + id.split(".")[1]) + '</span>' +
     '<h2>' + escapeHtml(jpLessonDisplayTitle(lesson)) + '</h2><p class="jp-muted"><b>Goal:</b> ' + escapeHtml(lesson.goal) + '</p>' +
