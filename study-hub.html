@@ -1167,6 +1167,12 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .jp-vocab small{display:block;color:var(--text-dim)}
 .jp-study-item{overflow-wrap:anywhere}
 .jp-study-item b{font-size:18px}
+.jp-study-reveal{margin:6px 0 2px}
+.jp-study-reveal summary{cursor:pointer;color:var(--accent);font-size:12px;font-weight:750;list-style:none}
+.jp-study-reveal summary::-webkit-details-marker{display:none}
+.jp-study-reveal summary::before{content:"＋ ";font-weight:900}
+.jp-study-reveal[open] summary::before{content:"− "}
+.jp-study-reveal small{margin-top:5px;line-height:1.5}
 .jp-hard-btn{margin-top:8px;padding:5px 9px;background:var(--bg-elev);color:var(--text);border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:12px;font-weight:700}
 .jp-hard-btn:hover,.jp-hard-btn.is-hard{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 .jp-furigana-float{position:fixed;top:66px;right:18px;z-index:38;box-shadow:0 8px 24px rgba(0,0,0,.22);background:color-mix(in srgb,var(--bg-elev) 92%,transparent);backdrop-filter:blur(8px)}
@@ -3223,8 +3229,9 @@ function jpHardItems(){
 function jpStudyItemHtml(type, item){
   const word=item[0], saved=DB.japanese.checks[jpHardKey(type,word)];
   const marked=!!(saved && saved.hard);
-  return '<div class="jp-study-item"><b lang="ja">' + escapeHtml(word) + '</b><small>' + escapeHtml(item[1]) + ' · ' + escapeHtml(item[2]) +
-    '</small><button type="button" class="jp-hard-btn' + (marked?' is-hard':'') + '" data-jp-hard-type="' + type +
+  return '<div class="jp-study-item"><b lang="ja">' + escapeHtml(word) + '</b>' +
+    '<details class="jp-study-reveal"><summary>Show reading &amp; meaning</summary><small>' + escapeHtml(item[1]) + ' · ' + escapeHtml(item[2]) + '</small></details>' +
+    '<button type="button" class="jp-hard-btn' + (marked?' is-hard':'') + '" data-jp-hard-type="' + type +
     '" data-jp-hard-word="' + escapeHtml(word) + '" data-jp-hard-reading="' + escapeHtml(item[1]) +
     '" data-jp-hard-meaning="' + escapeHtml(item[2]) + '" aria-pressed="' + marked + '">' +
     (marked ? '★ Hard · remove' : '☆ Hard') + '</button></div>';
@@ -3396,7 +3403,7 @@ function jpRenderLesson(id){
   lesson.vocab.forEach(function(v){
     html += jpStudyItemHtml("v",v);
   });
-  html += '</div>' + (lesson.reviewOnly ? '<p class="jp-muted">यी अघिल्ला दिनका शब्द हुन्; Hard to remember सूचीबाट गाह्रो भएका मात्र दोहोर्‍याऊ।</p>' : '<div class="jp-actions"><button type="button" class="btn secondary btn-sm" data-jp-cards="1">Add these words to Flashcards</button></div>') + '</div>';
+  html += '</div>' + (lesson.reviewOnly ? '<p class="jp-muted">यी अघिल्ला दिनका शब्द हुन्; Hard to remember सूचीबाट गाह्रो भएका मात्र दोहोर्‍याऊ।</p>' : '<div class="jp-actions"><button type="button" class="btn secondary btn-sm" data-jp-cards="vocab">Add this day’s vocabulary to Week ' + week + ' Flashcards</button></div>') + '</div>';
   if(lesson.kanji){
     const hasOnKun = lesson.kanji.some(function(k){ return /On:/.test(k[1]) && /Kun:/.test(k[1]); });
     const kanjiGuide = hasOnKun
@@ -3404,7 +3411,7 @@ function jpRenderLesson(id){
       : 'पहिले शब्द पढ; सबै readings एकैदिन कण्ठ नगर्नु।';
     html += '<div class="jp-panel"' + (studyPrefix ? ' id="' + studyPrefix + 'kanji"' : '') + '><h3>Kanji in context</h3><p class="jp-muted">' + kanjiGuide + '</p><div class="jp-vocab">';
     lesson.kanji.forEach(function(k){html += jpStudyItemHtml("k",k);});
-    html += '</div></div>';
+    html += '</div>' + (lesson.reviewOnly ? '' : '<div class="jp-actions"><button type="button" class="btn secondary btn-sm" data-jp-cards="kanji">Add this day’s kanji to Week ' + week + ' Flashcards</button></div>') + '</div>';
   }
   if(lesson.dialogue){
     html += '<div class="jp-panel"><h3>Natural conversation</h3><p class="jp-muted">पहिले जापानी मात्र पढ र भूमिका फेरेर दुईपटक बोल।</p>';
@@ -3549,20 +3556,9 @@ function renderJapanese(){
         save();
       }else if(el.dataset.jpCards){
         const lesson=JP_LESSONS.find(function(l){return l.id===jpPage.lesson;});
-        const deckId="jp-vocabulary-v1";
-        if(!DB.decks.some(function(d){return d.id===deckId;})){
-          DB.decks.push({id:deckId,name:"Japanese · Words in context",created:nowISO()});
-        }
-        let added=0;
-        lesson.vocab.forEach(function(v,i){
-          const cardId="jp-"+lesson.id+(lesson.cardVersion?"-"+lesson.cardVersion:"")+"-"+i;
-          if(DB.cards.some(function(c){return c.id===cardId;})) return;
-          DB.cards.push({id:cardId,deckId:deckId,front:v[0]+"（"+v[1]+"）",
-            back:v[2],ease:2.5,interval:0,reps:0,due:nowISO()});
-          added++;
-        });
-        save();
-        toast(added ? added+" words added to Flashcards" : "These words are already in Flashcards");
+        const type=el.dataset.jpCards==="kanji"?"kanji":"vocab";
+        const added=addJapaneseLessonCards(lesson,type);
+        toast(added ? added+" "+(type==="kanji"?"kanji":"words")+" added to Week "+lesson.id.split('.')[0]+" Flashcards" : "These "+(type==="kanji"?"kanji":"words")+" are already in Flashcards");
         return;
       }else if(el.dataset.jpSound){
         const lesson=JP_LESSONS.find(function(l){return l.id===jpPage.lesson;});
@@ -4728,13 +4724,66 @@ function renderNoteDetail(){
 }
 
 /* ================= FLASHCARDS (SM-2 lite) ================= */
+function japaneseDeckId(week,type){return "jp-week-"+week+"-"+type;}
+function ensureJapaneseDeck(week,type){
+  const id=japaneseDeckId(week,type);
+  let deck=DB.decks.find(function(d){return d.id===id;});
+  if(!deck){
+    deck={id:id,name:"Japanese · Week "+week+" · "+(type==="kanji"?"Kanji":"Vocabulary"),created:nowISO()};
+    DB.decks.push(deck);
+  }
+  return deck;
+}
+function cleanupJapaneseDecks(){
+  const before=DB.decks.length;
+  DB.decks=DB.decks.filter(function(d){
+    const generated=/^jp-week-\d+-(?:vocab|kanji)$/.test(d.id)||d.id==="jp-vocabulary-v1";
+    return !generated||DB.cards.some(function(c){return c.deckId===d.id;});
+  });
+  return before!==DB.decks.length;
+}
+function migrateJapaneseDecks(){
+  let changed=false;
+  DB.cards.forEach(function(card){
+    const match=String(card.id||"").match(/^jp-(\d+)\.\d+/);
+    if(!match)return;
+    const type=String(card.id).includes("-kanji-")?"kanji":"vocab";
+    const deck=ensureJapaneseDeck(Number(match[1]),type);
+    if(card.deckId!==deck.id){card.deckId=deck.id;changed=true;}
+  });
+  return cleanupJapaneseDecks()||changed;
+}
+function addJapaneseLessonCards(lesson,type){
+  migrateJapaneseDecks();
+  const week=Number(lesson.id.split(".")[0]);
+  const source=type==="kanji"?(lesson.kanji||[]):(lesson.vocab||[]);
+  const version=lesson.cardVersion?"-"+lesson.cardVersion:"";
+  const pending=[];
+  source.forEach(function(item,i){
+    const id="jp-"+lesson.id+version+(type==="kanji"?"-kanji-":"-")+i;
+    if(!DB.cards.some(function(c){return c.id===id;}))pending.push({id:id,item:item});
+  });
+  if(!pending.length){save();return 0;}
+  const deck=ensureJapaneseDeck(week,type);
+  pending.forEach(function(x){
+    DB.cards.push({id:x.id,deckId:deck.id,front:type==="kanji"?x.item[0]:x.item[0]+"（"+x.item[1]+"）",
+      back:type==="kanji"?x.item[1]+" · "+x.item[2]:x.item[2],ease:2.5,interval:0,reps:0,due:nowISO()});
+  });
+  save();return pending.length;
+}
 function renderDecks(){
   const grid = document.getElementById("deckGrid");
+  if(migrateJapaneseDecks())save();
   if(DB.decks.length===0){
     grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="big">🗂️</div><div>No decks yet. Create one to start reviewing.</div></div>`;
     return;
   }
-  grid.innerHTML = DB.decks.map(d=>{
+  const displayDecks=DB.decks.slice().sort(function(a,b){
+    const am=a.id.match(/^jp-week-(\d+)-(vocab|kanji)$/),bm=b.id.match(/^jp-week-(\d+)-(vocab|kanji)$/);
+    if(am&&bm)return Number(am[1])-Number(bm[1])||(am[2]==="vocab"?-1:1);
+    if(am)return 1;if(bm)return -1;return 0;
+  });
+  grid.innerHTML = displayDecks.map(d=>{
     const cards = DB.cards.filter(c=>c.deckId===d.id);
     const due = cards.filter(c=> new Date(c.due) <= new Date()).length;
     return `
@@ -4812,7 +4861,13 @@ function renderManageModal(deck){
   modalBox.querySelectorAll("[data-delcard]").forEach(b=>{
     b.addEventListener("click", ()=>{
       DB.cards = DB.cards.filter(c=>c.id!==b.dataset.delcard);
-      save(); renderManageModal(deck); renderDecks();
+      cleanupJapaneseDecks();
+      save();
+      if(!DB.decks.some(function(d){return d.id===deck.id;})){
+        closeModal();renderDecks();toast("Empty Japanese deck removed");
+      }else{
+        renderManageModal(deck);renderDecks();
+      }
     });
   });
 }

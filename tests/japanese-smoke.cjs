@@ -94,6 +94,9 @@ async function main(){
   await evalJs("document.querySelector('[data-jp-lesson=\"1.1\"]').click()");
   assert(await evalJs("document.querySelector('h2').textContent.includes('て-form') || document.querySelector('.jp-hero h2').textContent.includes('て-form')"),"Day 1 did not become te-form");
   assert(await evalJs("document.querySelectorAll('.jp-q').length === 8 && document.querySelectorAll('.jp-vocab')[0].children.length === 10 && document.querySelectorAll('.jp-vocab')[1].children.length === 11"),"Day 1 vocabulary, kanji or quiz missing");
+  assert(await evalJs("document.querySelectorAll('.jp-study-reveal').length >= 21 && [...document.querySelectorAll('.jp-study-reveal')].every(x=>!x.open)"),"Vocabulary or kanji reading and meaning is open before reveal");
+  await evalJs("document.querySelector('.jp-study-reveal summary').click()");
+  assert(await evalJs("document.querySelector('.jp-study-reveal').open && document.querySelector('.jp-study-reveal small').getClientRects().length>0"),"Vocabulary reading and meaning did not reveal");
   assert(await evalJs("document.querySelectorAll('.jp-rule-card').length === 3 && document.querySelectorAll('.jp-old-review .jp-example').length >= 3 && document.querySelectorAll('.jp-reading').length === 2"),"Te-form rules or old kana content missing");
   assert(await evalJs("[...document.querySelectorAll('[data-jp-jump]')].length === 8 && [...document.querySelectorAll('[data-jp-jump]')].every(x=>document.getElementById(x.dataset.jpJump)) && !!document.querySelector('#jp-day1-summary')"),"Day 1 section navigation or summary missing");
   assert(await evalJs("document.querySelector('.jp-old-review').textContent.includes('Old kana note') && document.querySelector('.jp-old-review').textContent.includes('Best quiz: 100%')"),"Old Kana note or score is not visible");
@@ -105,8 +108,16 @@ async function main(){
   assert(await evalJs("Object.values(JSON.parse(localStorage.studyHubData_v1).japanese.checks).filter(x=>x && x.hard).length === 0 && document.querySelectorAll('.jp-study-item').length === 0"),"Remembered word did not leave folder");
   await evalJs("document.querySelector('[data-jp-lesson=\"1.1\"]').click();document.querySelector('.jp-vocab [data-jp-hard-type=k]').click()");
   assert(await evalJs("Object.values(JSON.parse(localStorage.studyHubData_v1).japanese.checks).filter(x=>x && x.hard && x.type==='k').length === 1"),"Hard kanji did not save");
-  await evalJs("document.querySelector('[data-jp-cards]').click();document.querySelector('[data-jp-cards]').click()");
-  assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).cards.filter(x=>x.id.startsWith('jp-1.1-te-')).length === 10 && JSON.parse(localStorage.studyHubData_v1).cards.some(x=>x.id==='jp-1.1-0' && x.front.includes('切手'))"),"New cards missing or old cards overwritten");
+  await evalJs("document.querySelector('[data-jp-cards=vocab]').click();document.querySelector('[data-jp-cards=vocab]').click()");
+  assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1);return d.cards.filter(x=>x.id.startsWith('jp-1.1-te-')).length===10 && d.cards.some(x=>x.id==='jp-1.1-0' && x.front.includes('切手') && x.deckId==='jp-week-1-vocab') && d.decks.some(x=>x.id==='jp-week-1-vocab' && x.name==='Japanese · Week 1 · Vocabulary') && !d.decks.some(x=>x.id==='jp-vocabulary-v1') && !d.decks.some(x=>x.id==='jp-week-1-kanji') && !d.decks.some(x=>x.id==='jp-week-2-vocab');})()"),"Vocabulary week deck, old-card migration, or lazy deck creation failed");
+  await evalJs("document.querySelector('[data-jp-cards=kanji]').click();document.querySelector('[data-jp-cards=kanji]').click()");
+  assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1);return d.cards.filter(x=>x.deckId==='jp-week-1-kanji').length===11 && d.cards.filter(x=>x.deckId==='jp-week-1-kanji').every(x=>x.id.includes('-kanji-') && x.back.includes(' · ')) && d.decks.some(x=>x.id==='jp-week-1-kanji' && x.name==='Japanese · Week 1 · Kanji');})()"),"Kanji week deck or cards failed");
+  await evalJs("document.querySelector('#sidebar [data-view=flashcards]').click();document.querySelector('[data-manage=\"jp-week-1-kanji\"]').click()");
+  const removableKanji=await evalJs("JSON.parse(localStorage.studyHubData_v1).cards.filter(x=>x.deckId==='jp-week-1-kanji').length");
+  for(let i=0;i<removableKanji;i++) await evalJs("document.querySelector('[data-delcard]').click()");
+  assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1);return !d.decks.some(x=>x.id==='jp-week-1-kanji') && !d.cards.some(x=>x.deckId==='jp-week-1-kanji') && !document.querySelector('[data-manage=\"jp-week-1-kanji\"]');})()"),"Empty generated kanji deck did not disappear");
+  await evalJs("document.querySelector('#sidebar [data-view=japanese]').click();document.querySelector('[data-jp-cards=kanji]').click()");
+  assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1);return d.decks.some(x=>x.id==='jp-week-1-kanji') && d.cards.filter(x=>x.deckId==='jp-week-1-kanji').length===11;})()"),"Removed kanji deck did not reappear after adding cards again");
   await evalJs("document.querySelector('#jpNotes').value='My Japanese practice';document.querySelector('#jpNotes').dispatchEvent(new Event('input',{bubbles:true}))");
   await evalJs("document.querySelector('[data-jp-check=read]').click()");
   await evalJs("[1,0,2,1,1,0,1,0].forEach((a,i)=>document.querySelector('input[name=jpq'+i+'][value=\"'+a+'\"]').click())");
