@@ -50,6 +50,9 @@ async function main(){
     return r.result.value;
   }
   function assert(value,message){if(!value)throw new Error(message);}
+  async function furiganaCoverage(){
+    return evalJs(`(()=>{const roots=[...document.querySelectorAll('.jp-jp,.jp-reading,.jp-pattern,p[lang=ja],.jp-q legend,.jp-choice,.jp-rule-card [lang=ja],.jp-panel>p:not(.jp-muted)')];const bad=[];for(const root of roots){const walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;while(node=walk.nextNode()){if(node.parentElement.closest('ruby'))continue;if(/[\\u3400-\\u9fff々]/.test(node.data))bad.push(node.data)}}const voc=[...document.querySelectorAll('.jp-vocab')][0],kan=[...document.querySelectorAll('.jp-vocab')][1];return {bad:bad.slice(0,5),vocab:!!voc&&[...voc.children].every(x=>!!x.querySelector('ruby rt')),kanji:!!kan&&[...kan.children].every(x=>!!x.querySelector('.jp-kanji-readings'))};})()`);
+  }
   await send("Runtime.enable");
   await send("Page.enable");
   for(let i=0;i<50;i++){
@@ -85,6 +88,9 @@ async function main(){
   await evalJs("document.querySelector('#searchInput').value='振替輸送';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
   await sleep(220);
   assert(await evalJs("document.querySelectorAll('#searchResults .sr-item').length>0 && document.querySelector('#searchResults').textContent.includes('Week 11')"),"Japanese search does not index Week 11 content");
+  await evalJs("document.querySelector('#searchInput').value='試験運転';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
+  await sleep(220);
+  assert(await evalJs("document.querySelectorAll('#searchResults .sr-item').length>0 && document.querySelector('#searchResults').textContent.includes('Week 12')"),"Japanese search does not index Week 12 content");
   await evalJs("document.querySelector('#modalOverlay').click()");
   assert(await evalJs("document.querySelectorAll('.jp-week-card').length === 36"),"Roadmap is incomplete");
   assert(await evalJs("document.querySelector('.jp-hero [data-jp-lesson=\"1.1\"]') !== null && document.querySelector('.jp-progress').getAttribute('aria-valuenow') === '0'"),"Old kana completion falsely completed new Day 1");
@@ -298,8 +304,36 @@ async function main(){
     if(day===7) assert(await evalJs("!document.querySelector('[data-jp-cards]')"),"Week 11 review should not duplicate flashcards");
     if(day<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"11."+(day+1)+"\"]').click()");
   }
+  await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"12.1\"]').click()");
+  for(let day=1;day<=7;day++){
+    const expectedQuiz=day===7?10:6;
+    assert(await evalJs("document.querySelector('.jp-hero h2').textContent==='Day "+day+"' && document.querySelectorAll('.jp-vocab')[0].children.length===20 && document.querySelectorAll('.jp-vocab')[1].children.length===5 && document.querySelectorAll('.jp-q').length==="+expectedQuiz+" && document.querySelectorAll('.jp-panel').length>=12"),"Week 12 Day "+day+" content, words, kanji, teaching blocks or quiz missing");
+    const f=await furiganaCoverage();
+    assert(f.bad.length===0 && f.vocab && f.kanji,"Week 12 Day "+day+" Furigana coverage failed: "+JSON.stringify(f));
+    if(day===2) assert(await evalJs("!document.body.textContent.includes('Pस्वरूप')"),"Week 12 contains a broken Nepali gloss");
+    if(day===4) assert(await evalJs("(()=>{const read=w=>{const r=[...document.querySelectorAll('ruby')].find(x=>x.childNodes[0]&&x.childNodes[0].nodeValue===w);return r&&r.querySelector('rt').textContent};return read('十時半')==='じゅうじはん'&&read('十分')==='じゅっぷん'&&read('触らないで')==='さわらないで'&&read('十時二十分')==='じゅうじにじゅっぷん';})()"),"Week 12 time, counter, or verb Furigana is incorrect");
+    if(day===1){
+      await evalJs("document.querySelector('[data-jp-cards=vocab]').click();document.querySelector('[data-jp-cards=kanji]').click()");
+      assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1);return d.cards.filter(x=>x.deckId==='jp-week-12-vocab').length===20 && d.cards.filter(x=>x.deckId==='jp-week-12-kanji').length===5;})()"),"Week 12 vocabulary or kanji flashcards failed");
+    }
+    await evalJs("Array.from({length:"+expectedQuiz+"},(_,j)=>document.querySelector('input[name=jpq'+j+'][value=\"0\"]')).forEach(x=>x.click());document.querySelector('[data-jp-quiz]').click()");
+    assert(await evalJs("document.querySelector('.jp-result').textContent.includes('"+expectedQuiz+" / "+expectedQuiz+" correct')"),"Week 12 Day "+day+" quiz failed");
+    await evalJs("document.querySelector('#jpNotes').value='Week 12 note "+day+"';document.querySelector('#jpNotes').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-jp-done]').click()");
+    assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['12."+day+"']"),"Week 12 Day "+day+" completion did not save");
+    if(day===7) assert(await evalJs("!document.querySelector('[data-jp-cards]')"),"Week 12 review should not duplicate flashcards");
+    if(day<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"12."+(day+1)+"\"]').click()");
+  }
+  for(let week=1;week<=12;week++){
+    await evalJs("document.querySelector('[data-jp-home]').click();document.querySelector('[data-jp-week=\""+week+"\"]').click();document.querySelector('[data-jp-lesson=\""+week+".1\"]').click()");
+    for(let day=1;day<=7;day++){
+      const f=await furiganaCoverage();
+      assert(f.bad.length===0 && f.vocab && f.kanji,"Week "+week+" Day "+day+" incomplete Furigana: "+JSON.stringify(f));
+      if((week===5&&day===5)||(week===8&&day===4)) assert(await evalJs("(()=>{const r=[...document.querySelectorAll('ruby')].find(x=>x.childNodes[0]&&x.childNodes[0].nodeValue==='十分');return !!r&&r.querySelector('rt').textContent==='じゅうぶん';})()"),"十分 meaning 'enough' has the wrong Furigana in Week "+week+" Day "+day);
+      if(day<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\""+week+"."+(day+1)+"\"]').click()");
+    }
+  }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-hero [data-jp-lesson=\"1.1\"]') !== null && document.querySelector('.jp-progress').getAttribute('aria-valuenow') === '77' && !document.body.textContent.includes('Your weekly rhythm')"),"Week 11 completion count or removed rhythm panel changed");
+  assert(await evalJs("document.querySelector('.jp-hero [data-jp-lesson=\"1.1\"]') !== null && document.querySelector('.jp-progress').getAttribute('aria-valuenow') === '84' && !document.body.textContent.includes('Your weekly rhythm')"),"Week 12 completion count or removed rhythm panel changed");
   await evalJs("document.querySelector('[data-jp-lesson=\"19.1\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-panel h3').length >= 10"),"Imported grammar sections missing");
   assert(await evalJs("document.body.textContent.includes('Natural conversation') && document.body.textContent.includes('Write and compare')"),"Imported conversation or writing practice missing");
@@ -335,6 +369,7 @@ async function main(){
   assert(await evalJs("['9.1','9.2','9.3','9.4','9.5','9.6','9.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 9 note '+(i+1))"),"Week 9 progress did not survive reload");
   assert(await evalJs("['10.1','10.2','10.3','10.4','10.5','10.6','10.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 10 note '+(i+1)) && localStorage.studyHubJapaneseFurigana==='1'"),"Week 10 progress or Furigana preference did not survive reload");
   assert(await evalJs("['11.1','11.2','11.3','11.4','11.5','11.6','11.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 11 note '+(i+1))"),"Week 11 progress did not survive reload");
+  assert(await evalJs("['12.1','12.2','12.3','12.4','12.5','12.6','12.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 12 note '+(i+1))"),"Week 12 progress did not survive reload");
   assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.quizScores['19.2'] === 100"),"Day 17 score did not survive reload");
   await evalJs("document.querySelector('#sidebar [data-view=course]').click()");
   assert(await evalJs("document.querySelector('#view-course').classList.contains('active')"),"Python course navigation failed");
@@ -448,6 +483,17 @@ async function main(){
     }
     if(n<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"11."+(n+1)+"\"]').click()");
   }
+  await evalJs("document.querySelector('[data-jp-home]').click();document.querySelector('[data-jp-week=\"12\"]').click()");
+  assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 12 finish line')"),"Mobile Week 12 short titles, lessons or finish line missing");
+  await evalJs("document.querySelector('[data-jp-lesson=\"12.1\"]').click()");
+  for(const n of [1,2,3,4,5,6,7]){
+    assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1 && document.querySelectorAll('.jp-vocab')[0].children.length===20 && document.querySelectorAll('.jp-vocab')[1].children.length===5 && document.querySelectorAll('ruby rt').length>20 && document.querySelectorAll('.jp-kanji-readings').length===5"),"Mobile Week 12 Day "+n+" overflow, content or Furigana failure");
+    if(process.env.JP_SHOTS && n===6){
+      const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
+      fs.writeFileSync(path.join(os.tmpdir(),"studyhub-japanese-week12-mobile.png"),Buffer.from(shot.data,"base64"));
+    }
+    if(n<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"12."+(n+1)+"\"]').click()");
+  }
   await evalJs("document.querySelector('[data-jp-home]').click();document.querySelector('[data-jp-week=\"3\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && !!document.querySelector('[data-jp-lesson=\"3.7\"]')"),"Mobile Week 3 short titles, lessons or review missing");
   await evalJs("document.querySelector('[data-jp-lesson=\"3.1\"]').click()");
@@ -505,7 +551,8 @@ async function main(){
   assert(await evalJs("['9.1','9.2','9.3','9.4','9.5','9.6','9.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 9 progress");
   assert(await evalJs("['10.1','10.2','10.3','10.4','10.5','10.6','10.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 10 progress");
   assert(await evalJs("['11.1','11.2','11.3','11.4','11.5','11.6','11.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 11 progress");
-  assert(await evalJs("Object.keys(JSON.parse(localStorage.studyHubData_v1).reviews.items).length >= 77"),"Import erased spaced-review records");
+  assert(await evalJs("['12.1','12.2','12.3','12.4','12.5','12.6','12.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 12 progress");
+  assert(await evalJs("Object.keys(JSON.parse(localStorage.studyHubData_v1).reviews.items).length >= 84"),"Import erased spaced-review records");
   assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:v:起きる'].hard === false && JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:k:起'].hard === false"),"Hard removal failed to merge or stale mark returned");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['19.1']"),"Import erased imported lesson progress");
   await evalJs("document.querySelector('#exportBtn').click()");
@@ -554,7 +601,7 @@ async function main(){
   assert(await evalJs("JSON.parse(localStorage.studyHubSync).gistId === '0123456789abcdef0123456789abcdef'"),"Forget erased Gist ID");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1']"),"Forget erased writing");
   assert(errors.length===0,"JavaScript errors: "+errors.join("; "));
-  console.log("PASS: Japanese Weeks 1–11, Furigana, full-content search, On/Kun readings, 20-word Week 2–11 days, progress, mobile, dark mode, backup, mock Gist sync, no JS exceptions");
+  console.log("PASS: Japanese Weeks 1–12, full Furigana coverage, search, On/Kun readings, 20-word Week 2–12 days, progress, mobile, dark mode, backup, mock Gist sync, no JS exceptions");
   ws.close();
 }
 main().catch(err=>{console.error(err);process.exitCode=1;}).finally(()=>{browser.kill();});
