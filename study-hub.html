@@ -1370,7 +1370,10 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
     <div class="view" id="view-flashcards">
       <div class="pane-header">
         <h1>Flashcards</h1>
-        <button type="button" class="btn secondary" id="newDeckBtn">+ New deck</button>
+        <div class="row-actions">
+          <button type="button" class="btn secondary" id="importCardsBtn">⇧ Import CSV</button>
+          <button type="button" class="btn secondary" id="newDeckBtn">+ New deck</button>
+        </div>
       </div>
       <div class="deck-grid" id="deckGrid"></div>
     </div>
@@ -4923,6 +4926,17 @@ function migrateJapaneseDecks(){
     const type=String(card.id).includes("-kanji-")?"kanji":"vocab";
     const deck=ensureJapaneseDeck(Number(match[1]),type);
     if(card.deckId!==deck.id){card.deckId=deck.id;changed=true;}
+    /* Older vocabulary cards showed the reading on the question side. Move it
+       to the answer without touching SM-2 progress, due dates, or card ids. */
+    if(type==="vocab"){
+      const oldFront=String(card.front||"").match(/^(.*?)（([^（）]+)）$/);
+      if(oldFront){
+        card.front=oldFront[1];
+        const reading=oldFront[2],oldBack=String(card.back||"");
+        card.back=oldBack.startsWith(reading+" · ")?oldBack:reading+" · "+oldBack;
+        changed=true;
+      }
+    }
   });
   return cleanupJapaneseDecks()||changed;
 }
@@ -4939,8 +4953,8 @@ function addJapaneseLessonCards(lesson,type){
   if(!pending.length){save();return 0;}
   const deck=ensureJapaneseDeck(week,type);
   pending.forEach(function(x){
-    DB.cards.push({id:x.id,deckId:deck.id,front:type==="kanji"?x.item[0]:x.item[0]+"（"+x.item[1]+"）",
-      back:type==="kanji"?x.item[1]+" · "+x.item[2]:x.item[2],ease:2.5,interval:0,reps:0,due:nowISO()});
+    DB.cards.push({id:x.id,deckId:deck.id,front:x.item[0],
+      back:x.item[1]+" · "+x.item[2],ease:2.5,interval:0,reps:0,due:nowISO()});
   });
   save();return pending.length;
 }
@@ -4980,6 +4994,111 @@ function renderDecks(){
     });
   }));
 }
+
+function flashcardDelimiter(text,filename){
+  if(/\.tsv$/i.test(filename||""))return "\t";
+  let comma=0,tab=0,semi=0,quoted=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(ch==='"'){
+      if(quoted&&text[i+1]==='"'){i++;continue;}
+      quoted=!quoted;continue;
+    }
+    if(!quoted&&(ch==='\n'||ch==='\r'))break;
+    if(!quoted){if(ch===',')comma++;else if(ch==='\t')tab++;else if(ch===';')semi++;}
+  }
+  return tab>comma&&tab>=semi?'\t':semi>comma?';':',';
+}
+function parseFlashcardImport(text,filename){
+  text=String(text||"").replace(/^\uFEFF/,"");
+  const delimiter=flashcardDelimiter(text,filename),rows=[];
+  let row=[],field="",quoted=false;
+  for(let i=0;i<=text.length;i++){
+    const ch=i<text.length?text[i]:"\n";
+    if(quoted){
+      if(ch==='"'&&text[i+1]==='"'){field+='"';i++;}
+      else if(ch==='"')quoted=false;
+      else field+=ch;
+    }else if(ch==='"'&&field==="")quoted=true;
+    else if(ch===delimiter){row.push(field.trim());field="";}
+    else if(ch==='\n'||ch==='\r'||i===text.length){
+      row.push(field.trim());field="";
+      if(row.some(function(x){return x!=="";}))rows.push(row);
+      row=[];if(ch==='\r'&&text[i+1]==='\n')i++;
+    }else field+=ch;
+  }
+  if(!rows.length)return [];
+  const header=rows[0].map(function(x){return x.toLowerCase().replace(/[\s_-]+/g,"");});
+  const find=function(names){return header.findIndex(function(x){return names.includes(x);});};
+  let front=find(["front","term","question","word","kanji"]);
+  let back=find(["back","definition","answer"]);
+  const reading=find(["reading","hiragana","kana","yomi"]);
+  const meaning=find(["meaning","translation","english","nepali","english/nepalimeaning"]);
+  const hasHeader=front>=0&&(back>=0||reading>=0||meaning>=0);
+  if(!hasHeader){front=0;back=1;}
+  return rows.slice(hasHeader?1:0).map(function(cols){
+    const frontText=String(cols[front]||"").trim();
+    let parts=[];
+    if(hasHeader){
+      if(reading>=0&&cols[reading])parts.push(cols[reading].trim());
+      if(back>=0&&cols[back])parts.push(cols[back].trim());
+      if(meaning>=0&&meaning!==back&&cols[meaning])parts.push(cols[meaning].trim());
+    }else parts=cols.slice(1).map(function(x){return String(x||"").trim();}).filter(Boolean);
+    return {front:frontText,back:parts.join(" · ")};
+  }).filter(function(card){return card.front&&card.back;});
+}
+function importFlashcardRows(deckName,cards){
+  const name=String(deckName||"").trim();
+  if(!name)throw new Error("Deck name is required");
+  let deck=DB.decks.find(function(d){return d.name.toLowerCase()===name.toLowerCase();});
+  if(!deck){deck={id:uid(),name:name,created:nowISO()};DB.decks.push(deck);}
+  const existing=new Set(DB.cards.filter(function(c){return c.deckId===deck.id;}).map(function(c){return c.front.trim()+"\u0000"+c.back.trim();}));
+  let added=0,skipped=0;
+  cards.forEach(function(card){
+    const front=String(card.front||"").trim(),back=String(card.back||"").trim(),key=front+"\u0000"+back;
+    if(!front||!back||existing.has(key)){skipped++;return;}
+    DB.cards.push({id:uid(),deckId:deck.id,front:front,back:back,ease:2.5,interval:0,reps:0,due:nowISO()});
+    existing.add(key);added++;
+  });
+  if(!added&&!DB.cards.some(function(c){return c.deckId===deck.id;}))DB.decks=DB.decks.filter(function(d){return d.id!==deck.id;});
+  save();renderDecks();
+  return {added:added,skipped:skipped,deckId:deck.id};
+}
+document.getElementById("importCardsBtn").addEventListener("click",function(){
+  openModal(`
+    <h2>Import flashcards</h2>
+    <p class="muted" style="margin-bottom:14px;">Quizlet-style CSV or TSV छान्नुहोस्। दुई columns भए पहिलो <b>front/term</b> र दोस्रो <b>back/definition</b> हुन्छ। <b>Kanji, Hiragana, Meaning</b> भएको तीन-column file पनि चल्छ। File यही device मा मात्र पढिन्छ।</p>
+    <div class="form-row"><label>Deck name</label><input type="text" id="csvDeckName" placeholder="e.g. Japanese · Week 15"></div>
+    <div class="form-row"><label>CSV or TSV file</label><input type="file" id="csvCardFile" accept=".csv,.tsv,text/csv,text/tab-separated-values"></div>
+    <div id="csvImportPreview" class="jp-panel" style="display:none;margin-top:12px;"></div>
+    <div class="modal-actions"><button type="button" class="btn secondary" id="csvCancel">Cancel</button><button type="button" class="btn" id="csvImport" disabled>Import cards</button></div>
+  `);
+  const fileInput=document.getElementById("csvCardFile"),nameInput=document.getElementById("csvDeckName"),preview=document.getElementById("csvImportPreview"),importBtn=document.getElementById("csvImport");
+  let parsed=[];
+  document.getElementById("csvCancel").onclick=closeModal;
+  fileInput.onchange=function(){
+    const file=fileInput.files&&fileInput.files[0];parsed=[];importBtn.disabled=true;
+    if(!file)return;
+    if(file.size>5*1024*1024){preview.style.display="block";preview.innerHTML='<b>File is too large.</b><p class="muted">Maximum size is 5 MB.</p>';return;}
+    if(!nameInput.value.trim())nameInput.value=file.name.replace(/\.(csv|tsv)$/i,"")||"Imported flashcards";
+    const reader=new FileReader();
+    reader.onload=function(){
+      try{parsed=parseFlashcardImport(reader.result,file.name);}catch(err){parsed=[];}
+      preview.style.display="block";
+      if(!parsed.length){preview.innerHTML='<b>No valid cards found.</b><p class="muted">Use at least two columns: front and back.</p>';return;}
+      preview.innerHTML='<b>'+parsed.length+' cards ready</b><p class="muted">पहिला पाँच cards:</p>'+parsed.slice(0,5).map(function(c){return '<div class="jp-example"><b>'+escapeHtml(c.front)+'</b><div class="jp-gloss">'+escapeHtml(c.back)+'</div></div>';}).join('');
+      importBtn.disabled=false;
+    };
+    reader.onerror=function(){preview.style.display="block";preview.textContent="Could not read this file.";};
+    reader.readAsText(file,"UTF-8");
+  };
+  importBtn.onclick=function(){
+    if(!parsed.length||!nameInput.value.trim())return;
+    const result=importFlashcardRows(nameInput.value,parsed);
+    closeModal();renderDecks();toast(result.added+" cards imported"+(result.skipped?" · "+result.skipped+" duplicates skipped":""));
+  };
+  nameInput.focus();
+});
 document.getElementById("newDeckBtn").addEventListener("click", ()=>{
   openModal(`
     <h2>New deck</h2>

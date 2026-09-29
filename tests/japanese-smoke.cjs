@@ -125,10 +125,25 @@ async function main(){
   await evalJs("document.querySelector('[data-jp-lesson=\"1.1\"]').click();document.querySelector('.jp-vocab [data-jp-hard-type=k]').click()");
   assert(await evalJs("Object.values(JSON.parse(localStorage.studyHubData_v1).japanese.checks).filter(x=>x && x.hard && x.type==='k').length === 1"),"Hard kanji did not save");
   await evalJs("document.querySelector('[data-jp-cards=vocab]').click();document.querySelector('[data-jp-cards=vocab]').click()");
-  assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1);return d.cards.filter(x=>x.id.startsWith('jp-1.1-te-')).length===10 && d.cards.some(x=>x.id==='jp-1.1-0' && x.front.includes('切手') && x.deckId==='jp-week-1-vocab') && d.decks.some(x=>x.id==='jp-week-1-vocab' && x.name==='Japanese · Week 1 · Vocabulary') && !d.decks.some(x=>x.id==='jp-vocabulary-v1') && !d.decks.some(x=>x.id==='jp-week-1-kanji') && !d.decks.some(x=>x.id==='jp-week-2-vocab');})()"),"Vocabulary week deck, old-card migration, or lazy deck creation failed");
+  assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1),cards=d.cards.filter(x=>x.deckId==='jp-week-1-vocab'),old=cards.find(x=>x.id==='jp-1.1-0');return d.cards.filter(x=>x.id.startsWith('jp-1.1-te-')).length===10 && cards.every(x=>!x.front.includes('（')&&x.back.includes(' · ')) && old.front==='切手' && old.back.startsWith('きって · ') && old.ease===2.5 && d.decks.some(x=>x.id==='jp-week-1-vocab' && x.name==='Japanese · Week 1 · Vocabulary') && !d.decks.some(x=>x.id==='jp-vocabulary-v1') && !d.decks.some(x=>x.id==='jp-week-1-kanji') && !d.decks.some(x=>x.id==='jp-week-2-vocab');})()"),"Kanji-only vocabulary fronts, reading backs, deck migration, or scheduling preservation failed");
   await evalJs("document.querySelector('[data-jp-cards=kanji]').click();document.querySelector('[data-jp-cards=kanji]').click()");
   assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1);return d.cards.filter(x=>x.deckId==='jp-week-1-kanji').length===11 && d.cards.filter(x=>x.deckId==='jp-week-1-kanji').every(x=>x.id.includes('-kanji-') && x.back.includes(' · ')) && d.decks.some(x=>x.id==='jp-week-1-kanji' && x.name==='Japanese · Week 1 · Kanji');})()"),"Kanji week deck or cards failed");
-  await evalJs("document.querySelector('#sidebar [data-view=flashcards]').click();document.querySelector('[data-manage=\"jp-week-1-kanji\"]').click()");
+  await evalJs("document.querySelector('#sidebar [data-view=flashcards]').click();document.querySelector('#importCardsBtn').click()");
+  assert(await evalJs("!!document.querySelector('#csvCardFile') && !!document.querySelector('#csvDeckName') && document.querySelector('#csvImport').disabled"),"CSV import dialog is missing required controls");
+  await evalJs("(()=>{const text='term,definition\\n\"学校\",\"がっこう · school, विद्यालय\"\\n\"猫\",\"ねこ · cat, बिरालो\"';const file=new File([text],'CSV Import Test.csv',{type:'text/csv'}),input=document.querySelector('#csvCardFile');Object.defineProperty(input,'files',{value:[file],configurable:true});input.dispatchEvent(new Event('change',{bubbles:true}));})()");
+  await sleep(250);
+  assert(await evalJs("document.querySelector('#csvImportPreview').textContent.includes('2 cards ready') && document.querySelector('#csvImportPreview').textContent.includes('school, विद्यालय') && document.querySelector('#csvDeckName').value==='CSV Import Test' && !document.querySelector('#csvImport').disabled"),"Quizlet-style quoted CSV preview failed");
+  await evalJs("document.querySelector('#csvImport').click()");
+  assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1),deck=d.decks.find(x=>x.name==='CSV Import Test'),cards=deck?d.cards.filter(x=>x.deckId===deck.id):[];return cards.length===2&&cards.some(x=>x.front==='学校'&&x.back==='がっこう · school, विद्यालय');})()"),"CSV cards were not imported correctly");
+  await evalJs("document.querySelector('#importCardsBtn').click();document.querySelector('#csvDeckName').value='CSV Import Test';(()=>{const file=new File(['term\\tdefinition\\n学校\\tがっこう · school, विद्यालय'],'repeat.tsv',{type:'text/tab-separated-values'}),input=document.querySelector('#csvCardFile');Object.defineProperty(input,'files',{value:[file],configurable:true});input.dispatchEvent(new Event('change',{bubbles:true}));})()");
+  await sleep(250);
+  await evalJs("document.querySelector('#csvImport').click()");
+  assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1),deck=d.decks.find(x=>x.name==='CSV Import Test');return d.cards.filter(x=>x.deckId===deck.id).length===2;})()"),"TSV parsing or duplicate prevention failed");
+  await evalJs("document.querySelector('[data-study=\"jp-week-1-vocab\"]').click()");
+  assert(await evalJs("!document.querySelector('#flashcardEl').textContent.includes('（') && document.body.textContent.includes('Tap card to reveal answer')"),"Vocabulary flashcard front reveals the reading");
+  await evalJs("document.querySelector('#flashcardEl').click()");
+  assert(await evalJs("document.querySelector('#flashcardEl').textContent.includes(' · ') && document.body.textContent.includes('Answer')"),"Vocabulary flashcard back does not show reading and meaning");
+  await evalJs("document.querySelector('#exitStudyBtn').click();document.querySelector('[data-manage=\"jp-week-1-kanji\"]').click()");
   const removableKanji=await evalJs("JSON.parse(localStorage.studyHubData_v1).cards.filter(x=>x.deckId==='jp-week-1-kanji').length");
   for(let i=0;i<removableKanji;i++) await evalJs("document.querySelector('[data-delcard]').click()");
   assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1);return !d.decks.some(x=>x.id==='jp-week-1-kanji') && !d.cards.some(x=>x.deckId==='jp-week-1-kanji') && !document.querySelector('[data-manage=\"jp-week-1-kanji\"]');})()"),"Empty generated kanji deck did not disappear");
@@ -384,7 +399,7 @@ async function main(){
     assert(f.bad.length===0 && f.vocab && f.kanji,"Week 14 Day "+day+" Furigana coverage failed: "+JSON.stringify(f));
     if(day===1){
       await evalJs("document.querySelector('[data-jp-cards=vocab]').click();document.querySelector('[data-jp-cards=kanji]').click()");
-      assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1);return d.cards.filter(x=>x.deckId==='jp-week-14-vocab').length===20 && d.cards.filter(x=>x.deckId==='jp-week-14-kanji').length===5;})()"),"Week 14 flashcard decks failed");
+      assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1),v=d.cards.filter(x=>x.deckId==='jp-week-14-vocab'),k=d.cards.filter(x=>x.deckId==='jp-week-14-kanji');return v.length===20&&k.length===5&&v.every(x=>!x.front.includes('（')&&x.back.includes(' · '))&&k.every(x=>!x.front.includes('（')&&x.back.includes(' · '));})()"),"Week 14 flashcard decks or front/back format failed");
     }
     await evalJs("Array.from({length:"+expectedQuiz+"},(_,j)=>document.querySelector('input[name=jpq'+j+'][value=\"0\"]')).forEach(x=>x.click());document.querySelector('[data-jp-quiz]').click()");
     assert(await evalJs("document.querySelector('.jp-result').textContent.includes('"+expectedQuiz+" / "+expectedQuiz+" correct')"),"Week 14 Day "+day+" quiz failed");
@@ -644,6 +659,7 @@ async function main(){
   assert(await evalJs("['12.1','12.2','12.3','12.4','12.5','12.6','12.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 12 progress");
   assert(await evalJs("['13.1','13.2','13.3','13.4','13.5','13.6','13.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 13 progress");
   assert(await evalJs("['14.1','14.2','14.3','14.4','14.5','14.6','14.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 14 progress");
+  assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1),deck=d.decks.find(x=>x.name==='CSV Import Test');return !!deck&&d.cards.filter(x=>x.deckId===deck.id).length===2;})()"),"Backup/import erased CSV flashcards");
   assert(await evalJs("Object.keys(JSON.parse(localStorage.studyHubData_v1).reviews.items).length >= 84"),"Import erased spaced-review records");
   assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:v:起きる'].hard === false && JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:k:起'].hard === false"),"Hard removal failed to merge or stale mark returned");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['19.1']"),"Import erased imported lesson progress");
@@ -692,8 +708,15 @@ async function main(){
   assert(await evalJs("!JSON.parse(localStorage.studyHubSync).token && !sessionStorage.studyHubSyncSessionToken"),"Forget did not clear token");
   assert(await evalJs("JSON.parse(localStorage.studyHubSync).gistId === '0123456789abcdef0123456789abcdef'"),"Forget erased Gist ID");
   assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['1.1']"),"Forget erased writing");
+  await evalJs("document.querySelector('#sidebar [data-view=flashcards]').click();document.querySelector('#importCardsBtn').click()");
+  assert(await evalJs("document.documentElement.scrollWidth<=window.innerWidth+1 && document.querySelector('#modalBox').getBoundingClientRect().right<=window.innerWidth && !!document.querySelector('#csvCardFile')"),"CSV import dialog overflows or is missing on mobile");
+  if(process.env.JP_SHOTS){
+    const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
+    fs.writeFileSync(path.join(os.tmpdir(),"studyhub-flashcard-csv-mobile.png"),Buffer.from(shot.data,"base64"));
+  }
+  await evalJs("document.querySelector('#csvCancel').click()");
   assert(errors.length===0,"JavaScript errors: "+errors.join("; "));
-  console.log("PASS: Japanese Weeks 1–14, 5-minute random review, weekly retrieval drills, full Furigana coverage, search, On/Kun readings, 20-word Week 2–14 days, progress, mobile, dark mode, backup, mock Gist sync, no JS exceptions");
+  console.log("PASS: Japanese Weeks 1–14, Kanji-only flashcard fronts, CSV/TSV import, 5-minute random review, weekly retrieval drills, Furigana, search, progress, mobile, dark mode, backup, mock Gist sync, no JS exceptions");
   ws.close();
 }
 main().catch(err=>{console.error(err);process.exitCode=1;}).finally(()=>{browser.kill();});
