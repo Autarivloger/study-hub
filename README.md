@@ -240,3 +240,20 @@ icon.svg                app icon
   ```
   or simply open it and confirm the browser console is clean.
 - Add one week of lessons at a time and verify, rather than many at once.
+
+## Kanji reading reference
+
+Selected On’yomi/Kun’yomi additions use KANJIDIC2, © James William BREEN and
+the Electronic Dictionary Research and Development Group, under CC BY-SA 4.0.
+The licensed extract is `japanese-kanji-readings.json`; it is embedded in the HTML
+for offline use. Existing lesson examples/readings and saved user data are preserved.
+Dictionary readings can include uncommon forms. Learn the contextual example first;
+parentheses mark okurigana and a dash with an explanatory note means no reading in
+that dictionary category. This is not a complete Japanese dictionary.
+
+- Documentation: https://www.edrdg.org/wiki/KANJIDIC_Project.html
+- Licence: https://www.edrdg.org/edrdg/licence.html
+- Refresh selected data monthly or before the next published curriculum update:
+  `node scripts/update-kanji-readings.cjs` (requires network access).
+- Check the result with `node tests/kanji-readings.cjs` and
+  `node tests/japanese-smoke.cjs`, inspect the diff, then publish.
