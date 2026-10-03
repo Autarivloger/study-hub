@@ -1,0 +1,301 @@
+﻿front,back
+"大きい","おおきい · big · ठूलो
+Opposite: 小さい（ちいさい） · small · सानो
+Usage: Size: 大きい家／小さい家。"
+"長い","ながい · long · लामो
+Opposite: 短い（みじかい） · short · छोटो
+Usage: Length or duration。"
+"高い","たかい · high/tall · अग्लो
+Opposite: 低い（ひくい） · low · होचो
+Usage: Height: 高い山／低い山。"
+"高い","たかい · expensive · महँगो
+Opposite: 安い（やすい） · cheap · सस्तो
+Usage: Price: 高い服／安い服。 Height को opposite 低い हो।"
+"暑い","あつい · hot weather · गर्मी
+Opposite: 寒い（さむい） · cold weather · जाडो
+Usage: Weather/air temperature; object तापमा 熱い／冷たい。"
+"熱い","あつい · hot to touch · तातो
+Opposite: 冷たい（つめたい） · cold to touch · चिसो
+Usage: 熱いお茶／冷たいお茶。"
+"暖かい","あたたかい · warm weather · न्यानो
+Opposite: 涼しい（すずしい） · cool weather · शीतल
+Usage: Comfortable air/weather temperatures。"
+"厚い","あつい · thick · बाक्लो
+Opposite: 薄い（うすい） · thin · पातलो
+Usage: Thickness: 厚い本／薄い本。"
+"重い","おもい · heavy · गह्रौँ
+Opposite: 軽い（かるい） · light · हल्का
+Usage: Weight or burden。"
+"強い","つよい · strong · बलियो
+Opposite: 弱い（よわい） · weak · कमजोर
+Usage: Strength: 強い風／弱い風。"
+"広い","ひろい · spacious · फराकिलो
+Opposite: 狭い（せまい） · narrow · साँघुरो
+Usage: Area/space。"
+"深い","ふかい · deep · गहिरो
+Opposite: 浅い（あさい） · shallow · उथलो
+Usage: Depth: 深い川／浅い川。"
+"明るい","あかるい · bright · उज्यालो
+Opposite: 暗い（くらい） · dark · अँध्यारो
+Usage: Light; also personality depending on context。"
+"新しい","あたらしい · new · नयाँ
+Opposite: 古い（ふるい） · old · पुरानो
+Usage: Objects/information, not people's age。"
+"若い","わかい · young · जवान
+Opposite: 年を取った（としをとった） · older/aged · उमेर पुगेको
+Usage: People's age; polite descriptions depend on situation。"
+"近い","ちかい · near · नजिक
+Opposite: 遠い（とおい） · far · टाढा
+Usage: Distance。"
+"早い","はやい · early · चाँडो
+Opposite: 遅い（おそい） · late · ढिलो
+Usage: Time: 早い時間／遅い時間。"
+"速い","はやい · fast · छिटो
+Opposite: 遅い（おそい） · slow · सुस्त
+Usage: Speed: 速い車／遅い車。 早い refers to early timing。"
+"多い","おおい · many · धेरै
+Opposite: 少ない（すくない） · few · थोरै
+Usage: 人が多い／人が少ない; not 多い人 for many people。"
+"良い","よい · good · राम्रो
+Opposite: 悪い（わるい） · bad · नराम्रो
+Usage: 良い also often read いい。"
+"難しい","むずかしい · difficult · कठिन
+Opposite: 易しい（やさしい） · easy · सजिलो
+Usage: 易しい easy; 優しい same reading means kind。"
+"忙しい","いそがしい · busy · व्यस्त
+Opposite: 暇（ひま） · free time · फुर्सद
+Usage: 忙しいです／暇です; adjective types differ。"
+"静か","しずか · quiet · शान्त
+Opposite: 騒がしい（さわがしい） · noisy · हल्लामय
+Usage: 静かな場所／騒がしい場所。"
+"きれい","きれい · clean · सफा
+Opposite: 汚い（きたない） · dirty · फोहोर
+Usage: Cleanliness sense; きれい can also mean beautiful。"
+"好き","すき · like · मन पर्ने
+Opposite: 嫌い（きらい） · dislike · मन नपर्ने
+Usage: 日本語が好きです; use が for preference target。"
+"上手","じょうず · skillful · सिपालु
+Opposite: 下手（へた） · unskillful · कम सिपालु
+Usage: Performance, not moral worth。"
+"便利","べんり · convenient · सुविधाजनक
+Opposite: 不便（ふべん） · inconvenient · असुविधाजनक
+Usage: 便利な道具／不便な場所。"
+"安全","あんぜん · safe · सुरक्षित
+Opposite: 危険（きけん） · dangerous · खतरनाक
+Usage: 安全な場所／危険な場所。"
+"丈夫","じょうぶ · sturdy · टिकाउ
+Opposite: 弱い（よわい） · fragile/weak · कमजोर
+Usage: Construction/durability context。"
+"健康","けんこう · healthy · स्वस्थ
+Opposite: 不健康（ふけんこう） · unhealthy · अस्वस्थ
+Usage: 健康な生活／不健康な生活。"
+"甘い","あまい · sweet · गुलियो
+Opposite: 苦い（にがい） · bitter · तीतो
+Usage: Taste contrast; 甘い also lenient in other contexts。"
+"柔らかい","やわらかい · soft · नरम
+Opposite: 硬い（かたい） · hard · कडा
+Usage: Material texture。"
+"賢い","かしこい · wise · बुद्धिमान
+Opposite: 愚か（おろか） · foolish · मूर्खतापूर्ण
+Usage: Describe judgments carefully; personal labels can sound harsh。"
+"正しい","ただしい · correct · सही
+Opposite: 間違った（まちがった） · wrong · गलत
+Usage: 正しい答え／間違った答え。"
+"美しい","うつくしい · beautiful · सुन्दर
+Opposite: 醜い（みにくい） · ugly · कुरूप
+Usage: Appearance description; insulting toward people。"
+"豊か","ゆたか · rich/abundant · सम्पन्न
+Opposite: 貧しい（まずしい） · poor · गरिब
+Usage: Resources/living conditions。"
+"上品","じょうひん · refined · सभ्य/सुशोभित
+Opposite: 下品（げひん） · vulgar · असभ्य
+Usage: Manners/style; evaluate situation, not identity。"
+"自由","じゆう · free · स्वतन्त्र
+Opposite: 不自由（ふじゆう） · restricted · अस्वतन्त्र
+Usage: Choice/movement; context matters。"
+"丁寧","ていねい · careful/polite · विनम्र/सावधान
+Opposite: 乱暴（らんぼう） · rough · रुखो
+Usage: Manner of handling or speaking。"
+"親切","しんせつ · kind/helpful · सहयोगी
+Opposite: 不親切（ふしんせつ） · unhelpful · असहयोगी
+Usage: Behavior toward someone。"
+"上","うえ · above · माथि
+Opposite: 下（した） · below · तल
+Usage: Spatial positions。"
+"左","ひだり · left · बायाँ
+Opposite: 右（みぎ） · right · दायाँ
+Usage: Directions。"
+"前","まえ · front/before · अगाडि
+Opposite: 後ろ（うしろ） · behind · पछाडि
+Usage: Spatial front/back; time before/after often 前／後。"
+"中","なか · inside · भित्र
+Opposite: 外（そと） · outside · बाहिर
+Usage: Spatial location。"
+"北","きた · north · उत्तर
+Opposite: 南（みなみ） · south · दक्षिण
+Usage: Compass directions。"
+"東","ひがし · east · पूर्व
+Opposite: 西（にし） · west · पश्चिम
+Usage: Compass directions。"
+"朝","あさ · morning · बिहान
+Opposite: 夕方（ゆうがた） · evening · साँझ
+Usage: Contrasting parts of day, not logical negations。"
+"昼","ひる · daytime · दिन
+Opposite: 夜（よる） · night · रात
+Usage: Day/night contrast。"
+"昨日","きのう · yesterday · हिजो
+Opposite: 明日（あした） · tomorrow · भोलि
+Usage: Past/future relative to today。"
+"過去","かこ · past · विगत
+Opposite: 未来（みらい） · future · भविष्य
+Usage: Timeline contrast。"
+"以前","いぜん · before/formerly · पहिले
+Opposite: 以後（いご） · afterward · त्यसपछि
+Usage: 以前/以後 can include the reference point; context decides。"
+"最初","さいしょ · first · पहिलो
+Opposite: 最後（さいご） · last · अन्तिम
+Usage: Order。"
+"始まり","はじまり · beginning · सुरुवात
+Opposite: 終わり（おわり） · end · अन्त्य
+Usage: Stages of an event。"
+"入り口","いりぐち · entrance · प्रवेशद्वार
+Opposite: 出口（でぐち） · exit · बाहिरिने द्वार
+Usage: Also written 入口。"
+"出発","しゅっぱつ · departure · प्रस्थान
+Opposite: 到着（とうちゃく） · arrival · आगमन
+Usage: Travel stages。"
+"開始","かいし · start · सुरुवात
+Opposite: 終了（しゅうりょう） · finish · समाप्ति
+Usage: Formal event/operation terms。"
+"成功","せいこう · success · सफलता
+Opposite: 失敗（しっぱい） · failure · असफलता
+Usage: Outcome。"
+"勝利","しょうり · victory · विजय
+Opposite: 敗北（はいぼく） · defeat · पराजय
+Usage: Competition outcome。"
+"賛成","さんせい · agreement · समर्थन
+Opposite: 反対（はんたい） · opposition · विरोध
+Usage: 案に賛成／案に反対。"
+"許可","きょか · permission · अनुमति
+Opposite: 禁止（きんし） · prohibition · निषेध
+Usage: Not permitted does not always mean a stated prohibition; read rules。"
+"増加","ぞうか · increase · वृद्धि
+Opposite: 減少（げんしょう） · decrease · कमी
+Usage: Quantity changes。"
+"拡大","かくだい · expansion · विस्तार
+Opposite: 縮小（しゅくしょう） · reduction · संकुचन
+Usage: Scale/size changes。"
+"上昇","じょうしょう · rise · उकालो
+Opposite: 下降（かこう） · fall · ओरालो
+Usage: Movement or trends。"
+"生","せい · life · जीवन
+Opposite: 死（し） · death · मृत्यु
+Usage: Abstract life/death, 生 has other readings in compounds。"
+"出席","しゅっせき · attendance · उपस्थिति
+Opposite: 欠席（けっせき） · absence · अनुपस्थिति
+Usage: Event/class attendance。"
+"可能","かのう · possible · सम्भव
+Opposite: 不可能（ふかのう） · impossible · असम्भव
+Usage: Feasibility。"
+"必要","ひつよう · necessary · आवश्यक
+Opposite: 不要（ふよう） · unnecessary · अनावश्यक
+Usage: What is required; scope matters。"
+"有料","ゆうりょう · paid · शुल्क लाग्ने
+Opposite: 無料（むりょう） · free of charge · निःशुल्क
+Usage: Fee, not reservation requirement。"
+"有効","ゆうこう · valid/effective · मान्य/प्रभावकारी
+Opposite: 無効（むこう） · invalid · अमान्य
+Usage: Validity/effectiveness。"
+"利益","りえき · profit/benefit · लाभ
+Opposite: 損失（そんしつ） · loss · घाटा
+Usage: Business/outcome contrast。"
+"長所","ちょうしょ · strength · राम्रो पक्ष
+Opposite: 短所（たんしょ） · weakness · कमजोर पक्ष
+Usage: Characteristics, not length。"
+"貸す","かす · lend · उधारो दिनु
+Opposite: 借りる（かりる） · borrow · उधारो लिनु
+Usage: Same transaction from opposite viewpoints; not strict negations。"
+"売る","うる · sell · बेच्नु
+Opposite: 買う（かう） · buy · किन्नु
+Usage: Opposite roles in a transaction。"
+"教える","おしえる · teach · सिकाउनु
+Opposite: 習う（ならう） · learn from someone · सिक्नु
+Usage: Teacher/learner direction; 学ぶ is broader learning。"
+"与える","あたえる · give · दिनु
+Opposite: 受け取る（うけとる） · receive · प्राप्त गर्नु
+Usage: Giving/receiving direction。"
+"送信","そうしん · sending · पठाउनु
+Opposite: 受信（じゅしん） · receiving · प्राप्त गर्नु
+Usage: Messages/signals。"
+"開ける","あける · open something · खोल्नु
+Opposite: 閉める（しめる） · close something · बन्द गर्नु
+Usage: Transitive: ドアを開ける／閉める。"
+"開く","あく · open · खुल्नु
+Opposite: 閉まる（しまる） · close · बन्द हुनु
+Usage: Intransitive: ドアが開く／閉まる。"
+"入る","はいる · enter · पस्नु
+Opposite: 出る（でる） · leave · निस्कनु
+Usage: Place movement。"
+"立つ","たつ · stand · उभिनु
+Opposite: 座る（すわる） · sit · बस्नु
+Usage: Posture contrast。"
+"起きる","おきる · wake/get up · उठ्नु
+Opposite: 寝る（ねる） · go to bed · सुत्नु
+Usage: Daily routine contrast; 起きる can also mean happen。"
+"進む","すすむ · advance · अघि बढ्नु
+Opposite: 戻る（もどる） · return/go back · फर्कनु
+Usage: Direction; 戻る implies going back。"
+"上がる","あがる · go up · माथि जानु
+Opposite: 下がる（さがる） · go down · तल जानु
+Usage: Height, values, position。"
+"押す","おす · push · धकेल्नु
+Opposite: 引く（ひく） · pull · तान्नु
+Usage: Door instructions。"
+"つける","つける · turn on · बाल्नु
+Opposite: 消す（けす） · turn off · निभाउनु
+Usage: Light/appliance: 電気をつける／消す。"
+"増やす","ふやす · increase something · बढाउनु
+Opposite: 減らす（へらす） · decrease something · घटाउनु
+Usage: Transitive: 人数を増やす／減らす。"
+"笑う","わらう · laugh · हाँस्नु
+Opposite: 泣く（なく） · cry · रुनु
+Usage: Contrasting reactions; can coexist in real emotions。"
+"喜ぶ","よろこぶ · be pleased · खुशी हुनु
+Opposite: 悲しむ（かなしむ） · grieve · दुःखी हुनु
+Usage: Emotional contrast。"
+"覚える","おぼえる · remember/learn · सम्झनु
+Opposite: 忘れる（わすれる） · forget · बिर्सनु
+Usage: Memory。"
+"肯定","こうてい · affirmation · स्वीकार
+Opposite: 否定（ひてい） · negation · अस्वीकार
+Usage: Statements/judgments。"
+"攻撃","こうげき · attack · आक्रमण
+Opposite: 防御（ぼうぎょ） · defense · रक्षा
+Usage: Contrasting roles/actions。"
+"集合","しゅうごう · gather · भेला
+Opposite: 解散（かいさん） · disperse · छुट्टिनु
+Usage: Event stages。"
+"加入","かにゅう · join · सदस्य बन्नु
+Opposite: 脱退（だったい） · withdraw · सदस्यता छाड्नु
+Usage: Group membership。"
+"合格","ごうかく · pass · उत्तीर्ण
+Opposite: 不合格（ふごうかく） · fail · अनुत्तीर्ण
+Usage: Exam/selection result。"
+"合法","ごうほう · lawful · कानुनी
+Opposite: 違法（いほう） · unlawful · गैरकानुनी
+Usage: Vocabulary contrast; actual legality depends on applicable rules。"
+"公的","こうてき · public/official · सार्वजनिक
+Opposite: 私的（してき） · private/personal · निजी
+Usage: Domain/purpose。"
+"普通","ふつう · ordinary · सामान्य
+Opposite: 特別（とくべつ） · special · विशेष
+Usage: Status/context。"
+"満足","まんぞく · satisfaction · सन्तुष्टि
+Opposite: 不満（ふまん） · dissatisfaction · असन्तुष्टि
+Usage: Feelings about a result。"
+"積極的","せっきょくてき · active/proactive · सक्रिय
+Opposite: 消極的（しょうきょくてき） · passive/reluctant · निष्क्रिय
+Usage: Attitude toward action。"
+"楽観的","らっかんてき · optimistic · आशावादी
+Opposite: 悲観的（ひかんてき） · pessimistic · निराशावादी
+Usage: Expectation/outlook。"
