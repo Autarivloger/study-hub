@@ -120,9 +120,9 @@ async function main(){
   await evalJs("document.querySelector('#searchInput').value='在宅勤務';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
   await sleep(220);
   assert(await evalJs("document.querySelectorAll('#searchResults .sr-item').length>0 && document.querySelector('#searchResults').textContent.includes('Week 21')"),"Japanese search does not index Week 21 content");
-  await evalJs("document.querySelector('#searchInput').value='聞き手';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
+  await evalJs("document.querySelector('#searchInput').value='清掃用具';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
   await sleep(220);
-  assert(await evalJs("document.querySelectorAll('#searchResults .sr-item').length>0 && document.querySelector('#searchResults').textContent.includes('Week 24')"),"Japanese search does not index Week 24 content");
+  assert(await evalJs("document.querySelectorAll('#searchResults .sr-item').length>0 && document.querySelector('#searchResults').textContent.includes('Week 25')"),"Japanese search does not index Week 25 content");
   await evalJs("document.querySelector('#modalOverlay').click()");
   assert(await evalJs("document.querySelectorAll('.jp-week-card').length === 36"),"Roadmap is incomplete");
   assert(await evalJs("document.querySelector('.jp-hero [data-jp-lesson=\"1.1\"]') !== null && document.querySelector('.jp-progress').getAttribute('aria-valuenow') === '0'"),"Old kana completion falsely completed new Day 1");
@@ -370,7 +370,7 @@ async function main(){
     if(day===7) assert(await evalJs("!document.querySelector('[data-jp-cards]')"),"Week 12 review should not duplicate flashcards");
     if(day<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"12."+(day+1)+"\"]').click()");
   }
-  for(let week=1;week<=24;week++){
+  for(let week=1;week<=25;week++){
     const lessonId=day=>week===19 ? "19."+day+".core" : week+"."+day;
     await evalJs("document.querySelector('[data-jp-home]').click();document.querySelector('[data-jp-week=\""+week+"\"]').click();document.querySelector('[data-jp-lesson=\""+lessonId(1)+"\"]').click()");
     for(let day=1;day<=7;day++){
@@ -412,7 +412,7 @@ async function main(){
     if(day<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"13."+(day+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='91' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168' && !!document.querySelector('[data-jp-lesson=\"14.1\"]')"),"Week 13 completion total or Week 14 continuation is incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='91' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175' && !!document.querySelector('[data-jp-lesson=\"14.1\"]')"),"Week 13 completion total or Week 14 continuation is incorrect");
   await evalJs("document.querySelector('[data-jp-week=\"14\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 14 finish line')"),"Week 14 day list, short titles, or finish line is missing");
   await evalJs("document.querySelector('[data-jp-lesson=\"14.1\"]').click()");
@@ -435,7 +435,7 @@ async function main(){
     if(day<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"14."+(day+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='98' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168' && !!document.querySelector('[data-jp-lesson=\"15.1\"]')"),"Week 14 completion total or Week 15 continuation is incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='98' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175' && !!document.querySelector('[data-jp-lesson=\"15.1\"]')"),"Week 14 completion total or Week 15 continuation is incorrect");
   await evalJs("document.querySelector('[data-jp-week=\"15\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 15 finish line')"),"Week 15 day list, short titles, or finish line is missing");
   await evalJs("document.querySelector('[data-jp-lesson=\"15.1\"]').click()");
@@ -458,7 +458,7 @@ async function main(){
     if(day<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"15."+(day+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='105' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168' && !!document.querySelector('[data-jp-lesson=\"16.1\"]')"),"Week 15 completion total or Week 16 continuation is incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='105' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175' && !!document.querySelector('[data-jp-lesson=\"16.1\"]')"),"Week 15 completion total or Week 16 continuation is incorrect");
   await evalJs("document.querySelector('[data-jp-week=\"16\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 16 finish line')"),"Week 16 day list, short titles, or finish line is missing");
   await evalJs("document.querySelector('[data-jp-lesson=\"16.1\"]').click()");
@@ -481,7 +481,7 @@ async function main(){
     if(day<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"16."+(day+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='112' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168' && !!document.querySelector('[data-jp-lesson=\"17.1\"]')"),"Week 16 completion total or Week 17 continuation is incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='112' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175' && !!document.querySelector('[data-jp-lesson=\"17.1\"]')"),"Week 16 completion total or Week 17 continuation is incorrect");
   await evalJs("document.querySelector('[data-jp-week=\"17\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 17 finish line')"),"Week 17 day list, short titles, or finish line is missing");
   await evalJs("document.querySelector('[data-jp-lesson=\"17.1\"]').click()");
@@ -504,7 +504,7 @@ async function main(){
     if(day<7) await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"17."+(day+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='119' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168' && !!document.querySelector('[data-jp-lesson=\"18.1\"]')"),"Week 17 completion total or Week 18 continuation is incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='119' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175' && !!document.querySelector('[data-jp-lesson=\"18.1\"]')"),"Week 17 completion total or Week 18 continuation is incorrect");
   await evalJs("document.querySelector('[data-jp-week=\"18\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 18 finish line')"),"Week 18 day list, short titles, or finish line is missing");
   await evalJs("document.querySelector('[data-jp-lesson=\"18.1\"]').click()");
@@ -523,7 +523,7 @@ async function main(){
     if(day<7)await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"18."+(day+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='126' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168'"),"Week 18 completion total is incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='126' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175'"),"Week 18 completion total is incorrect");
   assert(await evalJs("!!document.querySelector('[data-jp-lesson=\"19.1.core\"]')"),"Week 18 does not continue to Week 19 core");
   await evalJs("document.querySelector('[data-jp-week=\"19\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 19 finish line')"),"Week 19 day list, short titles, or finish line is missing");
@@ -543,7 +543,7 @@ async function main(){
     if(day<7)await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"19."+(day+1)+".core\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='133' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168'"),"Week 19 completion total is incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='133' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175'"),"Week 19 completion total is incorrect");
   assert(await evalJs("!!document.querySelector('[data-jp-lesson=\"20.1\"]')"),"Week 19 does not continue to Week 20");
   await evalJs("document.querySelector('[data-jp-week=\"20\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 20 finish line')"),"Week 20 day list, titles, or finish line missing");
@@ -563,7 +563,7 @@ async function main(){
     if(day<7)await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"20."+(day+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='140' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168'"),"Week 20 completion total is incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='140' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175'"),"Week 20 completion total is incorrect");
   assert(await evalJs("!!document.querySelector('[data-jp-lesson=\"21.1\"]')"),"Week 20 does not continue to Week 21");
   await evalJs("document.querySelector('[data-jp-week=\"21\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 21 finish line')"),"Week 21 lessons or finish line missing");
@@ -583,7 +583,7 @@ async function main(){
     if(day<7)await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"21."+(day+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='147' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168'"),"Week 21 completion total incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='147' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175'"),"Week 21 completion total incorrect");
   assert(await evalJs("!!document.querySelector('[data-jp-lesson=\"22.1\"]')"),"Week 21 does not continue to Week 22");
   await evalJs("document.querySelector('[data-jp-week=\"22\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 22 finish line')"),"Week 22 lessons missing");
@@ -603,7 +603,7 @@ async function main(){
     if(day<7)await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"22."+(day+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='154' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168'"),"Week 22 completion total incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='154' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175'"),"Week 22 completion total incorrect");
   assert(await evalJs("!!document.querySelector('[data-jp-lesson=\"23.1\"]')"),"Week 22 does not continue to Week 23");
   await evalJs("document.querySelector('[data-jp-week=\"23\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 23 finish line')"),"Week 23 lessons missing");
@@ -623,7 +623,7 @@ async function main(){
     if(day<7)await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"23."+(day+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='161' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168'"),"Week 23 completion total incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='161' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175'"),"Week 23 completion total incorrect");
   assert(await evalJs("!!document.querySelector('[data-jp-lesson=\"24.1\"]')"),"Week 23 does not continue to Week 24");
   await evalJs("document.querySelector('[data-jp-week=\"24\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 24 finish line')"),"Week 24 lessons missing");
@@ -643,7 +643,27 @@ async function main(){
     if(day<7)await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"24."+(day+1)+"\"]').click()");
   }
   await evalJs("document.querySelector('[data-jp-home]').click()");
-  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='168' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='168'"),"Week 24 completion total incorrect");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='168' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175'"),"Week 24 completion total incorrect");
+  assert(await evalJs("!!document.querySelector('[data-jp-lesson=\"25.1\"]')"),"Week 24 does not continue to Week 25");
+  await evalJs("document.querySelector('[data-jp-week=\"25\"]').click()");
+  assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && document.body.textContent.includes('Week 25 finish line')"),"Week 25 lessons missing");
+  await evalJs("document.querySelector('[data-jp-lesson=\"25.1\"]').click()");
+  for(let day=1;day<=7;day++){
+    const expectedQuiz=day===7?20:8;
+    assert(await evalJs("document.querySelector('.jp-hero h2').textContent==='Day "+day+"' && document.querySelectorAll('.jp-vocab')[0].children.length===20 && document.querySelectorAll('.jp-vocab')[1].children.length===5 && document.querySelectorAll('.jp-q').length==="+expectedQuiz+" && document.querySelectorAll('.jp-panel').length>=12"),"Week 25 Day "+day+" content missing");
+    if(day<7)assert(await evalJs("[...document.querySelectorAll('.jp-panel')].some(x=>x.querySelector('h3')&&x.querySelector('h3').textContent.includes('Write and compare')&&x.querySelectorAll('.jp-example').length>=10)"),"Week 25 Day "+day+" lacks exercises");
+    if(day===7)assert(await evalJs("document.querySelectorAll('.jp-review-drill').length===4 && document.querySelectorAll('.jp-review-drill details').length===40"),"Week 25 review lacks 40 drills");
+    const f=await furiganaCoverage();assert(f.bad.length===0&&f.vocab&&f.kanji,"Week 25 Day "+day+" Furigana coverage failed: "+JSON.stringify(f));
+    if(day===1){await evalJs("document.querySelector('[data-jp-cards=vocab]').click();document.querySelector('[data-jp-cards=kanji]').click()");assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1),v=d.cards.filter(x=>x.deckId==='jp-week-25-vocab'),k=d.cards.filter(x=>x.deckId==='jp-week-25-kanji');return v.length===20&&k.length===5&&v.every(x=>!x.front.includes('（')&&x.back.includes(' · '));})()"),"Week 25 flashcards failed");}
+    await evalJs("Array.from({length:"+expectedQuiz+"},(_,j)=>document.querySelector('input[name=jpq'+j+'][value=\"0\"]')).forEach(x=>x.click());document.querySelector('[data-jp-quiz]').click()");
+    assert(await evalJs("document.querySelector('.jp-result').textContent.includes('"+expectedQuiz+" / "+expectedQuiz+" correct')"),"Week 25 Day "+day+" quiz failed");
+    await evalJs("document.querySelector('#jpNotes').value='Week 25 note "+day+"';document.querySelector('#jpNotes').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-jp-done]').click()");
+    assert(await evalJs("!!JSON.parse(localStorage.studyHubData_v1).japanese.done['25."+day+"']"),"Week 25 Day "+day+" completion failed");
+    if(day===7)assert(await evalJs("!document.querySelector('[data-jp-cards]')"),"Week 25 review duplicates flashcards");
+    if(day<7)await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"25."+(day+1)+"\"]').click()");
+  }
+  await evalJs("document.querySelector('[data-jp-home]').click()");
+  assert(await evalJs("document.querySelector('.jp-progress').getAttribute('aria-valuenow')==='175' && document.querySelector('.jp-progress').getAttribute('aria-valuemax')==='175'"),"Week 25 completion total incorrect");
   await evalJs("document.querySelector('[data-jp-lesson=\"19.1\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-panel h3').length >= 10"),"Imported grammar sections missing");
   assert(await evalJs("document.body.textContent.includes('Natural conversation') && document.body.textContent.includes('Write and compare')"),"Imported conversation or writing practice missing");
@@ -692,6 +712,7 @@ async function main(){
   assert(await evalJs("['22.1','22.2','22.3','22.4','22.5','22.6','22.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 22 note '+(i+1))"),"Week 22 progress did not survive reload");
   assert(await evalJs("['23.1','23.2','23.3','23.4','23.5','23.6','23.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 23 note '+(i+1))"),"Week 23 progress did not survive reload");
   assert(await evalJs("['24.1','24.2','24.3','24.4','24.5','24.6','24.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 24 note '+(i+1))"),"Week 24 progress did not survive reload");
+  assert(await evalJs("['25.1','25.2','25.3','25.4','25.5','25.6','25.7'].every((k,i)=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k] && JSON.parse(localStorage.studyHubData_v1).japanese.quizScores[k]===100 && JSON.parse(localStorage.studyHubData_v1).japanese.notes[k]==='Week 25 note '+(i+1))"),"Week 25 progress did not survive reload");
   assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.quizScores['19.2'] === 100"),"Day 17 score did not survive reload");
   await evalJs("document.querySelector('#sidebar [data-view=course]').click()");
   assert(await evalJs("document.querySelector('#view-course').classList.contains('active')"),"Python course navigation failed");
@@ -895,6 +916,10 @@ async function main(){
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && document.body.textContent.includes('Week 24 finish line')"),"Mobile Week 24 missing");
   await evalJs("document.querySelector('[data-jp-lesson=\"24.1\"]').click()");
   for(const n of [1,2,3,4,5,6,7]){assert(await evalJs("document.documentElement.scrollWidth<=window.innerWidth+1 && document.querySelectorAll('.jp-vocab')[0].children.length===20 && document.querySelectorAll('.jp-vocab')[1].children.length===5 && document.querySelectorAll('ruby rt').length>20"),"Mobile Week 24 Day "+n+" failed");if(process.env.JP_SHOTS&&n===7){const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),"studyhub-japanese-week24-review-mobile.png"),Buffer.from(shot.data,"base64"));}if(n<7)await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"24."+(n+1)+"\"]').click()");}
+  await evalJs("document.querySelector('[data-jp-home]').click();document.querySelector('[data-jp-week=\"25\"]').click()");
+  assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && document.body.textContent.includes('Week 25 finish line')"),"Mobile Week 25 missing");
+  await evalJs("document.querySelector('[data-jp-lesson=\"25.1\"]').click()");
+  for(const n of [1,2,3,4,5,6,7]){assert(await evalJs("document.documentElement.scrollWidth<=window.innerWidth+1 && document.querySelectorAll('.jp-vocab')[0].children.length===20 && document.querySelectorAll('.jp-vocab')[1].children.length===5 && document.querySelectorAll('ruby rt').length>20"),"Mobile Week 25 Day "+n+" failed");if(process.env.JP_SHOTS&&n===7){const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),"studyhub-japanese-week25-review-mobile.png"),Buffer.from(shot.data,"base64"));}if(n<7)await evalJs("document.querySelector('.jp-actions [data-jp-lesson=\"25."+(n+1)+"\"]').click()");}
   await evalJs("document.querySelector('[data-jp-home]').click();document.querySelector('[data-jp-week=\"3\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-day-card').length===7 && [...document.querySelectorAll('.jp-day-card strong')].every((x,i)=>x.textContent==='Day '+(i+1)) && !!document.querySelector('[data-jp-lesson=\"3.7\"]')"),"Mobile Week 3 short titles, lessons or review missing");
   await evalJs("document.querySelector('[data-jp-lesson=\"3.1\"]').click()");
@@ -965,6 +990,7 @@ async function main(){
   assert(await evalJs("['22.1','22.2','22.3','22.4','22.5','22.6','22.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 22 progress");
   assert(await evalJs("['23.1','23.2','23.3','23.4','23.5','23.6','23.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 23 progress");
   assert(await evalJs("['24.1','24.2','24.3','24.4','24.5','24.6','24.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 24 progress");
+  assert(await evalJs("['25.1','25.2','25.3','25.4','25.5','25.6','25.7'].every(k=>!!JSON.parse(localStorage.studyHubData_v1).japanese.done[k])"),"Import erased Week 25 progress");
   assert(await evalJs("(()=>{const d=JSON.parse(localStorage.studyHubData_v1),deck=d.decks.find(x=>x.name==='CSV Import Test');return !!deck&&d.cards.filter(x=>x.deckId===deck.id).length===2;})()"),"Backup/import erased CSV flashcards");
   assert(await evalJs("Object.keys(JSON.parse(localStorage.studyHubData_v1).reviews.items).length >= 84"),"Import erased spaced-review records");
   assert(await evalJs("JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:v:起きる'].hard === false && JSON.parse(localStorage.studyHubData_v1).japanese.checks['hard:k:起'].hard === false"),"Hard removal failed to merge or stale mark returned");
@@ -1022,7 +1048,7 @@ async function main(){
   }
   await evalJs("document.querySelector('#csvCancel').click()");
   assert(errors.length===0,"JavaScript errors: "+errors.join("; "));
-  console.log("PASS: Japanese Weeks 1–24, Kanji-only flashcard fronts, CSV/TSV import, 5-minute random review, weekly retrieval drills, Furigana, search, progress, mobile, dark mode, backup, mock Gist sync, no JS exceptions");
+  console.log("PASS: Japanese Weeks 1–25, Kanji-only flashcard fronts, CSV/TSV import, 5-minute random review, weekly retrieval drills, Furigana, search, progress, mobile, dark mode, backup, mock Gist sync, no JS exceptions");
   ws.close();
 }
 main().catch(err=>{console.error(err);process.exitCode=1;}).finally(()=>{browser.kill();});
