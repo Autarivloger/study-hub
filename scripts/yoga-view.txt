@@ -1,0 +1,63 @@
+/* ================= YOGA & MEDITATION ================= */
+let yogaPage = {mode:"home", id:null, duration:20};
+function yogaSession(id){return YOGA_COURSE.sessions.find(function(s){return s.id===id;});}
+function yogaLink(label,mode,id){return '<button type="button" class="btn secondary btn-sm" data-yoga-mode="'+mode+'"'+(id?' data-yoga-id="'+escapeAttr(id)+'"':'')+'>'+escapeHtml(label)+'</button>';}
+function yogaPoseHtml(pose){
+  return '<details class="yoga-guide"><summary>'+escapeHtml(pose.name)+' <span>'+escapeHtml(pose.tag)+'</span></summary><ol>'+pose.steps.map(function(x){return '<li>'+escapeHtml(x)+'</li>';}).join('')+'</ol><p><b>श्वास:</b> '+escapeHtml(pose.breath)+'</p><p><b>विकल्प:</b> '+escapeHtml(pose.modify)+'</p><p><b>Common mistake:</b> '+escapeHtml(pose.mistake)+'</p><p><b>बाहर आने का तरीका:</b> '+escapeHtml(pose.exit)+'</p></details>';
+}
+function yogaMeditationHtml(item){
+  return '<article class="card yoga-practice"><h3>'+escapeHtml(item.name)+'</h3><p class="yoga-muted">'+escapeHtml(item.minutes)+' min · जरूरत पर छोटा करें</p><ol>'+item.steps.map(function(x){return '<li>'+escapeHtml(x)+'</li>';}).join('')+'</ol><p class="ls-key">'+escapeHtml(item.key)+'</p><p><b>विकल्प:</b> '+escapeHtml(item.adapt)+'</p></article>';
+}
+function yogaGitaHtml(item){
+  return '<article class="card yoga-practice"><h3>'+escapeHtml(item.ref)+' · '+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.meaning)+'</p><p><b>Reflection:</b> '+escapeHtml(item.reflection)+'</p><small>तुम्हारे दिए गीता PDF के printed pages '+escapeHtml(item.pages)+' से विषय-संदर्भ; यह हमारी सरल अभ्यास-व्याख्या है, पुस्तक के अनुवाद की नकल नहीं।</small></article>';
+}
+function yogaStages(session,duration){
+  const times=duration===30?[2,3,6,5,3,6,3,2]:[1,2,4,3,2,4,3,1];
+  const guidance=[
+    'अहिंसा का संकल्प: आज शरीर और श्वास को दबाना नहीं। Stable जगह, mat/chair और support तैयार करें। अगर अभी running से सांस तेज है तो पहले सामान्य होने दें; तब routine शुरू करें।',
+    'Shoulder circles, ankle movement और छोटी Cat–Cow/chair movement। 4–6 आरामदेह repetitions पर्याप्त; दर्दरहित range रखें।',
+    'अपनी परिचित सूर्यनमस्कार variation सहज गति पर। पहले एक slow round, फिर जरूरत पर विश्राम। कोई rounds quota नहीं। थके दिन chair/mobility विकल्प लें; running पहले से किया हो तो अधिक जोड़ना जरूरी नहीं।',
+    session.focus,
+    session.day===6?'अनुलोम–विलोम guide पढ़कर 4 सहज cycles, बिना कुम्भक। नहीं करना चाहें तो natural breathing।':'बैठकर 6–10 natural breaths observe करें; बाकी समय सहज रहें। Forced depth, count/ratio या breath hold नहीं।',
+    'नीचे दिया ध्यान guide follow करें। '+(session.day===7?'Walking Attention के लिए सुरक्षित समतल जगह और आंखें खुली रखें।':'पहले posture, फिर चुना anchor, अंत में कमरे से संपर्क।')+' जरूरत पर छोटा session करें।',
+    'Supported Rest/side-lying/chair rest। 2–3 मिनट breath को अपने आप चलने दें। धीरे उठें।',
+    'आज का गीता reflection और एक छोटी note: श्वास कैसी रही, कहाँ support लिया, next time क्या बदलोगे?'
+  ];
+  const names=['तैयारी · Sankalpa','Warm-up','परिचित सूर्यनमस्कार / विकल्प','Focused movement','सहज श्वास','ध्यान','Recovery','Reflection'];
+  return names.map(function(name,i){return {name:name,minutes:times[i],guidance:guidance[i]};});
+}
+function renderYoga(){
+  const el=document.getElementById('lessonsBody');
+  const completed=YOGA_COURSE.sessions.filter(function(s){return lessonDone(s.id);}).length;
+  const next=YOGA_COURSE.sessions.find(function(s){return !lessonDone(s.id);})||YOGA_COURSE.sessions[0];
+  let html='<div class="yoga-wrap"><div class="yoga-intro card"><p class="yoga-eyebrow">साधना · Intermediate Path</p><h2>शरीर में स्थिरता, मन में सहजता</h2><p>तुम्हारे 10 min सूर्यनमस्कार + 5 min running आधार से शुरू। पहले quality, फिर duration: आरामदेह अभ्यास दोहराकर आगे बढ़ो। सात sessions को सात लगातार दिन में करना जरूरी नहीं।</p><div class="yoga-actions">'+yogaLink('अभ्यासक्रम','home')+yogaLink('आसन Guide','poses')+yogaLink('ध्यान / श्वास','meditations')+yogaLink('गीता Reflection','gita')+'</div></div>';
+  if(yogaPage.mode==='home'){
+    html+='<div class="card"><h3>Module 1 · स्थिरता और सजगता</h3><p>'+completed+' / '+YOGA_COURSE.sessions.length+' sessions complete · 20 या 30 min</p>'+progressBar(completed,YOGA_COURSE.sessions.length)+'<p>20 min से शुरू करो। कई आरामदेह repetitions के बाद चाहो तो 30 min। समय सुझाया हुआ है—बचा समय पूरा करने के लिए hold या repetitions न बढ़ाओ।</p>'+yogaLink(completed===YOGA_COURSE.sessions.length?'फिर से अभ्यास':'अगला अभ्यास: Session '+next.day,'session',next.id)+'</div><div class="yoga-grid">'+YOGA_COURSE.sessions.map(function(item){return '<button type="button" class="card yoga-card" data-yoga-mode="session" data-yoga-id="'+escapeAttr(item.id)+'"><span class="yoga-eyebrow">Session '+item.day+(lessonDone(item.id)?' · ✓ Complete':'')+'</span><h3>'+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.goal)+'</p></button>';}).join('')+'</div><div class="ls-box ls-tip"><b>Intermediate का अर्थ</b>यहाँ balance, movement control और attention गहराते हैं। Headstand, shoulderstand, forced lotus, breath retention और forceful pranayama इस self-guided module का हिस्सा नहीं हैं। नए या कठिन आसन के लिए योग्य in-person teacher से alignment feedback लो।</div>';
+  }else if(yogaPage.mode==='poses'){
+    html+='<h2>आसन Guide · पढ़ो, फिर धीरे अभ्यास करो</h2>'+YOGA_COURSE.poses.map(yogaPoseHtml).join('');
+  }else if(yogaPage.mode==='meditations'){
+    html+='<h2>ध्यान और सहज श्वास</h2><p>श्वास को बदलने से पहले उसे महसूस करना सीखो। कोई technique अनिवार्य नहीं; natural breath या external sound दोनों anchor हो सकते हैं।</p>'+YOGA_COURSE.meditations.map(yogaMeditationHtml).join('');
+  }else if(yogaPage.mode==='gita'){
+    html+='<h2>गीता · अभ्यास और जीवन</h2><p>गीता ध्यान का आध्यात्मिक संदर्भ देती है; यह modern asana manual या medical treatment guide नहीं। यहाँ अध्याय 6 से विषय लेकर अपनी सरल व्याख्या की गई है।</p>'+YOGA_COURSE.gita.map(yogaGitaHtml).join('');
+  }else{
+    const item=yogaSession(yogaPage.id);
+    if(!item){yogaPage.mode='home';return renderYoga();}
+    const duration=yogaPage.duration===30?30:20,stages=yogaStages(item,duration);
+    const meditation=YOGA_COURSE.meditations.find(function(x){return x.id===item.meditation;});
+    const reflection=YOGA_COURSE.gita.find(function(x){return x.id===item.gita;});
+    html+='<article class="card"><p class="yoga-eyebrow">Module 1 · Session '+item.day+' / 7</p><h2>'+escapeHtml(item.title)+'</h2><p><b>उद्देश्य:</b> '+escapeHtml(item.goal)+'</p><div class="yoga-actions" aria-label="Suggested session duration"><button type="button" class="btn'+(duration===20?'':' secondary')+'" data-yoga-duration="20" aria-pressed="'+(duration===20)+'">20 min</button><button type="button" class="btn'+(duration===30?'':' secondary')+'" data-yoga-duration="30" aria-pressed="'+(duration===30)+'">30 min</button></div><p>आज '+duration+' min का suggested plan। जरूरत पर आराम/विकल्प चुनना भी पूरा अभ्यास है।</p><ol class="yoga-stages">'+stages.map(function(stage){return '<li><h3>'+escapeHtml(stage.name)+' <span class="yoga-muted">· '+stage.minutes+' min</span></h3><p>'+escapeHtml(stage.guidance)+'</p></li>';}).join('')+'</ol></article><h3>आज के आसन · entry, श्वास और exit</h3>'+item.poses.map(function(id){return yogaPoseHtml(YOGA_COURSE.poses.find(function(x){return x.id===id;}));}).join('')+(item.day===6?yogaMeditationHtml(YOGA_COURSE.meditations.find(function(x){return x.id==='alternate';})): '')+yogaMeditationHtml(meditation)+yogaGitaHtml(reflection);
+    const sections=[{t:'h',v:'Practice reflection',noteKey:item.id+'|reflection'},{t:'ex',v:item.task},{t:'p',v:'अपनी note लिखने के लिए heading के पास ✎ दबाओ। Duration से ज्यादा comfortable breath, control और recovery को देखो।'}];
+    html+=renderSections(sections,item.id)+renderLessonQuiz(item.quiz);
+    html+='<div class="card yoga-actions">'+(item.day>1?yogaLink('← Previous session','session',YOGA_COURSE.sessions[item.day-2].id):'')+'<button type="button" class="btn" data-yoga-complete="'+escapeAttr(item.id)+'">'+(lessonDone(item.id)?'✓ Complete · Undo':'Mark practice complete')+'</button>'+(item.day<7?yogaLink('Next session →','session',YOGA_COURSE.sessions[item.day].id):yogaLink('Review all sessions','home'))+'</div>';
+  }
+  html+='<details class="yoga-guide yoga-safety"><summary>अभ्यास की सीमा और sources</summary><p>तेज दर्द, चक्कर, सांस की परेशानी या faintness पर रुकें। Chest pain या बेहोशी जैसे गंभीर लक्षण हों तो तत्काल मदद लें। Injury, pregnancy, heart/breathing condition या uncontrolled blood pressure हो तो practice की intensity/आसन योग्य clinician/instructor के साथ तय करें। Guided text live alignment assessment का विकल्प नहीं। Meditation में distress हो तो रोककर आंखें खोलें और आसपास से जुड़ें।</p><p>आसन, श्वास और ध्यान को cure, detox या guaranteed spiritual result की तरह प्रस्तुत नहीं किया गया है। कठिन poses और forceful breathing को self-guided practice में न जोड़ें।</p><p><a href="https://www.nccih.nih.gov/health/yoga-effectiveness-and-safety" target="_blank" rel="noopener noreferrer">NCCIH · Yoga effectiveness and safety</a><br><a href="https://www.nccih.nih.gov/health/meditation-and-mindfulness-effectiveness-and-safety" target="_blank" rel="noopener noreferrer">NCCIH · Meditation safety</a><br>Traditional study: supplied Gita Press श्रीमद्भगवद्गीता, अध्याय 6, printed pages 434–439, 456, 467–468। बाहरी sources खोलने के लिए internet चाहिए; course सामग्री offline है।</p></details></div>';
+  el.innerHTML=html;
+  if(yogaPage.mode!=='home')el.querySelector('.yoga-intro').classList.add('yoga-compact');
+  el.querySelectorAll('[data-yoga-mode]').forEach(function(btn){btn.onclick=function(){yogaPage.mode=btn.dataset.yogaMode;yogaPage.id=btn.dataset.yogaId||null;renderYoga();window.scrollTo(0,0);};});
+  el.querySelectorAll('[data-yoga-duration]').forEach(function(btn){btn.onclick=function(){const y=window.scrollY;yogaPage.duration=Number(btn.dataset.yogaDuration);renderYoga();window.scrollTo(0,y);};});
+  el.querySelectorAll('[data-yoga-complete]').forEach(function(btn){btn.onclick=function(){toggleLessonDone(btn.dataset.yogaComplete);renderYoga();renderSideStats();};});
+  if(yogaPage.mode==='session'){
+    wireHeadNotes(el);
+    const item=yogaSession(yogaPage.id);if(item)wireLessonQuiz(el,item.quiz);
+  }
+}

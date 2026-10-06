@@ -29,7 +29,7 @@ async function main(){
 
   assert(await evalJs('LESSONS.length===0 && LEGACY_PYTHON_LESSONS.length===8'), 'Lessons not migrated');
   await evalJs('switchView("lessons");renderLessons()');
-  assert(await evalJs('document.querySelectorAll(".lesson-card").length===0 && document.querySelector("#openPythonCourse")'), 'Lessons not empty');
+  assert(await evalJs('document.querySelectorAll(".lesson-card").length===0 && document.querySelectorAll(".yoga-card").length===7'), 'Yoga replacement or legacy course migration failed');
   const rendered=await evalJs('(()=>{let count=0;switchView("course");for(const key of Object.keys(DAY_TEACH)){const [w,d]=key.split(".").map(Number);for(let p=0;p<dayParts(key).length;p++){courseView={mode:"day",week:w,dayIdx:d,part:p};renderCourseDay();if(!document.querySelector(".day-teach"))throw Error("Missing teaching "+key);count++;}}return count;})()');
   assert(rendered>=114,'Not all days rendered');
   if(await evalJs('Boolean(DAY_TEACH["21.0"])')){
@@ -71,7 +71,7 @@ async function main(){
   await evalJs('switchView("lessons");renderLessons()');assert(await evalJs('document.documentElement.scrollWidth<=window.innerWidth+1'),'Mobile Lessons overflow');
   await evalJs('switchView("course");courseView={mode:"day",week:2,dayIdx:3,part:0};renderCourseDay()');
   const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'studyhub-python-course-mobile.png'),Buffer.from(shot.data,'base64'));
-  assert(errors.length===0,'JS errors: '+errors.join('; '));console.log('PASS: '+rendered+' course parts, empty Lessons, quizzes, stable moved practice, existing progress, saved notes, Resume, exact-part links/search, practice filter, refresh, mobile/dark, no JS errors');ws.close();
+  assert(errors.length===0,'JS errors: '+errors.join('; '));console.log('PASS: '+rendered+' course parts, Yoga tab replacement, quizzes, stable moved practice, existing progress, saved notes, Resume, exact-part links/search, practice filter, refresh, mobile/dark, no JS errors');ws.close();
 }
 main().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>browser.kill());
 

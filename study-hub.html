@@ -372,7 +372,7 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
   .jr-date{ order:-1; flex-basis:100%; }
 }
 
-/* Lessons */
+/* Yoga uses the existing Lessons view identifier for legacy links. */
 #lessonsBody{ padding:18px; max-width:760px; }
 .lessons-intro{ font-size:14px; color:var(--text-dim); line-height:1.6; margin:0 0 16px; }
 .lessons-more{ font-size:13px; color:var(--text-dim); margin-top:16px; font-style:italic; }
@@ -1216,6 +1216,28 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 #jpMeaningSearch{width:100%;box-sizing:border-box;margin:8px 0;}
 .jp-meaning-pair .jp-study-item{min-width:0;overflow-wrap:anywhere;}
 @media(max-width:480px){.jp-meaning-pair{grid-template-columns:1fr;}}
+
+/* Yoga & Meditation: use the app theme and existing controls. */
+.yoga-wrap{max-width:920px;margin:0 auto;line-height:1.75}
+.yoga-wrap .card{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:18px}
+.yoga-wrap h2,.yoga-wrap h3{line-height:1.4;overflow-wrap:anywhere}
+.yoga-wrap .yoga-intro{border-top:3px solid var(--accent);margin-bottom:18px}
+.yoga-wrap .yoga-compact{padding:6px 16px}
+.yoga-compact>h2,.yoga-compact>p{display:none}
+.yoga-eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.04em;color:var(--accent)}
+.yoga-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+.yoga-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+.yoga-card{text-align:left;cursor:pointer;width:100%;color:inherit;font:inherit}
+.yoga-card:hover{border-color:var(--accent)}
+.yoga-guide{border:1px solid var(--border);border-radius:12px;padding:14px;margin:12px 0;background:var(--bg-elev)}
+.yoga-guide summary{cursor:pointer;font-weight:700;line-height:1.6}
+.yoga-guide summary span,.yoga-muted{font-size:.85rem;color:var(--text-dim)}
+.yoga-guide summary span{display:block;font-weight:400}
+.yoga-guide li,.yoga-practice li{padding:5px 0}
+.yoga-practice{margin:18px 0}.yoga-stages{padding-left:24px}.yoga-stages li{padding:8px 0}
+.yoga-wrap a{overflow-wrap:anywhere}.yoga-wrap .ls-key{padding:12px;border-radius:8px}
+@media(max-width:600px){.yoga-grid{grid-template-columns:1fr}.yoga-guide{padding:12px}.yoga-wrap ol{padding-left:22px}.yoga-actions .btn{white-space:normal}}
+
 </style>
 </head>
 <body>
@@ -1239,7 +1261,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
 
 <nav id="tabnav" aria-label="Sections">
   <button type="button" data-view="course"><span class="ic">🎓</span>Course</button>
-  <button type="button" data-view="lessons"><span class="ic">📖</span>Lessons</button>
+  <button type="button" data-view="lessons"><span class="ic">🧘</span>Yoga &amp; Meditation</button>
   <button type="button" data-view="journal"><span class="ic">📔</span>Journal</button>
   <button type="button" data-view="wisdom"><span class="ic">🌱</span>Life</button>
   <button type="button" data-view="liked"><span class="ic">❤️</span>I Liked</button>
@@ -1257,7 +1279,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
 <div id="main">
   <div id="sidebar">
     <button type="button" class="nav-item active" data-view="course"><span class="ic">🎓</span>Course</button>
-    <button type="button" class="nav-item" data-view="lessons"><span class="ic">📖</span>Lessons</button>
+    <button type="button" class="nav-item" data-view="lessons"><span class="ic">🧘</span>Yoga &amp; Meditation</button>
     <button type="button" class="nav-item" data-view="journal"><span class="ic">📔</span>Journal</button>
     <button type="button" class="nav-item" data-view="wisdom"><span class="ic">🌱</span>Life Lessons</button>
     <button type="button" class="nav-item" data-view="liked"><span class="ic">❤️</span>I Liked</button>
@@ -1305,8 +1327,8 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
     <!-- LESSONS VIEW -->
     <div class="view" id="view-lessons">
       <div class="pane-header">
-        <h1>Lessons</h1>
-        <button type="button" class="btn secondary btn-sm" id="lessonsHomeBtn">All lessons</button>
+        <h1>Yoga &amp; Meditation</h1>
+        <button type="button" class="btn secondary btn-sm" id="lessonsHomeBtn">Practice home</button>
       </div>
       <div id="lessonsBody"></div>
     </div>
@@ -1690,7 +1712,7 @@ function switchView(name){
   });
   document.querySelectorAll("#sidebar .nav-item").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
   document.querySelectorAll("#tabnav button").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
-  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Lessons", journal:"Daily Journal", wisdom:"Life Lessons", liked:"I Liked", typing:"Typing", japanese:"Japanese Language", reviews:"Today's Review", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Quizzes"}[name];
+  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Yoga & Meditation", journal:"Daily Journal", wisdom:"Life Lessons", liked:"I Liked", typing:"Typing", japanese:"Japanese Language", reviews:"Today's Review", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Quizzes"}[name];
   document.getElementById("backBtn").style.display = "none";
   if(name!=="typing") typingLeave();
   if(name==="course") renderCourse();
@@ -4021,7 +4043,7 @@ function reviewEnrollPythonLesson(id,completedAt){
 function migrateCompletedToReviews(){
   let changed=false;
   Object.keys(DB.course.done||{}).forEach(function(k){const p=k.split(".").map(Number),id=reviewId("python","day",k);if(!DB.reviews.items[id]){reviewEnrollPythonDay(p[0],p[1],DB.course.done[k]);changed=true;}});
-  Object.keys(DB.lessonsDone||{}).forEach(function(k){const id=reviewId("python","lesson",k);if(!DB.reviews.items[id]){reviewEnrollPythonLesson(k,DB.lessonsDone[k]);changed=true;}});
+  Object.keys(DB.lessonsDone||{}).forEach(function(k){if(!LEGACY_PYTHON_LESSONS.some(function(l){return l.id===k;}))return;const id=reviewId("python","lesson",k);if(!DB.reviews.items[id]){reviewEnrollPythonLesson(k,DB.lessonsDone[k]);changed=true;}});
   Object.keys(DB.japanese.done||{}).forEach(function(k){
     const L=JP_LESSONS.find(function(x){return jpStateId(x)===k||x.id===k;});
     const id=reviewId("japanese","lesson",k);
@@ -20336,9 +20358,674 @@ function wireLessonQuiz(el, L){
   });
 }
 
+const YOGA_COURSE = {
+  "poses": [
+    {
+      "id": "mountain",
+      "name": "ताड़ासन · Tadasana",
+      "tag": "Standing awareness",
+      "steps": [
+        "दोनों पैरों को आराम से hip-width पर रखें; एड़ियों और पैर के आगे के हिस्से पर भार बाँटें।",
+        "घुटनों को जोर से lock न करें। श्रोणि के ऊपर पसलियाँ और उनके ऊपर सिर रखें; कंधे नरम।",
+        "हाथ बगल में, दृष्टि सामने। 4–6 सहज श्वास तक खड़े रहें, फिर पैर हिलाएँ।"
+      ],
+      "breath": "श्वास स्वाभाविक रखें; पेट खींचकर श्वास रोकना नहीं।",
+      "modify": "संतुलन कठिन हो तो दीवार पास रखें; chair पर सीधे बैठकर यही awareness कर सकते हैं।",
+      "mistake": "छाती को बहुत आगे निकालना या घुटने पीछे धकेलना।",
+      "exit": "भार दोनों पैरों पर समान करें और आराम से कदम लें।"
+    },
+    {
+      "id": "cat",
+      "name": "मार्जारी–बितिल · Cat–Cow",
+      "tag": "Spine mobilisation",
+      "steps": [
+        "हथेलियाँ कंधों के नीचे और घुटने hips के नीचे; घुटनों के लिए blanket रखें।",
+        "सहज inhale पर छाती थोड़ा आगे, spine हल्की लंबी; गर्दन पीछे न फेंकें।",
+        "Exhale पर पीठ धीरे गोल करें और सिर सहज झुकाएँ। 4–6 छोटे, दर्दरहित चक्र; अंत में neutral spine।"
+      ],
+      "breath": "हर movement एक सहज श्वास के साथ; बहुत गहरा range आवश्यक नहीं।",
+      "modify": "Wrist/knee discomfort हो तो chair पर बैठकर हाथ जाँघों पर रखकर छोटी spine movement करें।",
+      "mistake": "कमर में जोर से arch बनाना या हथेलियों में पूरा भार पटकना।",
+      "exit": "Neutral spine में आएँ; धीरे बैठें या खड़े हों।"
+    },
+    {
+      "id": "warrior",
+      "name": "वीरभद्रासन II · Warrior II",
+      "tag": "Standing strength",
+      "steps": [
+        "पैर चौड़े लेकिन नियंत्रित दूरी पर; दायाँ पैर बाहर की ओर, बायाँ थोड़ा अंदर।",
+        "दायाँ घुटना मोड़ें और उसे पैर की दिशा में रखें; आरामदायक bend, आगे का घुटना अंदर न गिरे।",
+        "हाथ shoulder height पर यदि आरामदेह हों; pelvis और chest side की ओर। 3–4 श्वास, फिर पैर सीधा करें और दूसरी ओर।"
+      ],
+      "breath": "श्वास रोके बिना स्थिर रहें; बोलने/सहज सांस में कठिनाई हो तो bend कम करें।",
+      "modify": "Stance छोटा करें, घुटना कम मोड़ें; एक हाथ chair पर या दोनों हाथ hips पर।",
+      "mistake": "गहरा bend पाने के लिए घुटने को अंदर गिराना या कंधे कानों तक उठाना।",
+      "exit": "पहले आगे का पैर सीधा करें, फिर पैरों को parallel करके stance छोटा करें।"
+    },
+    {
+      "id": "triangle",
+      "name": "त्रिकोणासन · Supported Triangle",
+      "tag": "Length before depth",
+      "steps": [
+        "मध्यम चौड़ा stance लें; सामने का पैर बाहर, पीछे का पैर थोड़ा अंदर, दोनों घुटने नरम।",
+        "धड़ लंबा रखते हुए आगे के hip से छोटा hinge करें; नीचे वाला हाथ chair/स्थिर block पर।",
+        "ऊपरी हाथ hip पर रह सकता है। Chest थोड़ा side की ओर, नजर जमीन पर। 3 सहज श्वास और दूसरी ओर।"
+      ],
+      "breath": "श्वास के लिए जगह रखें; पेट/पसलियों को दबाकर नीचे न जाएँ।",
+      "modify": "ऊँचा support और छोटा stance; चक्कर हो तो standing mountain में रहें।",
+      "mistake": "हाथ जमीन तक पहुँचाने के लिए spine को collapse करना।",
+      "exit": "घुटने हल्के मोड़ें, पैरों का सहारा लेते हुए धड़ उठाएँ; जल्दी सिर न उठाएँ।"
+    },
+    {
+      "id": "tree",
+      "name": "वृक्षासन · Supported Tree",
+      "tag": "Balance with support",
+      "steps": [
+        "दीवार/chair के पास खड़े हों; एक पैर पर धीरे भार लें, दूसरा पैर toes जमीन पर रखकर ankle के पास रखें।",
+        "यदि स्थिर हों तो पैर calf पर रख सकते हैं; घुटने के जोड़ पर दबाव न दें।",
+        "Pelvis सामने और नजर एक स्थिर बिंदु पर। 2–4 श्वास, पैर नीचे और दूसरी ओर।"
+      ],
+      "breath": "सहज श्वास; संतुलन खोना अभ्यास का हिस्सा है।",
+      "modify": "दोनों हाथ chair पर और दूसरे पैर की toes हमेशा जमीन पर रखें।",
+      "mistake": "पैर को सीधे knee joint पर दबाना या आंखें बंद करके चुनौती बढ़ाना।",
+      "exit": "पैर को जमीन पर रखें, दोनों पैरों पर भार बाँटें, तभी side बदलें।"
+    },
+    {
+      "id": "fold",
+      "name": "अर्ध उत्तानासन · Supported Half Fold",
+      "tag": "Hip hinge",
+      "steps": [
+        "Chair/दीवार के सामने खड़े हों; हाथ support पर और कदम पीछे करके आरामदायक hinge बनाएं।",
+        "घुटने थोड़ा मोड़ें; hips पीछे, spine लंबी, सिर spine की line में।",
+        "3–5 सहज श्वास; ऊंचाई ऐसी रखें कि पीठ या hamstrings में खिंचाव दर्द न बने।"
+      ],
+      "breath": "गर्दन और पेट नरम; श्वास रोककर खिंचाव नहीं।",
+      "modify": "हाथ ऊँची दीवार पर रखें और बहुत छोटा hinge; नीचे सिर करने से परेशानी हो तो upright रहें।",
+      "mistake": "घुटने lock करके कमर को गोल धकेलना।",
+      "exit": "घुटने नरम करके धीरे ऊपर आएँ; पहले चक्कर तो नहीं, यह देखें।"
+    },
+    {
+      "id": "cobra",
+      "name": "भुजंगासन · Low Cobra",
+      "tag": "Small backbend",
+      "steps": [
+        "पेट के बल लेटें, पैर आराम से पीछे; हथेलियाँ निचली पसलियों के पास, elbows पास।",
+        "Inhale पर छाती थोड़ा ऊपर लाएँ; हाथों से जोर लगाकर ऊँचा नहीं। Pelvis और पैर जमीन पर सहज।",
+        "गर्दन लंबी, नजर आगे-नीचे। 1–2 श्वास या एक सहज inhale/exhale; 2–3 छोटे repetitions।"
+      ],
+      "breath": "ऊपर हल्का inhale, नीचे सहज exhale; श्वास/कमर दबे तो तुरंत नीचे।",
+      "modify": "पेट के बल होना असुविधाजनक हो तो यह छोड़कर chair पर gentle chest opening करें।",
+      "mistake": "Straight arms के लिए कमर को दबाना और सिर बहुत पीछे करना।",
+      "exit": "Exhale पर छाती नीचे, सिर एक ओर या हाथों पर आराम।"
+    },
+    {
+      "id": "bridge",
+      "name": "सेतुबंधासन · Gentle Bridge",
+      "tag": "Controlled hip lift",
+      "steps": [
+        "पीठ के बल लेटें; घुटने मुड़े, पैर hip-width और heels आराम से hips के पास।",
+        "Inhale पर hips थोड़े उठाएँ; घुटने पैर की दिशा में। भार shoulders/पैरों पर, गर्दन पर दबाव नहीं।",
+        "2–3 सहज श्वास या छोटे up/down repetitions। सिर को उठे हुए pose में side की ओर न मोड़ें।"
+      ],
+      "breath": "श्वास सहज; ऊंचाई से ज्यादा control महत्वपूर्ण।",
+      "modify": "बहुत छोटी lift या hips जमीन पर रखते हुए पैर का gentle press।",
+      "mistake": "सबसे ऊंची lift के लिए lower back दबाना या pose में गर्दन घुमाना।",
+      "exit": "धीरे hips जमीन पर रखें, फिर आराम करें।"
+    },
+    {
+      "id": "rest",
+      "name": "शवासन · Supported Rest",
+      "tag": "Recovery",
+      "steps": [
+        "पीठ के बल सहज लेटें; घुटनों के नीचे pillow, सिर के नीचे पतला support जरूरत के अनुसार।",
+        "हाथ आराम से बगल में; आंखें बंद करना जरूरी नहीं। शरीर का भार support पर छोड़ें।",
+        "2–4 मिनट कोई श्वास बदलने का लक्ष्य नहीं; पैर, pelvis, shoulders, चेहरे की सहजता देखें।"
+      ],
+      "breath": "श्वास को अपने आप आने-जाने दें।",
+      "modify": "Side-lying with pillow या chair पर supported rest; शरीर या breath पर ध्यान असहज हो तो कमरे की आवाज़ सुनें।",
+      "mistake": "आराम को भी perfect करने की कोशिश; uncomfortable posture में टिके रहना।",
+      "exit": "उंगलियाँ हिलाएँ, side पर मुड़ें, हाथ का सहारा लेकर धीरे उठें।"
+    },
+    {
+      "id": "seat",
+      "name": "सुखासन / Chair Seat · Meditation Seat",
+      "tag": "Stable and comfortable",
+      "steps": [
+        "Chair पर बैठें तो पैर जमीन पर, hips स्थिर और पीठ आराम से लंबी। Floor पर cushion ऊँचा रखें; knees को support दे सकते हैं।",
+        "कंधे, jaw और हाथ नरम; आंखें हल्की खुली या बंद—अपनी सहजता के अनुसार।",
+        "हर 1–2 मिनट posture देखें। Pain या numbness हो तो position बदलें; ध्यान के लिए lotus आवश्यक नहीं।"
+      ],
+      "breath": "स्वाभाविक श्वास; posture इतना कठोर न करें कि सांस दबे।",
+      "modify": "Chair या supported back वाला आसन पूरी तरह मान्य है।",
+      "mistake": "Padmasana में पैरों को जबरदस्ती खींचना या सुन्न होने पर भी न हिलना।",
+      "exit": "आंखें खोलें, आसपास देखें, पैरों को धीरे सीधा करें और फिर खड़े हों।"
+    }
+  ],
+  "meditations": [
+    {
+      "id": "breath",
+      "name": "श्वास-दृष्टि · Breath Awareness",
+      "minutes": "4–8",
+      "steps": [
+        "1 मिनट posture और कमरे का संपर्क महसूस करें। Chair का सहारा भी ठीक है।",
+        "एक anchor चुनें: नासिका पर सहज श्वास, पेट की हल्की movement, या कमरे की आवाज़।",
+        "2–5 मिनट anchor महसूस करें। मन भटके तो मन में “विचार” कहें और नरमी से वापस आएँ; सांस को लंबा बनाने की जरूरत नहीं।",
+        "अंतिम 1 मिनट पूरे शरीर/कमरे को देखें और आंखें खोलें।"
+      ],
+      "key": "ध्यान का कौशल विचार खत्म करना नहीं—भटकना पहचानकर लौटना है।",
+      "adapt": "Breath focus से घबराहट हो तो आंखें खोलें, पैर जमीन पर महसूस करें और बाहरी आवाज़ को anchor बनाएं।"
+    },
+    {
+      "id": "alternate",
+      "name": "अनुलोम–विलोम · बिना कुम्भक",
+      "minutes": "2–3",
+      "steps": [
+        "आराम से बैठें। बाएँ हाथ को आराम दें; दाहिने हाथ से नासिका को बहुत हल्के स्पर्श से बंद करें।",
+        "दाहिनी नासिका बंद: बाईं से सहज inhale। बाईं बंद करके दाहिनी खोलें: सहज exhale।",
+        "दाहिनी से सहज inhale; दाहिनी बंद करके बाईं खोलें: सहज exhale। यह एक चक्र है।",
+        "4–6 आरामदेह चक्र तक या 2 मिनट के भीतर रखें। कोई breath hold, जोरदार inhale या निश्चित ratio नहीं। अंत में दोनों नासिकाओं से सामान्य श्वास।"
+      ],
+      "key": "श्वास सहज रहे; नासिका बंद हो तो plain breath awareness करें।",
+      "adapt": "हाथ थके, सांस कम लगे या चक्कर आए तो हाथ नीचे और सामान्य श्वास। यह बीमारी का उपचार या “detox” नहीं है।"
+    },
+    {
+      "id": "mantra",
+      "name": "जप-ध्यान · Optional Mantra",
+      "minutes": "5–8",
+      "steps": [
+        "एक परिचित और अर्थपूर्ण शब्द चुनें—जैसे “ॐ” या “शान्ति”; धार्मिक जप चुनना जरूरी नहीं।",
+        "30–60 seconds सहज बैठें। हर कुछ श्वास पर चुना हुआ शब्द मन में धीरे दोहराएँ; breath को शब्द के हिसाब से जोर न दें।",
+        "मन भटके तो शब्द/आवाज पर वापस। तेज chanting, लंबा breath hold या throat pressure नहीं।",
+        "अंत में शब्द छोड़कर एक मिनट चुप बैठें और कमरे से दोबारा जुड़ें।"
+      ],
+      "key": "जप एक attention anchor है; दिव्य अनुभूति को परीक्षा या guaranteed result न बनाएं।",
+      "adapt": "यदि जप पसंद नहीं तो breath awareness या बाहरी आवाज़ चुनें।"
+    },
+    {
+      "id": "witness",
+      "name": "साक्षीभाव · Observe Without Fighting",
+      "minutes": "5–8",
+      "steps": [
+        "पहले 2 मिनट breath या sound anchor पर रहें।",
+        "फिर कोई विचार आए तो छोटा label: “योजना”, “याद”, “चिंता”। कहानी में आगे जाने के बजाय anchor महसूस करें।",
+        "Thoughts को दबाएँ नहीं। बार-बार भटकने पर attention को अधिक सरल बाहरी sound/पैर के संपर्क पर लौटाएँ।",
+        "अंतिम मिनट आंखें खोलें और तीन चीजें देखें; meditation समाप्त होने को पहचानें।"
+      ],
+      "key": "यह एक contemplative अभ्यास है; कठिन भावना को सहते रहने की मजबूरी नहीं।",
+      "adapt": "Panic, unreality या overwhelm हो तो रोकें, आंखें खोलकर जमीन/कमरे से जुड़ें। बार-बार परेशानी हो तो योग्य सहायता लें।"
+    },
+    {
+      "id": "walk",
+      "name": "सचेत चलना · Walking Attention",
+      "minutes": "4–6",
+      "steps": [
+        "समतल सुरक्षित जगह चुनें; आंखें खुली और रास्ते पर ध्यान।",
+        "सामान्य धीमी गति से चलें; पैर का उठना, आगे बढ़ना और जमीन छूना महसूस करें।",
+        "सोच में खो जाएँ तो अगले एक कदम पर वापस; सांस और कदम का forced ratio नहीं।",
+        "अंत में रुककर दो सहज श्वास लें। यह running challenge नहीं।"
+      ],
+      "key": "ध्यान बैठने तक सीमित नहीं; movement में भी लौटने का अभ्यास हो सकता है।",
+      "adapt": "Chair पर बैठे हुए पैर का संपर्क/आवाज़ महसूस करना भी विकल्प है।"
+    }
+  ],
+  "gita": [
+    {
+      "id": "seat",
+      "ref": "गीता 6.12–14",
+      "pages": "434–436",
+      "title": "स्थिरता और एकाग्रता",
+      "meaning": "ध्यान में जगह, बैठने की स्थिरता और एक दिशा में मन लगाने का महत्व है। इस course में उसका व्यावहारिक रूप: comfortable seat, नरम posture और एक attention anchor। यह हमारी अभ्यास-व्याख्या है; श्लोक chair या आधुनिक stretching routine का निर्देश नहीं देते।",
+      "reflection": "आज कौन-सा बैठने का support तुम्हारी श्वास को सहज रखता है?"
+    },
+    {
+      "id": "moderation",
+      "ref": "गीता 6.16–17",
+      "pages": "438–439",
+      "title": "युक्त आहार-विहार · संतुलित अभ्यास",
+      "meaning": "अति और उपेक्षा दोनों से बचकर आहार, activity, काम और आराम में संयम रखने का संदेश। इसका अभ्यास में अर्थ: थके दिन intensity घटाना और पर्याप्त recovery रखना। यह कोई विशेष diet, fasting या नींद छोड़ने की prescription नहीं है।",
+      "reflection": "आज अधिक करना चाहने के बजाय किस सीमा का सम्मान कर सकते हो?"
+    },
+    {
+      "id": "return",
+      "ref": "गीता 6.26",
+      "pages": "456",
+      "title": "मन भटके तो फिर लौटना",
+      "meaning": "मन अलग-अलग ओर जाए तो बार-बार उसे साधना के लक्ष्य की ओर लौटाना। हम पहले breath/sound anchor पर कोमल return सीखते हैं; गीता के आध्यात्मिक संदर्भ में लक्ष्य आत्मा/परमात्मा का ध्यान है। दोनों संदर्भों को एक जैसा दावा नहीं करते।",
+      "reflection": "ध्यान भटका तब तुम्हारा स्वर कठोर था या धैर्यपूर्ण?"
+    },
+    {
+      "id": "practice",
+      "ref": "गीता 6.35",
+      "pages": "467–468",
+      "title": "अभ्यास और वैराग्य",
+      "meaning": "चंचल मन के साथ नियमित अभ्यास और आसक्ति से दूरी—दोनों की भूमिका। आज का व्यावहारिक संकल्प: छोटे नियमित sessions और अनुभव/अंक/गहरे pose के प्रति अनावश्यक चिपकाव कम करना। इसे instant control या guaranteed spiritual achievement न समझें।",
+      "reflection": "कौन-सा परिणाम छोड़कर केवल अभ्यास की गुणवत्ता पर ध्यान दे सकते हो?"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "yoga:intermediate:1.1",
+      "day": 1,
+      "title": "स्थिरता, श्वास और अभ्यास की गुणवत्ता",
+      "goal": "तुम्हारे परिचित सूर्यनमस्कार को धीमे निरीक्षण के साथ करना।",
+      "poses": [
+        "mountain",
+        "cat",
+        "seat"
+      ],
+      "meditation": "breath",
+      "gita": "seat",
+      "task": "सूर्यनमस्कार में एक transition चुनो। Inhale/exhale सहज है या गति के पीछे श्वास दबती है? अगला round धीमा करो; कम rounds भी ठीक हैं।",
+      "focus": "Sun salutation की तुम्हारी परिचित variation ही करो। Full 12-position sequence नया सीखना हो तो in-person alignment guidance लो; इस session में नई कठिन variation जोड़ना लक्ष्य नहीं।",
+      "quiz": {
+        "id": "yoga:quiz:1.1",
+        "quiz": [
+          {
+            "q": "आसन में तेज दर्द या चक्कर आए तो क्या करें?",
+            "options": [
+              "थोड़ा और जोर लगाएँ",
+              "अभ्यास रोकें, safe position और सहज श्वास लें",
+              "दर्द को mastery समझें"
+            ],
+            "correct": 1,
+            "why": "Pain/dizziness चुनौती बढ़ाने का संकेत नहीं। नया/लगातार लक्षण हो तो उपयुक्त चिकित्सा सहायता लें।"
+          },
+          {
+            "q": "मन बार-बार भटके तो ध्यान असफल है?",
+            "options": [
+              "नहीं; ध्यान पहचानकर कोमलता से लौटाना अभ्यास है",
+              "हाँ; विचार बिल्कुल नहीं आने चाहिए",
+              "श्वास रोकने से ही ध्यान होगा"
+            ],
+            "correct": 0,
+            "why": "ध्यान लौटने का कौशल है; breath hold या thoughts suppression आवश्यक नहीं।"
+          },
+          {
+            "q": "आज progress का उपयोगी संकेत कौन-सा है?",
+            "options": [
+              "सबसे कठिन pose",
+              "दूसरे से अधिक rounds",
+              "सहज श्वास, नियंत्रित movement और अपनी सीमा पहचानना"
+            ],
+            "correct": 2,
+            "why": "Intensity या duration अकेला progress नहीं; quality और recovery देखें।"
+          }
+        ]
+      }
+    },
+    {
+      "id": "yoga:intermediate:1.2",
+      "day": 2,
+      "title": "संतुलन और पैरों का आधार",
+      "goal": "Balance में support लेना और steady breath बनाए रखना।",
+      "poses": [
+        "mountain",
+        "warrior",
+        "tree"
+      ],
+      "meditation": "breath",
+      "gita": "return",
+      "task": "दीवार के पास Tree को पहले toes जमीन पर रखकर करो। एक side अधिक कठिन हो तो समय बराबर रखने के लिए strain न बढ़ाओ।",
+      "focus": "Focused movement में Warrior II दोनों ओर 3 श्वास और Supported Tree दोनों ओर 2–3 श्वास, बीच में Mountain rest। समय भरने के लिए repetitions जरूरी नहीं।",
+      "quiz": {
+        "id": "yoga:quiz:1.2",
+        "quiz": [
+          {
+            "q": "आसन में तेज दर्द या चक्कर आए तो क्या करें?",
+            "options": [
+              "थोड़ा और जोर लगाएँ",
+              "अभ्यास रोकें, safe position और सहज श्वास लें",
+              "दर्द को mastery समझें"
+            ],
+            "correct": 1,
+            "why": "Pain/dizziness चुनौती बढ़ाने का संकेत नहीं। नया/लगातार लक्षण हो तो उपयुक्त चिकित्सा सहायता लें।"
+          },
+          {
+            "q": "मन बार-बार भटके तो ध्यान असफल है?",
+            "options": [
+              "नहीं; ध्यान पहचानकर कोमलता से लौटाना अभ्यास है",
+              "हाँ; विचार बिल्कुल नहीं आने चाहिए",
+              "श्वास रोकने से ही ध्यान होगा"
+            ],
+            "correct": 0,
+            "why": "ध्यान लौटने का कौशल है; breath hold या thoughts suppression आवश्यक नहीं।"
+          },
+          {
+            "q": "आज progress का उपयोगी संकेत कौन-सा है?",
+            "options": [
+              "सबसे कठिन pose",
+              "दूसरे से अधिक rounds",
+              "सहज श्वास, नियंत्रित movement और अपनी सीमा पहचानना"
+            ],
+            "correct": 2,
+            "why": "Intensity या duration अकेला progress नहीं; quality और recovery देखें।"
+          }
+        ]
+      }
+    },
+    {
+      "id": "yoga:intermediate:1.3",
+      "day": 3,
+      "title": "Spine movement और नियंत्रित strength",
+      "goal": "छोटे range में movement करना और recovery को अभ्यास मानना।",
+      "poses": [
+        "cat",
+        "cobra",
+        "bridge",
+        "rest"
+      ],
+      "meditation": "breath",
+      "gita": "moderation",
+      "task": "आज low cobra/bridge की ऊँचाई कम रखो। कमर में compression हो तो alternative चुनो; उसे progress का प्रमाण न मानो।",
+      "focus": "Cat–Cow 4 सहज cycles; Low Cobra 2 छोटे repetitions; Gentle Bridge 2 छोटे repetitions। हर movement के बीच neutral/rest। परिचित pose न हो तो पहले guide पढ़ो और chair विकल्प चुनो।",
+      "quiz": {
+        "id": "yoga:quiz:1.3",
+        "quiz": [
+          {
+            "q": "आसन में तेज दर्द या चक्कर आए तो क्या करें?",
+            "options": [
+              "थोड़ा और जोर लगाएँ",
+              "अभ्यास रोकें, safe position और सहज श्वास लें",
+              "दर्द को mastery समझें"
+            ],
+            "correct": 1,
+            "why": "Pain/dizziness चुनौती बढ़ाने का संकेत नहीं। नया/लगातार लक्षण हो तो उपयुक्त चिकित्सा सहायता लें।"
+          },
+          {
+            "q": "मन बार-बार भटके तो ध्यान असफल है?",
+            "options": [
+              "नहीं; ध्यान पहचानकर कोमलता से लौटाना अभ्यास है",
+              "हाँ; विचार बिल्कुल नहीं आने चाहिए",
+              "श्वास रोकने से ही ध्यान होगा"
+            ],
+            "correct": 0,
+            "why": "ध्यान लौटने का कौशल है; breath hold या thoughts suppression आवश्यक नहीं।"
+          },
+          {
+            "q": "आज progress का उपयोगी संकेत कौन-सा है?",
+            "options": [
+              "सबसे कठिन pose",
+              "दूसरे से अधिक rounds",
+              "सहज श्वास, नियंत्रित movement और अपनी सीमा पहचानना"
+            ],
+            "correct": 2,
+            "why": "Intensity या duration अकेला progress नहीं; quality और recovery देखें।"
+          }
+        ]
+      }
+    },
+    {
+      "id": "yoga:intermediate:1.4",
+      "day": 4,
+      "title": "Recovery और साक्षीभाव",
+      "goal": "हल्का दिन रखना, विचारों से लड़ने के बजाय लौटना।",
+      "poses": [
+        "fold",
+        "rest",
+        "seat"
+      ],
+      "meditation": "witness",
+      "gita": "moderation",
+      "task": "Running को yoga session के ऊपर extra intensity की तरह न जोड़ो। आज चाहो तो running की जगह आरामदेह walking चुनो।",
+      "focus": "हल्का Supported Half Fold 2–3 सहज श्वास, फिर Supported Rest। आज सूर्यनमस्कार कम intensity में या छोड़कर seated/chair warm-up कर सकते हो।",
+      "quiz": {
+        "id": "yoga:quiz:1.4",
+        "quiz": [
+          {
+            "q": "आसन में तेज दर्द या चक्कर आए तो क्या करें?",
+            "options": [
+              "थोड़ा और जोर लगाएँ",
+              "अभ्यास रोकें, safe position और सहज श्वास लें",
+              "दर्द को mastery समझें"
+            ],
+            "correct": 1,
+            "why": "Pain/dizziness चुनौती बढ़ाने का संकेत नहीं। नया/लगातार लक्षण हो तो उपयुक्त चिकित्सा सहायता लें।"
+          },
+          {
+            "q": "मन बार-बार भटके तो ध्यान असफल है?",
+            "options": [
+              "नहीं; ध्यान पहचानकर कोमलता से लौटाना अभ्यास है",
+              "हाँ; विचार बिल्कुल नहीं आने चाहिए",
+              "श्वास रोकने से ही ध्यान होगा"
+            ],
+            "correct": 0,
+            "why": "ध्यान लौटने का कौशल है; breath hold या thoughts suppression आवश्यक नहीं।"
+          },
+          {
+            "q": "आज progress का उपयोगी संकेत कौन-सा है?",
+            "options": [
+              "सबसे कठिन pose",
+              "दूसरे से अधिक rounds",
+              "सहज श्वास, नियंत्रित movement और अपनी सीमा पहचानना"
+            ],
+            "correct": 2,
+            "why": "Intensity या duration अकेला progress नहीं; quality और recovery देखें।"
+          }
+        ]
+      }
+    },
+    {
+      "id": "yoga:intermediate:1.5",
+      "day": 5,
+      "title": "Controlled standing flow",
+      "goal": "आसन के बीच safe transition और breath की continuity।",
+      "poses": [
+        "mountain",
+        "warrior",
+        "triangle",
+        "tree"
+      ],
+      "meditation": "breath",
+      "gita": "practice",
+      "task": "Mountain → Warrior II → Mountain → Supported Triangle → Mountain। हर side अलग करो। Speed नहीं, controlled entry और exit देखो।",
+      "focus": "Focused movement: Warrior II दोनों ओर 3 श्वास, supported Triangle दोनों ओर 3 श्वास। Balance ठीक हो तो supported Tree 2 श्वास; नहीं तो Mountain।",
+      "quiz": {
+        "id": "yoga:quiz:1.5",
+        "quiz": [
+          {
+            "q": "आसन में तेज दर्द या चक्कर आए तो क्या करें?",
+            "options": [
+              "थोड़ा और जोर लगाएँ",
+              "अभ्यास रोकें, safe position और सहज श्वास लें",
+              "दर्द को mastery समझें"
+            ],
+            "correct": 1,
+            "why": "Pain/dizziness चुनौती बढ़ाने का संकेत नहीं। नया/लगातार लक्षण हो तो उपयुक्त चिकित्सा सहायता लें।"
+          },
+          {
+            "q": "मन बार-बार भटके तो ध्यान असफल है?",
+            "options": [
+              "नहीं; ध्यान पहचानकर कोमलता से लौटाना अभ्यास है",
+              "हाँ; विचार बिल्कुल नहीं आने चाहिए",
+              "श्वास रोकने से ही ध्यान होगा"
+            ],
+            "correct": 0,
+            "why": "ध्यान लौटने का कौशल है; breath hold या thoughts suppression आवश्यक नहीं।"
+          },
+          {
+            "q": "आज progress का उपयोगी संकेत कौन-सा है?",
+            "options": [
+              "सबसे कठिन pose",
+              "दूसरे से अधिक rounds",
+              "सहज श्वास, नियंत्रित movement और अपनी सीमा पहचानना"
+            ],
+            "correct": 2,
+            "why": "Intensity या duration अकेला progress नहीं; quality और recovery देखें।"
+          }
+        ]
+      }
+    },
+    {
+      "id": "yoga:intermediate:1.6",
+      "day": 6,
+      "title": "सहज प्राणायाम और वैकल्पिक जप",
+      "goal": "Breath retention के बिना attention और श्वास की सहजता।",
+      "poses": [
+        "cat",
+        "seat",
+        "rest"
+      ],
+      "meditation": "mantra",
+      "gita": "return",
+      "task": "आज breath segment में अनुलोम–विलोम के 4 सहज cycles का विकल्प है; blocked nose या discomfort हो तो सामान्य श्वास। Meditation में optional शान्ति जप।",
+      "focus": "Light Cat–Cow/chair mobilisation और comfortable seat चुनो। Pranayama में fixed counts, कुम्भक, bandha, forceful kapalabhati/bhastrika नहीं। Familiar Sun Salutation को आसान intensity पर रखो।",
+      "quiz": {
+        "id": "yoga:quiz:1.6",
+        "quiz": [
+          {
+            "q": "आसन में तेज दर्द या चक्कर आए तो क्या करें?",
+            "options": [
+              "थोड़ा और जोर लगाएँ",
+              "अभ्यास रोकें, safe position और सहज श्वास लें",
+              "दर्द को mastery समझें"
+            ],
+            "correct": 1,
+            "why": "Pain/dizziness चुनौती बढ़ाने का संकेत नहीं। नया/लगातार लक्षण हो तो उपयुक्त चिकित्सा सहायता लें।"
+          },
+          {
+            "q": "मन बार-बार भटके तो ध्यान असफल है?",
+            "options": [
+              "नहीं; ध्यान पहचानकर कोमलता से लौटाना अभ्यास है",
+              "हाँ; विचार बिल्कुल नहीं आने चाहिए",
+              "श्वास रोकने से ही ध्यान होगा"
+            ],
+            "correct": 0,
+            "why": "ध्यान लौटने का कौशल है; breath hold या thoughts suppression आवश्यक नहीं।"
+          },
+          {
+            "q": "इस course में अनुलोम–विलोम कैसे है?",
+            "options": [
+              "जोरदार inhale और लंबा hold",
+              "सहज breathing, कोई retention नहीं",
+              "नासिका बंद हो तब भी जबरदस्ती"
+            ],
+            "correct": 1,
+            "why": "यह variant comfortable alternate breathing तक सीमित है।"
+          }
+        ]
+      }
+    },
+    {
+      "id": "yoga:intermediate:1.7",
+      "day": 7,
+      "title": "Review और अपनी routine बनाना",
+      "goal": "सात sessions की समझ से टिकाऊ, adaptable अभ्यास चुनना।",
+      "poses": [
+        "mountain",
+        "warrior",
+        "rest",
+        "seat"
+      ],
+      "meditation": "walk",
+      "gita": "practice",
+      "task": "आज अपने लिए एक standing pose चुनो, उसकी entry/exit बिना देखे समझाओ। ध्यान भटके तो return करो। Next session चुनते समय fatigue और श्वास देखो।",
+      "focus": "Review day: परिचित सूर्यनमस्कार या comfortable mobility; केवल एक familiar focused pose, फिर walking attention का विकल्प। कोई maximum flexibility या longest-hold परीक्षा नहीं।",
+      "quiz": {
+        "id": "yoga:quiz:1.7",
+        "quiz": [
+          {
+            "q": "आसन में तेज दर्द या चक्कर आए तो क्या करें?",
+            "options": [
+              "थोड़ा और जोर लगाएँ",
+              "अभ्यास रोकें, safe position और सहज श्वास लें",
+              "दर्द को mastery समझें"
+            ],
+            "correct": 1,
+            "why": "Pain/dizziness चुनौती बढ़ाने का संकेत नहीं। नया/लगातार लक्षण हो तो उपयुक्त चिकित्सा सहायता लें।"
+          },
+          {
+            "q": "मन बार-बार भटके तो ध्यान असफल है?",
+            "options": [
+              "नहीं; ध्यान पहचानकर कोमलता से लौटाना अभ्यास है",
+              "हाँ; विचार बिल्कुल नहीं आने चाहिए",
+              "श्वास रोकने से ही ध्यान होगा"
+            ],
+            "correct": 0,
+            "why": "ध्यान लौटने का कौशल है; breath hold या thoughts suppression आवश्यक नहीं।"
+          },
+          {
+            "q": "आज progress का उपयोगी संकेत कौन-सा है?",
+            "options": [
+              "सबसे कठिन pose",
+              "दूसरे से अधिक rounds",
+              "सहज श्वास, नियंत्रित movement और अपनी सीमा पहचानना"
+            ],
+            "correct": 2,
+            "why": "Intensity या duration अकेला progress नहीं; quality और recovery देखें।"
+          }
+        ]
+      }
+    }
+  ]
+};
+
+/* ================= YOGA & MEDITATION ================= */
+let yogaPage = {mode:"home", id:null, duration:20};
+function yogaSession(id){return YOGA_COURSE.sessions.find(function(s){return s.id===id;});}
+function yogaLink(label,mode,id){return '<button type="button" class="btn secondary btn-sm" data-yoga-mode="'+mode+'"'+(id?' data-yoga-id="'+escapeAttr(id)+'"':'')+'>'+escapeHtml(label)+'</button>';}
+function yogaPoseHtml(pose){
+  return '<details class="yoga-guide"><summary>'+escapeHtml(pose.name)+' <span>'+escapeHtml(pose.tag)+'</span></summary><ol>'+pose.steps.map(function(x){return '<li>'+escapeHtml(x)+'</li>';}).join('')+'</ol><p><b>श्वास:</b> '+escapeHtml(pose.breath)+'</p><p><b>विकल्प:</b> '+escapeHtml(pose.modify)+'</p><p><b>Common mistake:</b> '+escapeHtml(pose.mistake)+'</p><p><b>बाहर आने का तरीका:</b> '+escapeHtml(pose.exit)+'</p></details>';
+}
+function yogaMeditationHtml(item){
+  return '<article class="card yoga-practice"><h3>'+escapeHtml(item.name)+'</h3><p class="yoga-muted">'+escapeHtml(item.minutes)+' min · जरूरत पर छोटा करें</p><ol>'+item.steps.map(function(x){return '<li>'+escapeHtml(x)+'</li>';}).join('')+'</ol><p class="ls-key">'+escapeHtml(item.key)+'</p><p><b>विकल्प:</b> '+escapeHtml(item.adapt)+'</p></article>';
+}
+function yogaGitaHtml(item){
+  return '<article class="card yoga-practice"><h3>'+escapeHtml(item.ref)+' · '+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.meaning)+'</p><p><b>Reflection:</b> '+escapeHtml(item.reflection)+'</p><small>तुम्हारे दिए गीता PDF के printed pages '+escapeHtml(item.pages)+' से विषय-संदर्भ; यह हमारी सरल अभ्यास-व्याख्या है, पुस्तक के अनुवाद की नकल नहीं।</small></article>';
+}
+function yogaStages(session,duration){
+  const times=duration===30?[2,3,6,5,3,6,3,2]:[1,2,4,3,2,4,3,1];
+  const guidance=[
+    'अहिंसा का संकल्प: आज शरीर और श्वास को दबाना नहीं। Stable जगह, mat/chair और support तैयार करें। अगर अभी running से सांस तेज है तो पहले सामान्य होने दें; तब routine शुरू करें।',
+    'Shoulder circles, ankle movement और छोटी Cat–Cow/chair movement। 4–6 आरामदेह repetitions पर्याप्त; दर्दरहित range रखें।',
+    'अपनी परिचित सूर्यनमस्कार variation सहज गति पर। पहले एक slow round, फिर जरूरत पर विश्राम। कोई rounds quota नहीं। थके दिन chair/mobility विकल्प लें; running पहले से किया हो तो अधिक जोड़ना जरूरी नहीं।',
+    session.focus,
+    session.day===6?'अनुलोम–विलोम guide पढ़कर 4 सहज cycles, बिना कुम्भक। नहीं करना चाहें तो natural breathing।':'बैठकर 6–10 natural breaths observe करें; बाकी समय सहज रहें। Forced depth, count/ratio या breath hold नहीं।',
+    'नीचे दिया ध्यान guide follow करें। '+(session.day===7?'Walking Attention के लिए सुरक्षित समतल जगह और आंखें खुली रखें।':'पहले posture, फिर चुना anchor, अंत में कमरे से संपर्क।')+' जरूरत पर छोटा session करें।',
+    'Supported Rest/side-lying/chair rest। 2–3 मिनट breath को अपने आप चलने दें। धीरे उठें।',
+    'आज का गीता reflection और एक छोटी note: श्वास कैसी रही, कहाँ support लिया, next time क्या बदलोगे?'
+  ];
+  const names=['तैयारी · Sankalpa','Warm-up','परिचित सूर्यनमस्कार / विकल्प','Focused movement','सहज श्वास','ध्यान','Recovery','Reflection'];
+  return names.map(function(name,i){return {name:name,minutes:times[i],guidance:guidance[i]};});
+}
+function renderYoga(){
+  const el=document.getElementById('lessonsBody');
+  const completed=YOGA_COURSE.sessions.filter(function(s){return lessonDone(s.id);}).length;
+  const next=YOGA_COURSE.sessions.find(function(s){return !lessonDone(s.id);})||YOGA_COURSE.sessions[0];
+  let html='<div class="yoga-wrap"><div class="yoga-intro card"><p class="yoga-eyebrow">साधना · Intermediate Path</p><h2>शरीर में स्थिरता, मन में सहजता</h2><p>तुम्हारे 10 min सूर्यनमस्कार + 5 min running आधार से शुरू। पहले quality, फिर duration: आरामदेह अभ्यास दोहराकर आगे बढ़ो। सात sessions को सात लगातार दिन में करना जरूरी नहीं।</p><div class="yoga-actions">'+yogaLink('अभ्यासक्रम','home')+yogaLink('आसन Guide','poses')+yogaLink('ध्यान / श्वास','meditations')+yogaLink('गीता Reflection','gita')+'</div></div>';
+  if(yogaPage.mode==='home'){
+    html+='<div class="card"><h3>Module 1 · स्थिरता और सजगता</h3><p>'+completed+' / '+YOGA_COURSE.sessions.length+' sessions complete · 20 या 30 min</p>'+progressBar(completed,YOGA_COURSE.sessions.length)+'<p>20 min से शुरू करो। कई आरामदेह repetitions के बाद चाहो तो 30 min। समय सुझाया हुआ है—बचा समय पूरा करने के लिए hold या repetitions न बढ़ाओ।</p>'+yogaLink(completed===YOGA_COURSE.sessions.length?'फिर से अभ्यास':'अगला अभ्यास: Session '+next.day,'session',next.id)+'</div><div class="yoga-grid">'+YOGA_COURSE.sessions.map(function(item){return '<button type="button" class="card yoga-card" data-yoga-mode="session" data-yoga-id="'+escapeAttr(item.id)+'"><span class="yoga-eyebrow">Session '+item.day+(lessonDone(item.id)?' · ✓ Complete':'')+'</span><h3>'+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.goal)+'</p></button>';}).join('')+'</div><div class="ls-box ls-tip"><b>Intermediate का अर्थ</b>यहाँ balance, movement control और attention गहराते हैं। Headstand, shoulderstand, forced lotus, breath retention और forceful pranayama इस self-guided module का हिस्सा नहीं हैं। नए या कठिन आसन के लिए योग्य in-person teacher से alignment feedback लो।</div>';
+  }else if(yogaPage.mode==='poses'){
+    html+='<h2>आसन Guide · पढ़ो, फिर धीरे अभ्यास करो</h2>'+YOGA_COURSE.poses.map(yogaPoseHtml).join('');
+  }else if(yogaPage.mode==='meditations'){
+    html+='<h2>ध्यान और सहज श्वास</h2><p>श्वास को बदलने से पहले उसे महसूस करना सीखो। कोई technique अनिवार्य नहीं; natural breath या external sound दोनों anchor हो सकते हैं।</p>'+YOGA_COURSE.meditations.map(yogaMeditationHtml).join('');
+  }else if(yogaPage.mode==='gita'){
+    html+='<h2>गीता · अभ्यास और जीवन</h2><p>गीता ध्यान का आध्यात्मिक संदर्भ देती है; यह modern asana manual या medical treatment guide नहीं। यहाँ अध्याय 6 से विषय लेकर अपनी सरल व्याख्या की गई है।</p>'+YOGA_COURSE.gita.map(yogaGitaHtml).join('');
+  }else{
+    const item=yogaSession(yogaPage.id);
+    if(!item){yogaPage.mode='home';return renderYoga();}
+    const duration=yogaPage.duration===30?30:20,stages=yogaStages(item,duration);
+    const meditation=YOGA_COURSE.meditations.find(function(x){return x.id===item.meditation;});
+    const reflection=YOGA_COURSE.gita.find(function(x){return x.id===item.gita;});
+    html+='<article class="card"><p class="yoga-eyebrow">Module 1 · Session '+item.day+' / 7</p><h2>'+escapeHtml(item.title)+'</h2><p><b>उद्देश्य:</b> '+escapeHtml(item.goal)+'</p><div class="yoga-actions" aria-label="Suggested session duration"><button type="button" class="btn'+(duration===20?'':' secondary')+'" data-yoga-duration="20" aria-pressed="'+(duration===20)+'">20 min</button><button type="button" class="btn'+(duration===30?'':' secondary')+'" data-yoga-duration="30" aria-pressed="'+(duration===30)+'">30 min</button></div><p>आज '+duration+' min का suggested plan। जरूरत पर आराम/विकल्प चुनना भी पूरा अभ्यास है।</p><ol class="yoga-stages">'+stages.map(function(stage){return '<li><h3>'+escapeHtml(stage.name)+' <span class="yoga-muted">· '+stage.minutes+' min</span></h3><p>'+escapeHtml(stage.guidance)+'</p></li>';}).join('')+'</ol></article><h3>आज के आसन · entry, श्वास और exit</h3>'+item.poses.map(function(id){return yogaPoseHtml(YOGA_COURSE.poses.find(function(x){return x.id===id;}));}).join('')+(item.day===6?yogaMeditationHtml(YOGA_COURSE.meditations.find(function(x){return x.id==='alternate';})): '')+yogaMeditationHtml(meditation)+yogaGitaHtml(reflection);
+    const sections=[{t:'h',v:'Practice reflection',noteKey:item.id+'|reflection'},{t:'ex',v:item.task},{t:'p',v:'अपनी note लिखने के लिए heading के पास ✎ दबाओ। Duration से ज्यादा comfortable breath, control और recovery को देखो।'}];
+    html+=renderSections(sections,item.id)+renderLessonQuiz(item.quiz);
+    html+='<div class="card yoga-actions">'+(item.day>1?yogaLink('← Previous session','session',YOGA_COURSE.sessions[item.day-2].id):'')+'<button type="button" class="btn" data-yoga-complete="'+escapeAttr(item.id)+'">'+(lessonDone(item.id)?'✓ Complete · Undo':'Mark practice complete')+'</button>'+(item.day<7?yogaLink('Next session →','session',YOGA_COURSE.sessions[item.day].id):yogaLink('Review all sessions','home'))+'</div>';
+  }
+  html+='<details class="yoga-guide yoga-safety"><summary>अभ्यास की सीमा और sources</summary><p>तेज दर्द, चक्कर, सांस की परेशानी या faintness पर रुकें। Chest pain या बेहोशी जैसे गंभीर लक्षण हों तो तत्काल मदद लें। Injury, pregnancy, heart/breathing condition या uncontrolled blood pressure हो तो practice की intensity/आसन योग्य clinician/instructor के साथ तय करें। Guided text live alignment assessment का विकल्प नहीं। Meditation में distress हो तो रोककर आंखें खोलें और आसपास से जुड़ें।</p><p>आसन, श्वास और ध्यान को cure, detox या guaranteed spiritual result की तरह प्रस्तुत नहीं किया गया है। कठिन poses और forceful breathing को self-guided practice में न जोड़ें।</p><p><a href="https://www.nccih.nih.gov/health/yoga-effectiveness-and-safety" target="_blank" rel="noopener noreferrer">NCCIH · Yoga effectiveness and safety</a><br><a href="https://www.nccih.nih.gov/health/meditation-and-mindfulness-effectiveness-and-safety" target="_blank" rel="noopener noreferrer">NCCIH · Meditation safety</a><br>Traditional study: supplied Gita Press श्रीमद्भगवद्गीता, अध्याय 6, printed pages 434–439, 456, 467–468। बाहरी sources खोलने के लिए internet चाहिए; course सामग्री offline है।</p></details></div>';
+  el.innerHTML=html;
+  if(yogaPage.mode!=='home')el.querySelector('.yoga-intro').classList.add('yoga-compact');
+  el.querySelectorAll('[data-yoga-mode]').forEach(function(btn){btn.onclick=function(){yogaPage.mode=btn.dataset.yogaMode;yogaPage.id=btn.dataset.yogaId||null;renderYoga();window.scrollTo(0,0);};});
+  el.querySelectorAll('[data-yoga-duration]').forEach(function(btn){btn.onclick=function(){const y=window.scrollY;yogaPage.duration=Number(btn.dataset.yogaDuration);renderYoga();window.scrollTo(0,y);};});
+  el.querySelectorAll('[data-yoga-complete]').forEach(function(btn){btn.onclick=function(){toggleLessonDone(btn.dataset.yogaComplete);renderYoga();renderSideStats();};});
+  if(yogaPage.mode==='session'){
+    wireHeadNotes(el);
+    const item=yogaSession(yogaPage.id);if(item)wireLessonQuiz(el,item.quiz);
+  }
+}
+
 function renderLessons(){
   if(activeLessonId && PYTHON_LESSON_ROUTES[activeLessonId]){const r=PYTHON_LESSON_ROUTES[activeLessonId];activeLessonId=null;courseView={mode:"day",week:r.week,dayIdx:r.day,part:0};switchView("course");renderCourse();return;}
-  const empty=document.getElementById("lessonsBody");empty.innerHTML='<div class="card"><h2>Lessons</h2><p>All Python lessons now live in Course, in their learning order. Your saved progress, notes and quiz scores are preserved.</p><button class="btn" id="openPythonCourse">Open Course</button></div>';empty.querySelector("button").onclick=()=>{switchView("course");renderCourse();};return;
+  return renderYoga();
   if(practiceState) return renderPractice();
   if(activeLessonId) return renderLessonDetail();
   const el = document.getElementById("lessonsBody");
@@ -20654,7 +21341,7 @@ function wireRevealButtons(el){
 }
 
 document.getElementById("lessonsHomeBtn").addEventListener("click", ()=>{
-  activeLessonId = null; renderLessons();
+  activeLessonId = null; yogaPage.mode="home"; yogaPage.id=null; renderLessons();
 });
 
 
