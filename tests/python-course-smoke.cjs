@@ -32,6 +32,17 @@ async function main(){
   assert(await evalJs('document.querySelectorAll(".lesson-card").length===0 && document.querySelector("#openPythonCourse")'), 'Lessons not empty');
   const rendered=await evalJs('(()=>{let count=0;switchView("course");for(const key of Object.keys(DAY_TEACH)){const [w,d]=key.split(".").map(Number);for(let p=0;p<dayParts(key).length;p++){courseView={mode:"day",week:w,dayIdx:d,part:p};renderCourseDay();if(!document.querySelector(".day-teach"))throw Error("Missing teaching "+key);count++;}}return count;})()');
   assert(rendered>=114,'Not all days rendered');
+  if(await evalJs('Boolean(DAY_TEACH["21.0"])')){
+    await evalJs('switchView("course");courseView={mode:"day",week:21,dayIdx:0,part:0};renderCourseDay();document.querySelector("#partNext").click()');
+    assert(await evalJs('courseView.part===1'),'Week21 next part failed');
+    await evalJs('document.querySelector("#partPrev").click();document.querySelector("#nextDay").click()');
+    assert(await evalJs('courseView.week===21 && courseView.dayIdx===1'),'Week21 next day failed');
+    await evalJs('document.querySelector("#prevDay").click()');
+    assert(await evalJs('courseView.dayIdx===0'),'Week21 previous day failed');
+    await evalJs('(()=>{for(let d=0;d<6;d++)for(let p=0;p<dayParts("21."+d).length;p++){courseView={mode:"day",week:21,dayIdx:d,part:p};renderCourseDay();const quiz=dayParts("21."+d)[p].sections.find(s=>s.t==="checkpoint").lesson;document.querySelector("[data-lo=\\""+quiz.quiz[0].correct+"\\"]").click();if(DB.lessonQuizScores[quiz.id]!==100)throw Error("Week21 quiz saving "+quiz.id);}})()');
+    await evalJs('courseView={mode:"day",week:21,dayIdx:0,part:0};renderCourseDay();document.querySelector("#partDoneBtn").click();document.querySelector("#dayNote").value="Week21 saved note";document.querySelector("#dayNote").dispatchEvent(new Event("input",{bubbles:true}));save()');
+    assert(await evalJs('isPartDone(21,0,0)'),'Week21 part completion failed');
+  }
   if(await evalJs('Boolean(DAY_TEACH["20.0"])')){
     await evalJs('courseView={mode:"day",week:20,dayIdx:0,part:0};renderCourseDay();document.querySelector("[data-lo]").click()');
     assert(await evalJs('DB.lessonQuizScores["course:20.0.0"]===100'),'Week 20 quiz did not save');
@@ -51,7 +62,9 @@ async function main(){
   await evalJs('courseView={mode:"day",week:2,dayIdx:3,part:0};renderCourseDay();document.querySelector("#dayNote").value="Saved day note";document.querySelector("#dayNote").dispatchEvent(new Event("input",{bubbles:true}));');await sleep(600);
   await send('Page.reload',{ignoreCache:true});for(let i=0;i<50;i++){if(await evalJs('Boolean(window.__studyHubBooted)'))break;await sleep(100);}
   assert(await evalJs('DB.lessonQuizScores.strings===67 && DB.lessonsDone.strings && DB.course.notes["2.3"]==="Saved day note" && DB.course.practice.solved["1.5.1"] && DB.lessonQuizScores["course:1.0"]===100'),'Saved data failed reload');
+  if(await evalJs('Boolean(DAY_TEACH["21.0"])'))assert(await evalJs('isPartDone(21,0,0) && DB.lessonQuizScores["course:21.0.0"]===100 && DB.course.notes["21.0"]==="Week21 saved note"'),'Week21 progress/quiz/note failed reload');
   await send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
+  if(await evalJs('Boolean(DAY_TEACH["21.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("21."+d).length;p++){courseView={mode:"day",week:21,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week21 mobile overflow "+d+"."+p);}}})()');
   if(await evalJs('Boolean(DAY_TEACH["20.0"])'))await evalJs('(()=>{switchView("course");for(let d=0;d<6;d++)for(let p=0;p<dayParts("20."+d).length;p++){courseView={mode:"day",week:20,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week 20 overflow "+d+"."+p);}})()');
   await evalJs('document.querySelector("#themeBtn").click();switchView("course");courseView={mode:"day",week:1,dayIdx:5,part:0};renderCourseDay()');
   assert(await evalJs('document.documentElement.scrollWidth<=window.innerWidth+1'), 'Mobile Course overflow');

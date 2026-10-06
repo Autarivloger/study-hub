@@ -82,7 +82,12 @@ async function main(){
   assert(await evalJs("document.querySelector('#view-japanese').classList.contains('active') && document.querySelector('.jp-hero h2').textContent==='Day 7' && document.body.textContent.includes('銀色の水筒')"),"Japanese search result did not open its lesson");
   await evalJs("document.querySelector('[data-jp-home]').click()");
   await evalJs("document.querySelector('#searchBtn').click();document.querySelector('#searchInput').value='dictionary';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
-  await sleep(220);
+  // Search is debounced; wait for the expected result rather than assuming
+  // a fixed 220ms is sufficient while other Chrome tests are running.
+  for(let attempt=0;attempt<30;attempt++){
+    if(await evalJs("[...document.querySelectorAll('#searchResults .sr-kind')].some(x=>!x.textContent.includes('Japanese'))"))break;
+    await sleep(100);
+  }
   assert(await evalJs("[...document.querySelectorAll('#searchResults .sr-kind')].some(x=>!x.textContent.includes('Japanese'))"),"Global search stopped finding Python content");
   await evalJs("document.querySelector('#searchInput').value='財布';document.querySelector('#searchInput').dispatchEvent(new Event('input',{bubbles:true}))");
   await sleep(220);

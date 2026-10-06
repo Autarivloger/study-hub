@@ -16277,6 +16277,1947 @@ const DAY_TEACH = {
     }
   ]
 },
+"21.0": {
+  "parts": [
+    {
+      "title": "1. Dataclasses: useful methods from declared fields",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Dataclasses: useful methods from declared fields"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Replace repetitive record-class methods without hiding the domain rules."
+        },
+        {
+          "t": "new",
+          "v": "dataclasses module; @dataclass",
+          "note": "A standard-library decorator generates methods such as __init__, __repr__ and __eq__ from declared fields. No pip package is needed."
+        },
+        {
+          "t": "new",
+          "v": "field annotation: name: str",
+          "note": "The colon declares the intended field type; it is not an assignment or runtime validation. Day 2 explains annotations fully."
+        },
+        {
+          "t": "p",
+          "v": "Week 18 taught manual constructors; Week 20 taught repr and equality. A dataclass automates those repetitive pieces for a class whose main job is holding data. Methods you write still belong to the same ordinary class. Start with records, not every service in an application. Use Python 3.10 or newer for all this week’s examples."
+        },
+        {
+          "t": "syn",
+          "v": "from dataclasses import dataclass\n\n@dataclass\nclass Record:\n    name: str\n    count: int = 0",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "from dataclasses import dataclass\n\n@dataclass\nclass Book:\n    title: str\n    pages: int\n    finished: bool = False\n\na = Book(\"Python\", 120)\nb = Book(\"Python\", 120)\nprint(a)\nprint(a == b, a is b)\nb.finished = True\nprint(a == b)"
+        },
+        {
+          "t": "out",
+          "v": "Book(title='Python', pages=120, finished=False)\nTrue False\nFalse"
+        },
+        {
+          "t": "p",
+          "v": "Book(\"Python\",120) calls the generated constructor. Generated repr includes field names. Equality compares fields for the same concrete dataclass type; identity still checks whether two references point to one object. Required fields precede fields with defaults."
+        },
+        {
+          "t": "mis",
+          "wrong": "class Book:\n    title = str",
+          "right": "@dataclass\nclass Book:\n    title: str",
+          "why": "title = str assigns a class attribute; it does not declare a dataclass field."
+        },
+        {
+          "t": "ex",
+          "v": "Convert Student(name, score=0) into a dataclass; create two equal students, then change one score.",
+          "practiceId": "21.0.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "from dataclasses import dataclass\n@dataclass\nclass Student:\n    name: str\n    score: int = 0\na, b = Student(\"Sita\"), Student(\"Sita\")\nprint(a)\nprint(a == b)\nb.score = 90\nprint(a == b)",
+          "out": "Student(name='Sita', score=0)\nTrue\nFalse",
+          "why": "Use annotated fields, put required fields first, and retain any real business methods. Confirm value equality, separate identity, defaults, and repr. A shorter class is useful only when its behaviour is still clear."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Rewrite Book, Student and Ticket records from older weeks; compare the generated behaviour with your old __init__/repr/eq methods.",
+          "practiceId": "21.0.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "Use annotated fields, put required fields first, and retain any real business methods. Confirm value equality, separate identity, defaults, and repr. A shorter class is useful only when its behaviour is still clear."
+        },
+        {
+          "t": "try",
+          "q": "Does @dataclass enforce that pages is an integer?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No; type annotations alone do not validate runtime values.",
+          "why": "Dataclasses discover fields through annotations but normally do not enforce their annotated types."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.0.0",
+            "quiz": [
+              {
+                "q": "Does @dataclass enforce that pages is an integer?",
+                "options": [
+                  "No; type annotations alone do not validate runtime values.",
+                  "Yes; all wrong values are rejected.",
+                  "It converts every value to int."
+                ],
+                "correct": 0,
+                "why": "Dataclasses discover fields through annotations but normally do not enforce their annotated types."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Replace repetitive record-class methods without hiding the domain rules. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "2. Mutable defaults: each instance needs its own list",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Mutable defaults: each instance needs its own list"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Give each record an independent mutable collection."
+        },
+        {
+          "t": "new",
+          "v": "field; default_factory",
+          "note": "field customises a dataclass field. default_factory receives a zero-argument callable, such as list, and calls it for each new instance."
+        },
+        {
+          "t": "new",
+          "v": "list[str]",
+          "note": "A generic annotation describing a list whose elements are strings. Built-in collection type parameters work in Python 3.9+."
+        },
+        {
+          "t": "p",
+          "v": "Week 18 showed shared mutable class attributes. Dataclass defaults need the same care: a mutable list is not a safe shared default. Modern dataclasses reject many unhashable defaults. The factory solves ownership without requiring callers to remember to pass a list."
+        },
+        {
+          "t": "syn",
+          "v": "tags: list[str] = field(default_factory=list)",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "from dataclasses import dataclass, field\n@dataclass\nclass Notebook:\n    owner: str\n    pages: list[str] = field(default_factory=list)\na, b = Notebook(\"Sita\"), Notebook(\"Hari\")\na.pages.append(\"OOP notes\")\nprint(a.pages)\nprint(b.pages)\nprint(a.pages is b.pages)"
+        },
+        {
+          "t": "out",
+          "v": "['OOP notes']\n[]\nFalse"
+        },
+        {
+          "t": "p",
+          "v": "Pass list itself, not list(). A new empty list is made for each omitted pages argument. A caller-supplied list is not automatically copied: decide and document that ownership separately."
+        },
+        {
+          "t": "mis",
+          "wrong": "pages: list[str] = []",
+          "right": "pages: list[str] = field(default_factory=list)",
+          "why": "A literal list would be a shared mutable default and is rejected by current dataclasses. default_factory=list() is also wrong: the factory must be callable."
+        },
+        {
+          "t": "ex",
+          "v": "Make Team(name, members) with an independent default list; add a member to only one team.",
+          "practiceId": "21.0.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "from dataclasses import dataclass, field\n@dataclass\nclass Team:\n    name: str\n    members: list[str] = field(default_factory=list)\na, b = Team(\"A\"), Team(\"B\")\na.members.append(\"Sita\")\nprint(a.members, b.members)",
+          "out": "['Sita'] []",
+          "why": "The factory handles omitted values only. For explicit mutable input, either document sharing or copy it in a normal constructor/post-init. Test that modifying A’s default collection never changes B."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Give each ShoppingList its own items list and explain the difference between an omitted list and one explicitly passed by the caller.",
+          "practiceId": "21.0.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "The factory handles omitted values only. For explicit mutable input, either document sharing or copy it in a normal constructor/post-init. Test that modifying A’s default collection never changes B."
+        },
+        {
+          "t": "try",
+          "q": "Which value should default_factory receive for a new list?",
+          "code": "# Predict and explain before revealing.",
+          "a": "list",
+          "why": "The callable list creates a fresh object every time the generated constructor needs a default."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.0.1",
+            "quiz": [
+              {
+                "q": "Which value should default_factory receive for a new list?",
+                "options": [
+                  "[]",
+                  "list",
+                  "list()"
+                ],
+                "correct": 1,
+                "why": "The callable list creates a fresh object every time the generated constructor needs a default."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Give each record an independent mutable collection. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "3. Validation, frozen records and honest limitations",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Validation, frozen records and honest limitations"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Separate construction checks from later mutation rules."
+        },
+        {
+          "t": "new",
+          "v": "__post_init__",
+          "note": "A hook called after a generated dataclass __init__. Use it for initial validation or derived setup."
+        },
+        {
+          "t": "new",
+          "v": "frozen=True; FrozenInstanceError",
+          "note": "Frozen records reject ordinary field reassignment. This is shallow read-only behaviour, not deep immutability or security."
+        },
+        {
+          "t": "new",
+          "v": "replace",
+          "note": "dataclasses.replace builds another instance with selected field values changed and runs its constructor/post-init."
+        },
+        {
+          "t": "p",
+          "v": "A dataclass does not make impossible data valid. __post_init__ can reject negative stock initially, but a mutable dataclass can still receive an invalid later assignment. Use a frozen snapshot or a carefully designed service/property when invariants must always hold."
+        },
+        {
+          "t": "syn",
+          "v": "@dataclass(frozen=True)\nclass Snapshot:\n    quantity: int\n    def __post_init__(self):\n        ...",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "from dataclasses import dataclass, replace, FrozenInstanceError\n@dataclass(frozen=True)\nclass Stock:\n    quantity: int\n    def __post_init__(self):\n        if type(self.quantity) is not int or self.quantity < 0:\n            raise ValueError(\"nonnegative integer required\")\na = Stock(3)\nb = replace(a, quantity=5)\nprint(a.quantity, b.quantity)\ntry: a.quantity = 9\nexcept FrozenInstanceError: print(\"assignment refused\")\ntry: Stock(-1)\nexcept ValueError as error: print(error)"
+        },
+        {
+          "t": "out",
+          "v": "3 5\nassignment refused\nnonnegative integer required"
+        },
+        {
+          "t": "p",
+          "v": "The old snapshot remains 3; replace creates a checked new snapshot. A frozen record containing a list could still have that list mutated. Prefer immutable field values such as tuples for snapshots; do not add unsafe_hash merely to silence an error."
+        },
+        {
+          "t": "mis",
+          "wrong": "Check only in __post_init__, then permit any quantity assignment.",
+          "right": "Use frozen snapshots or checked updates when invariants matter.",
+          "why": "Initial validation does not automatically rerun after mutable field assignments."
+        },
+        {
+          "t": "ex",
+          "v": "Create frozen Point(x,y), then use replace to move x without changing the original.",
+          "practiceId": "21.0.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "from dataclasses import dataclass, replace\n@dataclass(frozen=True)\nclass Point:\n    x: int\n    y: int\na = Point(2, 3)\nb = replace(a, x=7)\nprint(a, b)",
+          "out": "Point(x=2, y=3) Point(x=7, y=3)",
+          "why": "replace returns a different checked instance. Frozen prevents ordinary field rebinding but cannot freeze the contents of nested mutable objects. Prefer simple immutable snapshot fields and validate at their boundary."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Explain why a frozen dataclass with a list field is not deeply immutable; redesign its field as a tuple.",
+          "practiceId": "21.0.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "replace returns a different checked instance. Frozen prevents ordinary field rebinding but cannot freeze the contents of nested mutable objects. Prefer simple immutable snapshot fields and validate at their boundary."
+        },
+        {
+          "t": "try",
+          "q": "Does frozen=True prevent changes inside a list field?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No; freezing is shallow.",
+          "why": "Ordinary attribute assignment is blocked, while mutable objects referenced by fields can still change."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.0.2",
+            "quiz": [
+              {
+                "q": "Does frozen=True prevent changes inside a list field?",
+                "options": [
+                  "Yes; every nested value is frozen.",
+                  "It encrypts the list.",
+                  "No; freezing is shallow."
+                ],
+                "correct": 2,
+                "why": "Ordinary attribute assignment is blocked, while mutable objects referenced by fields can still change."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Separate construction checks from later mutation rules. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    }
+  ]
+},
+"21.1": {
+  "parts": [
+    {
+      "title": "1. Type hints: document inputs and results",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Type hints: document inputs and results"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Read and write annotations without confusing them with validation."
+        },
+        {
+          "t": "new",
+          "v": "parameter annotation; -> return annotation",
+          "note": "name: str describes the expected input; -> str describes the intended result. A function returning no useful result uses -> None."
+        },
+        {
+          "t": "new",
+          "v": "static type checking",
+          "note": "A checker analyses annotated code without running it. Python still needs runtime checks for untrusted values."
+        },
+        {
+          "t": "p",
+          "v": "Types describe the shape of values; validation checks domain rules such as stock >= 0. def greet(name: str) -> str is still an ordinary function. Hints help tools catch mistakes before execution but do not cast arguments, validate ranges, or prove the program correct."
+        },
+        {
+          "t": "syn",
+          "v": "def greet(name: str) -> str:\n    return \"Hello \" + name",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "def label(name: str, count: int) -> str:\n    return f\"{name}: {count}\"\ndef log(text: str) -> None:\n    print(text)\nlog(label(\"Books\", 3))\n# This is deliberately type-incorrect but still executes:\nprint(label(\"Books\", \"many\"))"
+        },
+        {
+          "t": "out",
+          "v": "Books: 3\nBooks: many"
+        },
+        {
+          "t": "p",
+          "v": "The second call violates the hint but f-string formatting accepts a string, so Python prints it. A static checker reports the wrong argument. Do not copy the deliberately wrong call into your typed module."
+        },
+        {
+          "t": "mis",
+          "wrong": "def total(prices: list[int]) -> str: return sum(prices)",
+          "right": "def total(prices: list[int]) -> int: return sum(prices)",
+          "why": "The return annotation must describe the returned value, not the display format you intend to print later."
+        },
+        {
+          "t": "ex",
+          "v": "Annotate subtotal, discount, total, label and announce. Use integer amounts and explicitly mark the print-only function -> None.",
+          "practiceId": "21.1.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "def subtotal(prices: list[int]) -> int: return sum(prices)\ndef discount(amount: int, reduction: int) -> int: return amount - reduction\ndef total(prices: list[int], reduction: int) -> int:\n    return discount(subtotal(prices), reduction)\ndef label(amount: int) -> str: return f\"Total: {amount}\"\ndef announce(text: str) -> None: print(text)\nannounce(label(total([100, 50], 20)))",
+          "out": "Total: 130",
+          "why": "These five functions form a small complete typed module. Hints express the input/output contract, while validation remains separate. Read the Day 2 final part for mypy setup; installing the tool initially needs a connection, running it afterward can be offline."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Save the five functions as typed_receipt.py, then run python -m mypy --strict typed_receipt.py after installing mypy if needed. Deliberately pass a string where an int belongs and compare checker output with execution.",
+          "practiceId": "21.1.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "These five functions form a small complete typed module. Hints express the input/output contract, while validation remains separate. Read the Day 2 final part for mypy setup; installing the tool initially needs a connection, running it afterward can be offline."
+        },
+        {
+          "t": "try",
+          "q": "Does Python automatically reject label(\"Books\", \"many\") because count is annotated int?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No; annotations are not automatically enforced.",
+          "why": "The deliberately incorrect call runs because the function body can handle string formatting; a checker catches the mismatch."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.1.0",
+            "quiz": [
+              {
+                "q": "Does Python automatically reject label(\"Books\", \"many\") because count is annotated int?",
+                "options": [
+                  "No; annotations are not automatically enforced.",
+                  "Yes; the call is blocked.",
+                  "It silently converts many to an integer."
+                ],
+                "correct": 0,
+                "why": "The deliberately incorrect call runs because the function body can handle string formatting; a checker catches the mismatch."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Read and write annotations without confusing them with validation. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "2. Collections, unions and narrowing None",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Collections, unions and narrowing None"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Handle missing values before using them."
+        },
+        {
+          "t": "new",
+          "v": "dict[str, int]; tuple[str, int]",
+          "note": "Collection annotations describe element shapes; tuple[str,int] means a two-position tuple with those respective types."
+        },
+        {
+          "t": "new",
+          "v": "int | None; Optional[int]; Union[int, str]",
+          "note": "A union permits more than one type. int | None (Python 3.10+) means int or None, equivalent to Optional[int]. Optional does not mean the argument can simply be omitted."
+        },
+        {
+          "t": "new",
+          "v": "type narrowing",
+          "note": "A branch such as if value is None separates the missing case; afterward a checker can treat the remaining value as int."
+        },
+        {
+          "t": "p",
+          "v": "A dictionary lookup may fail to find a key; express that possibility instead of pretending the value always exists. A parameter without a default is still required even if its type includes None. Use narrow, meaningful types rather than adding Any to hide errors."
+        },
+        {
+          "t": "syn",
+          "v": "def lookup(name: str) -> int | None:\n    ...\nvalue = lookup(\"Python\")\nif value is not None:\n    ...",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "from typing import Optional, Union\ndef find_stock(name: str, stock: dict[str, int]) -> Optional[int]:\n    return stock.get(name)\nstock = {\"Book\": 3}\nfor name in (\"Book\", \"Pen\"):\n    value = find_stock(name, stock)\n    if value is None:\n        print(name, \"missing\")\n    else:\n        print(name, value + 1)\ndef show(code: Union[int, str]) -> str: return str(code)\nprint(show(7), show(\"A7\"))"
+        },
+        {
+          "t": "out",
+          "v": "Book 4\nPen missing\n7 A7"
+        },
+        {
+          "t": "p",
+          "v": "The missing branch uses identity with None, not a truthiness check: zero stock is a real value, not a missing entry. Built-in generics are notation, not new list/dict objects. Optional and Union come from typing; modern | spelling is an alternative."
+        },
+        {
+          "t": "mis",
+          "wrong": "if not value: print(\"missing\")",
+          "right": "if value is None: print(\"missing\")",
+          "why": "A stock of zero is falsy but is not the same as a missing item."
+        },
+        {
+          "t": "ex",
+          "v": "Write find_score(name, scores) -> int | None; show that zero is found while an absent key is missing.",
+          "practiceId": "21.1.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "def find_score(name: str, scores: dict[str, int]) -> int | None:\n    return scores.get(name)\nfor name in (\"Sita\", \"Hari\"):\n    score = find_score(name, {\"Sita\": 0})\n    print(\"missing\" if score is None else f\"score={score}\")",
+          "out": "score=0\nmissing",
+          "why": "A type union describes values, not parameter omission. Only a default such as count=None makes that argument optional at the call site. Always distinguish None from valid zero/empty values."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Write a function with argument count: int | None and no default. Explain why calling it with no argument still fails.",
+          "practiceId": "21.1.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "A type union describes values, not parameter omission. Only a default such as count=None makes that argument optional at the call site. Always distinguish None from valid zero/empty values."
+        },
+        {
+          "t": "try",
+          "q": "What does Optional[int] mean?",
+          "code": "# Predict and explain before revealing.",
+          "a": "An int or None.",
+          "why": "Optional[int] is a union with None; call-site defaults are a separate feature."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.1.1",
+            "quiz": [
+              {
+                "q": "What does Optional[int] mean?",
+                "options": [
+                  "Only positive integers.",
+                  "An int or None.",
+                  "An argument that can always be omitted."
+                ],
+                "correct": 1,
+                "why": "Optional[int] is a union with None; call-site defaults are a separate feature."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Handle missing values before using them. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "3. Mypy and typed interfaces: tools, not magic",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Mypy and typed interfaces: tools, not magic"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Check a typed module and express a behaviour contract."
+        },
+        {
+          "t": "new",
+          "v": "mypy; --strict",
+          "note": "A third-party static checker. Strict mode checks more annotations; it does not execute tests or validate business rules."
+        },
+        {
+          "t": "new",
+          "v": "Protocol",
+          "note": "typing.Protocol describes the methods a value must provide; implementations can satisfy the contract without inheriting from it. This is static structural typing."
+        },
+        {
+          "t": "new",
+          "v": "generic type parameter",
+          "note": "list[int] reuses one collection shape for a particular element type. You do not need to define a custom generic class yet."
+        },
+        {
+          "t": "p",
+          "v": "Use one small fully annotated file first. If mypy is not installed, python -m pip install mypy needs internet once; do not make the offline lesson depend on that download. After installation run python -m mypy --strict typed_receipt.py. Fix the reported file/line rather than suppressing every error. Protocol extends Week 19 duck typing with a tool-readable contract."
+        },
+        {
+          "t": "syn",
+          "v": "class Store(Protocol):\n    def count(self, name: str) -> int | None:\n        ...",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "from typing import Protocol\nclass Store(Protocol):\n    def count(self, name: str) -> int | None: ...\nclass MemoryStore:\n    def __init__(self) -> None: self.stock: dict[str, int] = {\"Book\": 3}\n    def count(self, name: str) -> int | None: return self.stock.get(name)\ndef display(store: Store, name: str) -> str:\n    count = store.count(name)\n    return \"missing\" if count is None else f\"{name}: {count}\"\nprint(display(MemoryStore(), \"Book\"))"
+        },
+        {
+          "t": "out",
+          "v": "Book: 3"
+        },
+        {
+          "t": "p",
+          "v": "The ... is an ellipsis placeholder in the interface stub, not a working implementation. MemoryStore satisfies the count contract without inheriting Store. Protocol is not a runtime validator and is not automatically suitable for isinstance checks."
+        },
+        {
+          "t": "mis",
+          "wrong": "Use isinstance(value, Store) for every ordinary Protocol.",
+          "right": "Let the checker verify the contract; validate actual data separately.",
+          "why": "Ordinary Protocols are primarily static; runtime_checkable is a separate feature and still does not check full signatures."
+        },
+        {
+          "t": "ex",
+          "v": "Define a Printer Protocol with write(text: str) -> None; implement ConsolePrinter and use it through an annotated function.",
+          "practiceId": "21.1.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "from typing import Protocol\nclass Printer(Protocol):\n    def write(self, text: str) -> None: ...\nclass ConsolePrinter:\n    def write(self, text: str) -> None: print(text)\ndef announce(printer: Printer, message: str) -> None:\n    printer.write(message)\nannounce(ConsolePrinter(), \"Ready\")",
+          "out": "Ready",
+          "why": "The type checker should reject the incompatible implementation when passed as Printer. Runtime tests are still required: even a fully typed program can calculate the wrong answer."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Type-check the five receipt functions and this interface. Add an implementation whose write returns an integer and explain why the stated contract no longer matches.",
+          "practiceId": "21.1.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "The type checker should reject the incompatible implementation when passed as Printer. Runtime tests are still required: even a fully typed program can calculate the wrong answer."
+        },
+        {
+          "t": "try",
+          "q": "What does mypy do when checking a module?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Analyses its types without running its program.",
+          "why": "Static checking and execution test different aspects of a program."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.1.2",
+            "quiz": [
+              {
+                "q": "What does mypy do when checking a module?",
+                "options": [
+                  "Runs every business operation.",
+                  "Automatically adds input validation.",
+                  "Analyses its types without running its program."
+                ],
+                "correct": 2,
+                "why": "Static checking and execution test different aspects of a program."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Check a typed module and express a behaviour contract. Explain the rule aloud, then write the example again without a template."
+        },
+        {
+          "t": "sh",
+          "v": "python -m pip install mypy\npython -m mypy --strict typed_receipt.py",
+          "note": "Optional tool setup: installation needs internet once. The lessons and standard-library examples are offline. Run the second line from the folder containing your saved file."
+        }
+      ]
+    }
+  ]
+},
+"21.2": {
+  "parts": [
+    {
+      "title": "1. Single responsibility: reasons to change",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Single responsibility: reasons to change"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Give calculation and formatting different owners."
+        },
+        {
+          "t": "new",
+          "v": "SOLID; Single Responsibility Principle (SRP)",
+          "note": "SOLID names five design guidelines. SRP asks a component to own a coherent responsibility: a change in presentation should not force a change in calculation."
+        },
+        {
+          "t": "p",
+          "v": "A class with many methods is not automatically bad; a class with unrelated reasons to change becomes hard to maintain. Start with the behaviour that actually differs. Do not create a class for every line of code: a pure calculation or formatter can remain a function."
+        },
+        {
+          "t": "syn",
+          "v": "class Invoice:\n    def total(self): ...\n\ndef format_invoice(invoice): ...",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "class Invoice:\n    def __init__(self, prices): self.prices = list(prices)\n    def total(self): return sum(self.prices)\ndef plain_text(invoice): return f\"Total: {invoice.total()}\"\ndef compact_text(invoice): return f\"TOTAL={invoice.total()}\"\ninvoice = Invoice([100, 40])\nprint(plain_text(invoice))\nprint(compact_text(invoice))"
+        },
+        {
+          "t": "out",
+          "v": "Total: 140\nTOTAL=140"
+        },
+        {
+          "t": "p",
+          "v": "Both formatters use the same arithmetic. A new display format does not require a new invoice subclass or a changed total algorithm. The copied prices list makes ownership explicit."
+        },
+        {
+          "t": "mis",
+          "wrong": "Put file saving, email sending and arithmetic into one total() method.",
+          "right": "Calculate in total(); pass the result to separate output code.",
+          "why": "Mixing I/O with calculation makes tests depend on unrelated services."
+        },
+        {
+          "t": "ex",
+          "v": "Split a student average calculation from its human-readable grade report.",
+          "practiceId": "21.2.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "def average(grades):\n    if not grades: return 0.0\n    return sum(grades) / len(grades)\ndef report(name, grades): return f\"{name}: {average(grades):.1f}\"\nprint(average([70, 90]))\nprint(report(\"Sita\", [70, 90]))",
+          "out": "80.0\nSita: 80.0",
+          "why": "Keep the numerical function independently testable, then have the formatter consume its result. Refactor one responsibility at a time, preserving outputs with tests."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Review a class from Week 18: list its reasons to change, then move only one unrelated formatting concern out of it.",
+          "practiceId": "21.2.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "Keep the numerical function independently testable, then have the formatter consume its result. Refactor one responsibility at a time, preserving outputs with tests."
+        },
+        {
+          "t": "try",
+          "q": "Which change should not require editing the total calculation?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Changing the report format.",
+          "why": "Presentation and arithmetic have different reasons to change."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.2.0",
+            "quiz": [
+              {
+                "q": "Which change should not require editing the total calculation?",
+                "options": [
+                  "Changing the report format.",
+                  "Changing the tax calculation rule.",
+                  "Changing the arithmetic definition."
+                ],
+                "correct": 0,
+                "why": "Presentation and arithmetic have different reasons to change."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Give calculation and formatting different owners. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "2. Open/closed and substitution: keep the promise",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Open/closed and substitution: keep the promise"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Extend behaviour through a stable contract and respect it."
+        },
+        {
+          "t": "new",
+          "v": "Open/Closed Principle (OCP)",
+          "note": "Add a new implementation behind a stable contract when repeated changes justify that boundary. It does not forbid editing code or fixing bugs."
+        },
+        {
+          "t": "new",
+          "v": "Liskov Substitution Principle (LSP)",
+          "note": "An implementation used in place of another must uphold the caller’s behavioural promise, not merely have matching method names."
+        },
+        {
+          "t": "p",
+          "v": "Week 19 taught substitutability. A delivery fee contract promises a nonnegative integer for a valid order. A subclass that returns a string or rejects ordinary valid orders breaks that promise. Do not build elaborate extension points for a single simple calculation."
+        },
+        {
+          "t": "syn",
+          "v": "def checkout(order, delivery):\n    return order + delivery.fee(order)",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "class StandardDelivery:\n    def fee(self, subtotal): return 20\nclass Pickup:\n    def fee(self, subtotal): return 0\ndef checkout(subtotal, delivery):\n    if subtotal < 0: raise ValueError(\"negative subtotal\")\n    return subtotal + delivery.fee(subtotal)\nfor policy in (StandardDelivery(), Pickup()):\n    print(checkout(100, policy))"
+        },
+        {
+          "t": "out",
+          "v": "120\n100"
+        },
+        {
+          "t": "p",
+          "v": "checkout stays stable as a pickup policy is added. Both policies preserve the documented units and nonnegative fee result. A method returning \"free\" would force callers to special-case it."
+        },
+        {
+          "t": "mis",
+          "wrong": "class Pickup:\n    def fee(self, subtotal): return \"free\"",
+          "right": "class Pickup:\n    def fee(self, subtotal): return 0",
+          "why": "Matching method names is insufficient when the result violates the arithmetic contract."
+        },
+        {
+          "t": "ex",
+          "v": "Add ExpressDelivery with fee 40 and test it through the same checkout caller.",
+          "practiceId": "21.2.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "class ExpressDelivery:\n    def fee(self, subtotal): return 40\ndef checkout(subtotal, delivery): return subtotal + delivery.fee(subtotal)\nassert checkout(100, ExpressDelivery()) == 140\nprint(\"same caller, new policy\")",
+          "out": "same caller, new policy",
+          "why": "A contract describes valid inputs, output meaning and side effects. Substitution is about keeping those promises. Add behaviour at the existing seam, not by branching on every concrete class."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Write a deliberately broken delivery implementation; identify whether it changes result type, input requirements or an expected guarantee.",
+          "practiceId": "21.2.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "A contract describes valid inputs, output meaning and side effects. Substitution is about keeping those promises. Add behaviour at the existing seam, not by branching on every concrete class."
+        },
+        {
+          "t": "try",
+          "q": "What would violate this delivery contract?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Returning a string instead of an integer fee.",
+          "why": "The caller expects nonnegative integer fee units and performs integer arithmetic."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.2.1",
+            "quiz": [
+              {
+                "q": "What would violate this delivery contract?",
+                "options": [
+                  "Returning zero for pickup.",
+                  "Returning a string instead of an integer fee.",
+                  "Adding another valid policy."
+                ],
+                "correct": 1,
+                "why": "The caller expects nonnegative integer fee units and performs integer arithmetic."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Extend behaviour through a stable contract and respect it. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "3. Small interfaces and dependency inversion",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Small interfaces and dependency inversion"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Let core rules receive collaborators they can replace."
+        },
+        {
+          "t": "new",
+          "v": "Interface Segregation Principle (ISP)",
+          "note": "Clients should depend on the operations they actually need; a read-only report should not require delete/save methods."
+        },
+        {
+          "t": "new",
+          "v": "Dependency Inversion Principle (DIP); dependency injection",
+          "note": "Core logic depends on a useful contract rather than constructing a particular database or printer inside itself. Injection means passing that collaborator in."
+        },
+        {
+          "t": "p",
+          "v": "A report needs values, not a full database administration API. Receive a small reader. A memory reader can test the same report without a database, credentials or network. Do not confuse dependency injection with a framework: an ordinary constructor argument is enough."
+        },
+        {
+          "t": "syn",
+          "v": "class Report:\n    def __init__(self, reader):\n        self.reader = reader",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "class MemoryReader:\n    def values(self): return [10, 20, 30]\nclass Report:\n    def __init__(self, reader): self.reader = reader\n    def average(self):\n        values = self.reader.values()\n        if not values: return 0.0\n        return sum(values) / len(values)\nprint(Report(MemoryReader()).average())"
+        },
+        {
+          "t": "out",
+          "v": "20.0"
+        },
+        {
+          "t": "p",
+          "v": "Report knows only values(). A different file reader could provide the same promise. Keep connections and persistence outside the pure calculation; inject the collaborator at the program’s assembly point."
+        },
+        {
+          "t": "mis",
+          "wrong": "self.reader = ProductionDatabase()  # inside Report",
+          "right": "def __init__(self, reader): self.reader = reader",
+          "why": "Constructing a concrete dependency inside core rules couples the report to that implementation."
+        },
+        {
+          "t": "ex",
+          "v": "Test Report with an EmptyReader, without inheriting a huge database interface.",
+          "practiceId": "21.2.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "class EmptyReader:\n    def values(self): return []\nclass Report:\n    def __init__(self, reader): self.reader = reader\n    def average(self):\n        values = self.reader.values()\n        return sum(values) / len(values) if values else 0.0\nassert Report(EmptyReader()).average() == 0.0\nprint(\"empty report checked\")",
+          "out": "empty report checked",
+          "why": "S: separate calculation/presentation. O: add delivery policies. L: preserve fee behaviour. I: a reader exposes only needed operations. D: receive a reader instead of constructing a database. These guidelines are judgement tools, not a requirement to multiply classes."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Explain all five SOLID letters using the invoice/delivery/report examples; name one place where a plain function is still the simplest design.",
+          "practiceId": "21.2.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "S: separate calculation/presentation. O: add delivery policies. L: preserve fee behaviour. I: a reader exposes only needed operations. D: receive a reader instead of constructing a database. These guidelines are judgement tools, not a requirement to multiply classes."
+        },
+        {
+          "t": "try",
+          "q": "How can Report be tested without a real database?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Pass a small fake reader with the same values() contract.",
+          "why": "Constructor injection separates core rules from the mechanism used to obtain data."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.2.2",
+            "quiz": [
+              {
+                "q": "How can Report be tested without a real database?",
+                "options": [
+                  "Disable the calculation.",
+                  "Make every report connect to production.",
+                  "Pass a small fake reader with the same values() contract."
+                ],
+                "correct": 2,
+                "why": "Constructor injection separates core rules from the mechanism used to obtain data."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Let core rules receive collaborators they can replace. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    }
+  ]
+},
+"21.3": {
+  "parts": [
+    {
+      "title": "1. Strategy: swap an algorithm deliberately",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Strategy: swap an algorithm deliberately"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Change one policy without rewriting the service."
+        },
+        {
+          "t": "new",
+          "v": "Strategy pattern",
+          "note": "Represent interchangeable algorithms behind a consistent call shape. Python functions can be strategies; a separate hierarchy is not always necessary."
+        },
+        {
+          "t": "new",
+          "v": "Callable[[int], int]",
+          "note": "typing.Callable describes a callable with one integer argument returning an integer. Passing fee differs from calling fee(...)."
+        },
+        {
+          "t": "p",
+          "v": "When only one calculation changes, pass that calculation. A delivery function can be changed without touching checkout. A class-based strategy is useful if the policy has its own state; a function is enough for the following example."
+        },
+        {
+          "t": "syn",
+          "v": "def checkout(amount, fee_policy):\n    return amount + fee_policy(amount)",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "from typing import Callable\ndef standard(amount: int) -> int: return 20\ndef free_over_100(amount: int) -> int: return 0 if amount >= 100 else 20\ndef checkout(amount: int, fee: Callable[[int], int]) -> int:\n    return amount + fee(amount)\nprint(checkout(80, standard))\nprint(checkout(120, free_over_100))"
+        },
+        {
+          "t": "out",
+          "v": "100\n120"
+        },
+        {
+          "t": "p",
+          "v": "Pass standard, not standard(80), so checkout receives the algorithm rather than its already-computed result. Both functions share units and parameter shape."
+        },
+        {
+          "t": "mis",
+          "wrong": "checkout(80, standard(80))",
+          "right": "checkout(80, standard)",
+          "why": "The first call passes an int; the service expects a callable."
+        },
+        {
+          "t": "ex",
+          "v": "Add a fixed fee of 40 as a function strategy and verify the same checkout routine accepts it.",
+          "practiceId": "21.3.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "def express(amount): return 40\ndef checkout(amount, fee): return amount + fee(amount)\nassert checkout(50, express) == 90\nprint(checkout(50, express))",
+          "out": "90",
+          "why": "The service receives a compatible algorithm. Use stateful classes only when the policy owns meaningful configuration; keep result units and validation consistent."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Make a strategy with state (a configurable minimum for free shipping). Decide whether a closure or a small callable/class method is clearer; justify the choice.",
+          "practiceId": "21.3.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "The service receives a compatible algorithm. Use stateful classes only when the policy owns meaningful configuration; keep result units and validation consistent."
+        },
+        {
+          "t": "try",
+          "q": "What should be passed as a strategy?",
+          "code": "# Predict and explain before revealing.",
+          "a": "A callable implementing the agreed algorithm.",
+          "why": "The caller needs to invoke the policy when it has the actual input."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.3.0",
+            "quiz": [
+              {
+                "q": "What should be passed as a strategy?",
+                "options": [
+                  "A callable implementing the agreed algorithm.",
+                  "Only the integer it returned earlier.",
+                  "The strategy’s printed name."
+                ],
+                "correct": 0,
+                "why": "The caller needs to invoke the policy when it has the actual input."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Change one policy without rewriting the service. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "2. Factory: choose construction in one place",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Factory: choose construction in one place"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Centralise object selection while exposing a stable operation."
+        },
+        {
+          "t": "new",
+          "v": "Factory pattern; ValueError for unknown kind",
+          "note": "A factory chooses and returns an object. It separates construction decisions from callers using the object, and refuses unsupported kinds explicitly."
+        },
+        {
+          "t": "p",
+          "v": "A small factory may be a function with two branches. A dictionary of classes or a factory hierarchy is optional, not required. The returned implementations must honour the same caller contract. Keep the factory close to program assembly."
+        },
+        {
+          "t": "syn",
+          "v": "def make_formatter(kind):\n    if kind == \"text\": return TextFormatter()\n    raise ValueError(\"unknown kind\")",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "class TextFormatter:\n    def format(self, amount): return f\"Total: {amount}\"\nclass CompactFormatter:\n    def format(self, amount): return f\"TOTAL={amount}\"\ndef make_formatter(kind):\n    if kind == \"text\": return TextFormatter()\n    if kind == \"compact\": return CompactFormatter()\n    raise ValueError(\"unknown formatter\")\nfor kind in (\"text\", \"compact\"):\n    print(make_formatter(kind).format(100))\ntry: make_formatter(\"other\")\nexcept ValueError as error: print(error)"
+        },
+        {
+          "t": "out",
+          "v": "Total: 100\nTOTAL=100\nunknown formatter"
+        },
+        {
+          "t": "p",
+          "v": "The caller asks for format(amount), not a concrete type. Unknown input fails early instead of returning None and crashing at a distant method call."
+        },
+        {
+          "t": "mis",
+          "wrong": "return None  # for unknown formatter",
+          "right": "raise ValueError(\"unknown formatter\")",
+          "why": "A clear construction error is easier to diagnose than a later None.format failure."
+        },
+        {
+          "t": "ex",
+          "v": "Make a greeting factory returning FormalGreeting or FriendlyGreeting, both with greet(name).",
+          "practiceId": "21.3.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "class FormalGreeting:\n    def greet(self, name): return f\"Welcome, {name}.\"\nclass FriendlyGreeting:\n    def greet(self, name): return f\"Hi {name}!\"\ndef make_greeting(kind):\n    if kind == \"formal\": return FormalGreeting()\n    if kind == \"friendly\": return FriendlyGreeting()\n    raise ValueError(\"unknown greeting\")\nprint(make_greeting(\"friendly\").greet(\"Sita\"))",
+          "out": "Hi Sita!",
+          "why": "A factory chooses construction; strategy chooses an algorithm. They can work together but solve different problems. Every constructed object must preserve the operation the caller depends on."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Add a new formatter, update only the construction choice, and prove existing callers still use format(amount) unchanged.",
+          "practiceId": "21.3.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "A factory chooses construction; strategy chooses an algorithm. They can work together but solve different problems. Every constructed object must preserve the operation the caller depends on."
+        },
+        {
+          "t": "try",
+          "q": "Where should unknown factory input be rejected?",
+          "code": "# Predict and explain before revealing.",
+          "a": "At the factory boundary.",
+          "why": "Failing early gives the caller a clear error at the source of the wrong selection."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.3.1",
+            "quiz": [
+              {
+                "q": "Where should unknown factory input be rejected?",
+                "options": [
+                  "Never; silently choose any object.",
+                  "At the factory boundary.",
+                  "After a random method call fails."
+                ],
+                "correct": 1,
+                "why": "Failing early gives the caller a clear error at the source of the wrong selection."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Centralise object selection while exposing a stable operation. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "3. Observer: notify listeners after a real change",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Observer: notify listeners after a real change"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Keep notifications separate from the state transition."
+        },
+        {
+          "t": "new",
+          "v": "Observer pattern; subscribe/unsubscribe",
+          "note": "An object publishes changes to registered listeners. Listeners react independently; unsubscribe removes a registration."
+        },
+        {
+          "t": "new",
+          "v": "listener snapshot",
+          "note": "Copy the listener list for one notification pass so callbacks changing registrations do not corrupt the current traversal."
+        },
+        {
+          "t": "p",
+          "v": "Think of a stock change notifying a screen and an audit recorder. The notifier should not know the details of every listener. Define delivery policy: this simple implementation calls synchronously, permits each listener only once, and propagates listener errors. It is not a durable event queue."
+        },
+        {
+          "t": "syn",
+          "v": "for listener in list(self._listeners):\n    listener(event)",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "class Signal:\n    def __init__(self): self._listeners = []\n    def subscribe(self, listener):\n        if listener not in self._listeners: self._listeners.append(listener)\n    def unsubscribe(self, listener):\n        if listener in self._listeners: self._listeners.remove(listener)\n    def emit(self, event):\n        for listener in list(self._listeners): listener(event)\ndef display(event): print(\"screen:\", event)\ndef audit(event): print(\"audit:\", event)\nsignal = Signal()\nsignal.subscribe(display)\nsignal.subscribe(audit)\nsignal.emit(\"stock=3\")\nsignal.unsubscribe(display)\nsignal.emit(\"stock=2\")"
+        },
+        {
+          "t": "out",
+          "v": "screen: stock=3\naudit: stock=3\naudit: stock=2"
+        },
+        {
+          "t": "p",
+          "v": "The first event reaches both listeners; the second reaches only audit. Pass a listener function without calling it. In a production system decide how callback errors and ordering affect delivery."
+        },
+        {
+          "t": "mis",
+          "wrong": "for listener in self._listeners: listener(event)  # callbacks modify this list",
+          "right": "for listener in list(self._listeners): listener(event)",
+          "why": "A snapshot makes registrations during callbacks take effect on later emits, not unpredictably within this pass."
+        },
+        {
+          "t": "ex",
+          "v": "Subscribe a recorder list through a callback, emit two events, unsubscribe, and show no third event is recorded.",
+          "practiceId": "21.3.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "class Signal:\n    def __init__(self): self.listeners = []\n    def subscribe(self, listener): self.listeners.append(listener)\n    def unsubscribe(self, listener): self.listeners.remove(listener)\n    def emit(self, event):\n        for listener in list(self.listeners): listener(event)\nevents = []\ndef record(event): events.append(event)\nsignal = Signal()\nsignal.subscribe(record)\nsignal.emit(\"A\")\nsignal.emit(\"B\")\nsignal.unsubscribe(record)\nsignal.emit(\"C\")\nprint(events)",
+          "out": "['A', 'B']",
+          "why": "Each emission walks a copied registration list. Changes to registration apply to subsequent emissions. Keep the policy explicit; durable delivery, retries and async queues are later topics."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Make a listener unsubscribe itself during notification. Predict which listeners receive the current event and which receive the next one.",
+          "practiceId": "21.3.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "Each emission walks a copied registration list. Changes to registration apply to subsequent emissions. Keep the policy explicit; durable delivery, retries and async queues are later topics."
+        },
+        {
+          "t": "try",
+          "q": "Why copy listeners for an emission?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Callbacks may change registrations during the pass.",
+          "why": "Walking a snapshot avoids skipping or revisiting entries when callbacks mutate the live registration list."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.3.2",
+            "quiz": [
+              {
+                "q": "Why copy listeners for an emission?",
+                "options": [
+                  "To permanently double every listener.",
+                  "To hide events from listeners.",
+                  "Callbacks may change registrations during the pass."
+                ],
+                "correct": 2,
+                "why": "Walking a snapshot avoids skipping or revisiting entries when callbacks mutate the live registration list."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Keep notifications separate from the state transition. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "4. Singleton: recognise it and understand the trade-off",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Singleton: recognise it and understand the trade-off"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Prefer explicit shared dependencies over hidden global state."
+        },
+        {
+          "t": "new",
+          "v": "Singleton pattern",
+          "note": "A design intends one shared instance in some scope. A Python module can hold a shared instance, but that does not guarantee one instance across processes."
+        },
+        {
+          "t": "new",
+          "v": "global state; test isolation",
+          "note": "Hidden shared mutable state lets one caller/test affect another. Passing a shared dependency explicitly makes that relationship visible."
+        },
+        {
+          "t": "p",
+          "v": "Learn what singleton means, but do not implement a clever __new__ trick just to use the name. If one configuration object is intentionally shared by two services, create it once at assembly and pass it to both. For independent tests create independent configuration objects."
+        },
+        {
+          "t": "syn",
+          "v": "config = Config()\nfirst = Service(config)\nsecond = Service(config)",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "class Config:\n    def __init__(self, currency): self.currency = currency\nclass Report:\n    def __init__(self, config): self.config = config\nshared = Config(\"JPY\")\na, b = Report(shared), Report(shared)\nisolated = Report(Config(\"NPR\"))\nprint(a.config is b.config)\nprint(a.config.currency, isolated.config.currency)"
+        },
+        {
+          "t": "out",
+          "v": "True\nJPY NPR"
+        },
+        {
+          "t": "p",
+          "v": "This demonstrates explicitly shared lifetime rather than enforced singleton identity. The design remains testable because callers can inject a separate object. If configuration should be immutable, a frozen record is often appropriate."
+        },
+        {
+          "t": "mis",
+          "wrong": "Make every constructor silently read and change one global config.",
+          "right": "Create dependencies at assembly and pass them to users.",
+          "why": "Hidden mutable singletons make tests order-dependent and hide ownership."
+        },
+        {
+          "t": "ex",
+          "v": "Create two services sharing one config and a third with its own config; explain scope and lifetime.",
+          "practiceId": "21.3.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "class Config:\n    def __init__(self, language): self.language = language\nclass Service:\n    def __init__(self, config): self.config = config\nc = Config(\"ja\")\na, b, other = Service(c), Service(c), Service(Config(\"ne\"))\nassert a.config is b.config\nassert other.config is not c\nprint(\"shared deliberately, isolated deliberately\")",
+          "out": "shared deliberately, isolated deliberately",
+          "why": "Factory selects construction; strategy varies calculation; observer distributes notification; singleton concerns one shared instance/lifetime. A shared injected dependency often gives the required reuse without enforcing global identity."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Compare factory, strategy, observer and singleton: name the problem each solves and one situation where it would be unnecessary.",
+          "practiceId": "21.3.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "Factory selects construction; strategy varies calculation; observer distributes notification; singleton concerns one shared instance/lifetime. A shared injected dependency often gives the required reuse without enforcing global identity."
+        },
+        {
+          "t": "try",
+          "q": "What is a common risk of a mutable singleton?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Hidden state leaking between callers or tests.",
+          "why": "Shared mutable lifetime can make behaviour depend on earlier calls."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.3.3",
+            "quiz": [
+              {
+                "q": "What is a common risk of a mutable singleton?",
+                "options": [
+                  "Hidden state leaking between callers or tests.",
+                  "Every caller gets an independent copy automatically.",
+                  "It guarantees correct business logic."
+                ],
+                "correct": 0,
+                "why": "Shared mutable lifetime can make behaviour depend on earlier calls."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Prefer explicit shared dependencies over hidden global state. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    }
+  ]
+},
+"21.4": {
+  "parts": [
+    {
+      "title": "1. Enum: name a finite set of states",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Enum: name a finite set of states"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Replace typo-prone status strings with explicit members."
+        },
+        {
+          "t": "new",
+          "v": "Enum; member; .name and .value",
+          "note": "enum.Enum declares a finite set of named members. .name is its Python identifier and .value is the chosen underlying value."
+        },
+        {
+          "t": "new",
+          "v": "module constant; naming convention",
+          "note": "UPPER_CASE communicates a constant but does not prevent reassignment. Enums model choices; unrelated numerical constants need not become enums."
+        },
+        {
+          "t": "p",
+          "v": "Use an enum for NEW/CONFIRMED/CANCELLED, not for every ordinary piece of text. A named status is different from its string value. At input/output boundaries, convert deliberately. Enum rejects unknown underlying values instead of silently accepting a typo."
+        },
+        {
+          "t": "syn",
+          "v": "class Status(Enum):\n    NEW = \"new\"\n    CONFIRMED = \"confirmed\"",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "from enum import Enum\nclass Status(Enum):\n    NEW = \"new\"\n    CONFIRMED = \"confirmed\"\n    CANCELLED = \"cancelled\"\ns = Status(\"confirmed\")\nprint(s.name, s.value)\nprint(s is Status.CONFIRMED)\nprint(s == \"confirmed\")\ntry: Status(\"confirmd\")\nexcept ValueError: print(\"unknown status\")"
+        },
+        {
+          "t": "out",
+          "v": "CONFIRMED confirmed\nTrue\nFalse\nunknown status"
+        },
+        {
+          "t": "p",
+          "v": "Membership is not string equality for this ordinary Enum. Store/serialize the explicit .value and reconstruct with Status(value). This example does not alter Study Hub’s existing storage schema."
+        },
+        {
+          "t": "mis",
+          "wrong": "status = \"confirmd\"",
+          "right": "status = Status.CONFIRMED",
+          "why": "Named members reduce typo-prone magic strings; external text still needs boundary conversion."
+        },
+        {
+          "t": "ex",
+          "v": "Build Priority with low/normal/high values; reconstruct high from text and print its name.",
+          "practiceId": "21.4.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "from enum import Enum\nclass Priority(Enum):\n    LOW = \"low\"\n    NORMAL = \"normal\"\n    HIGH = \"high\"\np = Priority(\"high\")\nprint(p.name, p.value)",
+          "out": "HIGH high",
+          "why": "Enums express a finite vocabulary. Validate external values at the boundary, preserve a deliberate serialization format, and leave user names/descriptions as strings."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Choose which fields in an old project are finite states and which are free text; replace only the finite choices in a separate practice copy.",
+          "practiceId": "21.4.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "Enums express a finite vocabulary. Validate external values at the boundary, preserve a deliberate serialization format, and leave user names/descriptions as strings."
+        },
+        {
+          "t": "try",
+          "q": "How do you turn stored text \"confirmed\" into this enum?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Status(\"confirmed\")",
+          "why": "Enum construction finds the member with that underlying value and rejects unknown values."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.4.0",
+            "quiz": [
+              {
+                "q": "How do you turn stored text \"confirmed\" into this enum?",
+                "options": [
+                  "Status(\"confirmed\")",
+                  "Status.name(\"confirmed\")",
+                  "Compare every status to a misspelled literal."
+                ],
+                "correct": 0,
+                "why": "Enum construction finds the member with that underlying value and rejects unknown values."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Replace typo-prone status strings with explicit members. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "2. auto, unique and stable storage values",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. auto, unique and stable storage values"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Separate internal symbolic choices from persistent identifiers."
+        },
+        {
+          "t": "new",
+          "v": "auto()",
+          "note": "Requests automatically generated member values. For ordinary Enum these are normally incrementing integers; do not assume those numbers are stable storage identifiers."
+        },
+        {
+          "t": "new",
+          "v": "@unique; enum aliases",
+          "note": "By default duplicate values can create aliases. @unique rejects duplicates when every state must be distinct."
+        },
+        {
+          "t": "p",
+          "v": "Internal options can use auto when the numeric values are irrelevant. If values go into saved files or an API, prefer explicit stable strings. Inserting or rearranging members must not accidentally reinterpret old stored numbers."
+        },
+        {
+          "t": "syn",
+          "v": "@unique\nclass Action(Enum):\n    START = auto()\n    STOP = auto()",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "from enum import Enum, auto, unique\n@unique\nclass Action(Enum):\n    START = auto()\n    STOP = auto()\nprint([member.name for member in Action])\nprint(Action.START != Action.STOP)\nclass SavedStatus(Enum):\n    NEW = \"new\"\n    DONE = \"done\"\nprint(SavedStatus.DONE.value)"
+        },
+        {
+          "t": "out",
+          "v": "['START', 'STOP']\nTrue\ndone"
+        },
+        {
+          "t": "p",
+          "v": "The output deliberately avoids depending on generated numeric values. @unique checks the class definition. Explicit text values are clearer when compatibility matters."
+        },
+        {
+          "t": "mis",
+          "wrong": "Save Action.START.value as a permanent identifier without a policy.",
+          "right": "Use explicit stable values for persistent states.",
+          "why": "auto is convenient for internal symbols, not a migration plan for stored data."
+        },
+        {
+          "t": "ex",
+          "v": "Make a unique InternalMode with READ/WRITE using auto; separately define SavedMode with explicit text values.",
+          "practiceId": "21.4.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "from enum import Enum, auto, unique\n@unique\nclass InternalMode(Enum):\n    READ = auto()\n    WRITE = auto()\nclass SavedMode(Enum):\n    READ = \"read\"\n    WRITE = \"write\"\nprint(InternalMode.READ.name)\nprint(SavedMode.WRITE.value)",
+          "out": "READ\nwrite",
+          "why": "Old saved values must continue to mean the same thing. Explicit stable values, boundary parsing and compatibility tests matter more than convenient automatic numbering."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Explain why changing a persisted state vocabulary needs a migration even if the enum definition is only three lines.",
+          "practiceId": "21.4.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "Old saved values must continue to mean the same thing. Explicit stable values, boundary parsing and compatibility tests matter more than convenient automatic numbering."
+        },
+        {
+          "t": "try",
+          "q": "Which values are safer for a long-lived saved status format?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Explicit stable values with a documented meaning.",
+          "why": "Persistent data needs stable identifiers, not incidental definition order."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.4.1",
+            "quiz": [
+              {
+                "q": "Which values are safer for a long-lived saved status format?",
+                "options": [
+                  "The displayed index in a dropdown.",
+                  "Explicit stable values with a documented meaning.",
+                  "Whatever auto generates after each edit."
+                ],
+                "correct": 1,
+                "why": "Persistent data needs stable identifiers, not incidental definition order."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Separate internal symbolic choices from persistent identifiers. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "3. State transitions: allowed values are not enough",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. State transitions: allowed values are not enough"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Validate the change as well as the status."
+        },
+        {
+          "t": "new",
+          "v": "state transition; transition table",
+          "note": "A state machine defines which changes are legal. An enum lists states but does not enforce allowed transitions by itself."
+        },
+        {
+          "t": "p",
+          "v": "NEW may become CONFIRMED or CANCELLED. A CANCELLED booking cannot be confirmed again in this policy. Reject the requested transition before mutating state. State-machine policy is a business decision; write it down rather than guessing from enum order."
+        },
+        {
+          "t": "syn",
+          "v": "if target not in allowed[current]:\n    raise ValueError(\"invalid transition\")",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "from enum import Enum\nclass Status(Enum):\n    NEW = \"new\"\n    CONFIRMED = \"confirmed\"\n    CANCELLED = \"cancelled\"\nclass Booking:\n    def __init__(self): self.status = Status.NEW\n    def transition(self, target):\n        allowed = {Status.NEW: {Status.CONFIRMED, Status.CANCELLED},\n                   Status.CONFIRMED: {Status.CANCELLED}, Status.CANCELLED: set()}\n        if target not in allowed[self.status]: raise ValueError(\"invalid transition\")\n        self.status = target\nb = Booking()\nb.transition(Status.CONFIRMED)\nb.transition(Status.CANCELLED)\ntry: b.transition(Status.CONFIRMED)\nexcept ValueError as error: print(error)\nprint(b.status.value)"
+        },
+        {
+          "t": "out",
+          "v": "invalid transition\ncancelled"
+        },
+        {
+          "t": "p",
+          "v": "The final state stays cancelled after a rejected request. Enum members are useful dictionary/set keys for an explicit transition table. Prevent callers from bypassing the method in a larger design by controlling access to the state."
+        },
+        {
+          "t": "mis",
+          "wrong": "Set any enum value whenever a caller asks.",
+          "right": "Check the transition policy before assignment.",
+          "why": "An enum permits known values, not every possible sequence of those values."
+        },
+        {
+          "t": "ex",
+          "v": "Make Task states TODO/DONE with only TODO -> DONE allowed; prove a second completion is rejected.",
+          "practiceId": "21.4.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "from enum import Enum\nclass State(Enum):\n    TODO = \"todo\"\n    DONE = \"done\"\nclass Task:\n    def __init__(self): self.state = State.TODO\n    def complete(self):\n        if self.state is not State.TODO: raise ValueError(\"already completed\")\n        self.state = State.DONE\nt = Task()\nt.complete()\ntry: t.complete()\nexcept ValueError as error: print(error)\nprint(t.state.value)",
+          "out": "already completed\ndone",
+          "why": "Model the policy before code. Validate first, mutate second, and test both successful transitions and invalid transitions with preserved state."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: List valid transitions for a library loan and include an invalid transition test that confirms no state change.",
+          "practiceId": "21.4.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "Model the policy before code. Validate first, mutate second, and test both successful transitions and invalid transitions with preserved state."
+        },
+        {
+          "t": "try",
+          "q": "Does defining an Enum enforce legal transition order?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No; the application must implement transition rules.",
+          "why": "Enum specifies available choices, while a transition policy specifies legal changes."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.4.2",
+            "quiz": [
+              {
+                "q": "Does defining an Enum enforce legal transition order?",
+                "options": [
+                  "Yes; enum order supplies all business rules.",
+                  "Only if names are uppercase.",
+                  "No; the application must implement transition rules."
+                ],
+                "correct": 2,
+                "why": "Enum specifies available choices, while a transition policy specifies legal changes."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Validate the change as well as the status. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    }
+  ]
+},
+"21.5": {
+  "parts": [
+    {
+      "title": "1. Safe refactoring: preserve observed behaviour first",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Safe refactoring: preserve observed behaviour first"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Move code into objects without quietly changing its results."
+        },
+        {
+          "t": "new",
+          "v": "characterisation test",
+          "note": "A test records what existing code does before restructuring. Refactoring preserves observable behaviour; bug fixes are separate deliberate changes."
+        },
+        {
+          "t": "new",
+          "v": "pure core; I/O boundary",
+          "note": "Keep calculation/state rules testable without keyboard, file or network interactions. Connect I/O at the outer boundary."
+        },
+        {
+          "t": "p",
+          "v": "Week 16–17 taught small changes and tests. Start from a working function, write representative normal/empty/boundary tests, then extract a class only if ownership makes it useful. Do not change input formats, arithmetic and architecture all in one step."
+        },
+        {
+          "t": "syn",
+          "v": "expected = old_function(input)\nassert new_object.method(input) == expected",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "def old_total(prices, fee=0): return sum(prices) + fee\nclass Receipt:\n    def __init__(self, prices): self.prices = list(prices)\n    def total(self, fee=0): return sum(self.prices) + fee\ncases = [([], 0), ([100], 20), ([100, 40], 0)]\nfor prices, fee in cases:\n    assert Receipt(prices).total(fee) == old_total(prices, fee)\nprint(\"3 compatibility cases passed\")"
+        },
+        {
+          "t": "out",
+          "v": "3 compatibility cases passed"
+        },
+        {
+          "t": "p",
+          "v": "The same values produce the same totals. These cases are not proof for every input, but they protect the behaviour being changed. Git commits let you review/refute one focused transformation."
+        },
+        {
+          "t": "mis",
+          "wrong": "Refactor and change rounding/units/storage formats in one edit.",
+          "right": "Record behaviour, restructure one boundary, then fix rules separately.",
+          "why": "Mixed changes make it hard to tell whether a failure is an intended rule change or a regression."
+        },
+        {
+          "t": "ex",
+          "v": "Refactor old_average(grades) into GradeBook.average, preserving the empty-list result and ordinary averages.",
+          "practiceId": "21.5.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "def old_average(grades): return sum(grades) / len(grades) if grades else 0.0\nclass GradeBook:\n    def __init__(self, grades): self.grades = list(grades)\n    def average(self): return sum(self.grades) / len(self.grades) if self.grades else 0.0\nfor grades in ([], [70], [60, 80]):\n    assert GradeBook(grades).average() == old_average(grades)\nprint(\"average behaviour preserved\")",
+          "out": "average behaviour preserved",
+          "why": "Size alone is not the reason for a class. Find state ownership and rules, preserve caller-visible results, and keep unrelated fixes out of the refactoring commit."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Before refactoring your own 200-line script, identify one coherent responsibility and write five tests around that boundary. Move only that piece first.",
+          "practiceId": "21.5.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "Size alone is not the reason for a class. Find state ownership and rules, preserve caller-visible results, and keep unrelated fixes out of the refactoring commit."
+        },
+        {
+          "t": "try",
+          "q": "What should a pure refactoring preserve?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Observable behaviour covered by the stated contract.",
+          "why": "Refactoring changes structure; intentional behavioural fixes should be separately reviewed."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.5.0",
+            "quiz": [
+              {
+                "q": "What should a pure refactoring preserve?",
+                "options": [
+                  "Observable behaviour covered by the stated contract.",
+                  "Only the number of lines.",
+                  "No tests are needed if names improve."
+                ],
+                "correct": 0,
+                "why": "Refactoring changes structure; intentional behavioural fixes should be separately reviewed."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Move code into objects without quietly changing its results. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "2. Milestone project: a typed inventory system",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Milestone project: a typed inventory system"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Combine the week’s tools around one clear state owner."
+        },
+        {
+          "t": "new",
+          "v": "repository interface",
+          "note": "A repository separates how records are found/saved from the business rules using them. This example is intentionally in-memory and offline; it is not persistent storage."
+        },
+        {
+          "t": "new",
+          "v": "immutable snapshot update",
+          "note": "replace creates a new validated Item. Retaining an old Item reference does not let a caller mutate current stock through ordinary field assignment."
+        },
+        {
+          "t": "p",
+          "v": "Build in layers: Item data/validation, Repository contract, MemoryRepository mechanism, Inventory business rules, a low-stock strategy and a formatter. Read one class at a time. Every import and syntax feature has been introduced earlier this week. The factory assembles storage; the strategy determines low-stock policy. Do not add inheritance between unrelated layers."
+        },
+        {
+          "t": "syn",
+          "v": "Item -> Repository contract -> Inventory rules -> render(item)",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "from dataclasses import dataclass, replace\nfrom enum import Enum\nfrom typing import Protocol, Callable\n\nclass Category(Enum):\n    BOOK = \"book\"\n    TOOL = \"tool\"\n\n@dataclass(frozen=True)\nclass Item:\n    sku: str\n    name: str\n    quantity: int\n    category: Category\n\n    def __post_init__(self) -> None:\n        if not self.sku.strip() or not self.name.strip():\n            raise ValueError(\"sku and name required\")\n        if type(self.quantity) is not int or self.quantity < 0:\n            raise ValueError(\"quantity must be a nonnegative integer\")\n        if not isinstance(self.category, Category):\n            raise TypeError(\"Category required\")\n\nclass Repository(Protocol):\n    def find(self, sku: str) -> Item | None: ...\n    def save(self, item: Item) -> None: ...\n\nclass MemoryRepository:\n    def __init__(self) -> None:\n        self._items: dict[str, Item] = {}\n    def find(self, sku: str) -> Item | None:\n        return self._items.get(sku)\n    def save(self, item: Item) -> None:\n        self._items[item.sku] = item\n\ndef make_repository(kind: str) -> Repository:\n    if kind == \"memory\":\n        return MemoryRepository()\n    raise ValueError(\"unknown repository\")\n\ndef never_low(item: Item) -> bool:\n    return False\n\ndef low_below_two(item: Item) -> bool:\n    return item.quantity < 2\n\nclass Inventory:\n    def __init__(self, repository: Repository,\n                 low_policy: Callable[[Item], bool]) -> None:\n        self._repository = repository\n        self._low_policy = low_policy\n\n    def add(self, item: Item) -> None:\n        if self._repository.find(item.sku) is not None:\n            raise ValueError(\"duplicate sku\")\n        self._repository.save(item)\n\n    def get(self, sku: str) -> Item:\n        item = self._repository.find(sku)\n        if item is None:\n            raise KeyError(sku)\n        return item\n\n    def remove(self, sku: str, amount: int) -> Item:\n        if type(amount) is not int or amount <= 0:\n            raise ValueError(\"positive integer amount required\")\n        current = self.get(sku)\n        if amount > current.quantity:\n            raise ValueError(\"not enough stock\")\n        updated = replace(current, quantity=current.quantity - amount)\n        self._repository.save(updated)\n        return updated\n\n    def is_low(self, sku: str) -> bool:\n        return self._low_policy(self.get(sku))\n\ndef render(item: Item) -> str:\n    return f\"{item.sku}: {item.name} / {item.quantity} / {item.category.value}\"\n\ninventory = Inventory(make_repository(\"memory\"), low_below_two)\ninventory.add(Item(\"B1\", \"Python\", 3, Category.BOOK))\nold = inventory.get(\"B1\")\nupdated = inventory.remove(\"B1\", 2)\nprint(render(updated))\nprint(old.quantity, updated.quantity, inventory.is_low(\"B1\"))\ntry:\n    inventory.remove(\"B1\", 2)\nexcept ValueError as error:\n    print(error)\nprint(inventory.get(\"B1\").quantity)\n"
+        },
+        {
+          "t": "out",
+          "v": "B1: Python / 1 / book\n3 1 True\nnot enough stock\n1"
+        },
+        {
+          "t": "p",
+          "v": "The returned old snapshot stays at quantity 3 while the saved replacement becomes 1. Duplicate SKUs, missing keys, impossible amounts and insufficient stock are separate errors. All checks run before saving; no file/network access is involved. The category is an explicit enum, never an arbitrary status string."
+        },
+        {
+          "t": "mis",
+          "wrong": "Update current.quantity directly and bypass checks.",
+          "right": "Validate amount, construct replacement, then save.",
+          "why": "Frozen snapshots and controlled updates make ownership and failed-operation behaviour clear."
+        },
+        {
+          "t": "ex",
+          "v": "Rebuild the inventory project from the contract. Add one TOOL item and use never_low as an alternative strategy.",
+          "practiceId": "21.5.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "from dataclasses import dataclass, replace\nfrom enum import Enum\nfrom typing import Protocol, Callable\n\nclass Category(Enum):\n    BOOK = \"book\"\n    TOOL = \"tool\"\n\n@dataclass(frozen=True)\nclass Item:\n    sku: str\n    name: str\n    quantity: int\n    category: Category\n\n    def __post_init__(self) -> None:\n        if not self.sku.strip() or not self.name.strip():\n            raise ValueError(\"sku and name required\")\n        if type(self.quantity) is not int or self.quantity < 0:\n            raise ValueError(\"quantity must be a nonnegative integer\")\n        if not isinstance(self.category, Category):\n            raise TypeError(\"Category required\")\n\nclass Repository(Protocol):\n    def find(self, sku: str) -> Item | None: ...\n    def save(self, item: Item) -> None: ...\n\nclass MemoryRepository:\n    def __init__(self) -> None:\n        self._items: dict[str, Item] = {}\n    def find(self, sku: str) -> Item | None:\n        return self._items.get(sku)\n    def save(self, item: Item) -> None:\n        self._items[item.sku] = item\n\ndef make_repository(kind: str) -> Repository:\n    if kind == \"memory\":\n        return MemoryRepository()\n    raise ValueError(\"unknown repository\")\n\ndef never_low(item: Item) -> bool:\n    return False\n\ndef low_below_two(item: Item) -> bool:\n    return item.quantity < 2\n\nclass Inventory:\n    def __init__(self, repository: Repository,\n                 low_policy: Callable[[Item], bool]) -> None:\n        self._repository = repository\n        self._low_policy = low_policy\n\n    def add(self, item: Item) -> None:\n        if self._repository.find(item.sku) is not None:\n            raise ValueError(\"duplicate sku\")\n        self._repository.save(item)\n\n    def get(self, sku: str) -> Item:\n        item = self._repository.find(sku)\n        if item is None:\n            raise KeyError(sku)\n        return item\n\n    def remove(self, sku: str, amount: int) -> Item:\n        if type(amount) is not int or amount <= 0:\n            raise ValueError(\"positive integer amount required\")\n        current = self.get(sku)\n        if amount > current.quantity:\n            raise ValueError(\"not enough stock\")\n        updated = replace(current, quantity=current.quantity - amount)\n        self._repository.save(updated)\n        return updated\n\n    def is_low(self, sku: str) -> bool:\n        return self._low_policy(self.get(sku))\n\ndef render(item: Item) -> str:\n    return f\"{item.sku}: {item.name} / {item.quantity} / {item.category.value}\"\n\ninventory = Inventory(make_repository(\"memory\"), never_low)\ninventory.add(Item(\"T1\", \"Pen\", 2, Category.TOOL))\nprint(render(inventory.remove(\"T1\", 1)))\nprint(inventory.is_low(\"T1\"))",
+          "out": "T1: Pen / 1 / tool\nFalse",
+          "why": "A new policy belongs in a strategy, not duplicated removal logic. The report reads snapshots; the Inventory owns state-changing rules. Preserve the repository contract and test both implementations through the same callers."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Add a read-only stock_value report or a second low-stock policy. Decide which existing layer owns it; write an invalid-input and valid-input test before implementing.",
+          "practiceId": "21.5.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "A new policy belongs in a strategy, not duplicated removal logic. The report reads snapshots; the Inventory owns state-changing rules. Preserve the repository contract and test both implementations through the same callers."
+        },
+        {
+          "t": "try",
+          "q": "Which layer decides whether a stock removal is allowed?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Inventory business rules.",
+          "why": "The repository stores records; the service enforces business rules before changing them."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.5.1",
+            "quiz": [
+              {
+                "q": "Which layer decides whether a stock removal is allowed?",
+                "options": [
+                  "An arbitrary external assignment.",
+                  "Inventory business rules.",
+                  "The text formatter."
+                ],
+                "correct": 1,
+                "why": "The repository stores records; the service enforces business rules before changing them."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Combine the week’s tools around one clear state owner. Explain the rule aloud, then write the example again without a template."
+        }
+      ]
+    },
+    {
+      "title": "3. Tests, type-checking and the full-week review",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Tests, type-checking and the full-week review"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Verify the contract, state preservation and design decisions."
+        },
+        {
+          "t": "new",
+          "v": "boundary test; failure-state assertion",
+          "note": "A rejected operation must raise the intended error and leave stored state unchanged. Test the resulting state as well as the exception."
+        },
+        {
+          "t": "new",
+          "v": "assertion; python -O caution",
+          "note": "assert states a test expectation. Optimised Python (-O) can remove asserts, so do not use them as production input validation. The service uses real exceptions instead."
+        },
+        {
+          "t": "p",
+          "v": "The standalone checks below use Week 10 lambda to delay an operation until the error helper calls it; lambda is a small function, not an already-executed result. This helper catches only the expected exception. Run normal Python, not -O. For strict typing, save the project definitions plus demo as inventory.py and run python -m mypy --strict inventory.py. The simple error helper below is a runtime test scaffold, not the strict-typed project module."
+        },
+        {
+          "t": "syn",
+          "v": "assert result == expected\nexpect_error(ValueError, lambda: invalid_operation())",
+          "note": "Syntax pattern: read the complete runnable example next."
+        },
+        {
+          "t": "code",
+          "v": "from dataclasses import dataclass, replace\nfrom enum import Enum\nfrom typing import Protocol, Callable\n\nclass Category(Enum):\n    BOOK = \"book\"\n    TOOL = \"tool\"\n\n@dataclass(frozen=True)\nclass Item:\n    sku: str\n    name: str\n    quantity: int\n    category: Category\n\n    def __post_init__(self) -> None:\n        if not self.sku.strip() or not self.name.strip():\n            raise ValueError(\"sku and name required\")\n        if type(self.quantity) is not int or self.quantity < 0:\n            raise ValueError(\"quantity must be a nonnegative integer\")\n        if not isinstance(self.category, Category):\n            raise TypeError(\"Category required\")\n\nclass Repository(Protocol):\n    def find(self, sku: str) -> Item | None: ...\n    def save(self, item: Item) -> None: ...\n\nclass MemoryRepository:\n    def __init__(self) -> None:\n        self._items: dict[str, Item] = {}\n    def find(self, sku: str) -> Item | None:\n        return self._items.get(sku)\n    def save(self, item: Item) -> None:\n        self._items[item.sku] = item\n\ndef make_repository(kind: str) -> Repository:\n    if kind == \"memory\":\n        return MemoryRepository()\n    raise ValueError(\"unknown repository\")\n\ndef never_low(item: Item) -> bool:\n    return False\n\ndef low_below_two(item: Item) -> bool:\n    return item.quantity < 2\n\nclass Inventory:\n    def __init__(self, repository: Repository,\n                 low_policy: Callable[[Item], bool]) -> None:\n        self._repository = repository\n        self._low_policy = low_policy\n\n    def add(self, item: Item) -> None:\n        if self._repository.find(item.sku) is not None:\n            raise ValueError(\"duplicate sku\")\n        self._repository.save(item)\n\n    def get(self, sku: str) -> Item:\n        item = self._repository.find(sku)\n        if item is None:\n            raise KeyError(sku)\n        return item\n\n    def remove(self, sku: str, amount: int) -> Item:\n        if type(amount) is not int or amount <= 0:\n            raise ValueError(\"positive integer amount required\")\n        current = self.get(sku)\n        if amount > current.quantity:\n            raise ValueError(\"not enough stock\")\n        updated = replace(current, quantity=current.quantity - amount)\n        self._repository.save(updated)\n        return updated\n\n    def is_low(self, sku: str) -> bool:\n        return self._low_policy(self.get(sku))\n\ndef render(item: Item) -> str:\n    return f\"{item.sku}: {item.name} / {item.quantity} / {item.category.value}\"\n\ndef expect_error(error_type, operation) -> None:\n    try:\n        operation()\n    except error_type:\n        return\n    raise AssertionError(\"expected error was not raised\")\n\ninventory = Inventory(make_repository(\"memory\"), low_below_two)\ninventory.add(Item(\"B1\", \"Python\", 3, Category.BOOK))\nassert inventory.get(\"B1\").quantity == 3\nexpect_error(ValueError, lambda: inventory.add(Item(\"B1\", \"Other\", 9, Category.BOOK)))\nassert inventory.get(\"B1\").name == \"Python\"\nexpect_error(KeyError, lambda: inventory.get(\"missing\"))\nfor bad in (0, -1, True, 1.5):\n    expect_error(ValueError, lambda: inventory.remove(\"B1\", bad))\n    assert inventory.get(\"B1\").quantity == 3\nexpect_error(ValueError, lambda: inventory.remove(\"B1\", 4))\nassert inventory.get(\"B1\").quantity == 3\nold = inventory.get(\"B1\")\nassert inventory.remove(\"B1\", 2).quantity == 1\nassert old.quantity == 3\nassert inventory.is_low(\"B1\")\nassert inventory.remove(\"B1\", 1).quantity == 0\nexpect_error(ValueError, lambda: Item(\"\", \"Book\", 1, Category.BOOK))\nexpect_error(ValueError, lambda: Item(\"B2\", \"Book\", -1, Category.BOOK))\nexpect_error(TypeError, lambda: Item(\"B2\", \"Book\", 1, \"book\"))\nexpect_error(ValueError, lambda: make_repository(\"unknown\"))\nprint(\"inventory success and failure checks passed\")\n"
+        },
+        {
+          "t": "out",
+          "v": "inventory success and failure checks passed"
+        },
+        {
+          "t": "p",
+          "v": "Checks cover add/find, duplicate preservation, missing items, zero/negative/bool/fractional removal, insufficient stock, unchanged state on failure, old snapshot stability, valid zero stock, low-stock strategy, invalid records and unknown factories. The helper is intentionally minimal; later pytest parametrisation can express these cases more compactly."
+        },
+        {
+          "t": "mis",
+          "wrong": "Assert only that an error occurred; ignore final stock.",
+          "right": "Assert both the intended error and unchanged state.",
+          "why": "A broken operation may change state and then raise, which exception-only tests miss."
+        },
+        {
+          "t": "ex",
+          "v": "Write a second inventory with never_low and prove one inventory does not affect the other; run the same repository contract checks against it.",
+          "practiceId": "21.5.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "from dataclasses import dataclass, replace\nfrom enum import Enum\nfrom typing import Protocol, Callable\n\nclass Category(Enum):\n    BOOK = \"book\"\n    TOOL = \"tool\"\n\n@dataclass(frozen=True)\nclass Item:\n    sku: str\n    name: str\n    quantity: int\n    category: Category\n\n    def __post_init__(self) -> None:\n        if not self.sku.strip() or not self.name.strip():\n            raise ValueError(\"sku and name required\")\n        if type(self.quantity) is not int or self.quantity < 0:\n            raise ValueError(\"quantity must be a nonnegative integer\")\n        if not isinstance(self.category, Category):\n            raise TypeError(\"Category required\")\n\nclass Repository(Protocol):\n    def find(self, sku: str) -> Item | None: ...\n    def save(self, item: Item) -> None: ...\n\nclass MemoryRepository:\n    def __init__(self) -> None:\n        self._items: dict[str, Item] = {}\n    def find(self, sku: str) -> Item | None:\n        return self._items.get(sku)\n    def save(self, item: Item) -> None:\n        self._items[item.sku] = item\n\ndef make_repository(kind: str) -> Repository:\n    if kind == \"memory\":\n        return MemoryRepository()\n    raise ValueError(\"unknown repository\")\n\ndef never_low(item: Item) -> bool:\n    return False\n\ndef low_below_two(item: Item) -> bool:\n    return item.quantity < 2\n\nclass Inventory:\n    def __init__(self, repository: Repository,\n                 low_policy: Callable[[Item], bool]) -> None:\n        self._repository = repository\n        self._low_policy = low_policy\n\n    def add(self, item: Item) -> None:\n        if self._repository.find(item.sku) is not None:\n            raise ValueError(\"duplicate sku\")\n        self._repository.save(item)\n\n    def get(self, sku: str) -> Item:\n        item = self._repository.find(sku)\n        if item is None:\n            raise KeyError(sku)\n        return item\n\n    def remove(self, sku: str, amount: int) -> Item:\n        if type(amount) is not int or amount <= 0:\n            raise ValueError(\"positive integer amount required\")\n        current = self.get(sku)\n        if amount > current.quantity:\n            raise ValueError(\"not enough stock\")\n        updated = replace(current, quantity=current.quantity - amount)\n        self._repository.save(updated)\n        return updated\n\n    def is_low(self, sku: str) -> bool:\n        return self._low_policy(self.get(sku))\n\ndef render(item: Item) -> str:\n    return f\"{item.sku}: {item.name} / {item.quantity} / {item.category.value}\"\n\na = Inventory(make_repository(\"memory\"), low_below_two)\nb = Inventory(make_repository(\"memory\"), never_low)\na.add(Item(\"B1\", \"Python\", 1, Category.BOOK))\nb.add(Item(\"B1\", \"Python\", 5, Category.BOOK))\nassert a.is_low(\"B1\") and not b.is_low(\"B1\")\na.remove(\"B1\", 1)\nassert b.get(\"B1\").quantity == 5\nprint(\"independent inventories and strategies passed\")",
+          "out": "independent inventories and strategies passed",
+          "why": "Separate dependencies and state so tests cannot leak into each other. Run type checking and runtime tests: neither substitutes for the other. Day 7 remains review/rest; repeat any weak part before Week 22 regular expressions."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Full-week recall: explain dataclass defaults/frozen, type hints vs validation, Optional vs omitted arguments, all five SOLID letters, the four patterns, stable enum values and safe refactoring. Rebuild Item/Repository/Inventory without a template and test one success and three failures.",
+          "practiceId": "21.5.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "# Design/retrieval answer; use the runnable solution above as your starting point.",
+          "why": "Separate dependencies and state so tests cannot leak into each other. Run type checking and runtime tests: neither substitutes for the other. Day 7 remains review/rest; repeat any weak part before Week 22 regular expressions."
+        },
+        {
+          "t": "try",
+          "q": "What extra assertion matters after a rejected removal?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Stored quantity is unchanged.",
+          "why": "Exception correctness and state preservation together establish the rejection contract."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.5.2",
+            "quiz": [
+              {
+                "q": "What extra assertion matters after a rejected removal?",
+                "options": [
+                  "Only that the repr looks shorter.",
+                  "Only that mypy is installed.",
+                  "Stored quantity is unchanged."
+                ],
+                "correct": 2,
+                "why": "Exception correctness and state preservation together establish the rejection contract."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Verify the contract, state preservation and design decisions. Explain the rule aloud, then write the example again without a template."
+        },
+        {
+          "t": "p",
+          "v": "Suggested Git sequence for your practice project: git init, add the working baseline and tests, commit; refactor one responsibility, rerun checks, commit; finally add a deliberate new feature in a separate commit. Never put credentials in source. This is for a separate practice folder, not an instruction to reset Study Hub."
+        },
+        {
+          "t": "p",
+          "v": "Optional official references: https://docs.python.org/3/library/dataclasses.html · https://docs.python.org/3/library/typing.html · https://docs.python.org/3/library/enum.html · https://mypy.readthedocs.io/en/stable/getting_started.html. All explanations and examples are included here for offline study."
+        },
+        {
+          "t": "key",
+          "v": "Week 21 checkpoint: build a checked record, annotate a small module, inject a collaborator, choose a useful pattern, model stable states, and refactor with preserved behaviour. Study the parts at your own pace."
+        }
+      ]
+    }
+  ]
+},
 };
 
 const REST_DAY = ["Review & rest",
