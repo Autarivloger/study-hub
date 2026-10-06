@@ -7,7 +7,7 @@ for(const lesson of ctx.lessons)for(const item of lesson.kanji||[]){
   assert(item[2],'Context example lost: '+lesson.id+' '+item[0]);
   if(item[1].includes('Lesson reading:'))retained++;
 }
-assert.equal(total,961);assert.equal(retained,280);
+assert.equal(ctx.lessons.filter(l=>Number(l.id.split(".")[0])<=27).reduce((n,l)=>n+(l.kanji||[]).length,0),961);assert(total>=961);assert.equal(retained,280);
 assert(ctx.lessons.filter(l=>l.id.startsWith('1.')).every(l=>(l.kanji||[]).every(k=>/On:/.test(k[1])&&/Kun:/.test(k[1]))),'Week1 missed');
 assert.equal(ctx.reading('食','On: ショク · Kun: た(べる)'),'On: ショク · Kun: た(べる)','Existing readings replaced');
 assert(ctx.reading('員','いん').includes('Kun: — (no dictionary Kun reading)'),'Absent Kun fabricated');
@@ -20,4 +20,4 @@ vm.runInContext(source.slice(start,end)+'\nthis.render=jpStudyItemHtml;',ctx);
 const hidden=ctx.render('k',['食','たべる','食べる']);assert(hidden.includes('Show On/Kun &amp; meaning'));assert(hidden.includes('<details')&&!hidden.includes('<details open'),'Answers exposed by default');assert(hidden.includes('On: ショク'));
 ctx.jpFuriganaOn=true;assert(ctx.render('k',['食','たべる','食べる']).includes('jp-kanji-readings'),'Reading control does not show kanji readings');
 assert(ctx.render('v',['食べる','たべる','eat']).includes('Show reading &amp; meaning'),'Vocabulary disclosure changed');
-console.log('PASS: all 961 kanji entries, 280 enriched entries, retained examples/readings, no fabricated Kun, hidden answers and Furigana display.');
+console.log('PASS: all '+total+' kanji entries, 280 enriched entries, retained examples/readings, no fabricated Kun, hidden answers and Furigana display.');

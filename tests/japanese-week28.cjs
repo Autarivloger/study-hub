@@ -1,0 +1,9 @@
+const fs=require('fs'),assert=require('assert'),cp=require('child_process');
+const html=fs.readFileSync('study-hub.html','utf8'),data=JSON.parse(html.match(/const JP_WEEK28_CORE = ([^\r\n]+);/)[1]);
+assert.equal(data.length,7);data.forEach((l,i)=>{assert.equal(l.id,'28.'+(i+1));assert(l.explain&&l.model&&l.speak&&l.readingQuestions.length>=6);assert(l.reading.replace(/\s/g,'').length>=500);assert(l.practice.length>=15);assert(l.furigana.length>100);l.quiz.forEach(q=>{assert(q[2]>=0&&q[2]<q[1].length);assert.equal(new Set(q[1]).size,q[1].length);});if(i<6){assert.equal(l.vocab.length,20);assert.equal(new Set(l.vocab.map(v=>v[0])).size,20);assert.equal(l.kanji.length,5);assert.equal(l.grammar.length,3);l.kanji.forEach(k=>assert(/On: .+ · Kun: .+/.test(k[1])));}});
+assert.equal(data[6].reviewPractice.length,4);assert.equal(data[6].practice.length,40);assert.equal(data[6].quiz.length,20);assert(data[6].reviewOnly);
+for(const l of data.slice(0,6))for(const type of ['vocab','kanji','examples']){const index=type==='vocab'?0:type==='kanji'?1:2;const word=l[type][0][index];assert(data[6].reviewPractice.flatMap(g=>g[1]).some(q=>q.some(x=>x.includes(word))),'Day not represented in review: '+l.id+' '+type);}
+const old=cp.execFileSync('git',['show','1b8cd2e:study-hub.html'],{encoding:'utf8',maxBuffer:32e6}).replace(/\r\n/g,'\n');
+for(let w=24;w<=27;w++)assert.equal(html.match(new RegExp('const JP_WEEK'+w+'_CORE = ([^\\r\\n]+);'))[1],old.match(new RegExp('const JP_WEEK'+w+'_CORE = ([^\\r\\n]+);'))[1],'Existing Japanese course changed');
+const dayLiteral=t=>t.replace(/\r\n/g,'\n').split('const DAY_TEACH = ')[1].split('\nconst REST_DAY')[0];assert.equal(dayLiteral(html),dayLiteral(old),'Python curriculum changed');
+console.log('PASS: Week 28 seven original long readings, 120 daily vocab slots, 30 On/Kun kanji slots, full-week 40 drills/20 quiz, Furigana mappings, previous course preserved');
