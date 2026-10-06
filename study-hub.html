@@ -15116,7 +15116,1167 @@ const DAY_TEACH = {
       {"t":"h","v":"Common mistake: Core String Methods"},
       {"t":"mis","wrong":"name = \"autari\"\nname[0] = \"A\"","right":"name = \"autari\"\nname = name.capitalize()","why":"Strings are immutable — you can never change one in place. name[0] = \"A\" raises TypeError: 'str' object does not support item assignment. Every string method returns a NEW string instead, which you must assign back."}
     ]}
-  ]}
+  ]},
+"20.0": {
+  "parts": [
+    {
+      "title": "1. Encapsulation: state and rules together",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Encapsulation: state and rules together"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Keep an account valid through operations, not arbitrary assignments."
+        },
+        {
+          "t": "new",
+          "v": "invariant; public API; _non_public convention",
+          "note": "An invariant is a rule that must remain true: balance >= 0. Encapsulation puts data and the operations enforcing that rule in one class. Python has no enforced protected keyword: _balance asks callers to use the public methods. It does not block access or secure secrets. Review classes in Week 18 and exceptions in Week 14 first."
+        },
+        {
+          "t": "p",
+          "v": "An invariant is a rule that must remain true: balance >= 0. Encapsulation puts data and the operations enforcing that rule in one class. Python has no enforced protected keyword: _balance asks callers to use the public methods. It does not block access or secure secrets. Review classes in Week 18 and exceptions in Week 14 first."
+        },
+        {
+          "t": "syn",
+          "v": "class BankAccount:\n    def __init__(self, balance=0):\n        if balance < 0:\n            raise ValueError(\"negative opening balance\")\n        self._balance = balance",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class BankAccount:\n    def __init__(self, balance=0):\n        if balance < 0:\n            raise ValueError(\"negative opening balance\")\n        self._balance = balance\n\n    def deposit(self, amount):\n        if amount <= 0:\n            raise ValueError(\"deposit must be positive\")\n        self._balance += amount\n\n    def withdraw(self, amount):\n        if amount <= 0 or amount > self._balance:\n            raise ValueError(\"invalid withdrawal\")\n        self._balance -= amount\n\n    def balance(self):\n        return self._balance\n\na = BankAccount(100)\na.deposit(20)\na.withdraw(35)\nprint(a.balance())\ntry:\n    a.withdraw(100)\nexcept ValueError as error:\n    print(error)\nprint(a.balance())"
+        },
+        {
+          "t": "out",
+          "v": "85\ninvalid withdrawal\n85"
+        },
+        {
+          "t": "p",
+          "v": "Validation runs before mutation. A failed withdrawal leaves the old balance intact. These integer units are simplified money; real currency needs a precise units/currency policy."
+        },
+        {
+          "t": "mis",
+          "wrong": "a._balance = -100",
+          "right": "a.withdraw(100)",
+          "why": "An underscore communicates an internal field. Calling the checked method preserves the invariant."
+        },
+        {
+          "t": "ex",
+          "v": "Write a Counter starting at zero. add(amount) rejects nonpositive values before mutation. Show one accepted and one rejected update.",
+          "practiceId": "20.0.0.0"
+        },
+        {
+          "t": "sol",
+          "code": "class Counter:\n    def __init__(self): self._value = 0\n    def add(self, amount):\n        if amount <= 0: raise ValueError(\"positive only\")\n        self._value += amount\n    def value(self): return self._value\nc = Counter()\nc.add(3)\ntry: c.add(-2)\nexcept ValueError as error: print(error)\nprint(c.value())",
+          "out": "positive only\n3",
+          "why": "Trace the initial state, each operation, and the final result. Validation runs before mutation. A failed withdrawal leaves the old balance intact. These integer units are simplified money; real currency needs a precise units/currency policy."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: Does _balance prevent outside code from accessing it?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "No; it is a convention.",
+          "why": "Python trusts callers to respect a non-public API."
+        },
+        {
+          "t": "key",
+          "v": "Keep an account valid through operations, not arbitrary assignments. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.0.0",
+            "quiz": [
+              {
+                "q": "Does _balance prevent outside code from accessing it?",
+                "options": [
+                  "No; it is a convention.",
+                  "Yes; it is encrypted.",
+                  "Yes; Python blocks all access."
+                ],
+                "correct": 0,
+                "why": "Python trusts callers to respect a non-public API."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "2. Double underscores prevent accidental name clashes",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Double underscores prevent accidental name clashes"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish name mangling from access control."
+        },
+        {
+          "t": "new",
+          "v": "__name; name mangling",
+          "note": "A field named __value inside Base becomes _Base__value. This reduces accidental collisions in subclasses; it is not encryption, authentication, or a place to hide passwords. Names ending with two underscores, such as __init__, are protocol names rather than this convention."
+        },
+        {
+          "t": "p",
+          "v": "A field named __value inside Base becomes _Base__value. This reduces accidental collisions in subclasses; it is not encryption, authentication, or a place to hide passwords. Names ending with two underscores, such as __init__, are protocol names rather than this convention."
+        },
+        {
+          "t": "syn",
+          "v": "class Base:\n    def __init__(self): self.__value = 10\n    def base_value(self): return self.__value\nclass Child(Base):\n    def __init__(self):",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class Base:\n    def __init__(self): self.__value = 10\n    def base_value(self): return self.__value\nclass Child(Base):\n    def __init__(self):\n        super().__init__()\n        self.__value = 20\nc = Child()\nprint(c.base_value())\nprint(c._Child__value)\nprint(c._Base__value)"
+        },
+        {
+          "t": "out",
+          "v": "10\n20\n10"
+        },
+        {
+          "t": "p",
+          "v": "Base and Child have separate fields. The direct mangled access here is a demonstration, not the recommended caller API."
+        },
+        {
+          "t": "mis",
+          "wrong": "Store a password in self.__password to keep it secret.",
+          "right": "Keep credentials out of published source and use appropriate authentication.",
+          "why": "Name mangling offers no confidentiality."
+        },
+        {
+          "t": "ex",
+          "v": "Build Parent and Child with separate __label values and public reader methods; print both.",
+          "practiceId": "20.0.1.0"
+        },
+        {
+          "t": "sol",
+          "code": "class Parent:\n    def __init__(self): self.__label = \"parent\"\n    def parent_label(self): return self.__label\nclass Child(Parent):\n    def __init__(self):\n        super().__init__()\n        self.__label = \"child\"\n    def child_label(self): return self.__label\nc = Child()\nprint(c.parent_label(), c.child_label())",
+          "out": "parent child",
+          "why": "Trace the initial state, each operation, and the final result. Base and Child have separate fields. The direct mangled access here is a demonstration, not the recommended caller API."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: What is the purpose of __value name mangling?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "Avoid accidental subclass name collisions.",
+          "why": "The class name is included in the stored attribute name."
+        },
+        {
+          "t": "key",
+          "v": "Distinguish name mangling from access control. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.0.1",
+            "quiz": [
+              {
+                "q": "What is the purpose of __value name mangling?",
+                "options": [
+                  "Avoid accidental subclass name collisions.",
+                  "Encrypt private data.",
+                  "Stop every outside read."
+                ],
+                "correct": 0,
+                "why": "The class name is included in the stored attribute name."
+              }
+            ]
+          }
+        },
+        {
+          "t": "ex",
+          "v": "Retrieval practice: without notes, explain both parts of Day 1, rewrite the examples, change one input, and predict its output. Identify one invalid input and prove the object remains valid.",
+          "practiceId": "20.0.retrieval"
+        },
+        {
+          "t": "sol",
+          "code": "# Use the complete standalone solutions above as a reference after your own attempt.",
+          "why": "Compare reasoning and behaviour, not only spelling. Repeat the part if you cannot explain the validation or protocol."
+        },
+        {
+          "t": "tip",
+          "v": "Study at your own pace. Use the existing Previous/Next part and completion controls; finish every part before moving on."
+        }
+      ]
+    }
+  ]
+},
+"20.1": {
+  "parts": [
+    {
+      "title": "1. Properties: a method behind attribute access",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Properties: a method behind attribute access"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Read a computed value without storing duplicate state."
+        },
+        {
+          "t": "new",
+          "v": "@property; getter; decorator",
+          "note": "@property turns a getter method into attribute-style access. Read rectangle.area, not rectangle.area(). The @ line applies a decorator (Week 10). Compute derived values from their source fields so they cannot become stale."
+        },
+        {
+          "t": "p",
+          "v": "@property turns a getter method into attribute-style access. Read rectangle.area, not rectangle.area(). The @ line applies a decorator (Week 10). Compute derived values from their source fields so they cannot become stale."
+        },
+        {
+          "t": "syn",
+          "v": "class Rectangle:\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n    @property",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class Rectangle:\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n    @property\n    def area(self):\n        return self.width * self.height\nr = Rectangle(3, 4)\nprint(r.area)\nr.width = 5\nprint(r.area)"
+        },
+        {
+          "t": "out",
+          "v": "12\n20"
+        },
+        {
+          "t": "p",
+          "v": "Python calls the getter on each access. This first example demonstrates computation only; it does not validate dimensions yet."
+        },
+        {
+          "t": "mis",
+          "wrong": "print(r.area())",
+          "right": "print(r.area)",
+          "why": "The getter result is a number, not a callable method."
+        },
+        {
+          "t": "ex",
+          "v": "Give Circle a read-only diameter computed from radius. Change radius and demonstrate that diameter updates.",
+          "practiceId": "20.1.0.0"
+        },
+        {
+          "t": "sol",
+          "code": "class Circle:\n    def __init__(self, radius): self.radius = radius\n    @property\n    def diameter(self): return 2 * self.radius\nc = Circle(3)\nprint(c.diameter)\nc.radius = 5\nprint(c.diameter)",
+          "out": "6\n10",
+          "why": "Trace the initial state, each operation, and the final result. Python calls the getter on each access. This first example demonstrates computation only; it does not validate dimensions yet."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: Why compute area instead of storing it separately?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "It stays consistent with the current dimensions.",
+          "why": "A computed property avoids two copies of the same fact."
+        },
+        {
+          "t": "key",
+          "v": "Read a computed value without storing duplicate state. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.1.0",
+            "quiz": [
+              {
+                "q": "Why compute area instead of storing it separately?",
+                "options": [
+                  "It stays consistent with the current dimensions.",
+                  "Properties encrypt values.",
+                  "Properties run only once."
+                ],
+                "correct": 0,
+                "why": "A computed property avoids two copies of the same fact."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "2. Setters: validate every assignment",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Setters: validate every assignment"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Use one validation path for construction and later changes."
+        },
+        {
+          "t": "new",
+          "v": "@name.setter; backing attribute; read-only property",
+          "note": "A setter handles obj.name = value. Use a different backing field such as _score: assigning self.score inside its own setter would call the setter again forever. Route __init__ through the property so initial values are checked too."
+        },
+        {
+          "t": "p",
+          "v": "A setter handles obj.name = value. Use a different backing field such as _score: assigning self.score inside its own setter would call the setter again forever. Route __init__ through the property so initial values are checked too."
+        },
+        {
+          "t": "syn",
+          "v": "class Student:\n    def __init__(self, score): self.score = score\n    @property\n    def score(self): return self._score\n    @score.setter",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class Student:\n    def __init__(self, score): self.score = score\n    @property\n    def score(self): return self._score\n    @score.setter\n    def score(self, value):\n        if type(value) is not int:\n            raise TypeError(\"integer score required\")\n        if not 0 <= value <= 100:\n            raise ValueError(\"score must be 0..100\")\n        self._score = value\ns = Student(80)\ns.score = 95\ntry: s.score = 101\nexcept ValueError as error: print(error)\nprint(s.score)"
+        },
+        {
+          "t": "out",
+          "v": "score must be 0..100\n95"
+        },
+        {
+          "t": "p",
+          "v": "Type checking occurs before range checking; bool is excluded intentionally because it is an int subclass. A failed update does not alter _score. A getter without a setter rejects assignment with AttributeError."
+        },
+        {
+          "t": "mis",
+          "wrong": "self.score = value  # inside the score setter",
+          "right": "self._score = value",
+          "why": "Writing the public property from its setter causes recursion."
+        },
+        {
+          "t": "ex",
+          "v": "Make Temperature with a Celsius property rejecting values below -273.15. Add a read-only Fahrenheit property. Test a rejected update.",
+          "practiceId": "20.1.1.0"
+        },
+        {
+          "t": "sol",
+          "code": "class Temperature:\n    def __init__(self, celsius): self.celsius = celsius\n    @property\n    def celsius(self): return self._celsius\n    @celsius.setter\n    def celsius(self, value):\n        if value < -273.15: raise ValueError(\"below absolute zero\")\n        self._celsius = value\n    @property\n    def fahrenheit(self): return self.celsius * 9 / 5 + 32\nt = Temperature(0)\nprint(t.fahrenheit)\ntry: t.celsius = -300\nexcept ValueError as error: print(error)\nprint(t.celsius)",
+          "out": "32.0\nbelow absolute zero\n0",
+          "why": "Trace the initial state, each operation, and the final result. Type checking occurs before range checking; bool is excluded intentionally because it is an int subclass. A failed update does not alter _score. A getter without a setter rejects assignment with AttributeError."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: Where should the setter store a valid score?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "self._score",
+          "why": "The backing name must differ from the property name."
+        },
+        {
+          "t": "key",
+          "v": "Use one validation path for construction and later changes. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.1.1",
+            "quiz": [
+              {
+                "q": "Where should the setter store a valid score?",
+                "options": [
+                  "self._score",
+                  "self.score inside the setter",
+                  "Only in a local variable"
+                ],
+                "correct": 0,
+                "why": "The backing name must differ from the property name."
+              }
+            ]
+          }
+        },
+        {
+          "t": "ex",
+          "v": "Retrieval practice: without notes, explain both parts of Day 2, rewrite the examples, change one input, and predict its output. Identify one invalid input and prove the object remains valid.",
+          "practiceId": "20.1.retrieval"
+        },
+        {
+          "t": "sol",
+          "code": "# Use the complete standalone solutions above as a reference after your own attempt.",
+          "why": "Compare reasoning and behaviour, not only spelling. Repeat the part if you cannot explain the validation or protocol."
+        },
+        {
+          "t": "tip",
+          "v": "Study at your own pace. Use the existing Previous/Next part and completion controls; finish every part before moving on."
+        }
+      ]
+    }
+  ]
+},
+"20.2": {
+  "parts": [
+    {
+      "title": "1. Friendly strings and diagnostic representations",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Friendly strings and diagnostic representations"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose what a user and a developer need to see."
+        },
+        {
+          "t": "new",
+          "v": "__str__; __repr__; !r conversion",
+          "note": "print(obj) and str(obj) use __str__ for a friendly description. repr(obj), containers, and f-string !r use __repr__ for diagnostic detail. Both methods must return str. !r in an f-string applies repr, so string quotes and escapes remain visible."
+        },
+        {
+          "t": "p",
+          "v": "print(obj) and str(obj) use __str__ for a friendly description. repr(obj), containers, and f-string !r use __repr__ for diagnostic detail. Both methods must return str. !r in an f-string applies repr, so string quotes and escapes remain visible."
+        },
+        {
+          "t": "syn",
+          "v": "class Book:\n    def __init__(self, title, pages):\n        self.title, self.pages = title, pages\n    def __str__(self): return f\"{self.title} ({self.pages} pages)\"\n    def __repr__(self): return f\"Book({self.title!r}, {self.pages!r})\"",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class Book:\n    def __init__(self, title, pages):\n        self.title, self.pages = title, pages\n    def __str__(self): return f\"{self.title} ({self.pages} pages)\"\n    def __repr__(self): return f\"Book({self.title!r}, {self.pages!r})\"\nb = Book(\"Python\", 120)\nprint(b)\nprint(repr(b))\nprint([b])"
+        },
+        {
+          "t": "out",
+          "v": "Python (120 pages)\nBook('Python', 120)\n[Book('Python', 120)]"
+        },
+        {
+          "t": "p",
+          "v": "The list uses repr of its elements. Constructor-like output is helpful but is not a guarantee that every repr can be evaluated. Never use eval on untrusted representation text."
+        },
+        {
+          "t": "mis",
+          "wrong": "def __str__(self): print(self.title)",
+          "right": "def __str__(self): return self.title",
+          "why": "Printing returns None; the protocol requires a string result."
+        },
+        {
+          "t": "ex",
+          "v": "Give a Ticket a friendly destination and a diagnostic repr containing destination and price.",
+          "practiceId": "20.2.0.0"
+        },
+        {
+          "t": "sol",
+          "code": "class Ticket:\n    def __init__(self, destination, price):\n        self.destination, self.price = destination, price\n    def __str__(self): return f\"To {self.destination}: {self.price}\"\n    def __repr__(self): return f\"Ticket({self.destination!r}, {self.price!r})\"\nt = Ticket(\"Tokyo\", 500)\nprint(t)\nprint([t])",
+          "out": "To Tokyo: 500\n[Ticket('Tokyo', 500)]",
+          "why": "Trace the initial state, each operation, and the final result. The list uses repr of its elements. Constructor-like output is helpful but is not a guarantee that every repr can be evaluated. Never use eval on untrusted representation text."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: Which method is normally used for an object inside a list display?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "__repr__",
+          "why": "Containers show diagnostic representations of their elements."
+        },
+        {
+          "t": "key",
+          "v": "Choose what a user and a developer need to see. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.2.0",
+            "quiz": [
+              {
+                "q": "Which method is normally used for an object inside a list display?",
+                "options": [
+                  "__repr__",
+                  "__init__",
+                  "Only __str__"
+                ],
+                "correct": 0,
+                "why": "Containers show diagnostic representations of their elements."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "2. Repr fallback and safe debugging",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Repr fallback and safe debugging"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Make debugging useful without leaking sensitive fields."
+        },
+        {
+          "t": "new",
+          "v": "representation fallback",
+          "note": "If a class defines __repr__ but no __str__, the default __str__ uses __repr__. Include useful non-sensitive state. An account or token object should not print a secret just because it is being logged. A good repr is stable and concise."
+        },
+        {
+          "t": "p",
+          "v": "If a class defines __repr__ but no __str__, the default __str__ uses __repr__. Include useful non-sensitive state. An account or token object should not print a secret just because it is being logged. A good repr is stable and concise."
+        },
+        {
+          "t": "syn",
+          "v": "class Session:\n    def __init__(self, user, token):\n        self.user, self._token = user, token\n    def __repr__(self): return f\"Session(user={self.user!r}, token=<hidden>)\"\ns = Session(\"Sita\", \"demonstration-only\")",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class Session:\n    def __init__(self, user, token):\n        self.user, self._token = user, token\n    def __repr__(self): return f\"Session(user={self.user!r}, token=<hidden>)\"\ns = Session(\"Sita\", \"demonstration-only\")\nprint(s)\nprint(repr(s))"
+        },
+        {
+          "t": "out",
+          "v": "Session(user='Sita', token=<hidden>)\nSession(user='Sita', token=<hidden>)"
+        },
+        {
+          "t": "p",
+          "v": "Redaction reduces accidental logging disclosure; the field still exists and is not secured by an underscore. This is a fake token, not a credential."
+        },
+        {
+          "t": "mis",
+          "wrong": "return f\"Session(token={self._token})\"",
+          "right": "return f\"Session(user={self.user!r}, token=<hidden>)\"",
+          "why": "Debug logs may be shared; avoid sensitive values in representations."
+        },
+        {
+          "t": "ex",
+          "v": "Write User(name, password) with a repr exposing only name. Show that print falls back to repr.",
+          "practiceId": "20.2.1.0"
+        },
+        {
+          "t": "sol",
+          "code": "class User:\n    def __init__(self, name, password): self.name, self._password = name, password\n    def __repr__(self): return f\"User(name={self.name!r})\"\nu = User(\"Hari\", \"fake-value\")\nprint(u)\nprint(repr(u))",
+          "out": "User(name='Hari')\nUser(name='Hari')",
+          "why": "Trace the initial state, each operation, and the final result. Redaction reduces accidental logging disclosure; the field still exists and is not secured by an underscore. This is a fake token, not a credential."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: Must repr always be valid executable Python?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "No; it should be informative and unambiguous.",
+          "why": "A helpful diagnostic representation can use descriptive text."
+        },
+        {
+          "t": "key",
+          "v": "Make debugging useful without leaking sensitive fields. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.2.1",
+            "quiz": [
+              {
+                "q": "Must repr always be valid executable Python?",
+                "options": [
+                  "No; it should be informative and unambiguous.",
+                  "Yes; always evaluate it.",
+                  "It must return a dictionary."
+                ],
+                "correct": 0,
+                "why": "A helpful diagnostic representation can use descriptive text."
+              }
+            ]
+          }
+        },
+        {
+          "t": "ex",
+          "v": "Retrieval practice: without notes, explain both parts of Day 3, rewrite the examples, change one input, and predict its output. Identify one invalid input and prove the object remains valid.",
+          "practiceId": "20.2.retrieval"
+        },
+        {
+          "t": "sol",
+          "code": "# Use the complete standalone solutions above as a reference after your own attempt.",
+          "why": "Compare reasoning and behaviour, not only spelling. Repeat the part if you cannot explain the validation or protocol."
+        },
+        {
+          "t": "tip",
+          "v": "Study at your own pace. Use the existing Previous/Next part and completion controls; finish every part before moving on."
+        }
+      ]
+    }
+  ]
+},
+"20.3": {
+  "parts": [
+    {
+      "title": "1. Equality, ordering and NotImplemented",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Equality, ordering and NotImplemented"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Compare values using meaningful state and cooperate with Python."
+        },
+        {
+          "t": "new",
+          "v": "__eq__; __lt__; NotImplemented; __hash__",
+          "note": "== calls equality methods; < calls ordering methods. Return NotImplemented when the other type is unsupported so Python can try the other operand. It is a singleton value, not an exception. is checks identity, not value. Defining equality without a compatible hash makes ordinary instances unhashable, which is appropriate for mutable value objects."
+        },
+        {
+          "t": "p",
+          "v": "== calls equality methods; < calls ordering methods. Return NotImplemented when the other type is unsupported so Python can try the other operand. It is a singleton value, not an exception. is checks identity, not value. Defining equality without a compatible hash makes ordinary instances unhashable, which is appropriate for mutable value objects."
+        },
+        {
+          "t": "syn",
+          "v": "class Score:\n    def __init__(self, value): self.value = value\n    def __eq__(self, other):\n        if not isinstance(other, Score): return NotImplemented\n        return self.value == other.value",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class Score:\n    def __init__(self, value): self.value = value\n    def __eq__(self, other):\n        if not isinstance(other, Score): return NotImplemented\n        return self.value == other.value\n    def __lt__(self, other):\n        if not isinstance(other, Score): return NotImplemented\n        return self.value < other.value\na, b = Score(80), Score(80)\nprint(a == b, a is b)\nprint([s.value for s in sorted([Score(90), Score(60), Score(80)])])\nprint(a == 80)"
+        },
+        {
+          "t": "out",
+          "v": "True False\n[60, 80, 90]\nFalse"
+        },
+        {
+          "t": "p",
+          "v": "sorted needs a consistent ordering. __lt__ does not automatically implement <= or > for every operand combination. Equality with an unsupported integer falls back to False here."
+        },
+        {
+          "t": "mis",
+          "wrong": "return False  # every unsupported __lt__ operand",
+          "right": "return NotImplemented",
+          "why": "Returning False for an unsupported ordering hides a type mismatch."
+        },
+        {
+          "t": "ex",
+          "v": "Make Rank compare by number, sort three ranks, and show two distinct equal values.",
+          "practiceId": "20.3.0.0"
+        },
+        {
+          "t": "sol",
+          "code": "class Rank:\n    def __init__(self, number): self.number = number\n    def __eq__(self, other):\n        if not isinstance(other, Rank): return NotImplemented\n        return self.number == other.number\n    def __lt__(self, other):\n        if not isinstance(other, Rank): return NotImplemented\n        return self.number < other.number\nprint(Rank(2) == Rank(2))\nprint([r.number for r in sorted([Rank(3), Rank(1), Rank(2)])])",
+          "out": "True\n[1, 2, 3]",
+          "why": "Trace the initial state, each operation, and the final result. sorted needs a consistent ordering. __lt__ does not automatically implement <= or > for every operand combination. Equality with an unsupported integer falls back to False here."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: What should an operator method return for an unsupported operand type?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "NotImplemented",
+          "why": "It allows Python to negotiate the operation or raise an appropriate TypeError."
+        },
+        {
+          "t": "key",
+          "v": "Compare values using meaningful state and cooperate with Python. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.3.0",
+            "quiz": [
+              {
+                "q": "What should an operator method return for an unsupported operand type?",
+                "options": [
+                  "NotImplemented",
+                  "raise NotImplemented",
+                  "Always False"
+                ],
+                "correct": 0,
+                "why": "It allows Python to negotiate the operation or raise an appropriate TypeError."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "2. Arithmetic without surprising mutation",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Arithmetic without surprising mutation"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Add and subtract money only when currencies match."
+        },
+        {
+          "t": "new",
+          "v": "__add__; __sub__; __radd__",
+          "note": "a + b invokes operator methods such as __add__. Produce a new value rather than silently modifying a. __radd__ can support a reversed operand but should be added only if that operation makes sense. This example uses integer minor units, not binary floats, and refuses different currencies."
+        },
+        {
+          "t": "p",
+          "v": "a + b invokes operator methods such as __add__. Produce a new value rather than silently modifying a. __radd__ can support a reversed operand but should be added only if that operation makes sense. This example uses integer minor units, not binary floats, and refuses different currencies."
+        },
+        {
+          "t": "syn",
+          "v": "class Money:\n    def __init__(self, units, currency):\n        self.units, self.currency = units, currency\n    def __add__(self, other):\n        if not isinstance(other, Money): return NotImplemented",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class Money:\n    def __init__(self, units, currency):\n        self.units, self.currency = units, currency\n    def __add__(self, other):\n        if not isinstance(other, Money): return NotImplemented\n        if self.currency != other.currency: raise ValueError(\"currency mismatch\")\n        return Money(self.units + other.units, self.currency)\n    def __sub__(self, other):\n        if not isinstance(other, Money): return NotImplemented\n        if self.currency != other.currency: raise ValueError(\"currency mismatch\")\n        return Money(self.units - other.units, self.currency)\n    def __repr__(self): return f\"Money({self.units}, {self.currency!r})\"\na, b = Money(100, \"JPY\"), Money(40, \"JPY\")\nprint(a + b)\nprint(a - b)\nprint(a)\ntry: print(a + Money(5, \"USD\"))\nexcept ValueError as error: print(error)"
+        },
+        {
+          "t": "out",
+          "v": "Money(140, 'JPY')\nMoney(60, 'JPY')\nMoney(100, 'JPY')\ncurrency mismatch"
+        },
+        {
+          "t": "p",
+          "v": "Currency mismatch is a valid Money operand with incompatible meaning, so it raises ValueError. A different type returns NotImplemented. This is a learning model, not a complete financial library."
+        },
+        {
+          "t": "mis",
+          "wrong": "self.units += other.units; return self",
+          "right": "return Money(self.units + other.units, self.currency)",
+          "why": "Ordinary addition should not silently mutate either value."
+        },
+        {
+          "t": "ex",
+          "v": "Write Distance(metres) with __add__ returning a new Distance. Verify both inputs stay unchanged.",
+          "practiceId": "20.3.1.0"
+        },
+        {
+          "t": "sol",
+          "code": "class Distance:\n    def __init__(self, metres): self.metres = metres\n    def __add__(self, other):\n        if not isinstance(other, Distance): return NotImplemented\n        return Distance(self.metres + other.metres)\na, b = Distance(3), Distance(4)\nc = a + b\nprint(c.metres, a.metres, b.metres)",
+          "out": "7 3 4",
+          "why": "Trace the initial state, each operation, and the final result. Currency mismatch is a valid Money operand with incompatible meaning, so it raises ValueError. A different type returns NotImplemented. This is a learning model, not a complete financial library."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: What should Money addition do with different currencies?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "Reject the operation with a clear error.",
+          "why": "A number alone cannot explain how currencies are converted."
+        },
+        {
+          "t": "key",
+          "v": "Add and subtract money only when currencies match. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.3.1",
+            "quiz": [
+              {
+                "q": "What should Money addition do with different currencies?",
+                "options": [
+                  "Reject the operation with a clear error.",
+                  "Add the numbers and keep the first currency.",
+                  "Change both accounts automatically."
+                ],
+                "correct": 0,
+                "why": "A number alone cannot explain how currencies are converted."
+              }
+            ]
+          }
+        },
+        {
+          "t": "ex",
+          "v": "Retrieval practice: without notes, explain both parts of Day 4, rewrite the examples, change one input, and predict its output. Identify one invalid input and prove the object remains valid.",
+          "practiceId": "20.3.retrieval"
+        },
+        {
+          "t": "sol",
+          "code": "# Use the complete standalone solutions above as a reference after your own attempt.",
+          "why": "Compare reasoning and behaviour, not only spelling. Repeat the part if you cannot explain the validation or protocol."
+        },
+        {
+          "t": "tip",
+          "v": "Study at your own pace. Use the existing Previous/Next part and completion controls; finish every part before moving on."
+        }
+      ]
+    }
+  ]
+},
+"20.4": {
+  "parts": [
+    {
+      "title": "1. Containers: len, indexing and membership",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Containers: len, indexing and membership"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Let a Playlist participate in familiar collection operations."
+        },
+        {
+          "t": "new",
+          "v": "__len__; __getitem__; __contains__; slicing",
+          "note": "len(p) calls __len__, p[index] calls __getitem__, and item in p can call __contains__. Delegating to an internal list preserves ordinary negative indices, slices, and IndexError. Copy constructor input so callers do not accidentally share the same outer list."
+        },
+        {
+          "t": "p",
+          "v": "len(p) calls __len__, p[index] calls __getitem__, and item in p can call __contains__. Delegating to an internal list preserves ordinary negative indices, slices, and IndexError. Copy constructor input so callers do not accidentally share the same outer list."
+        },
+        {
+          "t": "syn",
+          "v": "class Playlist:\n    def __init__(self, songs): self._songs = list(songs)\n    def __len__(self): return len(self._songs)\n    def __getitem__(self, index): return self._songs[index]\n    def __contains__(self, song): return song in self._songs",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class Playlist:\n    def __init__(self, songs): self._songs = list(songs)\n    def __len__(self): return len(self._songs)\n    def __getitem__(self, index): return self._songs[index]\n    def __contains__(self, song): return song in self._songs\nsource = [\"A\", \"B\", \"C\"]\np = Playlist(source)\nsource.append(\"D\")\nprint(len(p), p[0], p[-1])\nprint(p[1:])\nprint(\"B\" in p, \"D\" in p)\ntry: print(p[9])\nexcept IndexError: print(\"out of range\")"
+        },
+        {
+          "t": "out",
+          "v": "3 A C\n['B', 'C']\nTrue False\nout of range"
+        },
+        {
+          "t": "p",
+          "v": "This design intentionally returns a list for a slice; document the choice. The outer copy is shallow, so mutable song objects would still be shared."
+        },
+        {
+          "t": "mis",
+          "wrong": "def __getitem__(self, i): return None if i >= len(self._songs) else self._songs[i]",
+          "right": "def __getitem__(self, i): return self._songs[i]",
+          "why": "Returning None hides indexing errors and can break sequence iteration fallback."
+        },
+        {
+          "t": "ex",
+          "v": "Create Shelf with len, indexing, and membership delegated to its copied book list. Include a negative index and a slice.",
+          "practiceId": "20.4.0.0"
+        },
+        {
+          "t": "sol",
+          "code": "class Shelf:\n    def __init__(self, books): self._books = list(books)\n    def __len__(self): return len(self._books)\n    def __getitem__(self, index): return self._books[index]\n    def __contains__(self, book): return book in self._books\ns = Shelf([\"Python\", \"Japan\", \"Math\"])\nprint(len(s), s[-1])\nprint(s[:2])\nprint(\"Japan\" in s)",
+          "out": "3 Math\n['Python', 'Japan']\nTrue",
+          "why": "Trace the initial state, each operation, and the final result. This design intentionally returns a list for a slice; document the choice. The outer copy is shallow, so mutable song objects would still be shared."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: What should an out-of-range integer index normally raise?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "IndexError",
+          "why": "Sequence users rely on this established protocol."
+        },
+        {
+          "t": "key",
+          "v": "Let a Playlist participate in familiar collection operations. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.4.0",
+            "quiz": [
+              {
+                "q": "What should an out-of-range integer index normally raise?",
+                "options": [
+                  "IndexError",
+                  "Return a made-up item.",
+                  "Return zero silently."
+                ],
+                "correct": 0,
+                "why": "Sequence users rely on this established protocol."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "2. Iterable versus iterator: independent passes",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Iterable versus iterator: independent passes"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Create a fresh iterator for every traversal."
+        },
+        {
+          "t": "new",
+          "v": "__iter__; iter(); next(); StopIteration",
+          "note": "An iterable provides an iterator through iter(). An iterator remembers a position and next() advances it; exhaustion raises StopIteration. Returning iter(self._songs) creates a fresh list iterator each time. A collection should not normally be its own stateful iterator. Week 11 introduced generators; this implementation needs no new generator code."
+        },
+        {
+          "t": "p",
+          "v": "An iterable provides an iterator through iter(). An iterator remembers a position and next() advances it; exhaustion raises StopIteration. Returning iter(self._songs) creates a fresh list iterator each time. A collection should not normally be its own stateful iterator. Week 11 introduced generators; this implementation needs no new generator code."
+        },
+        {
+          "t": "syn",
+          "v": "class Playlist:\n    def __init__(self, songs): self._songs = list(songs)\n    def __iter__(self): return iter(self._songs)\n    def __len__(self): return len(self._songs)\np = Playlist([\"A\", \"B\"])",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class Playlist:\n    def __init__(self, songs): self._songs = list(songs)\n    def __iter__(self): return iter(self._songs)\n    def __len__(self): return len(self._songs)\np = Playlist([\"A\", \"B\"])\nleft, right = iter(p), iter(p)\nprint(next(left), next(left), next(right))\nprint(list(p))\nprint(list(p))\ntry: next(left)\nexcept StopIteration: print(\"finished\")\nprint(bool(Playlist([])))"
+        },
+        {
+          "t": "out",
+          "v": "A B A\n['A', 'B']\n['A', 'B']\nfinished\nFalse"
+        },
+        {
+          "t": "p",
+          "v": "The two iterators advance independently. list(p) requests another fresh iterator. Without __bool__, Python can use __len__: an empty collection is falsy. Do not mutate the collection during iteration unless a policy is explicitly documented."
+        },
+        {
+          "t": "mis",
+          "wrong": "def __iter__(self): return self._songs",
+          "right": "def __iter__(self): return iter(self._songs)",
+          "why": "A list is iterable but is not itself an iterator; __iter__ must return an iterator."
+        },
+        {
+          "t": "ex",
+          "v": "Make Bag iterable and verify a nested loop produces all four pairs for two elements.",
+          "practiceId": "20.4.1.0"
+        },
+        {
+          "t": "sol",
+          "code": "class Bag:\n    def __init__(self, items): self._items = list(items)\n    def __iter__(self): return iter(self._items)\nb = Bag([1, 2])\nfor x in b:\n    for y in b:\n        print(x, y)",
+          "out": "1 1\n1 2\n2 1\n2 2",
+          "why": "Trace the initial state, each operation, and the final result. The two iterators advance independently. list(p) requests another fresh iterator. Without __bool__, Python can use __len__: an empty collection is falsy. Do not mutate the collection during iteration unless a policy is explicitly documented."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: Why return a new iterator on every __iter__ call?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "Separate traversals need independent positions.",
+          "why": "Nested loops and repeated traversals should not consume each other."
+        },
+        {
+          "t": "key",
+          "v": "Create a fresh iterator for every traversal. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.4.1",
+            "quiz": [
+              {
+                "q": "Why return a new iterator on every __iter__ call?",
+                "options": [
+                  "Separate traversals need independent positions.",
+                  "To erase the collection.",
+                  "Because every iterator is permanent."
+                ],
+                "correct": 0,
+                "why": "Nested loops and repeated traversals should not consume each other."
+              }
+            ]
+          }
+        },
+        {
+          "t": "ex",
+          "v": "Retrieval practice: without notes, explain both parts of Day 5, rewrite the examples, change one input, and predict its output. Identify one invalid input and prove the object remains valid.",
+          "practiceId": "20.4.retrieval"
+        },
+        {
+          "t": "sol",
+          "code": "# Use the complete standalone solutions above as a reference after your own attempt.",
+          "why": "Compare reasoning and behaviour, not only spelling. Repeat the part if you cannot explain the validation or protocol."
+        },
+        {
+          "t": "tip",
+          "v": "Study at your own pace. Use the existing Previous/Next part and completion controls; finish every part before moving on."
+        }
+      ]
+    }
+  ]
+},
+"20.5": {
+  "parts": [
+    {
+      "title": "1. Instance, static and class methods",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Instance, static and class methods"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose self, no implicit argument, or cls deliberately."
+        },
+        {
+          "t": "new",
+          "v": "@staticmethod; @classmethod; cls; alternative constructor",
+          "note": "Instance methods receive self, the object. Static methods receive neither self nor cls: they group a related utility with a class. Class methods receive cls, the class actually used by the caller. cls(...) makes an alternative constructor preserve a subclass. A module function is often simpler than a static method when the utility is not class-specific."
+        },
+        {
+          "t": "p",
+          "v": "Instance methods receive self, the object. Static methods receive neither self nor cls: they group a related utility with a class. Class methods receive cls, the class actually used by the caller. cls(...) makes an alternative constructor preserve a subclass. A module function is often simpler than a static method when the utility is not class-specific."
+        },
+        {
+          "t": "syn",
+          "v": "class Student:\n    def __init__(self, name, age):\n        if not self.valid_age(age): raise ValueError(\"invalid age\")\n        self.name, self.age = name, age\n    @staticmethod",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class Student:\n    def __init__(self, name, age):\n        if not self.valid_age(age): raise ValueError(\"invalid age\")\n        self.name, self.age = name, age\n    @staticmethod\n    def valid_age(age): return type(age) is int and 0 <= age <= 130\n    @classmethod\n    def from_string(cls, text):\n        name, age = text.split(\",\")\n        return cls(name.strip(), int(age.strip()))\nclass Graduate(Student): pass\ns = Graduate.from_string(\"Sita, 24\")\nprint(type(s).__name__, s.name, s.age)\nprint(Student.valid_age(-1))"
+        },
+        {
+          "t": "out",
+          "v": "Graduate Sita 24\nFalse"
+        },
+        {
+          "t": "p",
+          "v": "split and strip were taught with strings; int parses the text and may raise ValueError. A production parser must document its format and validate empty names and unexpected fields."
+        },
+        {
+          "t": "mis",
+          "wrong": "return Student(name, age)  # inside from_string",
+          "right": "return cls(name, age)",
+          "why": "Hardcoding the base class loses the calling subclass."
+        },
+        {
+          "t": "ex",
+          "v": "Create Product.from_string for name:price and show a subclass is returned.",
+          "practiceId": "20.5.0.0"
+        },
+        {
+          "t": "sol",
+          "code": "class Product:\n    def __init__(self, name, price): self.name, self.price = name, price\n    @classmethod\n    def from_string(cls, text):\n        name, price = text.split(\":\")\n        return cls(name.strip(), int(price))\nclass SpecialProduct(Product): pass\np = SpecialProduct.from_string(\"Book:300\")\nprint(type(p).__name__, p.name, p.price)",
+          "out": "SpecialProduct Book 300",
+          "why": "Trace the initial state, each operation, and the final result. split and strip were taught with strings; int parses the text and may raise ValueError. A production parser must document its format and validate empty names and unexpected fields."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: What does cls refer to in Graduate.from_string(...)?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "Graduate",
+          "why": "Classmethod binding passes the actual calling class."
+        },
+        {
+          "t": "key",
+          "v": "Choose self, no implicit argument, or cls deliberately. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.5.0",
+            "quiz": [
+              {
+                "q": "What does cls refer to in Graduate.from_string(...)?",
+                "options": [
+                  "Graduate",
+                  "Always Student",
+                  "The current student instance"
+                ],
+                "correct": 0,
+                "why": "Classmethod binding passes the actual calling class."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "2. Week project: a Vector that feels natural",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Week project: a Vector that feels natural"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Combine properties, representations, operators, containers and construction."
+        },
+        {
+          "t": "new",
+          "v": "protocol composition; Vector design contract",
+          "note": "A two-dimensional vector can behave like a small sequence and a numeric value. Its addition and subtraction combine corresponding coordinates; lexicographic ordering compares x first, then y (not geometric length). This teaching version accepts integer coordinates only and is mutable/unhashable. Implement only operations whose meaning you can explain."
+        },
+        {
+          "t": "p",
+          "v": "A two-dimensional vector can behave like a small sequence and a numeric value. Its addition and subtraction combine corresponding coordinates; lexicographic ordering compares x first, then y (not geometric length). This teaching version accepts integer coordinates only and is mutable/unhashable. Implement only operations whose meaning you can explain."
+        },
+        {
+          "t": "syn",
+          "v": "class Vector:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n    @property\n    def x(self): return self._x",
+          "note": "Read the complete executable example below; this preview shows the shape of the definition."
+        },
+        {
+          "t": "code",
+          "v": "class Vector:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n    @property\n    def x(self): return self._x\n    @x.setter\n    def x(self, value):\n        if type(value) is not int: raise TypeError(\"integer coordinate required\")\n        self._x = value\n    @property\n    def y(self): return self._y\n    @y.setter\n    def y(self, value):\n        if type(value) is not int: raise TypeError(\"integer coordinate required\")\n        self._y = value\n    def __repr__(self): return f\"Vector({self.x}, {self.y})\"\n    def __str__(self): return f\"({self.x}, {self.y})\"\n    def __add__(self, other):\n        if not isinstance(other, Vector): return NotImplemented\n        return Vector(self.x + other.x, self.y + other.y)\n    def __sub__(self, other):\n        if not isinstance(other, Vector): return NotImplemented\n        return Vector(self.x - other.x, self.y - other.y)\n    def __eq__(self, other):\n        if not isinstance(other, Vector): return NotImplemented\n        return (self.x, self.y) == (other.x, other.y)\n    def __lt__(self, other):\n        if not isinstance(other, Vector): return NotImplemented\n        return (self.x, self.y) < (other.x, other.y)\n    def __len__(self): return 2\n    def __getitem__(self, index): return (self.x, self.y)[index]\n    def __iter__(self): return iter((self.x, self.y))\n    def __contains__(self, value): return value in (self.x, self.y)\n    @staticmethod\n    def valid_coordinate(value): return type(value) is int\n    @classmethod\n    def from_string(cls, text):\n        x, y = text.split(\",\")\n        return cls(int(x), int(y))\na, b = Vector.from_string(\"3,4\"), Vector(1,2)\nprint(a, repr(a))\nprint(a + b, a - b)\nprint(a == Vector(3,4), a is Vector(3,4))\nprint(len(a), a[-1], a[:], list(a), 4 in a)\nprint(sorted([a, b]))\ntry: a.x = \"bad\"\nexcept TypeError as error: print(error)\nprint(a.x)"
+        },
+        {
+          "t": "out",
+          "v": "(3, 4) Vector(3, 4)\n(4, 6) (2, 2)\nTrue False\n2 4 (3, 4) [3, 4] True\n[Vector(1, 2), Vector(3, 4)]\ninteger coordinate required\n3"
+        },
+        {
+          "t": "p",
+          "v": "Read one method at a time and map it to caller syntax. Tuple comparison is lexicographic. bool(Vector(0,0)) is True because len is 2: a zero vector is not an empty collection. Arithmetic returns the base Vector intentionally; richer subclasses need an explicit compatible-result policy."
+        },
+        {
+          "t": "mis",
+          "wrong": "Define dozens of dunders before deciding what operations mean.",
+          "right": "Write the contract first, then implement and test each operation.",
+          "why": "Predictable behaviour matters more than the number of methods."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: write Coordinate from memory with repr, equality, len, iteration and from_string. Then extend your Vector with a read-only magnitude_squared property and test (3,4) -> 25.",
+          "practiceId": "20.5.1.0"
+        },
+        {
+          "t": "sol",
+          "code": "class Coordinate:\n    def __init__(self, x, y): self.x, self.y = x, y\n    def __repr__(self): return f\"Coordinate({self.x}, {self.y})\"\n    def __eq__(self, other):\n        if not isinstance(other, Coordinate): return NotImplemented\n        return (self.x, self.y) == (other.x, other.y)\n    def __len__(self): return 2\n    def __iter__(self): return iter((self.x, self.y))\n    @classmethod\n    def from_string(cls, text):\n        x, y = text.split(\",\")\n        return cls(int(x), int(y))\n    @property\n    def magnitude_squared(self): return self.x ** 2 + self.y ** 2\nc = Coordinate.from_string(\"3,4\")\nprint(repr(c), c == Coordinate(3,4))\nprint(len(c), list(c), c.magnitude_squared)",
+          "out": "Coordinate(3, 4) True\n2 [3, 4] 25",
+          "why": "Trace the initial state, each operation, and the final result. Read one method at a time and map it to caller syntax. Tuple comparison is lexicographic. bool(Vector(0,0)) is True because len is 2: a zero vector is not an empty collection. Arithmetic returns the base Vector intentionally; richer subclasses need an explicit compatible-result policy."
+        },
+        {
+          "t": "try",
+          "q": "Explain before running: Why is bool(Vector(0,0)) True in this design?",
+          "code": "# Recall the rule before opening the answer.",
+          "a": "Its sequence length is two.",
+          "why": "Truth falls back to __len__ unless __bool__ defines another policy."
+        },
+        {
+          "t": "key",
+          "v": "Combine properties, representations, operators, containers and construction. Say why the design is useful, not just what the syntax looks like."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:20.5.1",
+            "quiz": [
+              {
+                "q": "Why is bool(Vector(0,0)) True in this design?",
+                "options": [
+                  "Its sequence length is two.",
+                  "Its coordinates are positive.",
+                  "All custom objects ignore length."
+                ],
+                "correct": 0,
+                "why": "Truth falls back to __len__ unless __bool__ defines another policy."
+              }
+            ]
+          }
+        },
+        {
+          "t": "ex",
+          "v": "Retrieval practice: without notes, explain both parts of Day 6, rewrite the examples, change one input, and predict its output. Identify one invalid input and prove the object remains valid.",
+          "practiceId": "20.5.retrieval"
+        },
+        {
+          "t": "sol",
+          "code": "# Use the complete standalone solutions above as a reference after your own attempt.",
+          "why": "Compare reasoning and behaviour, not only spelling. Repeat the part if you cannot explain the validation or protocol."
+        },
+        {
+          "t": "tip",
+          "v": "Study at your own pace. Use the existing Previous/Next part and completion controls; finish every part before moving on."
+        }
+      ]
+    },
+    {
+      "title": "3. Full-week review and transfer challenges",
+      "sections": [
+        {
+          "t": "h",
+          "v": "Week 20 review: explain, build, and test"
+        },
+        {
+          "t": "p",
+          "v": "Retrieve before rereading: 1. What is an invariant? 2. Why is _balance not security? 3. What does name mangling solve? 4. Why must a setter use a backing field? 5. When does repr run? 6. Why return NotImplemented? 7. Why is equality different from identity? 8. Why does each loop need a fresh iterator? 9. When is cls better than a hardcoded constructor? 10. Why does a zero vector still have length two?"
+        },
+        {
+          "t": "ex",
+          "v": "Transfer project: build a ReadingList with validated title, safe repr, copied internal books, len/indexing/iteration/membership, and a from_string constructor. Reject an empty title; test two independent iterators, negative indexing, slicing and an out-of-range index.",
+          "practiceId": "20.5.transfer"
+        },
+        {
+          "t": "sol",
+          "code": "class ReadingList:\n    def __init__(self, title, books):\n        self.title = title\n        self._books = list(books)\n    @property\n    def title(self): return self._title\n    @title.setter\n    def title(self, value):\n        if not isinstance(value, str): raise TypeError(\"text required\")\n        if not value.strip(): raise ValueError(\"empty title\")\n        self._title = value.strip()\n    def __repr__(self): return f\"ReadingList({self.title!r}, {self._books!r})\"\n    def __len__(self): return len(self._books)\n    def __getitem__(self, index): return self._books[index]\n    def __iter__(self): return iter(self._books)\n    def __contains__(self, book): return book in self._books\n    @classmethod\n    def from_string(cls, text):\n        title, books = text.split(\":\", 1)\n        return cls(title, [b.strip() for b in books.split(\",\") if b.strip()])\nr = ReadingList.from_string(\"Study:Python,Japan\")\nprint(repr(r))\nprint(len(r), r[-1], r[:1], \"Japan\" in r)\na, b = iter(r), iter(r)\nprint(next(a), next(a), next(b))\ntry: r.title = \" \"\nexcept ValueError as error: print(error)\nprint(r.title)\ntry: r[8]\nexcept IndexError: print(\"out of range\")",
+          "out": "ReadingList('Study', ['Python', 'Japan'])\n2 Japan ['Python'] True\nPython Japan Python\nempty title\nStudy\nout of range",
+          "why": "The parser is deliberately a simple comma-separated format, not CSV with quoted commas. Constructor and assignment share validation; independent list iterators preserve traversal."
+        },
+        {
+          "t": "key",
+          "v": "Day 7 is review/rest: revisit your Week 20 questions, rebuild Vector without a template, and explain the decisions. Week 21 introduces dataclasses and type hints; they are not required for this week."
+        },
+        {
+          "t": "p",
+          "v": "Reference (optional internet): Python official Classes tutorial, Built-in Functions (property, staticmethod, classmethod), and Data Model special methods. All teaching and exercises above work offline. https://docs.python.org/3/tutorial/classes.html · https://docs.python.org/3/library/functions.html · https://docs.python.org/3/reference/datamodel.html"
+        }
+      ]
+    }
+  ]
+},
 };
 
 const REST_DAY = ["Review & rest",
