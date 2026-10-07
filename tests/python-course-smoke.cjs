@@ -26,6 +26,26 @@ async function main(){
   for(let i=0;i<50;i++){if(await evalJs("Boolean(window.__studyHubBooted)"))break;await sleep(100);}
   assert(await evalJs("window.__studyHubBooted"),"App did not boot: "+errors.join("; "));
 
+  // Real mouse input: plain reading text supports drag selection; reveal
+  // labels act as controls, not selectable reading text.
+  await evalJs('jpPage={mode:"lesson",week:1,lesson:"1.1"};switchView("japanese");renderJapanese();');
+  const reading=await evalJs('(()=>{const e=document.querySelector("#jp-day1-reading .jp-reading");e.scrollIntoView({block:"center"});const text=[...e.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());const r=document.createRange();r.setStart(text,0);r.setEnd(text,Math.min(12,text.length));const box=r.getClientRects()[0];return {x:box.x+2,y:box.y+box.height/2,end:box.right-2};})()');
+  await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:reading.x,y:reading.y});
+  await send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',buttons:1,clickCount:1,x:reading.x,y:reading.y});
+  await send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',buttons:0,clickCount:1,x:reading.x,y:reading.y});
+  assert(await evalJs('window.getSelection().toString()===""'),'A single reading click selected text');
+  await send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',buttons:1,clickCount:1,x:reading.x,y:reading.y});
+  for(let step=1;step<=8;step++)await send('Input.dispatchMouseEvent',{type:'mouseMoved',button:'left',buttons:1,x:reading.x+(reading.end-reading.x)*step/8,y:reading.y});
+  await send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',buttons:0,clickCount:1,x:reading.end,y:reading.y});
+  assert(await evalJs('window.getSelection().toString().length>3 && jpPage.lesson==="1.1"'),'Mouse drag failed to select Japanese reading');
+  for(let attempt=0;attempt<6;attempt++){
+    const point=await evalJs('(()=>{const e=document.querySelector("#jp-day1-kanji summary");e.scrollIntoView({block:"center"});const b=e.getBoundingClientRect();return {x:b.x+b.width/2,y:b.y+b.height/2};})()');
+    await send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',buttons:1,clickCount:1,...point});
+    await send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',buttons:0,clickCount:1,...point});
+    assert(await evalJs('document.querySelector("#jp-day1-kanji details").open')===(attempt%2===0),'On/Kun single-click toggle failed '+attempt);
+    assert(await evalJs('getComputedStyle(document.querySelector("#jp-day1-kanji summary")).userSelect==="none"'),'Reveal label remains selectable');
+  }
+
 
   assert(await evalJs('LESSONS.length===0 && LEGACY_PYTHON_LESSONS.length===8'), 'Lessons not migrated');
   await evalJs('switchView("lessons");renderLessons()');

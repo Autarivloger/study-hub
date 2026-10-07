@@ -38,6 +38,11 @@
   }
 }
 *{box-sizing:border-box;}
+/* Reading text remains selectable for copying. Controls are actions,
+   so dragging their labels must not accidentally highlight the label. */
+body{-webkit-user-select:text;user-select:text;}
+button,summary,[role="button"]{-webkit-user-select:none;user-select:none;}
+input,textarea{-webkit-user-select:text;user-select:text;}
 /* Any author rule that sets `display` beats the browser's own [hidden] rule,
    so an element with the hidden attribute stays on screen. That is how an
    empty timer banner ended up showing permanently. One global rule covers
