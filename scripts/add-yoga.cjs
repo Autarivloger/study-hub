@@ -7,8 +7,8 @@ replace('<h1>Lessons</h1>','<h1>Yoga &amp; Meditation</h1>');
 replace('id="lessonsHomeBtn">All lessons','id="lessonsHomeBtn">Practice home');
 replace('lessons:"Lessons"','lessons:"Yoga & Meditation"');
 replace('Object.keys(DB.lessonsDone||{}).forEach(function(k){const id=reviewId("python","lesson",k);','Object.keys(DB.lessonsDone||{}).forEach(function(k){if(!LEGACY_PYTHON_LESSONS.some(function(l){return l.id===k;}))return;const id=reviewId("python","lesson",k);');
-const data=require('./yoga-course.cjs');
-replace('function renderLessons(){','const YOGA_COURSE = '+JSON.stringify(data,null,2)+';\n\n'+fs.readFileSync('scripts/yoga-view.txt','utf8')+'function renderLessons(){');
+const data=require('./yoga-english-content.cjs');
+replace('function renderLessons(){','const YOGA_COURSE = '+JSON.stringify(data,null,2)+';\n\n'+fs.readFileSync('scripts/yoga-view-english.txt','utf8')+'function renderLessons(){');
 const empty='  const empty=document.getElementById("lessonsBody");empty.innerHTML=';
 const start=html.indexOf(empty),end=html.indexOf('\n',start);
 if(start<0||end<0)throw Error('Legacy empty state missing');
@@ -34,6 +34,12 @@ const css=`\n/* Yoga & Meditation: use the app theme and existing controls. */
 .yoga-guide li,.yoga-practice li{padding:5px 0}
 .yoga-practice{margin:18px 0}.yoga-stages{padding-left:24px}.yoga-stages li{padding:8px 0}
 .yoga-wrap a{overflow-wrap:anywhere}.yoga-wrap .ls-key{padding:12px;border-radius:8px}
+#yogaPracticeNotes .hn-btn{width:auto;min-width:90px;padding:0 10px;white-space:nowrap;font-size:12px}
+#yogaPracticeNotes .hn-text{min-height:150px}
+#yogaPracticeNotes{scroll-margin-top:150px}
+#yogaPracticeNotes .hn-btn{width:auto;min-width:90px;padding:0 10px;white-space:nowrap;font-size:12px}
+#yogaPracticeNotes .hn-text{min-height:150px}
+#yogaPracticeNotes{scroll-margin-top:150px}
 @media(max-width:600px){.yoga-grid{grid-template-columns:1fr}.yoga-guide{padding:12px}.yoga-wrap ol{padding-left:22px}.yoga-actions .btn{white-space:normal}}
 `;
 replace('</style>',css+'\n</style>');

@@ -20,12 +20,19 @@ async function main(){
  for(let day=1;day<=7;day++){
   await evaluate('yogaPage={mode:"session",id:"yoga:intermediate:1.'+day+'",duration:20};renderLessons()');
   assert(await evaluate('document.querySelectorAll(".yoga-stages>li").length===8 && document.querySelectorAll(".yoga-guide").length>=4'),'Session '+day+' missing guidance');
+  assert(await evaluate('!document.querySelector("#yogaPracticeNotes .hn-box").hidden && document.querySelector("#yogaPracticeNotes textarea").getAttribute("aria-label").includes("Session")'),'Session '+day+' notes are not visible/labeled');
+  await evaluate('document.querySelector("#yogaPracticeNotes [data-hn]").click()');
+  assert(await evaluate('document.querySelector("#yogaPracticeNotes .hn-box").hidden'),'Hide notes failed');
+  await evaluate('document.querySelector("[data-yoga-notes]").click()');
+  assert(await evaluate('!document.querySelector("#yogaPracticeNotes .hn-box").hidden && document.activeElement===document.querySelector("#yogaPracticeNotes textarea")'),'Jump/show notes failed');
   await evaluate('document.querySelector("[data-yoga-duration=\\"30\\"]").click()');
   assert(await evaluate('yogaPage.duration===30'),'Duration switch failed');
   await evaluate('(()=>{const quiz=yogaSession(yogaPage.id).quiz;for(let i=0;i<quiz.quiz.length;i++){document.querySelector("#lessonsBody [data-lq=\\""+i+"\\"][data-lo=\\""+quiz.quiz[i].correct+"\\"]").click();}})()');
   assert(await evaluate('DB.lessonQuizScores["yoga:quiz:1.'+day+'"]===100'),'Yoga quiz saving '+day);
  }
- await evaluate('yogaPage={mode:"session",id:"yoga:intermediate:1.1",duration:20};renderLessons();document.querySelector("[data-hn]").click();document.querySelector("#lessonsBody .hn-text").value="Breath felt steady <script>not executed</script>";document.querySelector("#lessonsBody .hn-text").dispatchEvent(new Event("input",{bubbles:true}));');await sleep(650);
+ await evaluate('DB.headNotes["yoga:intermediate:1.1|reflection"]="Existing reflection note";yogaPage={mode:"session",id:"yoga:intermediate:1.1",duration:20};renderLessons()');
+ assert(await evaluate('document.querySelector("#yogaPracticeNotes textarea").value==="Existing reflection note"'),'Existing note did not appear after translation');
+ await evaluate('document.querySelector("#lessonsBody .hn-text").value="Breath felt steady <script>not executed</script>";document.querySelector("#lessonsBody .hn-text").dispatchEvent(new Event("input",{bubbles:true}));');await sleep(650);
  await evaluate('document.querySelector("[data-yoga-complete]").click()');
  assert(await evaluate('lessonDone("yoga:intermediate:1.1") && !Object.keys(DB.reviews.items).some(k=>k.includes("yoga:"))'),'Yoga completion contaminated Python review');
  await evaluate('document.querySelector("[data-yoga-complete]").click()');assert(await evaluate('!lessonDone("yoga:intermediate:1.1")'),'Undo failed');await evaluate('document.querySelector("[data-yoga-complete]").click()');
@@ -55,6 +62,8 @@ async function main(){
  let shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'studyhub-yoga-mobile-light.png'),Buffer.from(shot.data,'base64'));
  await evaluate('document.documentElement.dataset.theme="dark";yogaPage={mode:"session",id:"yoga:intermediate:1.1",duration:20};renderLessons();window.scrollTo(0,0)');
  shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'studyhub-yoga-mobile-dark.png'),Buffer.from(shot.data,'base64'));
+ await evaluate('document.querySelector("[data-yoga-notes]").click()');
+ shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'studyhub-yoga-mobile-notes.png'),Buffer.from(shot.data,'base64'));
  assert(errors.length===0,'JS errors: '+errors.join('; '));console.log('PASS: Yoga 7 sessions,21 answers,20/30-minute plans,notes,completion/undo,continue,refresh,export/import merge+replace,mobile/tablet/desktop,light/dark,no JS errors');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{if(ws)ws.close();browser.kill();});

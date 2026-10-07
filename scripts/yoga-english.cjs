@@ -1,0 +1,16 @@
+const fs=require('fs');
+let html=fs.readFileSync('study-hub.html','utf8').replace(/\r\n/g,'\n');
+const a=html.indexOf('const YOGA_COURSE = '),b=html.indexOf('function renderLessons(){',a);
+if(a<0||b<0)throw Error('Yoga boundaries missing');
+const oldEnd=html.indexOf(';\n\n/* ================= YOGA',a);
+const old=JSON.parse(html.slice(a+20,oldEnd));
+const data=require('./yoga-english-content.cjs');
+for(const key of ['sessions','poses','meditations','gita'])if(JSON.stringify(old[key].map(x=>x.id))!==JSON.stringify(data[key].map(x=>x.id)))throw Error('Identifiers changed: '+key);
+const view=fs.readFileSync('scripts/yoga-view-english.txt','utf8');
+if(/[\u0900-\u097f]/.test(JSON.stringify(data)+view))throw Error('Untranslated Yoga text remains');
+html=html.slice(0,a)+'const YOGA_COURSE = '+JSON.stringify(data,null,2)+';\n\n'+view+html.slice(b);
+if(!html.includes('#yogaPracticeNotes .hn-btn'))html=html.replace('</style>','#yogaPracticeNotes .hn-btn{width:auto;min-width:90px;padding:0 10px;white-space:nowrap;font-size:12px}\n#yogaPracticeNotes .hn-text{min-height:150px}\n#yogaPracticeNotes{scroll-margin-top:150px}\n</style>');
+if(!html.includes('#yogaPracticeNotes .hn-btn'))html=html.replace('</style>','#yogaPracticeNotes .hn-btn{width:auto;min-width:90px;padding:0 10px;white-space:nowrap;font-size:12px}\n#yogaPracticeNotes .hn-text{min-height:150px}\n#yogaPracticeNotes{scroll-margin-top:150px}\n</style>');
+for(const m of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g))new Function(m[1]);
+fs.writeFileSync('study-hub.html.tmp',html,'utf8');fs.renameSync('study-hub.html.tmp','study-hub.html');
+console.log('Yoga translated to English; visible practice notes reuse every existing reflection key.');

@@ -1,6 +1,6 @@
 # Yoga & Meditation
 
-The former empty Lessons tab now opens an original Hindi/Nepali intermediate practice module. Its internal `lessons` view identifier remains for legacy Python links, which still route to the corresponding Course days.
+The former empty Lessons tab now opens an original English intermediate practice module. Its internal `lessons` view identifier remains for legacy Python links, which still route to the corresponding Course days.
 
 ## Initial module
 
@@ -23,7 +23,9 @@ Safety references: [NCCIH Yoga](https://www.nccih.nih.gov/health/yoga-effectiven
 - Python review migration now filters actual legacy Python lesson IDs, so Yoga completion does not repeatedly trigger a nonexistent Python review.
 - Yoga's continue button uses the first incomplete session. It does not replace the saved Python Course Resume position.
 
-`scripts/yoga-course.cjs` contains the authored data, `scripts/yoga-view.txt` the view implementation, and `scripts/add-yoga.cjs` the one-time additive installer. It refuses duplicate installation. Later content edits should update the corresponding authored data and inline literal together, preserving IDs.
+`scripts/yoga-course.cjs` retains the original authored data. `scripts/yoga-english-content.cjs` translates every teaching field while preserving identifiers; `scripts/yoga-view-english.txt` is the current view. `scripts/add-yoga.cjs` is the one-time additive installer and refuses duplicate installation. `scripts/yoga-english.cjs` updates only the Yoga literal/view in an existing installation. Later content edits should update authored data and the inline literal together, preserving IDs.
+
+Each session now has a visible Practice Notes box, a jump-to-notes button and Show/Hide controls. The existing `headNotes` reflection key is reused; no notes are migrated or cleared, and automatic saving still uses `wireHeadNotes`.
 
 ## Verification
 

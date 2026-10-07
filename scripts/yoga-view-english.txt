@@ -1,0 +1,71 @@
+/* ================= YOGA & MEDITATION ================= */
+let yogaPage = {mode:"home", id:null, duration:20};
+function yogaSession(id){return YOGA_COURSE.sessions.find(function(s){return s.id===id;});}
+function yogaLink(label,mode,id){return '<button type="button" class="btn secondary btn-sm" data-yoga-mode="'+mode+'"'+(id?' data-yoga-id="'+escapeAttr(id)+'"':'')+'>'+escapeHtml(label)+'</button>';}
+function yogaPoseHtml(pose){
+  return '<details class="yoga-guide"><summary>'+escapeHtml(pose.name)+' <span>'+escapeHtml(pose.tag)+'</span></summary><ol>'+pose.steps.map(function(x){return '<li>'+escapeHtml(x)+'</li>';}).join('')+'</ol><p><b>Breathing:</b> '+escapeHtml(pose.breath)+'</p><p><b>Alternative:</b> '+escapeHtml(pose.modify)+'</p><p><b>Common mistake:</b> '+escapeHtml(pose.mistake)+'</p><p><b>Coming out:</b> '+escapeHtml(pose.exit)+'</p></details>';
+}
+function yogaMeditationHtml(item){
+  return '<article class="card yoga-practice"><h3>'+escapeHtml(item.name)+'</h3><p class="yoga-muted">'+escapeHtml(item.minutes)+' min · shorten if needed</p><ol>'+item.steps.map(function(x){return '<li>'+escapeHtml(x)+'</li>';}).join('')+'</ol><p class="ls-key">'+escapeHtml(item.key)+'</p><p><b>Alternative:</b> '+escapeHtml(item.adapt)+'</p></article>';
+}
+function yogaGitaHtml(item){
+  return '<article class="card yoga-practice"><h3>'+escapeHtml(item.ref)+' · '+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.meaning)+'</p><p><b>Reflection:</b> '+escapeHtml(item.reflection)+'</p><small>Topic reference: printed pages '+escapeHtml(item.pages)+' of your supplied Gita PDF. This is our original practice interpretation, not a copy of the book’s translation.</small></article>';
+}
+function yogaStages(session,duration){
+  const times=duration===30?[2,3,6,5,3,6,3,2]:[1,2,4,3,2,4,3,1];
+  const guidance=[
+    'Set an intention of Ahimsa: do not force your body or breath. Prepare a stable space, mat or chair and support. If breathing is still fast after running, let it settle before starting.',
+    'Use shoulder circles, ankle movements and small Cat–Cow or seated movements. Try 4–6 comfortable repetitions in a pain-free range.',
+    'Use your familiar Sun Salutation variation at an easy pace. Begin with one slow round, then rest as needed. There is no rounds quota. Choose chair mobility when tired; you do not need to add extra intensity after running.',
+    session.focus,
+    session.day===6?'Read the alternate-nostril guide and optionally try 4 easy cycles without retention. Choose natural breathing instead whenever preferred.':'Observe 6–10 natural breaths while sitting, then remain comfortable. No forced depth, fixed ratio or breath hold.',
+    'Follow the meditation guide below. '+(session.day===7?'For Walking Attention, choose a safe, level place and keep the eyes open.':'Begin with posture, use your chosen anchor, then reconnect with the room.')+' Shorten the session if needed.',
+    'Use Supported Rest, side-lying or a chair. Let breathing take care of itself for 2–3 minutes and rise slowly.',
+    'Read today’s Gita reflection and write a short note: how did breathing feel, where did you use support, and what will you change next time?'
+  ];
+  const names=['Preparation · Sankalpa','Warm-up','Familiar Sun Salutation / alternative','Focused movement','Easy breathing','Meditation','Recovery','Reflection'];
+  return names.map(function(name,i){return {name:name,minutes:times[i],guidance:guidance[i]};});
+}
+function renderYoga(){
+  const el=document.getElementById('lessonsBody');
+  const completed=YOGA_COURSE.sessions.filter(function(s){return lessonDone(s.id);}).length;
+  const next=YOGA_COURSE.sessions.find(function(s){return !lessonDone(s.id);})||YOGA_COURSE.sessions[0];
+  let html='<div class="yoga-wrap"><div class="yoga-intro card"><p class="yoga-eyebrow">Sadhana · Intermediate Path</p><h2>Steadiness in the body, ease in the mind</h2><p>Build from your 10 minutes of familiar Sun Salutation and 5 minutes of running. Prioritise quality before duration and repeat comfortable sessions. You do not have to complete these seven sessions on seven consecutive days.</p><div class="yoga-actions">'+yogaLink('Practice path','home')+yogaLink('Pose Guide','poses')+yogaLink('Meditation / Breathing','meditations')+yogaLink('Gita Reflection','gita')+'</div></div>';
+  if(yogaPage.mode==='home'){
+    html+='<div class="card"><h3>Module 1 · Steadiness and awareness</h3><p>'+completed+' / '+YOGA_COURSE.sessions.length+' sessions complete · 20 or 30 min</p>'+progressBar(completed,YOGA_COURSE.sessions.length)+'<p>Start with 20 minutes. After several comfortable repetitions, choose 30 minutes if you wish. Times are suggestions: do not add holds or repetitions simply to fill them.</p>'+yogaLink(completed===YOGA_COURSE.sessions.length?'Practise again':'Continue: Session '+next.day,'session',next.id)+'</div><div class="yoga-grid">'+YOGA_COURSE.sessions.map(function(item){return '<button type="button" class="card yoga-card" data-yoga-mode="session" data-yoga-id="'+escapeAttr(item.id)+'"><span class="yoga-eyebrow">Session '+item.day+(lessonDone(item.id)?' · ✓ Complete':'')+'</span><h3>'+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.goal)+'</p></button>';}).join('')+'</div><div class="ls-box ls-tip"><b>What intermediate means here</b>Deepen balance, movement control and attention. This self-guided module excludes headstands, shoulderstands, forced Lotus Pose, breath retention and forceful pranayama. Get alignment feedback from a qualified in-person teacher for new or difficult poses.</div>';
+  }else if(yogaPage.mode==='poses'){
+    html+='<h2>Pose Guide · read first, then practise slowly</h2>'+YOGA_COURSE.poses.map(yogaPoseHtml).join('');
+  }else if(yogaPage.mode==='meditations'){
+    html+='<h2>Meditation and comfortable breathing</h2><p>Notice breathing before trying to change it. No technique is compulsory; natural breath or an external sound can be your anchor.</p>'+YOGA_COURSE.meditations.map(yogaMeditationHtml).join('');
+  }else if(yogaPage.mode==='gita'){
+    html+='<h2>Gita · practice and daily life</h2><p>The Gita provides a spiritual context for meditation. It is not a modern asana manual or a medical treatment guide. These original interpretations draw on Chapter 6.</p>'+YOGA_COURSE.gita.map(yogaGitaHtml).join('');
+  }else{
+    const item=yogaSession(yogaPage.id);
+    if(!item){yogaPage.mode='home';return renderYoga();}
+    const duration=yogaPage.duration===30?30:20,stages=yogaStages(item,duration);
+    const meditation=YOGA_COURSE.meditations.find(function(x){return x.id===item.meditation;});
+    const reflection=YOGA_COURSE.gita.find(function(x){return x.id===item.gita;});
+    html+='<article class="card"><p class="yoga-eyebrow">Module 1 · Session '+item.day+' / 7</p><h2>'+escapeHtml(item.title)+'</h2><p><b>Objective:</b> '+escapeHtml(item.goal)+'</p><div class="yoga-actions" aria-label="Suggested session duration"><button type="button" class="btn'+(duration===20?'':' secondary')+'" data-yoga-duration="20" aria-pressed="'+(duration===20)+'">20 min</button><button type="button" class="btn'+(duration===30?'':' secondary')+'" data-yoga-duration="30" aria-pressed="'+(duration===30)+'">30 min</button><button type="button" class="btn secondary" data-yoga-notes>Practice Notes ↓</button></div><p>A suggested '+duration+'-minute plan. Choosing rest or an alternative is also a valid practice.</p><ol class="yoga-stages">'+stages.map(function(stage){return '<li><h3>'+escapeHtml(stage.name)+' <span class="yoga-muted">· '+stage.minutes+' min</span></h3><p>'+escapeHtml(stage.guidance)+'</p></li>';}).join('')+'</ol></article><h3>Today’s poses · entry, breathing and exit</h3>'+item.poses.map(function(id){return yogaPoseHtml(YOGA_COURSE.poses.find(function(x){return x.id===id;}));}).join('')+(item.day===6?yogaMeditationHtml(YOGA_COURSE.meditations.find(function(x){return x.id==='alternate';})): '')+yogaMeditationHtml(meditation)+yogaGitaHtml(reflection);
+    const sections=[{t:'p',v:item.task},{t:'h',v:'Practice Notes',noteKey:item.id+'|reflection'},{t:'p',v:'Your notes save automatically. Write what you noticed, where you needed support and what you want to adjust. Use Show notes / Hide notes whenever you like.'}];
+    html+='<section class="card" id="yogaPracticeNotes" aria-label="Practice Notes">'+renderSections(sections,item.id)+'</section>'+renderLessonQuiz(item.quiz);
+    html+='<div class="card yoga-actions">'+(item.day>1?yogaLink('← Previous session','session',YOGA_COURSE.sessions[item.day-2].id):'')+'<button type="button" class="btn" data-yoga-complete="'+escapeAttr(item.id)+'">'+(lessonDone(item.id)?'✓ Complete · Undo':'Mark practice complete')+'</button>'+(item.day<7?yogaLink('Next session →','session',YOGA_COURSE.sessions[item.day].id):yogaLink('Review all sessions','home'))+'</div>';
+  }
+  html+='<details class="yoga-guide yoga-safety"><summary>Practice limits and sources</summary><p>Stop for sharp pain, dizziness, breathing difficulty or faintness. Seek immediate help for serious symptoms such as chest pain or fainting. With an injury, pregnancy, a heart or breathing condition, or uncontrolled blood pressure, discuss suitable intensity and poses with a qualified clinician or instructor. Text guidance cannot assess your alignment. If meditation causes distress, stop, open the eyes and reconnect with the room.</p><p>These practices are not presented as cures, detox methods or guarantees of spiritual results. Do not add difficult poses or forceful breathing to this self-guided module.</p><p><a href="https://www.nccih.nih.gov/health/yoga-effectiveness-and-safety" target="_blank" rel="noopener noreferrer">NCCIH · Yoga effectiveness and safety</a><br><a href="https://www.nccih.nih.gov/health/meditation-and-mindfulness-effectiveness-and-safety" target="_blank" rel="noopener noreferrer">NCCIH · Meditation safety</a><br>Traditional study: your supplied Gita Press Bhagavad Gita, Chapter 6, printed pages 434–439, 456, 467–468. External sources need internet; all course teaching is available offline.</p></details></div>';
+  el.innerHTML=html;
+  if(yogaPage.mode!=='home')el.querySelector('.yoga-intro').classList.add('yoga-compact');
+  el.querySelectorAll('[data-yoga-mode]').forEach(function(btn){btn.onclick=function(){yogaPage.mode=btn.dataset.yogaMode;yogaPage.id=btn.dataset.yogaId||null;renderYoga();window.scrollTo(0,0);};});
+  el.querySelectorAll('[data-yoga-duration]').forEach(function(btn){btn.onclick=function(){const y=window.scrollY;yogaPage.duration=Number(btn.dataset.yogaDuration);renderYoga();window.scrollTo(0,y);};});
+  el.querySelectorAll('[data-yoga-complete]').forEach(function(btn){btn.onclick=function(){toggleLessonDone(btn.dataset.yogaComplete);renderYoga();renderSideStats();};});
+  if(yogaPage.mode==='session'){
+    wireHeadNotes(el);
+    const notes=el.querySelector('#yogaPracticeNotes'),box=notes.querySelector('.hn-box'),toggle=notes.querySelector('[data-hn]'),textarea=box.querySelector('textarea');
+    box.hidden=false;toggle.classList.add('open');toggle.textContent='Hide notes';toggle.setAttribute('aria-expanded','true');
+    textarea.placeholder='How did breathing feel? Which pose or support helped? What will you try next time?';textarea.setAttribute('aria-label','Practice Notes for Session '+yogaSession(yogaPage.id).day);
+    const existingToggle=toggle.onclick;
+    toggle.onclick=function(){existingToggle();toggle.textContent=box.hidden?'Show notes':'Hide notes';toggle.setAttribute('aria-expanded',String(!box.hidden));};
+    el.querySelector('[data-yoga-notes]').onclick=function(){if(box.hidden)toggle.click();notes.scrollIntoView({block:'start'});textarea.focus({preventScroll:true});};
+    notes.querySelectorAll('[data-hn-all]').forEach(function(btn){const handler=btn.onclick;btn.onclick=function(){handler();toggle.textContent=box.hidden?'Show notes':'Hide notes';toggle.setAttribute('aria-expanded',String(!box.hidden));};});
+    const item=yogaSession(yogaPage.id);if(item)wireLessonQuiz(el,item.quiz);
+  }
+}
+

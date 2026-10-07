@@ -7,7 +7,8 @@ function defaults(s){return s.slice(s.indexOf('function applyDefaults('),s.index
 assert.equal(defaults(current),defaults(baseline),'Storage defaults/schema changed');
 for(const name of ['ARRAY_KEYS','MAP_KEYS']){const re=new RegExp('const '+name+'[^;]+;');assert.equal(current.match(re)[0],baseline.match(re)[0]);}
 const a=current.indexOf('const YOGA_COURSE = ')+20,b=current.indexOf(';\n\n/* ================= YOGA',a),course=JSON.parse(current.slice(a,b));
-assert.deepEqual(course,require('../scripts/yoga-course.cjs'));
+assert.deepEqual(course,require('../scripts/yoga-english-content.cjs'));
+assert(!/[\u0900-\u097f]/.test(JSON.stringify(course)),'Yoga teaching is not fully English');
 assert.equal(course.sessions.length,7);assert.equal(course.poses.length,10);assert.equal(course.meditations.length,5);assert.equal(course.gita.length,4);
 const ids=new Set();for(const s of course.sessions){assert(s.id.startsWith('yoga:'));assert(!ids.has(s.id));ids.add(s.id);for(const id of s.poses)assert(course.poses.some(p=>p.id===id));assert(course.meditations.some(p=>p.id===s.meditation));assert(course.gita.some(p=>p.id===s.gita));assert.equal(s.quiz.quiz.length,3);for(const q of s.quiz.quiz)assert(q.options[q.correct]);}
 assert.equal((current.match(/data-view="lessons"[^>]*><span class="ic">🧘<\/span>Yoga &amp; Meditation/g)||[]).length,2,'Navigation rename missing');
