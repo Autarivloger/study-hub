@@ -12,6 +12,6 @@ for(let d=0;d<6;d++){
   for(const s of p.sections){if(s.t==='ex'){assert(s.practiceId);assert(!ids.has(s.practiceId));ids.add(s.practiceId);}if(s.t==='checkpoint'){quizCount++;for(const q of s.lesson.quiz){assert(q.options[q.correct]);assert.equal(new Set(q.options).size,q.options.length);answers.add(q.correct);}}}
  }
 }
-assert.equal(count,19);assert.equal(ids.size,38);assert.equal(quizCount,19);assert.equal(answers.size,3);
+assert.equal(count,25);assert.equal(ids.size,50);assert.equal(quizCount,25);assert.equal(answers.size,3);
 for(const m of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g))new Function(m[1]);
-console.log('PASS: Week21 19 parts,38 exercises,19 rotated quizzes; preceding Python teaching unchanged');
+console.log('PASS: Week21 25 parts,50 exercises,25 quiz checkpoints; preceding Python teaching unchanged');

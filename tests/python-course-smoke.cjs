@@ -59,7 +59,7 @@ async function main(){
     assert(await evalJs('courseView.week===21 && courseView.dayIdx===1'),'Week21 next day failed');
     await evalJs('document.querySelector("#prevDay").click()');
     assert(await evalJs('courseView.dayIdx===0'),'Week21 previous day failed');
-    await evalJs('(()=>{for(let d=0;d<6;d++)for(let p=0;p<dayParts("21."+d).length;p++){courseView={mode:"day",week:21,dayIdx:d,part:p};renderCourseDay();const quiz=dayParts("21."+d)[p].sections.find(s=>s.t==="checkpoint").lesson;document.querySelector("[data-lo=\\""+quiz.quiz[0].correct+"\\"]").click();if(DB.lessonQuizScores[quiz.id]!==100)throw Error("Week21 quiz saving "+quiz.id);}})()');
+    await evalJs('(()=>{for(let d=0;d<6;d++)for(let p=0;p<dayParts("21."+d).length;p++){courseView={mode:"day",week:21,dayIdx:d,part:p};renderCourseDay();const quiz=dayParts("21."+d)[p].sections.find(s=>s.t==="checkpoint").lesson;quiz.quiz.forEach((q,i)=>document.querySelector(".day-teach [data-lq=\\""+i+"\\"][data-lo=\\""+q.correct+"\\"]").click());if(DB.lessonQuizScores[quiz.id]!==100)throw Error("Week21 quiz saving "+quiz.id);}})()');
     await evalJs('courseView={mode:"day",week:21,dayIdx:0,part:0};renderCourseDay();document.querySelector("#partDoneBtn").click();document.querySelector("#dayNote").value="Week21 saved note";document.querySelector("#dayNote").dispatchEvent(new Event("input",{bubbles:true}));save()');
     assert(await evalJs('isPartDone(21,0,0)'),'Week21 part completion failed');
   }

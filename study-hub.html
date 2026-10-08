@@ -16349,6 +16349,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nपहिले plain class सम्झ: __init__ ले self.title/self.pages बनाउँछ। @dataclass ले त्यही assignment भएको constructor, readable repr र field equality तयार गर्छ। Book(\"Python\", 120) मा पहिलो argument title, दोस्रो pages हो; finished नदिँदा False हुन्छ। a == b ले field values तुलना गर्छ, a is b ले एउटै object हो कि होइन हेर्छ। b.finished बदल्दा a बदलिँदैन, त्यसैले equality False हुन्छ। Colon (:) field/type declaration हो; title = str जस्तो assignment होइन।"
+        },
+        {
+          "t": "p",
           "v": "Book(\"Python\",120) calls the generated constructor. Generated repr includes field names. Equality compares fields for the same concrete dataclass type; identity still checks whether two references point to one object. Required fields precede fields with defaults."
         },
         {
@@ -16446,6 +16450,10 @@ const DAY_TEACH = {
         {
           "t": "out",
           "v": "['OOP notes']\n[]\nFalse"
+        },
+        {
+          "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\ndefault_factory=list मा list function आफैँ दिइन्छ। Notebook(\"Sita\") बनाउँदा factory बोलिन्छ र नयाँ खाली list बन्छ; अर्को Notebook ले अर्को list पाउँछ। a.pages.append(...) ले a को list मात्र बदल्छ। default_factory=list() लेखेमा function होइन, बनिसकेको list दिन्छौ—त्यो गलत हुन्छ। Explicit list argument दिएमा factory प्रयोग हुँदैन; caller को list copy हुन्छ भन्ने नमान।"
         },
         {
           "t": "p",
@@ -16554,6 +16562,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\n__post_init__ generated constructor पछि चल्छ। पहिले quantity integer र nonnegative छ कि जाँचिन्छ; invalid भए object creation अस्वीकार हुन्छ। frozen=True ले normal field assignment रोक्छ। replace(a, quantity=5) ले a परिवर्तन नगरी नयाँ checked instance बनाउँछ। FrozenInstanceError पनि exception हो; try/except Week 14 कै हो। frozen भित्र list राखेमा list आफैँ freeze हुँदैन।"
+        },
+        {
+          "t": "p",
           "v": "The old snapshot remains 3; replace creates a checked new snapshot. A frozen record containing a list could still have that list mutated. Prefer immutable field values such as tuples for snapshots; do not add unsafe_hash merely to silence an error."
         },
         {
@@ -16613,9 +16625,127 @@ const DAY_TEACH = {
           "v": "Separate construction checks from later mutation rules. Explain the rule aloud, then write the example again without a template."
         }
       ]
+    },
+    {
+      "title": "Guided lab: manual records, dataclass records and ownership",
+      "optional": true,
+      "sections": [
+        {
+          "t": "h",
+          "v": "Guided lab: manual records, dataclass records and ownership"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Explain exactly what is generated and prove independent defaults."
+        },
+        {
+          "t": "new",
+          "v": "Guided application",
+          "note": "Field ownership: a factory makes a fresh default; copying explicit input is a separate policy."
+        },
+        {
+          "t": "p",
+          "v": "Day 1 का तीन parts पछि गर। पहिले manual objectको assignments र repr सम्झ, त्यसपछि dataclass version हेरेर कुन boilerplate हट्यो भन। तलको notebook exampleमा explicit input list पनि copy गर्छौँ, ताकि callerले list change गर्दा object बदलिँदैन।"
+        },
+        {
+          "t": "syn",
+          "v": "tags: list[str] = field(default_factory=list)\n\ndef __post_init__(self):\n    self.tags = list(self.tags)",
+          "note": "A pattern to recognise; the full executable example follows."
+        },
+        {
+          "t": "code",
+          "v": "from dataclasses import dataclass, field\n@dataclass\nclass Notebook:\n    name: str\n    tags: list[str] = field(default_factory=list)\n    def __post_init__(self):\n        self.tags = list(self.tags)\nsource = [\"python\"]\na = Notebook(\"A\", source)\nb = Notebook(\"B\")\nsource.append(\"outside\")\na.tags.append(\"oop\")\nprint(source)\nprint(a.tags, b.tags)\nprint(a.tags is source)"
+        },
+        {
+          "t": "out",
+          "v": "['python', 'outside']\n['python', 'oop'] []\nFalse"
+        },
+        {
+          "t": "p",
+          "v": "source listमा outside थपिन्छ, तर __post_init__मा गरिएको list copyका कारण a.tagsमा त्यो आउँदैन। a.tagsमा oop थप्दा b.tags खाली नै रहन्छ। Outer list copy shallow हो; tags strings भएकाले यहाँ nested mutation समस्या छैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Copy the syntax without checking state, inputs or the contract.",
+          "right": "Predict each operation, validate before mutation and test the resulting state.",
+          "why": "Correct-looking syntax does not guarantee correct behaviour. Explain the example before adapting it."
+        },
+        {
+          "t": "ex",
+          "v": "Build CheckedBook(title,pages) as a frozen dataclass. Reject blank title and nonpositive/non-int pages, including True. Test valid construction, invalid construction and replace while preserving the old instance.",
+          "practiceId": "21.lab.0.1"
+        },
+        {
+          "t": "sol",
+          "code": "from dataclasses import dataclass, replace\n@dataclass(frozen=True)\nclass CheckedBook:\n    title: str\n    pages: int\n    def __post_init__(self):\n        if not isinstance(self.title, str) or not self.title.strip():\n            raise ValueError(\"title required\")\n        if type(self.pages) is not int or self.pages <= 0:\n            raise ValueError(\"positive integer pages required\")\na = CheckedBook(\"Python\", 120)\nb = replace(a, pages=150)\nprint(a.pages, b.pages)\nfor title, pages in [(\" \", 20), (\"Python\", 0), (\"Python\", True)]:\n    try: CheckedBook(title, pages)\n    except ValueError as error: print(error)",
+          "out": "120 150\ntitle required\npositive integer pages required\npositive integer pages required",
+          "why": "source listमा outside थपिन्छ, तर __post_init__मा गरिएको list copyका कारण a.tagsमा त्यो आउँदैन। a.tagsमा oop थप्दा b.tags खाली नै रहन्छ। Outer list copy shallow हो; tags strings भएकाले यहाँ nested mutation समस्या छैन। The complete program is self-contained: run it first, then change one input and predict the difference."
+        },
+        {
+          "t": "ex",
+          "v": "Create two ReadingLog instances with an independent default list of finished titles. Append a title to the first and prove the second remains empty.",
+          "practiceId": "21.lab.0.2"
+        },
+        {
+          "t": "sol",
+          "code": "from dataclasses import dataclass, field\n@dataclass\nclass ReadingLog:\n    finished: list[str] = field(default_factory=list)\na, b = ReadingLog(), ReadingLog()\na.finished.append(\"Python\")\nassert b.finished == []\nprint(a.finished, b.finished)",
+          "out": "['Python'] []",
+          "why": "Use the assertions to check the stated contract, then explain every output line. Refer to today’s original parts for the underlying concept."
+        },
+        {
+          "t": "try",
+          "q": "Before running the example: which state or result should change, and what must stay unchanged?",
+          "code": "# Trace the input, operation and resulting state.",
+          "a": "source listमा outside थपिन्छ, तर __post_init__मा गरिएको list copyका कारण a.tagsमा त्यो आउँदैन। a.tagsमा oop थप्दा b.tags खाली नै रहन्छ। Outer list copy shallow हो; tags strings भएकाले यहाँ nested mutation समस्या छैन।",
+          "why": "Prediction tests understanding more directly than copying."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.lab.0",
+            "quiz": [
+              {
+                "q": "Does default_factory copy a list passed explicitly by the caller?",
+                "options": [
+                  "No; it only creates omitted default values.",
+                  "Yes; every input is deep copied.",
+                  "It prevents all mutation."
+                ],
+                "correct": 0,
+                "why": "No; it only creates omitted default values."
+              },
+              {
+                "q": "Why use type(pages) is int in this contract?",
+                "options": [
+                  "To convert a string automatically.",
+                  "To exclude bool as well as other types.",
+                  "Because isinstance cannot recognise int."
+                ],
+                "correct": 1,
+                "why": "To exclude bool as well as other types."
+              },
+              {
+                "q": "Does replace mutate its original instance?",
+                "options": [
+                  "Yes; it changes all references.",
+                  "It skips every constructor check.",
+                  "No; it constructs another instance."
+                ],
+                "correct": 2,
+                "why": "No; it constructs another instance."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Explain it without notes, write it from memory, then test one normal case and one rejected case. Repeat this lab whenever the idea feels unclear."
+        }
+      ]
     }
   ]
 },
+
 "21.1": {
   "parts": [
     {
@@ -16655,6 +16785,10 @@ const DAY_TEACH = {
         {
           "t": "out",
           "v": "Books: 3\nBooks: many"
+        },
+        {
+          "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nname: str / count: int ले tools लाई input को shape भन्छ; -> str ले return value वर्णन गर्छ। log(...) ले print गरेर उपयोगी value फर्काउँदैन, त्यसैले -> None। label(\"Books\", \"many\") जानाजानी गलत typed call हो, तर f-string ले string स्वीकार्ने हुँदा Python चल्छ। यही कारण hints र runtime validation एउटै कुरा होइनन्।"
         },
         {
           "t": "p",
@@ -16763,6 +16897,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nstock.get(name) ले key भए value, नभए None दिन्छ। zero पनि valid stock हो, त्यसैले if value is None प्रयोग गर्छौ; if not value ले zero लाई missing ठान्थ्यो। Optional[int] र int | None एउटै allowed-value idea हुन्। Default argument नभएको parameter भने call गर्दा दिनैपर्छ—Optional नामले argument omission सुनिश्चित गर्दैन।"
+        },
+        {
+          "t": "p",
           "v": "The missing branch uses identity with None, not a truthiness check: zero stock is a real value, not a missing entry. Built-in generics are notation, not new list/dict objects. Optional and Union come from typing; modern | spelling is an alternative."
         },
         {
@@ -16868,6 +17006,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nStore(Protocol) ले count(name: str) -> int | None भन्ने contract बताउँछ। ... implementation placeholder हो। MemoryStore ले त्यही method दिएको हुनाले Store बाट inherit नगरी पनि compatible हुन्छ। display ले concrete storage होइन contract प्रयोग गर्छ। Mypy लाई fully typed file चाहिन्छ; --strict ले थप जाँच गर्छ। Runtime tests अझै चाहिन्छ किनकि सही types भएको calculation पनि गलत हुन सक्छ।"
+        },
+        {
+          "t": "p",
           "v": "The ... is an ellipsis placeholder in the interface stub, not a working implementation. MemoryStore satisfies the count contract without inheriting Store. Protocol is not a runtime validator and is not automatically suitable for isinstance checks."
         },
         {
@@ -16932,9 +17074,127 @@ const DAY_TEACH = {
           "note": "Optional tool setup: installation needs internet once. The lessons and standard-library examples are offline. Run the second line from the folder containing your saved file."
         }
       ]
+    },
+    {
+      "title": "Guided lab: hints, validation and missing values",
+      "optional": true,
+      "sections": [
+        {
+          "t": "h",
+          "v": "Guided lab: hints, validation and missing values"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish a type promise from a runtime check using concrete cases."
+        },
+        {
+          "t": "new",
+          "v": "Guided application",
+          "note": "Boundary validation checks actual values received from a caller; type hints alone do not do this."
+        },
+        {
+          "t": "p",
+          "v": "पहिले : annotation र -> result type पढ। Exampleमा typed functionले text result बनाउँछ तर deliberately wrong count पनि format हुन्छ। दोस्रो functionमा explicit validation थपेका छौँ। यही दुई output तुलना गर्दा hint र check बीचको फरक स्पष्ट हुन्छ।"
+        },
+        {
+          "t": "syn",
+          "v": "def describe(count: int) -> str:\n    ...\n\nif type(count) is not int:\n    raise TypeError(...)",
+          "note": "A pattern to recognise; the full executable example follows."
+        },
+        {
+          "t": "code",
+          "v": "def describe(count: int) -> str:\n    return f\"Count: {count}\"\ndef checked_describe(count: int) -> str:\n    if type(count) is not int:\n        raise TypeError(\"integer count required\")\n    if count < 0:\n        raise ValueError(\"negative count\")\n    return f\"Count: {count}\"\nprint(describe(\"many\"))  # deliberate wrong typed call\nprint(checked_describe(0))\ntry: checked_describe(\"many\")\nexcept TypeError as error: print(error)"
+        },
+        {
+          "t": "out",
+          "v": "Count: many\nCount: 0\ninteger count required"
+        },
+        {
+          "t": "p",
+          "v": "describeको annotationले Pythonलाई argument रोक्न आदेश दिएको छैन। checked_describeको if/raise actual runtime code भएकाले wrong value रोक्छ। Zero valid हो, negative invalid हो। Error type/domain policy आफैँ स्पष्ट परिभाषित गर्नुपर्छ। Deliberate wrong typed callsलाई mypy-clean moduleमा नराख।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Copy the syntax without checking state, inputs or the contract.",
+          "right": "Predict each operation, validate before mutation and test the resulting state.",
+          "why": "Correct-looking syntax does not guarantee correct behaviour. Explain the example before adapting it."
+        },
+        {
+          "t": "ex",
+          "v": "Implement stock_label(name,stock) -> str using a dict[str,int]. Distinguish zero, positive stock and a missing key. Do not use truthiness to decide whether a key was found.",
+          "practiceId": "21.lab.1.1"
+        },
+        {
+          "t": "sol",
+          "code": "def stock_label(name: str, stock: dict[str, int]) -> str:\n    value: int | None = stock.get(name)\n    if value is None:\n        return f\"{name}: missing\"\n    return f\"{name}: {value} available\"\nstock = {\"Book\": 0, \"Pen\": 4}\nfor name in (\"Book\", \"Pen\", \"Bag\"):\n    print(stock_label(name, stock))",
+          "out": "Book: 0 available\nPen: 4 available\nBag: missing",
+          "why": "describeको annotationले Pythonलाई argument रोक्न आदेश दिएको छैन। checked_describeको if/raise actual runtime code भएकाले wrong value रोक्छ। Zero valid हो, negative invalid हो। Error type/domain policy आफैँ स्पष्ट परिभाषित गर्नुपर्छ। Deliberate wrong typed callsलाई mypy-clean moduleमा नराख। The complete program is self-contained: run it first, then change one input and predict the difference."
+        },
+        {
+          "t": "ex",
+          "v": "Annotate add, subtotal and receipt; make subtotal accept an empty list. Predict results before running and check the typed functions with mypy when available.",
+          "practiceId": "21.lab.1.2"
+        },
+        {
+          "t": "sol",
+          "code": "def add(a: int, b: int) -> int: return a + b\ndef subtotal(prices: list[int]) -> int: return sum(prices)\ndef receipt(prices: list[int]) -> str: return f\"Total: {subtotal(prices)}\"\nprint(add(2, 3))\nprint(receipt([]))\nprint(receipt([100, 20]))",
+          "out": "5\nTotal: 0\nTotal: 120",
+          "why": "Use the assertions to check the stated contract, then explain every output line. Refer to today’s original parts for the underlying concept."
+        },
+        {
+          "t": "try",
+          "q": "Before running the example: which state or result should change, and what must stay unchanged?",
+          "code": "# Trace the input, operation and resulting state.",
+          "a": "describeको annotationले Pythonलाई argument रोक्न आदेश दिएको छैन। checked_describeको if/raise actual runtime code भएकाले wrong value रोक्छ। Zero valid हो, negative invalid हो। Error type/domain policy आफैँ स्पष्ट परिभाषित गर्नुपर्छ। Deliberate wrong typed callsलाई mypy-clean moduleमा नराख।",
+          "why": "Prediction tests understanding more directly than copying."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.lab.1",
+            "quiz": [
+              {
+                "q": "A stock lookup returned 0. Is the item missing?",
+                "options": [
+                  "No; only None represents missing here.",
+                  "Yes; zero and None mean the same.",
+                  "Only if the checker is installed."
+                ],
+                "correct": 0,
+                "why": "No; only None represents missing here."
+              },
+              {
+                "q": "Does -> int automatically convert a result to int?",
+                "options": [
+                  "It prints the result.",
+                  "No; it describes the expected result.",
+                  "Yes; Python casts the result."
+                ],
+                "correct": 1,
+                "why": "No; it describes the expected result."
+              },
+              {
+                "q": "Can mypy replace tests for a wrong tax formula?",
+                "options": [
+                  "Yes; strict mode proves every result.",
+                  "Only if the function returns float.",
+                  "No; types and arithmetic correctness are different checks."
+                ],
+                "correct": 2,
+                "why": "No; types and arithmetic correctness are different checks."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Explain it without notes, write it from memory, then test one normal case and one rejected case. Repeat this lab whenever the idea feels unclear."
+        }
+      ]
     }
   ]
 },
+
 "21.2": {
   "parts": [
     {
@@ -16969,6 +17229,10 @@ const DAY_TEACH = {
         {
           "t": "out",
           "v": "Total: 140\nTOTAL=140"
+        },
+        {
+          "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nInvoice को जिम्मेवारी data र total हो। plain_text/compact_text को जिम्मेवारी output format हो। दुवैले invoice.total() बोलाउँछन्; नयाँ format थप्दा arithmetic फेरिँदैन। SRP भनेको एउटा method मात्र राख्नु होइन—सम्बन्धित कामको coherent owner हुनु हो। यो example मा formatter का लागि नयाँ class आवश्यक छैन।"
         },
         {
           "t": "p",
@@ -17072,6 +17336,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\ncheckout ले delivery.fee(subtotal) बाट nonnegative integer पाउने अपेक्षा गर्छ। Pickup र StandardDelivery दुवैले त्यो promise राख्छन्, त्यसैले एउटै caller चल्छ। नयाँ policy थप्ने seam OCP हो। String \"free\" फर्काउने Pickup ले arithmetic तोड्छ; method को नाम मिलेर मात्र LSP पूरा हुँदैन।"
+        },
+        {
+          "t": "p",
           "v": "checkout stays stable as a pickup policy is added. Both policies preserve the documented units and nonnegative fee result. A method returning \"free\" would force callers to special-case it."
         },
         {
@@ -17172,6 +17440,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nReport(reader) मा reader बाहिरबाट दिइन्छ: यही constructor injection हो। Report ले values() मात्र जान्छ; delete/save/connect चाहिँदैन। सानो interface ISP हो। Concrete database आफैँ नबनाएर reader contractमा निर्भर हुनु DIP हो। EmptyReader दिएर खाली-data case बिना network test हुन्छ।"
+        },
+        {
+          "t": "p",
           "v": "Report knows only values(). A different file reader could provide the same promise. Keep connections and persistence outside the pure calculation; inject the collaborator at the program’s assembly point."
         },
         {
@@ -17231,9 +17503,127 @@ const DAY_TEACH = {
           "v": "Let core rules receive collaborators they can replace. Explain the rule aloud, then write the example again without a template."
         }
       ]
+    },
+    {
+      "title": "Guided lab: use SOLID to solve a real design problem",
+      "optional": true,
+      "sections": [
+        {
+          "t": "h",
+          "v": "Guided lab: use SOLID to solve a real design problem"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Separate reading data, calculating a result and displaying it."
+        },
+        {
+          "t": "new",
+          "v": "Guided application",
+          "note": "A design contract includes meaning and behaviour, not only a method signature."
+        },
+        {
+          "t": "p",
+          "v": "Reportले input पढ्छ, average निकाल्छ, text print गर्छ र email पनि पठाउँछ भने unrelated reasons to change धेरै हुन्छन्। यहाँ readerले values दिन्छ, Reportले average निकाल्छ, formatterले text बनाउँछ। नयाँ source चाहिँ compatible reader हो; फरक output चाहिँ formatter हो।"
+        },
+        {
+          "t": "syn",
+          "v": "class Reader(Protocol):\n    def values(self) -> list[int]: ...",
+          "note": "A pattern to recognise; the full executable example follows."
+        },
+        {
+          "t": "code",
+          "v": "from typing import Protocol\nclass Reader(Protocol):\n    def values(self) -> list[int]: ...\nclass MemoryReader:\n    def values(self) -> list[int]: return [70, 90]\nclass EmptyReader:\n    def values(self) -> list[int]: return []\nclass Report:\n    def __init__(self, reader: Reader) -> None: self.reader = reader\n    def average(self) -> float:\n        values = self.reader.values()\n        return sum(values) / len(values) if values else 0.0\ndef format_report(report: Report) -> str:\n    return f\"Average: {report.average():.1f}\"\nprint(format_report(Report(MemoryReader())))\nprint(format_report(Report(EmptyReader())))"
+        },
+        {
+          "t": "out",
+          "v": "Average: 80.0\nAverage: 0.0"
+        },
+        {
+          "t": "p",
+          "v": "SRP: average र format अलग। OCP: अर्को reader थपेर caller reuse। LSP: readerले promised numbers दिनुपर्छ, string list होइन। ISP: Reportलाई values मात्र चाहिन्छ। DIP: Reportले MemoryReader आफैँ नबनाएर injected Reader contract लिन्छ। यी पाँच principles एकै tiny problemमा कसरी लागू भए हेर।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Copy the syntax without checking state, inputs or the contract.",
+          "right": "Predict each operation, validate before mutation and test the resulting state.",
+          "why": "Correct-looking syntax does not guarantee correct behaviour. Explain the example before adapting it."
+        },
+        {
+          "t": "ex",
+          "v": "Add a FixedReader storing a copied list, inject it into Report and prove mutating the caller list does not change the report. No database or internet is needed.",
+          "practiceId": "21.lab.2.1"
+        },
+        {
+          "t": "sol",
+          "code": "class FixedReader:\n    def __init__(self, values): self._values = list(values)\n    def values(self): return list(self._values)\nclass Report:\n    def __init__(self, reader): self.reader = reader\n    def average(self):\n        values = self.reader.values()\n        return sum(values) / len(values) if values else 0.0\nsource = [10, 30]\nreport = Report(FixedReader(source))\nsource.append(1000)\nassert report.average() == 20.0\nprint(report.average())",
+          "out": "20.0",
+          "why": "SRP: average र format अलग। OCP: अर्को reader थपेर caller reuse। LSP: readerले promised numbers दिनुपर्छ, string list होइन। ISP: Reportलाई values मात्र चाहिन्छ। DIP: Reportले MemoryReader आफैँ नबनाएर injected Reader contract लिन्छ। यी पाँच principles एकै tiny problemमा कसरी लागू भए हेर। The complete program is self-contained: run it first, then change one input and predict the difference."
+        },
+        {
+          "t": "ex",
+          "v": "Keep the same average calculation and add two text formats. Prove formatting does not change report data.",
+          "practiceId": "21.lab.2.2"
+        },
+        {
+          "t": "sol",
+          "code": "class Report:\n    def __init__(self, values): self.values = list(values)\n    def average(self): return sum(self.values) / len(self.values) if self.values else 0.0\ndef plain(report): return f\"Average: {report.average():.1f}\"\ndef compact(report): return f\"AVG={report.average():.1f}\"\nr = Report([70, 90])\nprint(plain(r))\nprint(compact(r))\nassert r.values == [70, 90]",
+          "out": "Average: 80.0\nAVG=80.0",
+          "why": "Use the assertions to check the stated contract, then explain every output line. Refer to today’s original parts for the underlying concept."
+        },
+        {
+          "t": "try",
+          "q": "Before running the example: which state or result should change, and what must stay unchanged?",
+          "code": "# Trace the input, operation and resulting state.",
+          "a": "SRP: average र format अलग। OCP: अर्को reader थपेर caller reuse। LSP: readerले promised numbers दिनुपर्छ, string list होइन। ISP: Reportलाई values मात्र चाहिन्छ। DIP: Reportले MemoryReader आफैँ नबनाएर injected Reader contract लिन्छ। यी पाँच principles एकै tiny problemमा कसरी लागू भए हेर।",
+          "why": "Prediction tests understanding more directly than copying."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.lab.2",
+            "quiz": [
+              {
+                "q": "Which change belongs in presentation rather than average()?",
+                "options": [
+                  "Changing the report wording.",
+                  "Changing the mean calculation.",
+                  "Changing the empty-data numerical rule."
+                ],
+                "correct": 0,
+                "why": "Changing the report wording."
+              },
+              {
+                "q": "Why inject a Reader into Report?",
+                "options": [
+                  "To force inheritance in every class.",
+                  "To replace the data source without coupling calculation to storage.",
+                  "To avoid all tests."
+                ],
+                "correct": 1,
+                "why": "To replace the data source without coupling calculation to storage."
+              },
+              {
+                "q": "A reader returns [\"free\"] instead of numbers. What happened?",
+                "options": [
+                  "It improved interface segregation.",
+                  "It is compatible because the method is named values.",
+                  "It broke the behavioural contract."
+                ],
+                "correct": 2,
+                "why": "It broke the behavioural contract."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Explain it without notes, write it from memory, then test one normal case and one rejected case. Repeat this lab whenever the idea feels unclear."
+        }
+      ]
     }
   ]
 },
+
 "21.3": {
   "parts": [
     {
@@ -17273,6 +17663,10 @@ const DAY_TEACH = {
         {
           "t": "out",
           "v": "100\n120"
+        },
+        {
+          "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\ncheckout(80, standard) मा function value pass भएको छ। checkout ले पछि fee(amount) बोलाउँछ। standard(80) पास गर्यौ भने integer 20 पहिले नै बनेको हुन्छ; त्यसलाई function जस्तो बोलाउन मिल्दैन। Callable[[int], int] notation मा भित्रको list argument types हो, अन्तिम int result type हो।"
         },
         {
           "t": "p",
@@ -17368,6 +17762,10 @@ const DAY_TEACH = {
         {
           "t": "out",
           "v": "Total: 100\nTOTAL=100\nunknown formatter"
+        },
+        {
+          "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nmake_formatter(kind) ले कुन object बनाउने निर्णय गर्छ। त्यो object आएपछि caller ले format(amount) मात्र बोलाउँछ। Factory construction चयनका लागि हो; strategy algorithm चयनका लागि हो। Unknown kind मा ValueError उठाउँदा bug निर्माण ठाउँमै स्पष्ट हुन्छ, None फर्काएर पछाडि obscure error दिँदैन।"
         },
         {
           "t": "p",
@@ -17471,6 +17869,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nsubscribe मा listener function राखिन्छ; emit(event) मा त्यो function बोलिन्छ। list(self._listeners) ले यस emission को snapshot बनाउँछ। Callback ले subscribe/unsubscribe गरे पनि अहिलेको traversal बिग्रिँदैन। यो synchronous example हो: listener error भए propagation हुन्छ, automatic retry/durable delivery छैन।"
+        },
+        {
+          "t": "p",
           "v": "The first event reaches both listeners; the second reaches only audit. Pass a listener function without calling it. In a production system decide how callback errors and ordering affect delivery."
         },
         {
@@ -17571,6 +17973,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nshared = Config(\"JPY\") एकचोटि बनाउँछौ। Report(shared) दुवैले उही object पाउँछन्; अलग Config(\"NPR\") ले अलग state दिन्छ। यो deliberate sharing हो, globally enforced singleton होइन। Singleton को उद्देश्य चिन, तर hidden global mutable stateले tests कसरी एकअर्कालाई असर गर्छ भन्ने पनि बुझ।"
+        },
+        {
+          "t": "p",
           "v": "This demonstrates explicitly shared lifetime rather than enforced singleton identity. The design remains testable because callers can inject a separate object. If configuration should be immutable, a frozen record is often appropriate."
         },
         {
@@ -17630,9 +18036,127 @@ const DAY_TEACH = {
           "v": "Prefer explicit shared dependencies over hidden global state. Explain the rule aloud, then write the example again without a template."
         }
       ]
+    },
+    {
+      "title": "Guided lab: factory and strategy working together",
+      "optional": true,
+      "sections": [
+        {
+          "t": "h",
+          "v": "Guided lab: factory and strategy working together"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose construction separately from using a calculation policy."
+        },
+        {
+          "t": "new",
+          "v": "Guided application",
+          "note": "A factory assembles an object; a strategy supplies interchangeable behaviour. These responsibilities can cooperate."
+        },
+        {
+          "t": "p",
+          "v": "Checkoutले total निकाल्छ। Delivery policyले fee निकाल्छ। make_checkoutले selected policyसँग Checkout बनाउँछ। पहिले “कसलाई बनाउने?” र “कसरी fee निकाल्ने?” छुट्याएर सोच। एउटा मात्र policy भए simple function पर्याप्त हुन सक्छ—pattern थप्नु आफैँ लक्ष्य होइन।"
+        },
+        {
+          "t": "syn",
+          "v": "service = make_checkout(\"pickup\")\nresult = service.total(100)",
+          "note": "A pattern to recognise; the full executable example follows."
+        },
+        {
+          "t": "code",
+          "v": "def standard_fee(amount): return 20\ndef pickup_fee(amount): return 0\nclass Checkout:\n    def __init__(self, fee_policy): self.fee_policy = fee_policy\n    def total(self, amount):\n        if amount < 0: raise ValueError(\"negative subtotal\")\n        return amount + self.fee_policy(amount)\ndef make_checkout(kind):\n    if kind == \"standard\": return Checkout(standard_fee)\n    if kind == \"pickup\": return Checkout(pickup_fee)\n    raise ValueError(\"unknown delivery\")\nprint(make_checkout(\"standard\").total(100))\nprint(make_checkout(\"pickup\").total(100))\ntry: make_checkout(\"other\")\nexcept ValueError as error: print(error)"
+        },
+        {
+          "t": "out",
+          "v": "120\n100\nunknown delivery"
+        },
+        {
+          "t": "p",
+          "v": "Factoryमा Checkout(standard_fee) ले function pass गर्छ; fee function त्यहाँ तुरुन्त चल्दैन। total(100)मा policy call हुन्छ। Pickup ले 0 दिनु valid contract हो; \"free\" string दिनु invalid हुन्थ्यो। Unknown kind लाई स्पष्ट error ले रोक्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Copy the syntax without checking state, inputs or the contract.",
+          "right": "Predict each operation, validate before mutation and test the resulting state.",
+          "why": "Correct-looking syntax does not guarantee correct behaviour. Explain the example before adapting it."
+        },
+        {
+          "t": "ex",
+          "v": "Extend the factory with express delivery costing 40. Reuse the same Checkout.total implementation and verify all three policies.",
+          "practiceId": "21.lab.3.1"
+        },
+        {
+          "t": "sol",
+          "code": "def standard(amount): return 20\ndef pickup(amount): return 0\ndef express(amount): return 40\nclass Checkout:\n    def __init__(self, policy): self.policy = policy\n    def total(self, amount): return amount + self.policy(amount)\ndef make_checkout(kind):\n    policies = {\"standard\": standard, \"pickup\": pickup, \"express\": express}\n    if kind not in policies: raise ValueError(\"unknown delivery\")\n    return Checkout(policies[kind])\nfor kind, expected in [(\"standard\", 120), (\"pickup\", 100), (\"express\", 140)]:\n    result = make_checkout(kind).total(100)\n    assert result == expected\n    print(kind, result)",
+          "out": "standard 120\npickup 100\nexpress 140",
+          "why": "Factoryमा Checkout(standard_fee) ले function pass गर्छ; fee function त्यहाँ तुरुन्त चल्दैन। total(100)मा policy call हुन्छ। Pickup ले 0 दिनु valid contract हो; \"free\" string दिनु invalid हुन्थ्यो। Unknown kind लाई स्पष्ट error ले रोक्छ। The complete program is self-contained: run it first, then change one input and predict the difference."
+        },
+        {
+          "t": "ex",
+          "v": "Make an observer unsubscribe itself during emission. Use a listener snapshot; show a second listener still gets both events.",
+          "practiceId": "21.lab.3.2"
+        },
+        {
+          "t": "sol",
+          "code": "class Signal:\n    def __init__(self): self.listeners = []\n    def subscribe(self, listener): self.listeners.append(listener)\n    def unsubscribe(self, listener): self.listeners.remove(listener)\n    def emit(self, event):\n        for listener in list(self.listeners): listener(event)\nsignal = Signal()\ndef once(event):\n    print(\"once:\", event)\n    signal.unsubscribe(once)\ndef always(event): print(\"always:\", event)\nsignal.subscribe(once)\nsignal.subscribe(always)\nsignal.emit(\"A\")\nsignal.emit(\"B\")",
+          "out": "once: A\nalways: A\nalways: B",
+          "why": "Use the assertions to check the stated contract, then explain every output line. Refer to today’s original parts for the underlying concept."
+        },
+        {
+          "t": "try",
+          "q": "Before running the example: which state or result should change, and what must stay unchanged?",
+          "code": "# Trace the input, operation and resulting state.",
+          "a": "Factoryमा Checkout(standard_fee) ले function pass गर्छ; fee function त्यहाँ तुरुन्त चल्दैन। total(100)मा policy call हुन्छ। Pickup ले 0 दिनु valid contract हो; \"free\" string दिनु invalid हुन्थ्यो। Unknown kind लाई स्पष्ट error ले रोक्छ।",
+          "why": "Prediction tests understanding more directly than copying."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.lab.3",
+            "quiz": [
+              {
+                "q": "When does standard_fee run in the example?",
+                "options": [
+                  "When total(amount) invokes the policy.",
+                  "When its name is passed to Checkout.",
+                  "Only when the class is defined."
+                ],
+                "correct": 0,
+                "why": "When total(amount) invokes the policy."
+              },
+              {
+                "q": "Which responsibility selects the Checkout configuration?",
+                "options": [
+                  "The amount integer.",
+                  "The factory.",
+                  "The formatter."
+                ],
+                "correct": 1,
+                "why": "The factory."
+              },
+              {
+                "q": "Why does the observer copy its listeners?",
+                "options": [
+                  "To call every listener twice.",
+                  "To make a global singleton.",
+                  "Callbacks can change subscriptions during emission."
+                ],
+                "correct": 2,
+                "why": "Callbacks can change subscriptions during emission."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Explain it without notes, write it from memory, then test one normal case and one rejected case. Repeat this lab whenever the idea feels unclear."
+        }
+      ]
     }
   ]
 },
+
 "21.4": {
   "parts": [
     {
@@ -17672,6 +18196,10 @@ const DAY_TEACH = {
         {
           "t": "out",
           "v": "CONFIRMED confirmed\nTrue\nFalse\nunknown status"
+        },
+        {
+          "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nStatus(\"confirmed\") ले underlying value बाट enum member खोज्छ। s.name identifier CONFIRMED हो; s.value stored string confirmed हो। Ordinary Enum member stringसँग बराबर होइन। Status.CONFIRMED जस्तो नामबाट codeमा choice स्पष्ट हुन्छ; external textलाई boundaryमा parse गर्नुपर्छ।"
         },
         {
           "t": "p",
@@ -17775,6 +18303,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nauto() ले internal values बनाउँछ, तर definition order edit हुँदा ती numbersलाई पुरानो saved dataको स्थिर अर्थ मान्न हुँदैन। @unique ले एउटै valueका accidental aliases अस्वीकार गर्छ। SavedStatusमा explicit \"new\"/\"done\" values compatibilityको लागि राखिएका हुन्। UPPER_CASE नाम पनि convention हो, protection होइन।"
+        },
+        {
+          "t": "p",
           "v": "The output deliberately avoids depending on generated numeric values. @unique checks the class definition. Explicit text values are clearer when compatibility matters."
         },
         {
@@ -17870,6 +18402,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nallowed[current] ले अहिलेको stateबाट जान मिल्ने target set दिन्छ। target छैन भने assignment अघि error उठ्छ। यही क्रमले failed transition पछि पुरानो state बचाउँछ। Enumले known choices दिन्छ; transition tableले कुन change valid हो बताउँछ। यी दुई अलग समस्या हुन्।"
+        },
+        {
+          "t": "p",
           "v": "The final state stays cancelled after a rejected request. Enum members are useful dictionary/set keys for an explicit transition table. Prevent callers from bypassing the method in a larger design by controlling access to the state."
         },
         {
@@ -17929,9 +18465,127 @@ const DAY_TEACH = {
           "v": "Validate the change as well as the status. Explain the rule aloud, then write the example again without a template."
         }
       ]
+    },
+    {
+      "title": "Guided lab: enum parsing and safe transitions",
+      "optional": true,
+      "sections": [
+        {
+          "t": "h",
+          "v": "Guided lab: enum parsing and safe transitions"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Keep persisted states meaningful and reject invalid changes before mutation."
+        },
+        {
+          "t": "new",
+          "v": "Guided application",
+          "note": "Boundary parsing converts external text into a known state; transition validation is a separate step."
+        },
+        {
+          "t": "p",
+          "v": "JSONमा Enum object सीधै serialize हुँदैन। त्यसैले stable .value string store गर्छौँ र पढ्दा Enum(value)ले reconstruct गर्छौँ। नयाँ state थप्दा पुरानो saved value को अर्थ नबदलिने policy चाहिन्छ। यो practice program हो; Study Hubको storage format बदलिएको छैन।"
+        },
+        {
+          "t": "syn",
+          "v": "payload = {\"state\": task.state.value}\nrestored = State(payload[\"state\"])",
+          "note": "A pattern to recognise; the full executable example follows."
+        },
+        {
+          "t": "code",
+          "v": "import json\nfrom enum import Enum\nclass State(Enum):\n    TODO = \"todo\"\n    DONE = \"done\"\nstate = State.DONE\ntext = json.dumps({\"state\": state.value})\npayload = json.loads(text)\nrestored = State(payload[\"state\"])\nprint(text)\nprint(restored.name, restored is State.DONE)\ntry: State(\"donne\")\nexcept ValueError: print(\"unknown saved state\")"
+        },
+        {
+          "t": "out",
+          "v": "{\"state\": \"done\"}\nDONE True\nunknown saved state"
+        },
+        {
+          "t": "p",
+          "v": "json.dumps मा state.value string हुन्छ। json.loads पछि पनि string नै हुन्छ; State(...) ले member खोज्छ। नाममा typo वा unsupported old value भए parsing असफल हुन्छ। चुपचाप अर्कै state नमान। Enum ले valid values चिनाउँछ; transition rule छुट्टै हुन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Copy the syntax without checking state, inputs or the contract.",
+          "right": "Predict each operation, validate before mutation and test the resulting state.",
+          "why": "Correct-looking syntax does not guarantee correct behaviour. Explain the example before adapting it."
+        },
+        {
+          "t": "ex",
+          "v": "Build Order with NEW → CONFIRMED → SHIPPED only. Reject NEW → SHIPPED and prove its state remains NEW; then perform both valid changes.",
+          "practiceId": "21.lab.4.1"
+        },
+        {
+          "t": "sol",
+          "code": "from enum import Enum\nclass State(Enum):\n    NEW = \"new\"\n    CONFIRMED = \"confirmed\"\n    SHIPPED = \"shipped\"\nclass Order:\n    def __init__(self): self._state = State.NEW\n    @property\n    def state(self): return self._state\n    def transition(self, target):\n        allowed = {State.NEW: {State.CONFIRMED}, State.CONFIRMED: {State.SHIPPED}, State.SHIPPED: set()}\n        if target not in allowed[self._state]: raise ValueError(\"invalid transition\")\n        self._state = target\no = Order()\ntry: o.transition(State.SHIPPED)\nexcept ValueError as error: print(error)\nassert o.state is State.NEW\no.transition(State.CONFIRMED)\no.transition(State.SHIPPED)\nprint(o.state.value)",
+          "out": "invalid transition\nshipped",
+          "why": "json.dumps मा state.value string हुन्छ। json.loads पछि पनि string नै हुन्छ; State(...) ले member खोज्छ। नाममा typo वा unsupported old value भए parsing असफल हुन्छ। चुपचाप अर्कै state नमान। Enum ले valid values चिनाउँछ; transition rule छुट्टै हुन्छ। The complete program is self-contained: run it first, then change one input and predict the difference."
+        },
+        {
+          "t": "ex",
+          "v": "Define an enum with explicit low/high saved values, round-trip a value through JSON and verify an unsupported value is rejected.",
+          "practiceId": "21.lab.4.2"
+        },
+        {
+          "t": "sol",
+          "code": "import json\nfrom enum import Enum\nclass Priority(Enum):\n    LOW = \"low\"\n    HIGH = \"high\"\nstored = json.dumps({\"priority\": Priority.HIGH.value})\nrestored = Priority(json.loads(stored)[\"priority\"])\nassert restored is Priority.HIGH\nprint(restored.name)\ntry: Priority(\"urgent\")\nexcept ValueError: print(\"unsupported priority\")",
+          "out": "HIGH\nunsupported priority",
+          "why": "Use the assertions to check the stated contract, then explain every output line. Refer to today’s original parts for the underlying concept."
+        },
+        {
+          "t": "try",
+          "q": "Before running the example: which state or result should change, and what must stay unchanged?",
+          "code": "# Trace the input, operation and resulting state.",
+          "a": "json.dumps मा state.value string हुन्छ। json.loads पछि पनि string नै हुन्छ; State(...) ले member खोज्छ। नाममा typo वा unsupported old value भए parsing असफल हुन्छ। चुपचाप अर्कै state नमान। Enum ले valid values चिनाउँछ; transition rule छुट्टै हुन्छ।",
+          "why": "Prediction tests understanding more directly than copying."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.lab.4",
+            "quiz": [
+              {
+                "q": "What should go into the example JSON payload?",
+                "options": [
+                  "The enum’s explicit stable value.",
+                  "The enum object without conversion.",
+                  "Its dropdown index."
+                ],
+                "correct": 0,
+                "why": "The enum’s explicit stable value."
+              },
+              {
+                "q": "An invalid transition raised an error. What else should be tested?",
+                "options": [
+                  "Whether auto() was used.",
+                  "The stored state remained unchanged.",
+                  "Only the spelling of the class."
+                ],
+                "correct": 1,
+                "why": "The stored state remained unchanged."
+              },
+              {
+                "q": "Does an enum validate legal transition order?",
+                "options": [
+                  "Yes; definition order supplies all rules.",
+                  "Only if values are strings.",
+                  "No; transition rules need their own code."
+                ],
+                "correct": 2,
+                "why": "No; transition rules need their own code."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Explain it without notes, write it from memory, then test one normal case and one rejected case. Repeat this lab whenever the idea feels unclear."
+        }
+      ]
     }
   ]
 },
+
 "21.5": {
   "parts": [
     {
@@ -17971,6 +18625,10 @@ const DAY_TEACH = {
         {
           "t": "out",
           "v": "3 compatibility cases passed"
+        },
+        {
+          "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nपहिले old_total को परिणाम baseline बनाऊ। Receipt(prices).total(fee) ले त्यही परिणाम दिनुपर्छ। Class extraction गर्दा calculation, rounding र storage format एकैपटक बदल्नु हुँदैन। [] / एक item / धेरै items जस्ता casesले structure परिवर्तनमा व्यवहार सुरक्षित छ कि देखाउँछन्।"
         },
         {
           "t": "p",
@@ -18074,6 +18732,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nयो project तहअनुसार पढ: Itemमा fields + validation; Repositoryमा find/save contract; MemoryRepositoryमा dict; Inventoryमा stock rules; low_below_twoमा policy; renderमा display। get() ले Optional Itemलाई missing/not-missing छुट्याउँछ। remove() ले amount validate गर्छ, sufficient stock जाँच्छ, replaceबाट checked snapshot बनाउँछ, त्यसपछि save गर्छ। पुरानो snapshot mutation हुँदैन।"
+        },
+        {
+          "t": "p",
           "v": "The returned old snapshot stays at quantity 3 while the saved replacement becomes 1. Duplicate SKUs, missing keys, impossible amounts and insufficient stock are separate errors. All checks run before saving; no file/network access is involved. The category is an explicit enum, never an arbitrary status string."
         },
         {
@@ -18174,6 +18836,10 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
+          "v": "Step-by-step walkthrough · सरल रूपमा\nexpect_error(..., lambda: ...) मा lambda ले operation पछि चलाउन मिल्ने function बनाउँछ। Helperले त्यही operation बोलाएर सही exception पर्खन्छ। Error आएपछि quantity पनि जाँचिन्छ: गलत codeले state बदलेर मात्र error उठाउन सक्छ। Testमा assert ठीक छ, production validationमा real exceptions प्रयोग गर्छौ; -O modeले assert हटाउन सक्छ।"
+        },
+        {
+          "t": "p",
           "v": "Checks cover add/find, duplicate preservation, missing items, zero/negative/bool/fractional removal, insufficient stock, unchanged state on failure, old snapshot stability, valid zero stock, low-stock strategy, invalid records and unknown factories. The helper is intentionally minimal; later pytest parametrisation can express these cases more compactly."
         },
         {
@@ -18245,9 +18911,127 @@ const DAY_TEACH = {
           "v": "Week 21 checkpoint: build a checked record, annotate a small module, inject a collaborator, choose a useful pattern, model stable states, and refactor with preserved behaviour. Study the parts at your own pace."
         }
       ]
+    },
+    {
+      "title": "Guided lab: refactor, test and explain the inventory",
+      "optional": true,
+      "sections": [
+        {
+          "t": "h",
+          "v": "Guided lab: refactor, test and explain the inventory"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Preserve behaviour and prove failures cannot corrupt state."
+        },
+        {
+          "t": "new",
+          "v": "Guided application",
+          "note": "Characterisation tests protect existing behaviour; failure-state tests verify rejected operations do not partially mutate data."
+        },
+        {
+          "t": "p",
+          "v": "पहिले पुरानो function बाट observed output सुरक्षित राख। नयाँ class मा उही cases चलाऊ। Inventory project पहिले पूरा पढेर मात्र extension गर: Itemdata, Repositorymechanism, Inventoryrules, policystrategy, formatterpresentation। गल्ती भेटिए bug fix र structure change अलग commits मा राख।"
+        },
+        {
+          "t": "syn",
+          "v": "before = inventory.quantity\ntry:\n    inventory.remove(invalid_amount)\nexcept ValueError:\n    assert inventory.quantity == before",
+          "note": "A pattern to recognise; the full executable example follows."
+        },
+        {
+          "t": "code",
+          "v": "class Inventory:\n    def __init__(self, quantity):\n        if type(quantity) is not int or quantity < 0: raise ValueError(\"invalid quantity\")\n        self._quantity = quantity\n    @property\n    def quantity(self): return self._quantity\n    def remove(self, amount):\n        if type(amount) is not int or amount <= 0 or amount > self._quantity:\n            raise ValueError(\"invalid removal\")\n        self._quantity -= amount\ninventory = Inventory(3)\nfor amount in (0, -1, True, 4):\n    before = inventory.quantity\n    try: inventory.remove(amount)\n    except ValueError:\n        assert inventory.quantity == before\n        print(\"rejected\", amount, \"stock\", inventory.quantity)\ninventory.remove(2)\nprint(\"remaining\", inventory.quantity)"
+        },
+        {
+          "t": "out",
+          "v": "rejected 0 stock 3\nrejected -1 stock 3\nrejected True stock 3\nrejected 4 stock 3\nremaining 1"
+        },
+        {
+          "t": "p",
+          "v": "प्रत्येक invalid amount अघि before लिन्छौँ। remove ले mutation भन्दा पहिले सबै checks गर्छ, त्यसैले rejected case मा पुरानो quantity बच्यो। Valid removal 2 पछि quantity 3 बाट 1 हुनुपर्छ। Exception मात्र catch गरेर state नहेरेमा partial mutation bug छुट्न सक्छ। @property getter ले caller लाई read path दिन्छ; internal field को underscore confidentiality होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Copy the syntax without checking state, inputs or the contract.",
+          "right": "Predict each operation, validate before mutation and test the resulting state.",
+          "why": "Correct-looking syntax does not guarantee correct behaviour. Explain the example before adapting it."
+        },
+        {
+          "t": "ex",
+          "v": "Refactor old_total(prices,fee) into a Receipt dataclass. Preserve outputs for empty, single and multiple prices. Use an independent default list and avoid changing numerical rules.",
+          "practiceId": "21.lab.5.1"
+        },
+        {
+          "t": "sol",
+          "code": "from dataclasses import dataclass, field\ndef old_total(prices, fee=0): return sum(prices) + fee\n@dataclass\nclass Receipt:\n    prices: list[int] = field(default_factory=list)\n    def total(self, fee=0): return sum(self.prices) + fee\nfor prices, fee in [([], 0), ([100], 20), ([100, 40], 0)]:\n    actual = Receipt(list(prices)).total(fee)\n    assert actual == old_total(prices, fee)\n    print(actual)",
+          "out": "0\n120\n140",
+          "why": "प्रत्येक invalid amount अघि before लिन्छौँ। remove ले mutation भन्दा पहिले सबै checks गर्छ, त्यसैले rejected case मा पुरानो quantity बच्यो। Valid removal 2 पछि quantity 3 बाट 1 हुनुपर्छ। Exception मात्र catch गरेर state नहेरेमा partial mutation bug छुट्न सक्छ। @property getter ले caller लाई read path दिन्छ; internal field को underscore confidentiality होइन। The complete program is self-contained: run it first, then change one input and predict the difference."
+        },
+        {
+          "t": "ex",
+          "v": "Write a small checked stock record and a service that returns a replaced snapshot. Show that the old snapshot stays unchanged and an oversized removal leaves current stock unchanged.",
+          "practiceId": "21.lab.5.2"
+        },
+        {
+          "t": "sol",
+          "code": "from dataclasses import dataclass, replace\n@dataclass(frozen=True)\nclass Stock:\n    quantity: int\n    def __post_init__(self):\n        if type(self.quantity) is not int or self.quantity < 0: raise ValueError(\"invalid stock\")\nclass Service:\n    def __init__(self, stock): self.stock = stock\n    def remove(self, amount):\n        if type(amount) is not int or amount <= 0 or amount > self.stock.quantity:\n            raise ValueError(\"invalid removal\")\n        self.stock = replace(self.stock, quantity=self.stock.quantity - amount)\n        return self.stock\nold = Stock(3)\ns = Service(old)\nprint(old.quantity, s.remove(2).quantity)\ntry: s.remove(2)\nexcept ValueError: print(\"rejected\")\nprint(old.quantity, s.stock.quantity)",
+          "out": "3 1\nrejected\n3 1",
+          "why": "Use the assertions to check the stated contract, then explain every output line. Refer to today’s original parts for the underlying concept."
+        },
+        {
+          "t": "try",
+          "q": "Before running the example: which state or result should change, and what must stay unchanged?",
+          "code": "# Trace the input, operation and resulting state.",
+          "a": "प्रत्येक invalid amount अघि before लिन्छौँ। remove ले mutation भन्दा पहिले सबै checks गर्छ, त्यसैले rejected case मा पुरानो quantity बच्यो। Valid removal 2 पछि quantity 3 बाट 1 हुनुपर्छ। Exception मात्र catch गरेर state नहेरेमा partial mutation bug छुट्न सक्छ। @property getter ले caller लाई read path दिन्छ; internal field को underscore confidentiality होइन।",
+          "why": "Prediction tests understanding more directly than copying."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:21.lab.5",
+            "quiz": [
+              {
+                "q": "A refactor also changes rounding and saved formats. Why is that risky?",
+                "options": [
+                  "It mixes structural and behavioural changes, hiding regressions.",
+                  "It guarantees better tests.",
+                  "It is required by dataclasses."
+                ],
+                "correct": 0,
+                "why": "It mixes structural and behavioural changes, hiding regressions."
+              },
+              {
+                "q": "Which layer owns the stock removal rule in the full project?",
+                "options": [
+                  "A random caller assignment.",
+                  "Inventory.",
+                  "The text formatter."
+                ],
+                "correct": 1,
+                "why": "Inventory."
+              },
+              {
+                "q": "What must you explain before adding a design pattern?",
+                "options": [
+                  "Only its fashionable name.",
+                  "Why every function must become a class.",
+                  "The problem it solves and the contract it preserves."
+                ],
+                "correct": 2,
+                "why": "The problem it solves and the contract it preserves."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Explain it without notes, write it from memory, then test one normal case and one rejected case. Repeat this lab whenever the idea feels unclear."
+        }
+      ]
     }
   ]
 },
+
 };
 
 const REST_DAY = ["Review & rest",
