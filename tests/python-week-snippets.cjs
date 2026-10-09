@@ -33,7 +33,7 @@ for (const c of cases) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), `study-hub-w${week}-`));
   const file = path.join(dir, 'snippet.py');
   fs.writeFileSync(file, c.code, 'utf8');
-  const run = spawnSync(python, [file], {cwd:dir, encoding:'utf8'});
+  const run = spawnSync(python, [file], {cwd:dir, encoding:'utf8', env:{...process.env,PYTHONIOENCODING:'utf-8'}});
   fs.rmSync(dir, {recursive:true, force:true});
   if (run.status !== 0) throw new Error(`Week ${week} Day ${c.day+1} failed:\n${run.stderr}\n${c.code}`);
   const actual = run.stdout.replace(/\r\n/g, '\n').trimEnd();

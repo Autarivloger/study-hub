@@ -19031,7 +19031,2892 @@ const DAY_TEACH = {
     }
   ]
 },
-
+"22.0": {
+  "parts": [
+    {
+      "title": "1. What a regex does: first match, or no match",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. What a regex does: first match, or no match"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Find a literal piece of text and safely inspect its match."
+        },
+        {
+          "t": "new",
+          "note": "Regex is a small pattern language for text. Python's standard-library re module runs these patterns; no package installation is needed.",
+          "v": "Regular expression; re module"
+        },
+        {
+          "t": "new",
+          "note": "search looks anywhere in a string and returns the first Match object, or None when nothing matches. A Match stores the matched text and its location.",
+          "v": "re.search; Match; None"
+        },
+        {
+          "t": "new",
+          "note": "group(0) returns the entire matched substring. span() returns (start, end), using the same end-exclusive indexes as Python slicing.",
+          "v": "group(0); span()"
+        },
+        {
+          "t": "p",
+          "v": "Week 21 finished object-oriented design; this week returns to text processing. Start with a literal pattern, not a complicated formula. For a plain yes/no substring test, 'Python' in text is often simpler. Regex becomes useful when the wanted text has a changing shape: several digits, a date, or a structured log line. Use Python 3.10 or newer. Every example here works offline with the standard library."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "import re\nmatch = re.search(\"wanted\", text)\nif match is not None:\n    print(match.group(0), match.span())"
+        },
+        {
+          "t": "code",
+          "v": "import re\ntext = \"I study Python today\"\nfound = re.search(\"Python\", text)\nif found is not None:\n    print(found.group(0))\n    print(found.span())\n    start, end = found.span()\n    print(text[start:end])\nprint(re.search(\"Java\", text) is None)\n"
+        },
+        {
+          "t": "out",
+          "v": "Python\n(8, 14)\nPython\nTrue"
+        },
+        {
+          "t": "p",
+          "v": "पहिलो import ले re उपलब्ध बनाउँछ। 'Python' index 8 बाट सुरु हुन्छ; end 14 भनेको index 14 सम्मको अक्षर समावेश हुँदैन। त्यसैले text[8:14] र group(0) एउटै हुन्छन्। Java नभएकाले अन्तिम output True आउँछ। Match लाई string नसम्झ: पहिले None जाँच, त्यसपछि त्यसको method प्रयोग गर।"
+        },
+        {
+          "t": "mis",
+          "wrong": "re.search('Java', text).group(0)",
+          "right": "found = re.search('Java', text)\nif found is not None:\n    print(found.group(0))",
+          "why": "An absent match is None, which has no group method. Check absence before accessing match information."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.0.0.build",
+          "v": "Search for ERROR in two messages. Print its text and indexes when present; otherwise print 'no error marker'."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfor text in (\"INFO ready\", \"ERROR disk full\"):\n    found = re.search(\"ERROR\", text)\n    if found is None:\n        print(\"no error marker\")\n    else:\n        print(found.group(0), found.span())\n",
+          "out": "no error marker\nERROR (0, 5)",
+          "why": "Build walkthrough: search returns the first occurrence, not all occurrences. Check None, then use group(0) and end-exclusive span indexes. Prefer ordinary string methods when a literal test already solves the task."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.0.0.challenge",
+          "v": "Mini challenge: Search 'cat cat'. Which occurrence is returned? Show its slice and compare it with group(0)."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ntext = \"cat cat\"\nfound = re.search(\"cat\", text)\nif found is not None:\n    start, end = found.span()\n    print(found.group(0), found.span())\n    print(text[start:end] == found.group(0))\n",
+          "out": "cat (0, 3)\nTrue",
+          "why": "Challenge check: search returns the first occurrence, not all occurrences. Check None, then use group(0) and end-exclusive span indexes. Prefer ordinary string methods when a literal test already solves the task."
+        },
+        {
+          "t": "try",
+          "q": "What does search return when the pattern is absent?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "None",
+          "why": "The absence result is None; it has no match methods."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.0.0",
+            "quiz": [
+              {
+                "q": "What does search return when the pattern is absent?",
+                "options": [
+                  "None",
+                  "An empty Match",
+                  "False as a boolean"
+                ],
+                "correct": 0,
+                "why": "The absence result is None; it has no match methods."
+              },
+              {
+                "q": "A match span is (8, 14). Which slice reproduces it?",
+                "options": [
+                  "text[9:14]",
+                  "text[8:14]",
+                  "text[8:15]"
+                ],
+                "correct": 1,
+                "why": "Python's slice stop index is excluded."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "search returns the first occurrence, not all occurrences. Check None, then use group(0) and end-exclusive span indexes. Prefer ordinary string methods when a literal test already solves the task."
+        }
+      ]
+    },
+    {
+      "title": "2. Raw strings: Python reads first, regex reads second",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Raw strings: Python reads first, regex reads second"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Explain the two interpretation layers and write backslash patterns correctly."
+        },
+        {
+          "t": "new",
+          "note": "A raw string preserves backslashes at Python's string-literal layer. The regex engine still interprets those backslashes as pattern instructions.",
+          "v": "Raw string prefix r"
+        },
+        {
+          "t": "new",
+          "note": "\\d matches one Unicode decimal digit; + repeats the preceding token one or more times. Day 2 explores classes and repetition fully.",
+          "v": "\\d; +"
+        },
+        {
+          "t": "new",
+          "note": "repr shows a debugging representation with escapes visible. The extra escaping in its display is not extra text in the original string.",
+          "v": "repr() for a pattern"
+        },
+        {
+          "t": "p",
+          "v": "Python must create a string before re can read it. In an ordinary Python string, '\\b' is a single backspace character. In r'\\b', Python preserves two characters, backslash and b; regex later interprets them as a word-boundary instruction. Do not try to memorise displayed backslashes alone: inspect repr and length, then ask which layer is interpreting them."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "pattern = r\"\\d+\"\nfound = re.search(pattern, text)"
+        },
+        {
+          "t": "code",
+          "v": "import re\npattern = r\"\\d+\"\nprint(repr(pattern))\nfound = re.search(pattern, \"Order 42 costs 150\")\nif found is not None:\n    print(found.group(0))\nprint(len(r\"\\b\"), len(\"\\b\"))\n"
+        },
+        {
+          "t": "out",
+          "v": "'\\\\d+'\n42\n2 1"
+        },
+        {
+          "t": "p",
+          "v": "r'\\d+' मा \\d एउटा digit र + लगातार digits हुन्। पहिलो समूह 42 हो, 150 होइन। Raw \\b को length 2 हुन्छ; ordinary \\b को length 1 हुन्छ। Raw ले regex बन्द गरेको होइन—Python को escape conversion मात्र रोक्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "pattern = \"\\bcat\\b\"",
+          "right": "pattern = r\"\\bcat\\b\"",
+          "why": "Ordinary \\b becomes backspace before regex sees it. Raw strings express the intended regex boundary. A raw string cannot end with an odd number of backslashes."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.0.1.build",
+          "v": "Extract the first number from 'Invoice 2087 is ready' using a raw pattern, then print its integer value."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfound = re.search(r\"\\d+\", \"Invoice 2087 is ready\")\nif found is not None:\n    print(found.group(0))\n    print(int(found.group(0)))\n",
+          "out": "2087\n2087",
+          "why": "Build walkthrough: Python string escapes and regex escapes are separate layers. Raw strings make patterns readable; re still gives \\d, \\b and \\n their regex meanings. Use repr while debugging."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.0.1.challenge",
+          "v": "Mini challenge: Compare ordinary '\\n' and raw r'\\n': print each length and repr. Explain why a raw string can still be used to match a newline in regex."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nordinary = \"\\n\"\nraw = r\"\\n\"\nprint(len(ordinary), len(raw))\nprint(repr(ordinary), repr(raw))\nprint(re.fullmatch(raw, ordinary) is not None)\n",
+          "out": "1 2\n'\\n' '\\\\n'\nTrue",
+          "why": "Challenge check: Python string escapes and regex escapes are separate layers. Raw strings make patterns readable; re still gives \\d, \\b and \\n their regex meanings. Use repr while debugging."
+        },
+        {
+          "t": "try",
+          "q": "Does r make a regex treat every character literally?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No; it only changes Python string-literal processing.",
+          "why": "The resulting string is still parsed by the regex engine."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.0.1",
+            "quiz": [
+              {
+                "q": "Does r make a regex treat every character literally?",
+                "options": [
+                  "It changes the result into bytes.",
+                  "No; it only changes Python string-literal processing.",
+                  "Yes; regex is disabled."
+                ],
+                "correct": 1,
+                "why": "The resulting string is still parsed by the regex engine."
+              },
+              {
+                "q": "How many characters are in r'\\b'?",
+                "options": [
+                  "1",
+                  "0",
+                  "2"
+                ],
+                "correct": 2,
+                "why": "It contains a backslash and b; ordinary '\\b' contains one backspace."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Python string escapes and regex escapes are separate layers. Raw strings make patterns readable; re still gives \\d, \\b and \\n their regex meanings. Use repr while debugging."
+        }
+      ]
+    },
+    {
+      "title": "3. Choose search, match, fullmatch or findall",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Choose search, match, fullmatch or findall"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose the operation according to the question, rather than adding accidental anchors."
+        },
+        {
+          "t": "new",
+          "note": "match checks only at the beginning; it may match a prefix without consuming the whole string.",
+          "v": "re.match"
+        },
+        {
+          "t": "new",
+          "note": "fullmatch requires the pattern to consume the complete string. Use it for a whole-input format check.",
+          "v": "re.fullmatch"
+        },
+        {
+          "t": "new",
+          "note": "findall collects non-overlapping matches. Without capture groups it returns a list of matched strings; Day 3 explains how captures change this shape.",
+          "v": "re.findall"
+        },
+        {
+          "t": "p",
+          "v": "Ask four different questions: Is the pattern anywhere? Does it start here? Does the whole value obey the format? What are all its occurrences? These are search, match, fullmatch and findall respectively. A prefix match is not a complete validation. Extracting a number produces text: call int only when you actually need arithmetic."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "re.search(pattern, text)\nre.match(pattern, text)\nre.fullmatch(pattern, text)\nre.findall(pattern, text)"
+        },
+        {
+          "t": "code",
+          "v": "import re\ntext = \"abc 12 and 34\"\nprint(re.search(r\"\\d+\", text).group(0))\nprint(re.match(r\"\\d+\", text) is None)\nprint(re.findall(r\"\\d+\", text))\nprint(re.match(r\"\\d+\", \"123abc\").group(0))\nprint(re.fullmatch(r\"\\d+\", \"123abc\") is None)\n"
+        },
+        {
+          "t": "out",
+          "v": "12\nTrue\n['12', '34']\n123\nTrue"
+        },
+        {
+          "t": "p",
+          "v": "abc बाट सुरु हुने text मा match ले number पाउँदैन, search ले 12 पाउँछ। findall ले 12 र 34 दुवै text रूपमा दिन्छ। 123abc को सुरुमा 123 भए पनि पूरा value digits मात्र होइन; त्यसैले fullmatch असफल हुन्छ। यहाँ group(0) सीधै बोलाइएको ठाउँमा literal input मा match निश्चित छ; अनिश्चित input मा None जाँच्नै पर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "bool(re.match(r'\\d+', user_input))",
+          "right": "re.fullmatch(r'\\d+', user_input) is not None",
+          "why": "match can accept the numeric prefix of '42junk'; fullmatch rejects trailing junk."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.0.2.build",
+          "v": "Validate '42', '42x' and an empty string as one-or-more digits. Print the input with repr and its validity."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfor value in (\"42\", \"42x\", \"\"):\n    print(repr(value), re.fullmatch(r\"\\d+\", value) is not None)\n",
+          "out": "'42' True\n'42x' False\n'' False",
+          "why": "Build walkthrough: Operation choice expresses intent: anywhere, beginning, entire input, or all matches. findall gives strings here; numeric conversion is a separate step."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.0.2.challenge",
+          "v": "Mini challenge: Extract 5 and 12 from '5 apples, 12 pears', convert each string to int, and print the sum."
+        },
+        {
+          "t": "sol",
+          "code": "import re\npieces = re.findall(r\"\\d+\", \"5 apples, 12 pears\")\nnumbers = [int(piece) for piece in pieces]\nprint(pieces)\nprint(sum(numbers))\n",
+          "out": "['5', '12']\n17",
+          "why": "Challenge check: Operation choice expresses intent: anywhere, beginning, entire input, or all matches. findall gives strings here; numeric conversion is a separate step."
+        },
+        {
+          "t": "try",
+          "q": "Which operation validates a whole numeric field?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "fullmatch",
+          "why": "A complete field must have no unmatched prefix or suffix."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.0.2",
+            "quiz": [
+              {
+                "q": "Which operation validates a whole numeric field?",
+                "options": [
+                  "search",
+                  "match",
+                  "fullmatch"
+                ],
+                "correct": 2,
+                "why": "A complete field must have no unmatched prefix or suffix."
+              },
+              {
+                "q": "What is findall(r'\\d+', '5 and 12') here?",
+                "options": [
+                  "['5', '12']",
+                  "[5, 12]",
+                  "A single Match"
+                ],
+                "correct": 0,
+                "why": "No capture groups are present, so each occurrence is a matched string."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Operation choice expresses intent: anywhere, beginning, entire input, or all matches. findall gives strings here; numeric conversion is a separate step."
+        }
+      ]
+    },
+    {
+      "title": "4. Compile a pattern and iterate over match locations",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Compile a pattern and iterate over match locations"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Reuse a named pattern and process each match with its position."
+        },
+        {
+          "t": "new",
+          "note": "compile returns a reusable pattern object. Give it a meaningful variable name; its search/finditer/fullmatch methods use that pattern.",
+          "v": "re.compile; compiled pattern methods"
+        },
+        {
+          "t": "new",
+          "note": "finditer yields Match objects one at a time, retaining matched text and spans. It avoids creating a list of all matches when iteration is enough.",
+          "v": "finditer"
+        },
+        {
+          "t": "p",
+          "v": "A pattern such as number_pattern communicates its role more clearly than a repeated anonymous string. Python already caches recent patterns, so compiling is not a promise of dramatic speed improvement. Use finditer when you need locations, or when you can process matches incrementally. Converting that iterator to a list still uses memory for all its matches."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "pattern = re.compile(r\"\\d+\")\nfor found in pattern.finditer(text):\n    print(found.group(0), found.span())"
+        },
+        {
+          "t": "code",
+          "v": "import re\nnumber_pattern = re.compile(r\"\\d+\")\nfor found in number_pattern.finditer(\"a12 b345\"):\n    print(found.group(0), found.span())\nprint(number_pattern.fullmatch(\"99\") is not None)\n"
+        },
+        {
+          "t": "out",
+          "v": "12 (1, 3)\n345 (5, 8)\nTrue"
+        },
+        {
+          "t": "p",
+          "v": "Pattern एक पटक नाम दिएर बनायौँ। loop को पहिलो Match 12 र दोस्रो 345 हो। प्रत्येक Match को span फरक हुन्छ। findall को string list बाट यस्तो location सीधै आउँदैन; finditer को Match बाट आउँछ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "for number in re.findall(r'\\d+', text):\n    print(number.span())",
+          "right": "for found in re.finditer(r'\\d+', text):\n    print(found.span())",
+          "why": "findall returns strings in this case, not Match objects; strings have no span method."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.0.3.build",
+          "v": "Compile a digit pattern and reuse it for 'Room 7' and 'Floor 12'. Print each line's matches."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nnumber_pattern = re.compile(r\"\\d+\")\nfor line in (\"Room 7\", \"Floor 12\"):\n    print(number_pattern.findall(line))\n",
+          "out": "['7']\n['12']",
+          "why": "Build walkthrough: compile names and reuses a pattern; finditer retains locations. End-exclusive slices reproduce matches. Iterator use is incremental only if you do not collect all results."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.0.3.challenge",
+          "v": "Mini challenge: For each match in 'x4 y55', prove that the recorded slice equals the matched text."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ntext = \"x4 y55\"\nfor found in re.finditer(r\"\\d+\", text):\n    start, end = found.span()\n    print(text[start:end], text[start:end] == found.group(0))\n",
+          "out": "4 True\n55 True",
+          "why": "Challenge check: compile names and reuses a pattern; finditer retains locations. End-exclusive slices reproduce matches. Iterator use is incremental only if you do not collect all results."
+        },
+        {
+          "t": "try",
+          "q": "Which operation keeps a Match object for every occurrence?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "finditer",
+          "why": "finditer yields match objects; their group and span methods remain available."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.0.3",
+            "quiz": [
+              {
+                "q": "Which operation keeps a Match object for every occurrence?",
+                "options": [
+                  "finditer",
+                  "findall without groups",
+                  "str.split"
+                ],
+                "correct": 0,
+                "why": "finditer yields match objects; their group and span methods remain available."
+              },
+              {
+                "q": "Does compile always make repeated matching dramatically faster?",
+                "options": [
+                  "It turns regex into native machine code.",
+                  "No; clarity and reuse are benefits, and re already caches patterns.",
+                  "Yes, in every program."
+                ],
+                "correct": 1,
+                "why": "Performance depends on workload; avoid unmeasured blanket claims."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "compile names and reuses a pattern; finditer retains locations. End-exclusive slices reproduce matches. Iterator use is incremental only if you do not collect all results."
+        }
+      ]
+    }
+  ]
+},
+"22.1": {
+  "parts": [
+    {
+      "title": "1. Character classes: a set means one character",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Character classes: a set means one character"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Read ranges, negated sets, and Unicode-aware shorthand classes."
+        },
+        {
+          "t": "new",
+          "note": "A bracket class matches one character from a set or range; a leading ^ inside brackets negates the set. It is not a whole word.",
+          "v": "[abc]; [a-z]; [^...]"
+        },
+        {
+          "t": "new",
+          "note": "\\w matches Unicode alphanumeric characters plus underscore; \\s matches Unicode whitespace; \\D is the complement of decimal-digit class \\d.",
+          "v": "\\w; \\s; \\D"
+        },
+        {
+          "t": "new",
+          "note": "On a str pattern, ASCII narrows \\d, \\w, \\s and related classes/boundaries to ASCII definitions.",
+          "v": "re.ASCII"
+        },
+        {
+          "t": "p",
+          "v": "Read [A-C] as one character A, B or C. Add + to match a run. [^,]+ means one or more non-comma characters. \\w is a programming character class, not a complete language-aware definition of a word. It includes underscores and many non-English characters; combining marks are not all covered. \\d includes Nepali decimal digits; use [0-9] if the required format explicitly permits only ASCII digits."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "[A-Z]+     [0-9]+     [^,]+\n\\w+        \\s+         \\D+"
+        },
+        {
+          "t": "code",
+          "v": "import re\nprint(re.findall(r\"[A-C]\", \"A x C D\"))\nprint(re.findall(r\"\\w+\", \"cat_2 東京\"))\nvalue = \"१२\"\nprint(re.fullmatch(r\"\\d+\", value) is not None)\nprint(re.fullmatch(r\"[0-9]+\", value) is not None)\nprint(re.fullmatch(r\"\\d+\", value, flags=re.ASCII) is not None)\n"
+        },
+        {
+          "t": "out",
+          "v": "['A', 'C']\n['cat_2', '東京']\nTrue\nFalse\nFalse"
+        },
+        {
+          "t": "p",
+          "v": "Brackets ले एक पटकमा एउटा character छान्छन्। \\w+ ले cat_2 लाई एउटै token मान्छ र 東京 पनि भेट्छ। १२ decimal digits भएकाले Unicode digit pattern सफल हुन्छ; ASCII-only विकल्प असफल हुन्छन्। आफ्नो data policy हेरेर class छान; English मात्र हो भन्ने अनुमान नगर।"
+        },
+        {
+          "t": "mis",
+          "wrong": "[cat] means the complete word cat",
+          "right": "cat means the sequence; [cat] means one of c, a or t",
+          "why": "Square brackets choose one character. Character-set membership and a sequence are different operations."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.1.0.build",
+          "v": "Extract ASCII alphabetic runs from 'room12 floor3'; then extract its digits separately."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ntext = \"room12 floor3\"\nprint(re.findall(r\"[A-Za-z]+\", text))\nprint(re.findall(r\"[0-9]+\", text))\n",
+          "out": "['room', 'floor']\n['12', '3']",
+          "why": "Build walkthrough: A class chooses a character; repetition chooses its count. Unicode and ASCII policies differ. Nonempty-run extraction may discard empty fields, which can change data meaning."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.1.0.challenge",
+          "v": "Mini challenge: Extract non-comma runs from 'one,two,,three'. Explain why the empty field disappears; compare str.split(',')."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ntext = \"one,two,,three\"\nprint(re.findall(r\"[^,]+\", text))\nprint(text.split(\",\"))\n",
+          "out": "['one', 'two', 'three']\n['one', 'two', '', 'three']",
+          "why": "Challenge check: A class chooses a character; repetition chooses its count. Unicode and ASCII policies differ. Nonempty-run extraction may discard empty fields, which can change data meaning."
+        },
+        {
+          "t": "try",
+          "q": "What does [cat] match?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "One character: c, a or t",
+          "why": "A bracket class describes alternatives at one character position."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.1.0",
+            "quiz": [
+              {
+                "q": "What does [cat] match?",
+                "options": [
+                  "One character: c, a or t",
+                  "Only the word cat",
+                  "All English words"
+                ],
+                "correct": 0,
+                "why": "A bracket class describes alternatives at one character position."
+              },
+              {
+                "q": "Does default \\d match Nepali decimal digits?",
+                "options": [
+                  "Only with IGNORECASE",
+                  "Yes",
+                  "No, only 0-9"
+                ],
+                "correct": 1,
+                "why": "Default str patterns use Unicode decimal-digit semantics."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "A class chooses a character; repetition chooses its count. Unicode and ASCII policies differ. Nonempty-run extraction may discard empty fields, which can change data meaning."
+        }
+      ]
+    },
+    {
+      "title": "2. Quantifiers: how many repetitions?",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Quantifiers: how many repetitions?"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose required, optional, and bounded repetition without accepting empty input accidentally."
+        },
+        {
+          "t": "new",
+          "note": "* means zero or more; + means one or more; ? means zero or one occurrence of the preceding token.",
+          "v": "*; +; ?"
+        },
+        {
+          "t": "new",
+          "note": "Brace quantifiers specify an exact count, an inclusive minimum/maximum, or a minimum with no stated maximum.",
+          "v": "{n}; {m,n}; {m,}"
+        },
+        {
+          "t": "p",
+          "v": "A quantifier modifies the token immediately before it: [0-9]{2} requires two digits; A{2} requires AA. It does not apply to the whole preceding sentence. To repeat a sequence, put it in a group (Day 3). Zero is permitted by * and ?, so fullmatch can accept the empty string for some patterns. Build validators by writing accepted and rejected examples before writing the regex."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "A[0-9]{2}     colou?r     [0-9]{2,4}\n[0-9]*        [0-9]+"
+        },
+        {
+          "t": "code",
+          "v": "import re\nfor value in (\"A12\", \"A1\", \"A123\"):\n    print(value, re.fullmatch(r\"A[0-9]{2}\", value) is not None)\nfor value in (\"color\", \"colour\"):\n    print(value, re.fullmatch(r\"colou?r\", value) is not None)\nprint(re.fullmatch(r\"[0-9]*\", \"\") is not None)\nprint(re.fullmatch(r\"[0-9]+\", \"\") is not None)\n"
+        },
+        {
+          "t": "out",
+          "v": "A12 True\nA1 False\nA123 False\ncolor True\ncolour True\nTrue\nFalse"
+        },
+        {
+          "t": "p",
+          "v": "A12 मा A पछि ठीक दुई digits छन्। colou?r मा u मात्र optional हो, पूरै colour होइन। Empty value मा * सफल र + असफल हुन्छ। त्यसैले required input का लागि + वा उचित minimum राख।"
+        },
+        {
+          "t": "mis",
+          "wrong": "re.fullmatch(r'[0-9]*', '') accepts required numeric input",
+          "right": "Use [0-9]+ when at least one digit is required",
+          "why": "* explicitly permits zero occurrences, including an empty complete match."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.1.1.build",
+          "v": "Validate digit strings with length 2 through 4. Test 1, 12, 1234 and 12345."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfor value in (\"1\", \"12\", \"1234\", \"12345\"):\n    print(value, re.fullmatch(r\"[0-9]{2,4}\", value) is not None)\n",
+          "out": "1 False\n12 True\n1234 True\n12345 False",
+          "why": "Build walkthrough: Quantifiers apply to the preceding token. Test minimum, maximum, empty, and too-long inputs. Optional spelling characters and optional whole sequences are different."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.1.1.challenge",
+          "v": "Mini challenge: Accept both gray and grey with one bracket class, but reject graay."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfor value in (\"gray\", \"grey\", \"graay\"):\n    print(value, re.fullmatch(r\"gr[ae]y\", value) is not None)\n",
+          "out": "gray True\ngrey True\ngraay False",
+          "why": "Challenge check: Quantifiers apply to the preceding token. Test minimum, maximum, empty, and too-long inputs. Optional spelling characters and optional whole sequences are different."
+        },
+        {
+          "t": "try",
+          "q": "Which quantifier means one or more?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "+",
+          "why": "+ has minimum one; * permits zero, ? permits zero or one."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.1.1",
+            "quiz": [
+              {
+                "q": "Which quantifier means one or more?",
+                "options": [
+                  "?",
+                  "+",
+                  "*"
+                ],
+                "correct": 1,
+                "why": "+ has minimum one; * permits zero, ? permits zero or one."
+              },
+              {
+                "q": "What does A[0-9]{2} require?",
+                "options": [
+                  "Two copies of the complete A-number",
+                  "An optional A",
+                  "A followed by exactly two ASCII digits"
+                ],
+                "correct": 2,
+                "why": "The brace quantifier applies to the digit class immediately before it."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Quantifiers apply to the preceding token. Test minimum, maximum, empty, and too-long inputs. Optional spelling characters and optional whole sequences are different."
+        }
+      ]
+    },
+    {
+      "title": "3. Four phone formats: define the rule first",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Four phone formats: define the rule first"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Validate a deliberately limited format policy with complete-string checks."
+        },
+        {
+          "t": "new",
+          "note": "Regex parentheses normally form a group. Escaping them matches the actual punctuation characters.",
+          "v": "\\( and \\): literal parentheses"
+        },
+        {
+          "t": "new",
+          "note": "A regex can check your chosen text shape. It does not prove that a number exists, belongs to someone, or obeys every country's numbering system.",
+          "v": "Format policy vs real-world validity"
+        },
+        {
+          "t": "p",
+          "v": "Our learning policy accepts exactly four 10-digit layouts: 1234567890, 123-456-7890, 123 456 7890, and (123) 456-7890. This is not a universal Nepal or Japan phone-number rule. Reject mixed separators, incorrect lengths, and trailing junk. Use four simple patterns and any(...) now; Day 3 introduces alternation to combine choices. The digits here must be ASCII."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "patterns = [r\"[0-9]{10}\", r\"[0-9]{3}-[0-9]{3}-[0-9]{4}\", ...]\nany(re.fullmatch(p, value) is not None for p in patterns)"
+        },
+        {
+          "t": "code",
+          "v": "import re\npatterns = [\n    r\"[0-9]{10}\",\n    r\"[0-9]{3}-[0-9]{3}-[0-9]{4}\",\n    r\"[0-9]{3} [0-9]{3} [0-9]{4}\",\n    r\"\\([0-9]{3}\\) [0-9]{3}-[0-9]{4}\",\n]\nfor value in (\"1234567890\", \"123-456-7890\", \"123 456 7890\",\n              \"(123) 456-7890\", \"123-456 7890\"):\n    valid = any(re.fullmatch(p, value) is not None for p in patterns)\n    print(value, valid)\n"
+        },
+        {
+          "t": "out",
+          "v": "1234567890 True\n123-456-7890 True\n123 456 7890 True\n(123) 456-7890 True\n123-456 7890 False"
+        },
+        {
+          "t": "p",
+          "v": "हरेक pattern एउटा allowed layout हो। any ले कम्तीमा एक layout मिल्यो कि भनेर हेर्छ। सबैमा fullmatch भएकाले अगाडि वा पछाडि extra text स्वीकारिँदैन। Parentheses देखाउन regex मा escape चाहिन्छ। देशअनुसार number rules फरक हुन्छन्; production policy छुट्टै तय गर्नुपर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Use search to validate a phone field",
+          "right": "Use fullmatch with an explicit allowed-format policy",
+          "why": "search can find a valid-looking substring inside an otherwise invalid field."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.1.2.build",
+          "v": "Check the hyphen layout against a valid value, a short value, and a valid prefix followed by junk."
+        },
+        {
+          "t": "sol",
+          "code": "import re\npattern = r\"[0-9]{3}-[0-9]{3}-[0-9]{4}\"\nfor value in (\"123-456-7890\", \"12-456-7890\", \"123-456-7890junk\"):\n    print(value, re.fullmatch(pattern, value) is not None)\n",
+          "out": "123-456-7890 True\n12-456-7890 False\n123-456-7890junk False",
+          "why": "Build walkthrough: Write the accepted format policy before its regex. Escape literal punctuation, reject trailing junk with fullmatch, and separate shape validation from ownership or real-world validity."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.1.2.challenge",
+          "v": "Mini challenge: Find the literal text '(2026)' in a sentence, including its parentheses."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfound = re.search(r\"\\([0-9]{4}\\)\", \"Year (2026) is here\")\nif found is not None:\n    print(found.group(0))\n",
+          "out": "(2026)",
+          "why": "Challenge check: Write the accepted format policy before its regex. Escape literal punctuation, reject trailing junk with fullmatch, and separate shape validation from ownership or real-world validity."
+        },
+        {
+          "t": "try",
+          "q": "Does a matching phone format prove the number exists?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "Shape is not reachability, ownership, or every country's numbering policy."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.1.2",
+            "quiz": [
+              {
+                "q": "Does a matching phone format prove the number exists?",
+                "options": [
+                  "Yes",
+                  "Only if it has parentheses",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Shape is not reachability, ownership, or every country's numbering policy."
+              },
+              {
+                "q": "How do you match a literal opening parenthesis?",
+                "options": [
+                  "\\(",
+                  "(",
+                  "[0-9]"
+                ],
+                "correct": 0,
+                "why": "Unescaped parentheses have grouping meaning; escaping makes this punctuation literal."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Write the accepted format policy before its regex. Escape literal punctuation, reject trailing junk with fullmatch, and separate shape validation from ownership or real-world validity."
+        }
+      ]
+    },
+    {
+      "title": "4. Flags and the dot: case, lines and newlines",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Flags and the dot: case, lines and newlines"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish IGNORECASE, MULTILINE and DOTALL."
+        },
+        {
+          "t": "new",
+          "note": "An unescaped dot matches one character except newline by default. Backslash-dot matches an actual dot.",
+          "v": ".; escaped dot"
+        },
+        {
+          "t": "new",
+          "note": "IGNORECASE relaxes case matching; MULTILINE changes ^/$ line anchors; DOTALL allows dot to include newline.",
+          "v": "re.IGNORECASE; re.MULTILINE; re.DOTALL"
+        },
+        {
+          "t": "new",
+          "note": "Bitwise OR combines integer flag values: re.IGNORECASE | re.MULTILINE. This is separate from alternation inside a pattern string.",
+          "v": "Flag combination with |"
+        },
+        {
+          "t": "p",
+          "v": "Change one flag at a time and observe its effect. MULTILINE does not make dot cross newlines; DOTALL does. ^ marks the beginning and $ the end (Day 3 explains the edge cases). With MULTILINE, anchors also operate at line boundaries. For ordinary Unicode case-insensitive matching, do not assume this performs every language-specific comparison you might need."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "re.findall(pattern, text, flags=re.IGNORECASE)\nre.search(pattern, text, flags=re.IGNORECASE | re.MULTILINE)"
+        },
+        {
+          "t": "code",
+          "v": "import re\nprint(re.findall(r\"python\", \"Python PYTHON python\", flags=re.IGNORECASE))\ntext = \"a\\nb\"\nprint(re.fullmatch(r\"a.b\", text) is not None)\nprint(re.fullmatch(r\"a.b\", text, flags=re.DOTALL) is not None)\nprint(re.search(r\"^ERROR\", \"INFO ready\\nERROR disk\", flags=re.MULTILINE).group(0))\n"
+        },
+        {
+          "t": "out",
+          "v": "['Python', 'PYTHON', 'python']\nFalse\nTrue\nERROR"
+        },
+        {
+          "t": "p",
+          "v": "पहिलो output मा case फरक भए पनि तीन matches आउँछन्। a र b बीच newline हुँदा default dot असफल हुन्छ; DOTALL ले सफल बनाउँछ। MULTILINE ले दोस्रो line को सुरुमा ERROR भेट्न मद्दत गर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "MULTILINE makes . match a newline",
+          "right": "DOTALL changes dot; MULTILINE changes line-anchor behaviour",
+          "why": "These flags alter different regex instructions."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.1.3.build",
+          "v": "Find ERROR at the start of a line, ignoring case, in a two-line message."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfound = re.search(r\"^error\", \"INFO ready\\nError disk\",\n                  flags=re.IGNORECASE | re.MULTILINE)\nif found is not None:\n    print(found.group(0), found.span())\n",
+          "out": "Error (11, 16)",
+          "why": "Build walkthrough: Flags have distinct jobs. Dot is a wildcard, not punctuation, unless escaped. Combine flag constants outside the pattern; Day 3's | inside a pattern means alternatives."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.1.3.challenge",
+          "v": "Mini challenge: Require the literal version '1.2'; show why 1.2 without escaping would also match '1x2'."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfor value in (\"1.2\", \"1x2\"):\n    print(value, re.fullmatch(r\"1.2\", value) is not None,\n          re.fullmatch(r\"1\\.2\", value) is not None)\n",
+          "out": "1.2 True True\n1x2 True False",
+          "why": "Challenge check: Flags have distinct jobs. Dot is a wildcard, not punctuation, unless escaped. Combine flag constants outside the pattern; Day 3's | inside a pattern means alternatives."
+        },
+        {
+          "t": "try",
+          "q": "Which flag makes dot include a newline?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "DOTALL",
+          "why": "DOTALL changes the dot; MULTILINE changes ^ and $."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.1.3",
+            "quiz": [
+              {
+                "q": "Which flag makes dot include a newline?",
+                "options": [
+                  "DOTALL",
+                  "MULTILINE",
+                  "ASCII"
+                ],
+                "correct": 0,
+                "why": "DOTALL changes the dot; MULTILINE changes ^ and $."
+              },
+              {
+                "q": "Which pattern matches a literal 1.2 only?",
+                "options": [
+                  "1[0-9]2",
+                  "1\\.2",
+                  "1.2"
+                ],
+                "correct": 1,
+                "why": "An escaped dot is literal, while an unescaped dot is a wildcard."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Flags have distinct jobs. Dot is a wildcard, not punctuation, unless escaped. Combine flag constants outside the pattern; Day 3's | inside a pattern means alternatives."
+        }
+      ]
+    }
+  ]
+},
+"22.2": {
+  "parts": [
+    {
+      "title": "1. Anchors and word boundaries: position, not characters",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Anchors and word boundaries: position, not characters"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Use start/end positions and explain why a boundary is not a space."
+        },
+        {
+          "t": "new",
+          "note": "These assert start/end positions. MULTILINE also allows line boundaries. Without MULTILINE, $ can still match just before a final newline.",
+          "v": "^; $"
+        },
+        {
+          "t": "new",
+          "note": "\\A asserts the beginning of the entire string; \\Z its absolute end. These examples use syntax supported by Python 3.10+, not version-specific newer anchors.",
+          "v": "\\A; \\Z"
+        },
+        {
+          "t": "new",
+          "note": "\\b asserts a boundary between a \\w and a non-\\w character, or an appropriate string edge. It consumes no character; it is not a literal space.",
+          "v": "\\b; zero-width assertion"
+        },
+        {
+          "t": "p",
+          "v": "An anchor tests where matching is happening. It does not add a character to group(0). catfish contains cat but has no boundary after its t. cat_name also has no boundary there because underscore belongs to \\w. A boundary is based on the regex word class, not a dictionary of real words. For a complete field, fullmatch is usually clearer than assembling anchors."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "re.search(r\"\\bcat\\b\", text)\nre.fullmatch(r\"cat\", value)\nre.search(r\"\\Acat\\Z\", value)"
+        },
+        {
+          "t": "code",
+          "v": "import re\nprint(re.findall(r\"\\bcat\\b\", \"cat catfish cat_name (cat)\"))\nvalue = \"cat\\n\"\nprint(re.search(r\"^cat$\", value) is not None)\nprint(re.fullmatch(r\"cat\", value) is not None)\nprint(re.search(r\"\\Acat\\Z\", value) is not None)\n"
+        },
+        {
+          "t": "out",
+          "v": "['cat', 'cat']\nTrue\nFalse\nFalse"
+        },
+        {
+          "t": "p",
+          "v": "दुई छुट्टै cat भेटिन्छन्; catfish र cat_name भेटिँदैनन्। 'cat\\n' मा $ ले अन्तिम newline भन्दा अगाडि end position स्वीकार्छ। fullmatch र absolute end \\Z ले newline बाँकी भएकाले reject गर्छन्। यो सानो फरक validation मा महत्त्वपूर्ण हुन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "^cat$ always means the exact complete input is cat",
+          "right": "Use fullmatch('cat', value) for exact whole-input matching",
+          "why": "$ has a final-newline exception; fullmatch must consume the entire string."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.2.0.build",
+          "v": "Extract standalone ASCII numbers from '12 x12 34 56x' using boundaries; explain excluded values."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nprint(re.findall(r\"\\b[0-9]+\\b\", \"12 x12 34 56x\"))\n",
+          "out": "['12', '34']",
+          "why": "Build walkthrough: Anchors and boundaries consume no text. Underscore is a word character. $ permits a position before a final newline; use fullmatch for exact field validation."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.2.0.challenge",
+          "v": "Mini challenge: Use MULTILINE to find lines beginning INFO, then contrast it with \\A which still requires the string's beginning."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ntext = \"WARN first\\nINFO second\"\nprint(re.search(r\"^INFO\", text, flags=re.MULTILINE) is not None)\nprint(re.search(r\"\\AINFO\", text, flags=re.MULTILINE) is not None)\n",
+          "out": "True\nFalse",
+          "why": "Challenge check: Anchors and boundaries consume no text. Underscore is a word character. $ permits a position before a final newline; use fullmatch for exact field validation."
+        },
+        {
+          "t": "try",
+          "q": "Will \\bcat\\b match cat_name?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No; underscore is a word character.",
+          "why": "No word-to-nonword transition exists after cat here."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.2.0",
+            "quiz": [
+              {
+                "q": "Will \\bcat\\b match cat_name?",
+                "options": [
+                  "No; underscore is a word character.",
+                  "Yes; underscore is always a boundary.",
+                  "Only with DOTALL"
+                ],
+                "correct": 0,
+                "why": "No word-to-nonword transition exists after cat here."
+              },
+              {
+                "q": "Does $ always mean the absolute string end?",
+                "options": [
+                  "It consumes a dollar sign.",
+                  "No; it can match before a final newline.",
+                  "Yes, without exceptions."
+                ],
+                "correct": 1,
+                "why": "For a strict complete input, prefer fullmatch."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Anchors and boundaries consume no text. Underscore is a word character. $ permits a position before a final newline; use fullmatch for exact field validation."
+        }
+      ]
+    },
+    {
+      "title": "2. Captures: turn a match into named fields",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Captures: turn a match into named fields"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Capture related pieces, convert values deliberately, and understand findall's result shape."
+        },
+        {
+          "t": "new",
+          "note": "Parentheses capture a submatch. Numbering starts at 1, group(0) is the whole match, and groups() returns the captured subgroups as a tuple.",
+          "v": "(pattern); group(1); groups()"
+        },
+        {
+          "t": "new",
+          "note": "A named group labels a field. groupdict returns name-to-captured-text mappings; the field values are still strings.",
+          "v": "(?P<name>pattern); groupdict()"
+        },
+        {
+          "t": "new",
+          "note": "No capture groups: full-match strings. One group: that group's strings. Multiple groups: tuples of captured strings.",
+          "v": "findall and capture count"
+        },
+        {
+          "t": "p",
+          "v": "Parse the structure into fields rather than repeatedly splitting an uncertain format. books=12 has a label and a quantity. Capture each; then convert quantity to int. A successful digit capture does not establish a domain rule such as quantity <= stock. A date-shaped capture likewise does not prove the date exists."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "pattern = r\"(?P<name>[A-Za-z]+)=(?P<count>[0-9]+)\"\nfound.group(\"count\")\nfound.groupdict()"
+        },
+        {
+          "t": "code",
+          "v": "import re\npattern = r\"(?P<name>[A-Za-z]+)=(?P<count>[0-9]+)\"\nfound = re.fullmatch(pattern, \"books=12\")\nif found is not None:\n    print(found.group(0))\n    print(found.groups())\n    print(found.groupdict())\n    print(int(found.group(\"count\")) + 1)\ntext = \"a1 b22\"\nprint(re.findall(r\"[a-z][0-9]+\", text))\nprint(re.findall(r\"[a-z]([0-9]+)\", text))\nprint(re.findall(r\"([a-z])([0-9]+)\", text))\n"
+        },
+        {
+          "t": "out",
+          "v": "books=12\n('books', '12')\n{'name': 'books', 'count': '12'}\n13\n['a1', 'b22']\n['1', '22']\n[('a', '1'), ('b', '22')]"
+        },
+        {
+          "t": "p",
+          "v": "पूरा match books=12 हो; captures books र 12 हुन्। groupdict ले field names दिन्छ, int ले संख्या बनाउँछ। तलका तीन findall का patterns मिल्दोजुल्दो भए पनि capture count फरक भएकाले result shape फरक छ। आफ्नो loop ले string चाहन्छ कि tuple भन्ने कुरा पहिले बुझ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Treat found.group('count') as an integer automatically",
+          "right": "count = int(found.group('count'))",
+          "why": "Regex returns captured text. Conversion and range validation are separate steps."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.2.1.build",
+          "v": "Capture name and score from 'Sita:90', print the named dictionary, then check that score is between 0 and 100."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfound = re.fullmatch(r\"(?P<name>[A-Za-z]+):(?P<score>[0-9]+)\", \"Sita:90\")\nif found is not None:\n    fields = found.groupdict()\n    score = int(fields[\"score\"])\n    print(fields)\n    print(0 <= score <= 100)\n",
+          "out": "{'name': 'Sita', 'score': '90'}\nTrue",
+          "why": "Build walkthrough: Capture names make field intent explicit. group(0) remains the whole match. Convert numeric fields and validate domain rules separately. Capture count changes findall's return shape."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.2.1.challenge",
+          "v": "Mini challenge: Capture year, month and day from '2026-02-31'. Show that this format matches, then explain why calendar checking is still needed (Day 6)."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfound = re.fullmatch(\n    r\"(?P<year>[0-9]{4})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})\",\n    \"2026-02-31\")\nif found is not None:\n    print(found.groupdict())\n    print(\"shape matches; calendar not checked\")\n",
+          "out": "{'year': '2026', 'month': '02', 'day': '31'}\nshape matches; calendar not checked",
+          "why": "Challenge check: Capture names make field intent explicit. group(0) remains the whole match. Convert numeric fields and validate domain rules separately. Capture count changes findall's return shape."
+        },
+        {
+          "t": "try",
+          "q": "What type is a captured numeric group on a str pattern?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "str",
+          "why": "Matching does not perform numeric conversion."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.2.1",
+            "quiz": [
+              {
+                "q": "What type is a captured numeric group on a str pattern?",
+                "options": [
+                  "float",
+                  "str",
+                  "int"
+                ],
+                "correct": 1,
+                "why": "Matching does not perform numeric conversion."
+              },
+              {
+                "q": "What does findall return when the pattern has two capture groups?",
+                "options": [
+                  "Only the entire match strings",
+                  "A dictionary automatically",
+                  "A list of tuples of captured strings"
+                ],
+                "correct": 2,
+                "why": "Multiple captures produce one tuple per occurrence."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Capture names make field intent explicit. group(0) remains the whole match. Convert numeric fields and validate domain rules separately. Capture count changes findall's return shape."
+        }
+      ]
+    },
+    {
+      "title": "3. Alternation and noncapturing groups",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Alternation and noncapturing groups"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Group alternative sequences without creating unwanted captured fields."
+        },
+        {
+          "t": "new",
+          "note": "Alternation chooses among branches. Python tries branches left to right; a successful earlier branch need not be the longest possible one.",
+          "v": "| inside a pattern"
+        },
+        {
+          "t": "new",
+          "note": "A noncapturing group organises a sequence or alternatives without adding a numbered capture or changing findall's capture shape.",
+          "v": "(?:...)"
+        },
+        {
+          "t": "new",
+          "note": "Anchors on separate ungrouped branches do not automatically apply to every alternative. Group the alternatives or use fullmatch.",
+          "v": "Alternation precedence"
+        },
+        {
+          "t": "p",
+          "v": "cat|dog means cat or dog. ^cat|dog$ instead means 'cat at the beginning' OR 'dog at the end', not necessarily the complete value cat or dog. fullmatch with a grouped choice expresses complete-input intent clearly. Use capture groups for fields you want back, and noncapturing groups for structure only."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "re.fullmatch(r\"(?:cat|dog)\", value)\nr\"(?P<method>GET|POST) /[A-Za-z]+\""
+        },
+        {
+          "t": "code",
+          "v": "import re\nfor value in (\"cat\", \"dog\", \"catfish\"):\n    print(value, re.fullmatch(r\"(?:cat|dog)\", value) is not None)\nprint(re.search(r\"cat|caterpillar\", \"caterpillar\").group(0))\nprint(re.search(r\"caterpillar|cat\", \"caterpillar\").group(0))\nprint(re.search(r\"^cat|dog$\", \"catfish\") is not None)\n"
+        },
+        {
+          "t": "out",
+          "v": "cat True\ndog True\ncatfish False\ncat\ncaterpillar\nTrue"
+        },
+        {
+          "t": "p",
+          "v": "पहिलो loop पूरा value जाँच्छ। search मा cat पहिला लेख्दा caterpillar भित्रको cat नै पहिलो सफल branch हुन्छ। यो 'सबैभन्दा लामो branch खोज्ने' नियम होइन। अन्तिम example मा ungrouped anchors ले catfish स्वीकारेको कारण बुझेर मात्र pattern बदल।"
+        },
+        {
+          "t": "mis",
+          "wrong": "^cat|dog$ for exact cat-or-dog validation",
+          "right": "re.fullmatch(r'(?:cat|dog)', value)",
+          "why": "The alternation splits the anchors across branches. Grouping plus fullmatch avoids the accidental prefix/suffix acceptance."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.2.2.build",
+          "v": "Parse 'GET /books' and 'POST /items' into named method and path fields; reject 'DELETE /books'."
+        },
+        {
+          "t": "sol",
+          "code": "import re\npattern = r\"(?P<method>GET|POST) (?P<path>/[A-Za-z]+)\"\nfor line in (\"GET /books\", \"POST /items\", \"DELETE /books\"):\n    found = re.fullmatch(pattern, line)\n    print(found.groupdict() if found is not None else \"rejected\")\n",
+          "out": "{'method': 'GET', 'path': '/books'}\n{'method': 'POST', 'path': '/items'}\nrejected",
+          "why": "Build walkthrough: Alternation tries branches left to right. Use noncapturing groups for structure, named captures for data, and fullmatch for complete-field validation."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.2.2.challenge",
+          "v": "Mini challenge: Find A12 and B34, but return only their numeric fields; use a noncapturing A/B choice."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nprint(re.findall(r\"(?:A|B)([0-9]+)\", \"A12 B34 C56\"))\n",
+          "out": "['12', '34']",
+          "why": "Challenge check: Alternation tries branches left to right. Use noncapturing groups for structure, named captures for data, and fullmatch for complete-field validation."
+        },
+        {
+          "t": "try",
+          "q": "Which group does not create a captured result?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "(?:...)",
+          "why": "The ?: prefix groups structurally without capturing."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.2.2",
+            "quiz": [
+              {
+                "q": "Which group does not create a captured result?",
+                "options": [
+                  "(...)",
+                  "(?P<name>...)",
+                  "(?:...)"
+                ],
+                "correct": 2,
+                "why": "The ?: prefix groups structurally without capturing."
+              },
+              {
+                "q": "What does search('cat|caterpillar', 'caterpillar') select?",
+                "options": [
+                  "cat",
+                  "caterpillar always",
+                  "No match"
+                ],
+                "correct": 0,
+                "why": "The first branch already succeeds at the same starting position."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Alternation tries branches left to right. Use noncapturing groups for structure, named captures for data, and fullmatch for complete-field validation."
+        }
+      ]
+    },
+    {
+      "title": "4. Literal input and backreferences",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Literal input and backreferences"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Escape dynamic literal text and compare a capture with later text."
+        },
+        {
+          "t": "new",
+          "note": "escape turns a literal string into a pattern fragment that matches its regex-special characters literally. It is for patterns, not replacement templates.",
+          "v": "re.escape"
+        },
+        {
+          "t": "new",
+          "note": "A backreference requires the same text as an earlier captured group. Numbered and named forms refer to the group; they do not rerun its pattern.",
+          "v": "\\1; (?P=name)"
+        },
+        {
+          "t": "new",
+          "note": "The regex exception used here for invalid pattern syntax. Catch a compile error without running a malformed pattern.",
+          "v": "re.error"
+        },
+        {
+          "t": "p",
+          "v": "A search term supplied as ordinary text may contain +, ., [, or other regex punctuation. If the intent is literal matching, escape it before adding it to a pattern; for a plain substring search, string methods remain simpler. A backreference can detect adjacent duplicate words because the second word must equal the first capture. This exercise uses ASCII letters and case-sensitive comparison; it is not a universal language tokenizer."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "re.search(re.escape(literal), text)\nr\"(?P<word>[A-Za-z]+)\\s+(?P=word)\""
+        },
+        {
+          "t": "code",
+          "v": "import re\nliteral = \"a+b\"\nprint(re.search(literal, \"aaab\").group(0))\nprint(re.search(re.escape(literal), \"aaab\") is None)\nprint(re.search(re.escape(literal), \"use a+b here\").group(0))\npattern = r\"\\b(?P<word>[A-Za-z]+)\\s+(?P=word)\\b\"\nfor found in re.finditer(pattern, \"go go then move move\"):\n    print(found.group(0), found.group(\"word\"))\n"
+        },
+        {
+          "t": "out",
+          "v": "aaab\nTrue\na+b\ngo go go\nmove move move"
+        },
+        {
+          "t": "p",
+          "v": "Unescaped a+b को अर्थ धेरै a अनि b हो; literal plus होइन। escape गरेपछि a+b नै चाहिन्छ। Duplicate-word pattern मा पहिलो word capture हुन्छ र दोस्रोले त्यही text दोहोर्‍याउनुपर्छ। Same shape भएका go र do ले match गर्दैनन्—same text हुनुपर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Use re.escape to fix a replacement template",
+          "right": "Use re.escape only for literal pattern fragments",
+          "why": "Replacement strings have their own syntax. Day 4 uses a callback to insert replacement text literally."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.2.3.build",
+          "v": "Search for the literal '[draft]' in a message and show its complete matched punctuation."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfound = re.search(re.escape(\"[draft]\"), \"file [draft] ready\")\nif found is not None:\n    print(found.group(0))\n",
+          "out": "[draft]",
+          "why": "Build walkthrough: Dynamic literal text is not a regex program: escape it or use literal string operations. Backreferences compare captured text, not just its shape. Handle invalid pattern syntax without running it."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.2.3.challenge",
+          "v": "Mini challenge: Use a numbered backreference to find 'yes yes', then catch the compile error for an unclosed bracket pattern."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfound = re.search(r\"\\b([A-Za-z]+)\\s+\\1\\b\", \"yes yes no\")\nif found is not None:\n    print(found.group(0))\ntry:\n    re.compile(\"[\")\nexcept re.error:\n    print(\"invalid pattern rejected\")\n",
+          "out": "yes yes\ninvalid pattern rejected",
+          "why": "Challenge check: Dynamic literal text is not a regex program: escape it or use literal string operations. Backreferences compare captured text, not just its shape. Handle invalid pattern syntax without running it."
+        },
+        {
+          "t": "try",
+          "q": "What is re.escape intended to prepare?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "A literal pattern fragment",
+          "why": "It escapes regex punctuation for use on the pattern side."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.2.3",
+            "quiz": [
+              {
+                "q": "What is re.escape intended to prepare?",
+                "options": [
+                  "A literal pattern fragment",
+                  "A replacement template",
+                  "An encrypted password"
+                ],
+                "correct": 0,
+                "why": "It escapes regex punctuation for use on the pattern side."
+              },
+              {
+                "q": "What does a backreference require?",
+                "options": [
+                  "A new match with the same pattern",
+                  "The text captured by the referenced group",
+                  "Any text with the same character count"
+                ],
+                "correct": 1,
+                "why": "A backreference reuses the captured value."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Dynamic literal text is not a regex program: escape it or use literal string operations. Backreferences compare captured text, not just its shape. Handle invalid pattern syntax without running it."
+        }
+      ]
+    }
+  ]
+},
+"22.3": {
+  "parts": [
+    {
+      "title": "1. Substitution: produce new text and count changes",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Substitution: produce new text and count changes"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Replace matches deliberately, preserve line breaks when needed, and retain the returned value."
+        },
+        {
+          "t": "new",
+          "note": "sub returns a new string with replacements. subn returns (new_string, replacement_count). Neither changes the original string in place.",
+          "v": "re.sub; re.subn"
+        },
+        {
+          "t": "new",
+          "note": "count limits the number of replacements when positive; its default 0 means replace all occurrences.",
+          "v": "count argument"
+        },
+        {
+          "t": "new",
+          "note": "\\s+ includes line breaks. [ \\t]+ collapses only space/tab runs, preserving line separators.",
+          "v": "Whitespace policy"
+        },
+        {
+          "t": "p",
+          "v": "Text cleaning changes information. Decide whether paragraph boundaries should survive before choosing a whitespace pattern. Replacing all \\s+ with one space flattens lines; that may be good for a one-line field but bad for paragraphs or logs. Assign the returned string. strip removes outer whitespace separately. Count replacements when you want an audit of the transformation."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "cleaned = re.sub(pattern, replacement, text)\ncleaned, count = re.subn(pattern, replacement, text)"
+        },
+        {
+          "t": "code",
+          "v": "import re\ntext = \"A   B\\nC\\t D\"\nflattened = re.sub(r\"\\s+\", \" \", text)\nkept_lines = re.sub(r\"[ \\t]+\", \" \", text)\nprint(repr(text))\nprint(repr(flattened))\nprint(repr(kept_lines))\nprint(re.subn(r\"[0-9]+\", \"#\", \"id12 id34\"))\nprint(re.sub(r\"[0-9]+\", \"#\", \"id12 id34\", count=1))\n"
+        },
+        {
+          "t": "out",
+          "v": "'A   B\\nC\\t D'\n'A B C D'\n'A B\\nC D'\n('id# id#', 2)\nid# id34"
+        },
+        {
+          "t": "p",
+          "v": "Original string उस्तै रहन्छ। flattened मा newline पनि space भयो; kept_lines मा newline बच्यो। subn ले cleaned text सँग दुई replacements भएको count दिन्छ। count=1 ले पहिलो numeric run मात्र बदल्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "re.sub(pattern, replacement, text)\nprint(text)",
+          "right": "text = re.sub(pattern, replacement, text)\nprint(text)",
+          "why": "Python strings are immutable; ignoring the returned result leaves your variable unchanged."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.3.0.build",
+          "v": "Normalise '  hello\\t\\tworld\\nagain  ' into one stripped line, and print the original with repr too."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ntext = \"  hello\\t\\tworld\\nagain  \"\ncleaned = re.sub(r\"\\s+\", \" \", text).strip()\nprint(repr(text))\nprint(cleaned)\n",
+          "out": "'  hello\\t\\tworld\\nagain  '\nhello world again",
+          "why": "Build walkthrough: Replacement returns a new string. Whitespace policy is a data decision; \\s includes newlines. subn counts replacements, not characters changed."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.3.0.challenge",
+          "v": "Mini challenge: Collapse spaces/tabs but preserve the newline in 'a   b\\nc\\t d'. Use subn to show how many runs changed."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ncleaned, count = re.subn(r\"[ \\t]+\", \" \", \"a   b\\nc\\t d\")\nprint(repr(cleaned))\nprint(count)\n",
+          "out": "'a b\\nc d'\n2",
+          "why": "Challenge check: Replacement returns a new string. Whitespace policy is a data decision; \\s includes newlines. subn counts replacements, not characters changed."
+        },
+        {
+          "t": "try",
+          "q": "Does re.sub modify its input string in place?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No; it returns a new string.",
+          "why": "Strings are immutable, and sub returns its transformed result."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.3.0",
+            "quiz": [
+              {
+                "q": "Does re.sub modify its input string in place?",
+                "options": [
+                  "No; it returns a new string.",
+                  "Yes",
+                  "Only when count=0"
+                ],
+                "correct": 0,
+                "why": "Strings are immutable, and sub returns its transformed result."
+              },
+              {
+                "q": "Which pattern collapses spaces/tabs while preserving newlines?",
+                "options": [
+                  ".",
+                  "[ \\t]+",
+                  "\\s+"
+                ],
+                "correct": 1,
+                "why": "\\s includes newline; the explicit space/tab class does not."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Replacement returns a new string. Whitespace policy is a data decision; \\s includes newlines. subn counts replacements, not characters changed."
+        }
+      ]
+    },
+    {
+      "title": "2. Replacement templates and callback functions",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Replacement templates and callback functions"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Reorder captured fields and compute replacement text with a function."
+        },
+        {
+          "t": "new",
+          "note": "In a replacement string these insert a captured group. The angle-bracket form makes the group reference unambiguous.",
+          "v": "\\g<name>; \\g<1> replacement template"
+        },
+        {
+          "t": "new",
+          "note": "Pass a function as the replacement. For every Match, re calls the function, which must return the replacement string.",
+          "v": "Replacement callback"
+        },
+        {
+          "t": "new",
+          "note": "A callback's returned string is inserted literally; it is not parsed as a backreference template.",
+          "v": "Literal callback result"
+        },
+        {
+          "t": "p",
+          "v": "A replacement template can rearrange a date's fields; that only changes its text shape, not its calendar validity. A callback can convert captured digits to int, compute a result, then return str(result). Returning an integer is an error: text replacement needs text. If replacement data contains backslashes intended literally, a callback avoids accidental interpretation as group references. Do not apply re.escape to replacement data."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "re.sub(pattern, r\"\\g<year>-\\g<month>-\\g<day>\", text)\nre.sub(pattern, replacement_function, text)"
+        },
+        {
+          "t": "code",
+          "v": "import re\npattern = r\"(?P<day>[0-9]{2})/(?P<month>[0-9]{2})/(?P<year>[0-9]{4})\"\nprint(re.sub(pattern, r\"\\g<year>-\\g<month>-\\g<day>\", \"on 10/10/2026\"))\ndef double(found):\n    return str(int(found.group(0)) * 2)\nprint(re.sub(r\"[0-9]+\", double, \"5 apples, 12 pears\"))\nliteral = r\"\\g<1>\"\nprint(re.sub(r\"X\", lambda found: literal, \"X X\"))\n"
+        },
+        {
+          "t": "out",
+          "v": "on 2026-10-10\n10 apples, 24 pears\n\\g<1> \\g<1>"
+        },
+        {
+          "t": "p",
+          "v": "Date template ले captured year/month/day नयाँ क्रमले राख्छ। double function हरेक numeric Match मा बोलिन्छ। अन्तिम callback ले backslash सहितको text जस्ताको तस्तै राख्छ; group reference झैँ चलाउँदैन। lambda Week 10 मा पढेको सानो function हो; चाहिँदा सामान्य def प्रयोग गर्न सकिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "def replacement(found): return int(found.group(0)) * 2",
+          "right": "def replacement(found): return str(int(found.group(0)) * 2)",
+          "why": "A callback must return a string when replacing within a str input."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.3.1.build",
+          "v": "Turn 'Sita=90 Hari=80' into '90:Sita 80:Hari' with named captures and a replacement template."
+        },
+        {
+          "t": "sol",
+          "code": "import re\npattern = r\"(?P<name>[A-Za-z]+)=(?P<score>[0-9]+)\"\nprint(re.sub(pattern, r\"\\g<score>:\\g<name>\", \"Sita=90 Hari=80\"))\n",
+          "out": "90:Sita 80:Hari",
+          "why": "Build walkthrough: Templates rearrange captured text; callbacks compute new text. Callback return values must be strings and are inserted literally. Date shape and calendar validity remain separate."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.3.1.challenge",
+          "v": "Mini challenge: Replace each price in 'price=100 price=250' with a price increased by 10, preserving the prefix. Write a named callback."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ndef increase(found):\n    amount = int(found.group(\"amount\"))\n    return \"price=\" + str(amount + 10)\nprint(re.sub(r\"price=(?P<amount>[0-9]+)\", increase, \"price=100 price=250\"))\n",
+          "out": "price=110 price=260",
+          "why": "Challenge check: Templates rearrange captured text; callbacks compute new text. Callback return values must be strings and are inserted literally. Date shape and calendar validity remain separate."
+        },
+        {
+          "t": "try",
+          "q": "What must a replacement callback return for str input?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "str",
+          "why": "Text substitution requires a string for each replacement."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.3.1",
+            "quiz": [
+              {
+                "q": "What must a replacement callback return for str input?",
+                "options": [
+                  "A list of Match objects",
+                  "str",
+                  "int"
+                ],
+                "correct": 1,
+                "why": "Text substitution requires a string for each replacement."
+              },
+              {
+                "q": "Is callback output parsed again as a replacement template?",
+                "options": [
+                  "Yes, always.",
+                  "Only if it has a digit",
+                  "No; it is inserted literally."
+                ],
+                "correct": 2,
+                "why": "A callback can safely insert literal backslash text without template interpretation."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Templates rearrange captured text; callbacks compute new text. Callback return values must be strings and are inserted literally. Date shape and calendar validity remain separate."
+        }
+      ]
+    },
+    {
+      "title": "3. Splitting and a small cleaning pipeline",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Splitting and a small cleaning pipeline"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Split on explicit delimiters and separate transformations into testable steps."
+        },
+        {
+          "t": "new",
+          "note": "split divides text at pattern matches. maxsplit limits splits, leaving the remaining suffix intact.",
+          "v": "re.split; maxsplit"
+        },
+        {
+          "t": "new",
+          "note": "A capturing group in the separator pattern causes separator text to appear in the result too.",
+          "v": "Capturing separators in split"
+        },
+        {
+          "t": "new",
+          "note": "A pipeline performs named steps in order. An idempotent cleaner produces the same result when applied again; test this where your policy expects it.",
+          "v": "Pipeline; idempotence"
+        },
+        {
+          "t": "p",
+          "v": "For a deliberately simple list format, split on comma or semicolon, strip each field, and decide explicitly whether empty fields matter. Do not drop an empty field in a table merely because it looks inconvenient. Our word-list exercise discards empty items by policy. A real CSV parser must handle quoting and embedded delimiters; Day 6 uses csv.reader instead. Whitespace, case and dates each need their own rule: upper/lower casing can destroy case-sensitive identifiers, and a date reorder needs calendar validation if correctness matters."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "parts = re.split(r\"[,;]\", text)\ncleaned = [part.strip() for part in parts]\nkept = [part for part in cleaned if part]"
+        },
+        {
+          "t": "code",
+          "v": "import re\ntext = \"one,two;three\"\nprint(re.split(r\"[,;]\", text))\nprint(re.split(r\"([,;])\", text))\nprint(re.split(r\"[,;]\", text, maxsplit=1))\ndef clean_words(value):\n    parts = re.split(r\"[,;]\", value.strip())\n    return [re.sub(r\"\\s+\", \" \", part).strip().lower()\n            for part in parts if part.strip()]\nprint(clean_words(\"  RED  APPLE; BLUE\\tBERRY,, \"))\n"
+        },
+        {
+          "t": "out",
+          "v": "['one', 'two', 'three']\n['one', ',', 'two', ';', 'three']\n['one', 'two;three']\n['red apple', 'blue berry']"
+        },
+        {
+          "t": "p",
+          "v": "पहिलो split ले delimiters हटाउँछ; parentheses भएको अर्को pattern ले ती पनि result मा राख्छ। maxsplit=1 पछि बाँकी suffix उस्तै रहन्छ। Function ले क्रमैसँग split, whitespace cleanup, outer trim र lowercase गर्छ। यो simple word list को policy हो, quoted CSV को होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Use re.split(',') to parse every possible CSV row",
+          "right": "Use csv.reader for CSV; use regex splitting only for your explicitly simple delimiter format",
+          "why": "A quoted field may contain a comma that is not a separator."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.3.2.build",
+          "v": "Clean '  Python ; REGEX,, text  ' into lowercase nonempty words with comma/semicolon separators."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ntext = \"  Python ; REGEX,, text  \"\nwords = [part.strip().lower() for part in re.split(r\"[,;]\", text)\n         if part.strip()]\nprint(words)\n",
+          "out": "['python', 'regex', 'text']",
+          "why": "Build walkthrough: Keep each cleaning policy explicit and testable. Captured separators change split output. Empty-field removal and lowercasing are decisions, not universally safe defaults."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.3.2.challenge",
+          "v": "Mini challenge: Write a one-line cleaner that strips edges, collapses whitespace and lowercases a label. Assert that cleaning twice gives the same result."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ndef clean_label(value):\n    return re.sub(r\"\\s+\", \" \", value).strip().lower()\nonce = clean_label(\"  MY\\t Study  \")\nassert clean_label(once) == once\nprint(once)\nprint(\"idempotence passed\")\n",
+          "out": "my study\nidempotence passed",
+          "why": "Challenge check: Keep each cleaning policy explicit and testable. Captured separators change split output. Empty-field removal and lowercasing are decisions, not universally safe defaults."
+        },
+        {
+          "t": "try",
+          "q": "Why are commas included in re.split(r'(,)', text)?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "The separator is captured.",
+          "why": "Capturing groups insert matched separator text into the result."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.3.2",
+            "quiz": [
+              {
+                "q": "Why are commas included in re.split(r'(,)', text)?",
+                "options": [
+                  "split always retains separators.",
+                  "DOTALL is enabled.",
+                  "The separator is captured."
+                ],
+                "correct": 2,
+                "why": "Capturing groups insert matched separator text into the result."
+              },
+              {
+                "q": "What does maxsplit=1 mean?",
+                "options": [
+                  "Split at most once; keep the remaining suffix.",
+                  "Keep only one output field.",
+                  "Remove one character."
+                ],
+                "correct": 0,
+                "why": "One split usually creates two pieces, with the second containing unsplit remainder."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Keep each cleaning policy explicit and testable. Captured separators change split output. Empty-field removal and lowercasing are decisions, not universally safe defaults."
+        }
+      ]
+    }
+  ]
+},
+"22.4": {
+  "parts": [
+    {
+      "title": "1. Greedy and lazy: where should a match stop?",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Greedy and lazy: where should a match stop?"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Trace consumption and choose a clear delimiter-aware pattern for simple flat text."
+        },
+        {
+          "t": "new",
+          "note": "Quantifiers such as * and + initially consume as much as possible while allowing the remainder of the pattern to succeed.",
+          "v": "Greedy repetition"
+        },
+        {
+          "t": "new",
+          "note": "Adding ? to a quantifier makes it try the smallest consumption first, expanding as necessary. This differs from ? used alone as optionality.",
+          "v": "Lazy repetition: *?; +?"
+        },
+        {
+          "t": "new",
+          "note": "For a simple flat delimiter format, a class such as [^>] explicitly refuses the closing delimiter rather than relying on wildcard preference.",
+          "v": "Negated delimiter class"
+        },
+        {
+          "t": "p",
+          "v": "On '<one> <two>', <.*> can span from the first opening angle bracket to the final closing one. <.*?> instead tries a shorter body first and finds each flat token. <[^>]*> states that the body cannot contain >. None of these is a complete HTML parser: quoted attributes, nesting, comments and malformed documents require a parser and a defined policy. The examples intentionally use flat, unescaped toy delimiters."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "<.*>     <.*?>     <[^>]*>"
+        },
+        {
+          "t": "code",
+          "v": "import re\ntext = \"<one> <two>\"\nprint(re.findall(r\"<.*>\", text))\nprint(re.findall(r\"<.*?>\", text))\nprint(re.findall(r\"<[^>]*>\", text))\nprint(re.findall(r\"<([^<>]*)>\", text))\n"
+        },
+        {
+          "t": "out",
+          "v": "['<one> <two>']\n['<one>', '<two>']\n['<one>', '<two>']\n['one', 'two']"
+        },
+        {
+          "t": "p",
+          "v": "Greedy body ले अन्तिम > सम्म जान सक्छ; lazy ले पहिलो सफल > मा रोकिने प्रयास गर्छ। Negated class ले > लाई body मा अनुमति दिँदैन। अन्तिम pattern मा capture भएका कारण tokens होइन, भित्रको content आउँछ। यो नियम flat अभ्यासका लागि हो; वास्तविक HTML मा blindly चलाउने होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "<.*> extracts each independent tag reliably",
+          "right": "For flat toy delimiters compare <.*?> and <[^>]*>; for actual HTML use a parser",
+          "why": "Greedy wildcard can overmatch, and HTML has structure beyond a flat delimiter regex."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.4.0.build",
+          "v": "Extract 'red' and 'blue' from '[red] [blue]' without including square brackets; reject nested brackets in the body by your class."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nprint(re.findall(r\"\\[([^\\[\\]]*)\\]\", \"[red] [blue]\"))\n",
+          "out": "['red', 'blue']",
+          "why": "Build walkthrough: Greedy and lazy are search preferences, not universal correctness or speed guarantees. State delimiter assumptions. Use a parser for real nested or quoted formats."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.4.0.challenge",
+          "v": "Mini challenge: Compare greedy and lazy quoted-string extraction on '\"one\" and \"two\"'. State that this toy format does not support escaped quotes."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ntext = '\"one\" and \"two\"'\nprint(re.findall(r'\".*\"', text))\nprint(re.findall(r'\".*?\"', text))\nprint(\"toy quotes only; escapes not supported\")\n",
+          "out": "['\"one\" and \"two\"']\n['\"one\"', '\"two\"']\ntoy quotes only; escapes not supported",
+          "why": "Challenge check: Greedy and lazy are search preferences, not universal correctness or speed guarantees. State delimiter assumptions. Use a parser for real nested or quoted formats."
+        },
+        {
+          "t": "try",
+          "q": "What does <.*> find in '<one> <two>'?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "<one> <two>",
+          "why": "The greedy dot-star can consume up to the last closing delimiter."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.4.0",
+            "quiz": [
+              {
+                "q": "What does <.*> find in '<one> <two>'?",
+                "options": [
+                  "<one> <two>",
+                  "Only <one>",
+                  "Only the word one"
+                ],
+                "correct": 0,
+                "why": "The greedy dot-star can consume up to the last closing delimiter."
+              },
+              {
+                "q": "Does lazy matching turn a regex into a full HTML parser?",
+                "options": [
+                  "Only with MULTILINE",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Preference for shorter matches does not implement HTML grammar."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Greedy and lazy are search preferences, not universal correctness or speed guarantees. State delimiter assumptions. Use a parser for real nested or quoted formats."
+        }
+      ]
+    },
+    {
+      "title": "2. Lookahead: inspect what follows without consuming it",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Lookahead: inspect what follows without consuming it"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Add a following-context condition while returning only the wanted text."
+        },
+        {
+          "t": "new",
+          "note": "At the current position, the following pattern must match. A lookahead consumes no characters in the outer match.",
+          "v": "(?=...): positive lookahead"
+        },
+        {
+          "t": "new",
+          "note": "The following pattern must not match. A negative condition excludes only what it states; it does not imply a word boundary.",
+          "v": "(?!...): negative lookahead"
+        },
+        {
+          "t": "p",
+          "v": "In [0-9]+(?= USD), the digits belong to the result and the following space/USD is a condition. The currency text is not part of group(0). cat(?!fish) prevents an immediate fish suffix, but catnap still matches its cat prefix. If you need a whole word, say so with appropriate boundaries. Combine restrictions carefully and test longer words as well as happy paths."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "[0-9]+(?= USD)\n\\bcat\\b(?!:)"
+        },
+        {
+          "t": "code",
+          "v": "import re\ntext = \"10 USD, 20 EUR, 30 USD\"\nfor found in re.finditer(r\"[0-9]+(?= USD)\", text):\n    print(found.group(0), found.span())\nprint(re.findall(r\"cat(?!fish)\", \"catfish catnap cat\"))\nprint(re.findall(r\"\\bcat\\b(?!:)\", \"cat: cat catfish\"))\n"
+        },
+        {
+          "t": "out",
+          "v": "10 (0, 2)\n30 (16, 18)\n['cat', 'cat']\n['cat']"
+        },
+        {
+          "t": "p",
+          "v": "Lookahead को USD text output मा समावेश हुँदैन। Negative lookahead ले fish मात्र निषेध गर्छ; catnap मा nap भएकाले अझै cat भेटिन्छ। Whole-word आवश्यकता छ भने boundary चाहिन्छ। cat: मा colon तत्काल पछाडि भएकाले अन्तिम pattern ले त्यो word हटाउँछ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "cat(?!fish) means only the whole word cat",
+          "right": "Use \\bcat\\b when a whole regex-word occurrence is required",
+          "why": "Negative lookahead rejects the stated suffix, not every other possible suffix."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.4.1.build",
+          "v": "Extract integer quantities immediately followed by ' kg' from '3 kg, 7 m, 12 kg'. Do not consume the unit."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nprint(re.findall(r\"[0-9]+(?= kg)\", \"3 kg, 7 m, 12 kg\"))\n",
+          "out": "['3', '12']",
+          "why": "Build walkthrough: Lookahead is a zero-width following-context condition. It does not consume the condition's text. Negative conditions are narrow; boundaries and format policies remain your responsibility."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.4.1.challenge",
+          "v": "Mini challenge: Find whole ASCII-letter words that are not immediately followed by a colon in 'name: ready status: good'."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nprint(re.findall(r\"\\b[A-Za-z]+\\b(?!:)\", \"name: ready status: good\"))\n",
+          "out": "['ready', 'good']",
+          "why": "Challenge check: Lookahead is a zero-width following-context condition. It does not consume the condition's text. Negative conditions are narrow; boundaries and format policies remain your responsibility."
+        },
+        {
+          "t": "try",
+          "q": "Does [0-9]+(?= USD) include USD in group(0)?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "Only the digit portion is consumed by the outer match."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.4.1",
+            "quiz": [
+              {
+                "q": "Does [0-9]+(?= USD) include USD in group(0)?",
+                "options": [
+                  "Only if USD is uppercase",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Only the digit portion is consumed by the outer match."
+              },
+              {
+                "q": "Does cat(?!fish) match a prefix of catnap?",
+                "options": [
+                  "No",
+                  "Only when escaped",
+                  "Yes"
+                ],
+                "correct": 2,
+                "why": "The immediate suffix is nap, not fish; no whole-word boundary was requested."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Lookahead is a zero-width following-context condition. It does not consume the condition's text. Negative conditions are narrow; boundaries and format policies remain your responsibility."
+        }
+      ]
+    },
+    {
+      "title": "3. Lookbehind: fixed-width context on the left",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Lookbehind: fixed-width context on the left"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Use a fixed-width preceding condition and replace variable-width lookbehind with captures."
+        },
+        {
+          "t": "new",
+          "note": "Positive/negative lookbehind test text immediately before the current position without consuming it.",
+          "v": "(?<=...); (?<!...)"
+        },
+        {
+          "t": "new",
+          "note": "Python re requires the inside of a lookbehind to have a fixed length. A variable-length + repetition inside it is rejected.",
+          "v": "Fixed-width restriction"
+        },
+        {
+          "t": "new",
+          "note": "When preceding context has variable length, match the context normally and capture just the field you want back.",
+          "v": "Capture the prefix instead"
+        },
+        {
+          "t": "p",
+          "v": "USD plus one space is four characters, so (?<=USD ) has a fixed width. USD followed by one-or-more whitespace characters has variable width and is not accepted as a Python re lookbehind. You do not need a new package to solve that exercise: match the variable prefix normally, then return a named amount capture. Do not disguise the prefix as fixed width if your actual input permits multiple spaces."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "(?<=USD )[0-9]+\nUSD\\s+(?P<amount>[0-9]+)"
+        },
+        {
+          "t": "code",
+          "v": "import re\nprint(re.findall(r\"(?<=USD )[0-9]+\", \"USD 10 EUR 20 USD 30\"))\ntry:\n    re.compile(r\"(?<=USD\\s+)[0-9]+\")\nexcept re.error:\n    print(\"variable-width lookbehind rejected\")\npattern = r\"USD\\s+(?P<amount>[0-9]+)\"\nfor found in re.finditer(pattern, \"USD  10 and USD\\t30\"):\n    print(found.group(\"amount\"))\n"
+        },
+        {
+          "t": "out",
+          "v": "['10', '30']\nvariable-width lookbehind rejected\n10\n30"
+        },
+        {
+          "t": "p",
+          "v": "Fixed-width lookbehind ले amount मात्र निकाल्छ। Compile भएको बेला variable-width pattern reject हुन्छ; यसलाई matching failure भनेर नबुझ। वैकल्पिक pattern मा पूरा prefix match हुन्छ तर हामी amount group मात्र लिन्छौँ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "(?<=USD\\s+)[0-9]+",
+          "right": "USD\\s+(?P<amount>[0-9]+)",
+          "why": "Standard re rejects variable-width lookbehind; consuming the prefix and selecting a capture expresses the same extraction goal."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.4.2.build",
+          "v": "Extract amounts after literal 'NPR ' using fixed-width positive lookbehind."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nprint(re.findall(r\"(?<=NPR )[0-9]+\", \"NPR 500 USD 20 NPR 750\"))\n",
+          "out": "['500', '750']",
+          "why": "Build walkthrough: Lookbehind inspects preceding context without consuming it, but Python re requires fixed width. A normal prefix match plus a named capture is often simpler for variable-length context."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.4.2.challenge",
+          "v": "Mini challenge: Support one or more spaces or tabs after NPR without lookbehind. Return only the named amount."
+        },
+        {
+          "t": "sol",
+          "code": "import re\npattern = r\"NPR[ \\t]+(?P<amount>[0-9]+)\"\nfor found in re.finditer(pattern, \"NPR  500; NPR\\t750\"):\n    print(found.group(\"amount\"))\n",
+          "out": "500\n750",
+          "why": "Challenge check: Lookbehind inspects preceding context without consuming it, but Python re requires fixed width. A normal prefix match plus a named capture is often simpler for variable-length context."
+        },
+        {
+          "t": "try",
+          "q": "Can Python re compile (?<=USD\\s+)[0-9]+?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No; the lookbehind has variable width.",
+          "why": "+ allows different lengths in the lookbehind."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.4.2",
+            "quiz": [
+              {
+                "q": "Can Python re compile (?<=USD\\s+)[0-9]+?",
+                "options": [
+                  "Yes, always.",
+                  "Only with DOTALL",
+                  "No; the lookbehind has variable width."
+                ],
+                "correct": 2,
+                "why": "+ allows different lengths in the lookbehind."
+              },
+              {
+                "q": "How can you extract after a variable-length prefix?",
+                "options": [
+                  "Match the prefix and select a named captured field.",
+                  "Ignore all compile errors.",
+                  "Use a greedy dot for every field."
+                ],
+                "correct": 0,
+                "why": "Capturing the desired field avoids the fixed-width lookbehind restriction."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Lookbehind inspects preceding context without consuming it, but Python re requires fixed width. A normal prefix match plus a named capture is often simpler for variable-length context."
+        }
+      ]
+    },
+    {
+      "title": "4. Backtracking, bounded inputs and simpler patterns",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Backtracking, bounded inputs and simpler patterns"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Recognise ambiguous repetition and define limits without running a pathological example."
+        },
+        {
+          "t": "new",
+          "note": "A regex engine may retry earlier choices when a later part fails. Overlapping nested repetitions can create a very large number of alternatives.",
+          "v": "Backtracking"
+        },
+        {
+          "t": "new",
+          "note": "Certain ambiguous patterns can take excessive time on crafted failing input. Pattern shape and input size both matter.",
+          "v": "Catastrophic backtracking"
+        },
+        {
+          "t": "new",
+          "note": "Standard re does not accept a per-match timeout argument. Limit input lengths and prefer simple bounded patterns; a hard timeout needs isolation or other deliberate tooling.",
+          "v": "Input bound; no built-in per-match timeout"
+        },
+        {
+          "t": "p",
+          "v": "Consider (a+)+$ conceptually: the same run of a characters can be divided among inner repetitions in many ways. A failing suffix can force extensive retrying. We intentionally do not run a large dangerous example. Making a quantifier lazy is not proof of linear time. For a small identifier, say exactly what is permitted and limit its length. Validate with explicit exceptions, not assertions that may disappear under python -O. A length cap is one defence, not a proof that arbitrary untrusted regex is safe."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "if len(value) > limit:\n    raise ValueError(\"input too long\")\nvalid = re.fullmatch(r\"[A-Z]{1,3}[0-9]{1,4}\", value) is not None"
+        },
+        {
+          "t": "code",
+          "v": "import re\ndef valid_code(value):\n    if len(value) > 7:\n        return False\n    return re.fullmatch(r\"[A-Z]{1,3}[0-9]{1,4}\", value) is not None\nfor value in (\"A1\", \"ABC1234\", \"ABCD1\", \"A\", \"A\" * 100):\n    print(repr(value[:12]), valid_code(value))\nprint(\"nested ambiguous repetition discussed, not executed\")\n"
+        },
+        {
+          "t": "out",
+          "v": "'A1' True\n'ABC1234' True\n'ABCD1' False\n'A' False\n'AAAAAAAAAAAA' False\nnested ambiguous repetition discussed, not executed"
+        },
+        {
+          "t": "p",
+          "v": "Allowed code मा 1–3 uppercase letters र 1–4 digits हुन्छन्, त्यसैले maximum 7 हो। लामो input regex चलाउनुअघि reject हुन्छ। Ambiguous nested example पढेर यसको समस्या बुझ; त्यसलाई लामो failing input मा चलाउन आवश्यक छैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Changing (a+)+$ to a lazy version guarantees safe runtime",
+          "right": "Remove ambiguous nesting, constrain the format, and limit input",
+          "why": "Lazy preference alone does not eliminate costly backtracking. Standard re has no per-match timeout parameter."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.4.3.build",
+          "v": "Validate a lowercase ASCII username of length 3 through 12, rejecting shorter, longer and uppercase examples."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ndef valid_user(value):\n    return len(value) <= 12 and re.fullmatch(r\"[a-z]{3,12}\", value) is not None\nfor value in (\"sita\", \"ab\", \"Sita\", \"a\" * 13):\n    print(value, valid_user(value))\n",
+          "out": "sita True\nab False\nSita False\naaaaaaaaaaaaa False",
+          "why": "Build walkthrough: Simple bounded patterns and ordinary string checks are often best. Avoid overlapping nested repetition and unbounded untrusted inputs. Do not promise a timeout that standard re does not provide."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.4.3.challenge",
+          "v": "Mini challenge: Check an ASCII 4-digit PIN with a direct length/character test, then compare it with a bounded regex."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfor value in (\"1234\", \"12\", \"१२३४\", \"12x4\"):\n    direct = len(value) == 4 and all(\"0\" <= ch <= \"9\" for ch in value)\n    regex = re.fullmatch(r\"[0-9]{4}\", value) is not None\n    assert direct == regex\n    print(value, direct)\n",
+          "out": "1234 True\n12 False\n१२३४ False\n12x4 False",
+          "why": "Challenge check: Simple bounded patterns and ordinary string checks are often best. Avoid overlapping nested repetition and unbounded untrusted inputs. Do not promise a timeout that standard re does not provide."
+        },
+        {
+          "t": "try",
+          "q": "Does making a pattern lazy guarantee linear runtime?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "Matching preference does not prove computational complexity."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.4.3",
+            "quiz": [
+              {
+                "q": "Does making a pattern lazy guarantee linear runtime?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only on Windows"
+                ],
+                "correct": 0,
+                "why": "Matching preference does not prove computational complexity."
+              },
+              {
+                "q": "Does standard re.search accept timeout=1?",
+                "options": [
+                  "Only for compiled patterns",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "A hard deadline needs a different explicitly designed mechanism, such as process isolation."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Simple bounded patterns and ordinary string checks are often best. Avoid overlapping nested repetition and unbounded untrusted inputs. Do not promise a timeout that standard re does not provide."
+        }
+      ]
+    }
+  ]
+},
+"22.5": {
+  "parts": [
+    {
+      "title": "1. Email shapes and URL candidates: honest limits",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Email shapes and URL candidates: honest limits"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Separate candidate extraction, simple shape checks, and real-world validity."
+        },
+        {
+          "t": "new",
+          "note": "The standard-library URL parser separates scheme, network location, path, query and fragment. Parsing a URL does not prove it is safe or reachable.",
+          "v": "urllib.parse.urlsplit"
+        },
+        {
+          "t": "new",
+          "note": "A regex can locate possible values for a later parser. A candidate is not automatically valid.",
+          "v": "Candidate extraction"
+        },
+        {
+          "t": "new",
+          "note": "rstrip removes any run of characters from the supplied set at the right edge; it does not remove one fixed suffix.",
+          "v": "rstrip(character_set)"
+        },
+        {
+          "t": "p",
+          "v": "For practice, accept a simple email shape with non-whitespace text on both sides of one @ and a later dot. This deliberately limited rule is not a complete internet email-address validator, and cannot establish mailbox ownership. For links, extract http/https candidates and inspect urlsplit fields. Our trailing-punctuation trimming is only a prose heuristic: a real URL can legitimately end in a dot, comma or parenthesis, so trimming may alter it. These examples make no network requests."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "re.fullmatch(r\"[^\\s@]+@[^\\s@]+\\.[^\\s@]+\", value)\nurlsplit(candidate)"
+        },
+        {
+          "t": "code",
+          "v": "import re\nfrom urllib.parse import urlsplit\nemail_shape = r\"[^\\s@]+@[^\\s@]+\\.[^\\s@]+\"\nfor value in (\"sita@example.com\", \"bad@@example.com\", \"no-at.example\"):\n    print(value, re.fullmatch(email_shape, value) is not None)\ntext = \"Read https://example.com/a, then http://example.org/b.\"\nfor candidate in re.findall(r\"https?://[^\\s]+\", text):\n    candidate = candidate.rstrip(\".,)\")\n    parsed = urlsplit(candidate)\n    print(parsed.scheme, parsed.hostname, parsed.path)\n"
+        },
+        {
+          "t": "out",
+          "v": "sita@example.com True\nbad@@example.com False\nno-at.example False\nhttps example.com /a\nhttp example.org /b"
+        },
+        {
+          "t": "p",
+          "v": "Regex ले candidate text निकाल्छ; urlsplit ले त्यसको भाग छुट्याउँछ। Hostname देखियो भन्दैमा link सुरक्षित वा चल्ने हो भन्ने प्रमाण होइन। Email format मिल्यो भन्दैमा account अस्तित्वमा छ भन्ने पनि होइन। यहाँ real addresses मा message वा request पठाइँदैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "A short regex proves every matching email/URL is real and safe",
+          "right": "State the shape policy, parse candidates, and keep ownership/reachability/safety checks separate",
+          "why": "Text matching and parsing do not perform real-world verification."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.5.0.build",
+          "v": "Test the limited email shape against a valid-looking address, missing dot, double @ and an embedded space."
+        },
+        {
+          "t": "sol",
+          "code": "import re\npattern = r\"[^\\s@]+@[^\\s@]+\\.[^\\s@]+\"\nfor value in (\"a@b.co\", \"a@b\", \"a@@b.co\", \"a b@c.co\"):\n    print(repr(value), re.fullmatch(pattern, value) is not None)\n",
+          "out": "'a@b.co' True\n'a@b' False\n'a@@b.co' False\n'a b@c.co' False",
+          "why": "Build walkthrough: Be honest about deliberately limited email checks and prose URL heuristics. Parsing is not validation, safety or ownership. Preserve raw candidates when cleaning would lose information."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.5.0.challenge",
+          "v": "Mini challenge: Extract two HTTP(S) candidates and print each query separately. Preserve the exact candidates rather than automatically trimming punctuation."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfrom urllib.parse import urlsplit\ntext = \"https://example.com/search?q=python http://example.org/page?id=2\"\nfor candidate in re.findall(r\"https?://[^\\s]+\", text):\n    print(candidate, urlsplit(candidate).query)\n",
+          "out": "https://example.com/search?q=python q=python\nhttp://example.org/page?id=2 id=2",
+          "why": "Challenge check: Be honest about deliberately limited email checks and prose URL heuristics. Parsing is not validation, safety or ownership. Preserve raw candidates when cleaning would lose information."
+        },
+        {
+          "t": "try",
+          "q": "Does matching the simple email shape prove a mailbox exists?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "Existence and ownership are outside this text-format check."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.5.0",
+            "quiz": [
+              {
+                "q": "Does matching the simple email shape prove a mailbox exists?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only if it ends in .com"
+                ],
+                "correct": 0,
+                "why": "Existence and ownership are outside this text-format check."
+              },
+              {
+                "q": "What does rstrip('.,)') remove?",
+                "options": [
+                  "All punctuation anywhere",
+                  "Any trailing run of those characters",
+                  "Only the exact suffix '.,)'"
+                ],
+                "correct": 1,
+                "why": "rstrip uses a character set, and can alter legitimate URL endings."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Be honest about deliberately limited email checks and prose URL heuristics. Parsing is not validation, safety or ownership. Preserve raw candidates when cleaning would lose information."
+        }
+      ]
+    },
+    {
+      "title": "2. Dates: format first, calendar second",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Dates: format first, calendar second"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Normalise three chosen date layouts while rejecting impossible calendar dates."
+        },
+        {
+          "t": "new",
+          "note": "date(year, month, day) represents a calendar date and raises ValueError for an impossible combination.",
+          "v": "datetime.date"
+        },
+        {
+          "t": "new",
+          "note": "isoformat produces a consistent YYYY-MM-DD representation of a validated date.",
+          "v": "date.isoformat()"
+        },
+        {
+          "t": "new",
+          "note": "Here slashes/dots mean DD/MM/YYYY and DD.MM.YYYY. These are not guessed from locale or interpreted as month-first.",
+          "v": "A declared date-order policy"
+        },
+        {
+          "t": "p",
+          "v": "A digit-count regex happily captures 2026-02-31; the calendar must reject it. Accept exactly ISO YYYY-MM-DD, day-first DD/MM/YYYY, and day-first DD.MM.YYYY in this exercise. Compile three patterns with the same named fields, convert those strings to int, and construct date. Catch the intended ValueError at the caller. Do not silently swap day and month when a date is ambiguous."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "fields = found.groupdict()\nchecked = date(int(fields[\"year\"]), int(fields[\"month\"]), int(fields[\"day\"]))\nchecked.isoformat()"
+        },
+        {
+          "t": "code",
+          "v": "import re\nfrom datetime import date\npatterns = [\n    r\"(?P<year>[0-9]{4})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})\",\n    r\"(?P<day>[0-9]{2})/(?P<month>[0-9]{2})/(?P<year>[0-9]{4})\",\n    r\"(?P<day>[0-9]{2})\\.(?P<month>[0-9]{2})\\.(?P<year>[0-9]{4})\",\n]\ndef normalise(value):\n    for pattern in patterns:\n        found = re.fullmatch(pattern, value)\n        if found is not None:\n            fields = found.groupdict()\n            checked = date(int(fields[\"year\"]), int(fields[\"month\"]), int(fields[\"day\"]))\n            return checked.isoformat()\n    raise ValueError(\"unsupported date format\")\nfor value in (\"2026-10-09\", \"09/10/2026\", \"09.10.2026\", \"2026-02-31\"):\n    try:\n        print(value, normalise(value))\n    except ValueError:\n        print(value, \"rejected\")\n"
+        },
+        {
+          "t": "out",
+          "v": "2026-10-09 2026-10-09\n09/10/2026 2026-10-09\n09.10.2026 2026-10-09\n2026-02-31 rejected"
+        },
+        {
+          "t": "p",
+          "v": "तीन layouts बाट एउटै field names पाइन्छन्, त्यसैले एउटै date constructor प्रयोग हुन्छ। 09/10/2026 को हाम्रो policy October 9 हो। date ले February 31 reject गर्छ; regex ले shape जाँच्यो भन्दैमा असम्भव date बच्दैन। isoformat ले valid results एउटै क्रममा देखाउँछ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Regex digits alone prove a date is valid",
+          "right": "Construct datetime.date after capturing numeric fields",
+          "why": "Calendar rules, including leap years, require semantic validation."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.5.1.build",
+          "v": "Compare February 29 in leap year 2024 and non-leap year 2025 using date, catching invalid input."
+        },
+        {
+          "t": "sol",
+          "code": "from datetime import date\nfor year in (2024, 2025):\n    try:\n        print(date(year, 2, 29).isoformat())\n    except ValueError:\n        print(year, \"invalid leap day\")\n",
+          "out": "2024-02-29\n2025 invalid leap day",
+          "why": "Build walkthrough: Separate text shape, numeric conversion and calendar validation. Declare date order; never guess ambiguous layouts. Keep original text available when reporting a rejected transformation."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.5.1.challenge",
+          "v": "Mini challenge: Create a cleaning pipeline for '  On\\t09/10/2026  '. Collapse whitespace, lowercase the prose, capture the date and replace it through a calendar-validating callback."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfrom datetime import date\ndef replace_date(found):\n    checked = date(int(found.group(\"year\")), int(found.group(\"month\")),\n                   int(found.group(\"day\")))\n    return checked.isoformat()\ntext = \"  On\\t09/10/2026  \"\ntext = re.sub(r\"\\s+\", \" \", text).strip().lower()\npattern = r\"\\b(?P<day>[0-9]{2})/(?P<month>[0-9]{2})/(?P<year>[0-9]{4})\\b\"\nprint(re.sub(pattern, replace_date, text))\n",
+          "out": "on 2026-10-09",
+          "why": "Challenge check: Separate text shape, numeric conversion and calendar validation. Declare date order; never guess ambiguous layouts. Keep original text available when reporting a rejected transformation."
+        },
+        {
+          "t": "try",
+          "q": "Which step rejects February 31?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "datetime.date construction",
+          "why": "The date constructor applies the calendar rules."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.5.1",
+            "quiz": [
+              {
+                "q": "Which step rejects February 31?",
+                "options": [
+                  "lower()",
+                  "datetime.date construction",
+                  "A two-digit day capture"
+                ],
+                "correct": 1,
+                "why": "The date constructor applies the calendar rules."
+              },
+              {
+                "q": "Under our stated policy, what is 09/10/2026?",
+                "options": [
+                  "September 10, 2026",
+                  "The parser guesses",
+                  "October 9, 2026"
+                ],
+                "correct": 2,
+                "why": "The declared slash format is day/month/year."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Separate text shape, numeric conversion and calendar validation. Declare date order; never guess ambiguous layouts. Keep original text available when reporting a rejected transformation."
+        }
+      ]
+    },
+    {
+      "title": "3. CSV and HTML: choose a parser for structured text",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. CSV and HTML: choose a parser for structured text"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Recognise quoted/nested formats and use standard-library parsers appropriately."
+        },
+        {
+          "t": "new",
+          "note": "csv.reader understands CSV delimiter and quoting rules. StringIO presents a string as an in-memory text file for that reader.",
+          "v": "csv.reader; io.StringIO"
+        },
+        {
+          "t": "new",
+          "note": "HTMLParser is a standard-library event parser. A subclass overrides handle_data to receive text pieces; it does not create a browser-rendered page.",
+          "v": "html.parser.HTMLParser; handle_data"
+        },
+        {
+          "t": "new",
+          "note": "Character references such as &amp; are converted in ordinary text when this parser option is enabled. It is not an HTML sanitizer.",
+          "v": "convert_charrefs=True"
+        },
+        {
+          "t": "p",
+          "v": "The row Book,\"red, blue\",12 has three CSV fields, not four: the comma inside quotes is data. Use csv.reader and, for a real file, with open(path, newline='', encoding='utf-8') as handle. For simple HTML text collection, a subclass can accumulate data callbacks. This reuses Week 18 classes and Week 19 method overriding. Our toy collector also receives some text you might not want, such as script content; it is not a general visible-text extractor or sanitizer."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "list(csv.reader(io.StringIO(text)))\nclass TextCollector(HTMLParser):\n    def handle_data(self, data):\n        self.parts.append(data)"
+        },
+        {
+          "t": "code",
+          "v": "import csv\nimport io\nfrom html.parser import HTMLParser\ntext = 'Book,\"red, blue\",12\\nPen,\"say \"\"hello\"\"\",3\\n'\nfor row in csv.reader(io.StringIO(text)):\n    print(row)\nclass TextCollector(HTMLParser):\n    def __init__(self):\n        super().__init__(convert_charrefs=True)\n        self.parts = []\n    def handle_data(self, data):\n        self.parts.append(data)\ncollector = TextCollector()\ncollector.feed(\"<p>Hello <b>world</b> &amp; all.</p>\")\ncollector.close()\nprint(\"\".join(collector.parts))\n"
+        },
+        {
+          "t": "out",
+          "v": "['Book', 'red, blue', '12']\n['Pen', 'say \"hello\"', '3']\nHello world & all."
+        },
+        {
+          "t": "p",
+          "v": "StringIO ले memory को text लाई file-जस्तो reader मा दिन्छ। CSV parser ले quoted comma र doubled quote नियम बुझ्छ। HTML subclass मा super().__init__ ले parent setup गर्छ; प्रत्येक text callback list मा राख्छ। Empty-string join ले original text chunks जोड्छ। Word spacing, hidden text र malformed HTML को policy छुट्टै चाहिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Split every CSV line at each comma; strip HTML with <.*?>",
+          "right": "Use csv.reader for CSV and a parser for actual HTML",
+          "why": "Quoted delimiters and structured markup exceed the assumptions of these flat regex recipes."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.5.2.build",
+          "v": "Parse 'Sita,\"Kathmandu, Nepal\",90' into three fields, then convert the final score to int."
+        },
+        {
+          "t": "sol",
+          "code": "import csv\nimport io\nrow = next(csv.reader(io.StringIO('Sita,\"Kathmandu, Nepal\",90')))\nprint(row)\nprint(int(row[2]) + 1)\n",
+          "out": "['Sita', 'Kathmandu, Nepal', '90']\n91",
+          "why": "Build walkthrough: Regex is useful for local patterns, not every text grammar. csv.reader handles quoting; HTMLParser handles markup events. Parsing, text collection and sanitizing are distinct jobs."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.5.2.challenge",
+          "v": "Mini challenge: Collect text from '<p>One &amp; <b>two</b>.</p>' with HTMLParser. Compare with the original markup and explain that this is not sanitization."
+        },
+        {
+          "t": "sol",
+          "code": "from html.parser import HTMLParser\nclass TextCollector(HTMLParser):\n    def __init__(self):\n        super().__init__(convert_charrefs=True)\n        self.parts = []\n    def handle_data(self, data):\n        self.parts.append(data)\noriginal = \"<p>One &amp; <b>two</b>.</p>\"\ncollector = TextCollector()\ncollector.feed(original)\ncollector.close()\nprint(original)\nprint(\"\".join(collector.parts))\n",
+          "out": "<p>One &amp; <b>two</b>.</p>\nOne & two.",
+          "why": "Challenge check: Regex is useful for local patterns, not every text grammar. csv.reader handles quoting; HTMLParser handles markup events. Parsing, text collection and sanitizing are distinct jobs."
+        },
+        {
+          "t": "try",
+          "q": "Why not split CSV at every comma?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "A quoted field can contain a comma.",
+          "why": "Quoted commas belong inside a field; a CSV parser interprets that grammar."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.5.2",
+            "quiz": [
+              {
+                "q": "Why not split CSV at every comma?",
+                "options": [
+                  "Commas are never delimiters.",
+                  "CSV has no fields.",
+                  "A quoted field can contain a comma."
+                ],
+                "correct": 2,
+                "why": "Quoted commas belong inside a field; a CSV parser interprets that grammar."
+              },
+              {
+                "q": "Does our HTML text collector sanitize HTML for display?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only if it calls close()"
+                ],
+                "correct": 0,
+                "why": "Collecting data events is not a security or complete visible-text policy."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Regex is useful for local patterns, not every text grammar. csv.reader handles quoting; HTMLParser handles markup events. Parsing, text collection and sanitizing are distinct jobs."
+        }
+      ]
+    },
+    {
+      "title": "4. Complete project: parse and analyse a server log",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Complete project: parse and analyse a server log"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Build a checked parser, keep rejected line numbers, and compute three clearly defined reports."
+        },
+        {
+          "t": "new",
+          "note": "Counter counts occurrences from an iterable. Here it counts error types, request hours, and IPs of records whose status is at least 400.",
+          "v": "collections.Counter"
+        },
+        {
+          "t": "new",
+          "note": "fromisoformat validates our captured ISO timestamp. strftime formats it into an hour bucket; %Y/%m/%d/%H mean year/month/day/hour.",
+          "v": "datetime.fromisoformat; strftime"
+        },
+        {
+          "t": "new",
+          "note": "ip_address validates an IP address instead of trusting a digits-and-dots shape. version identifies IPv4 vs IPv6; this declared log format permits IPv4 only.",
+          "v": "ipaddress.ip_address; version"
+        },
+        {
+          "t": "new",
+          "note": "Python joins adjacent string literals inside parentheses. This lets the compiled pattern show one named field per line without changing its required spaces.",
+          "v": "Adjacent string literals; named-group log schema"
+        },
+        {
+          "t": "new",
+          "note": "The sort key (-count, ip) puts larger counts first and uses IP text as a consistent tie-breaker. This is lexical tie-breaking, not numeric IP order.",
+          "v": "Deterministic report ordering"
+        },
+        {
+          "t": "p",
+          "v": "Use the exact log grammar shown below: naive ISO timestamp, one space, INFO/WARN/ERROR, IPv4 field, three-digit HTTP status, ASCII-letter/underscore error type, and a message. Each physical line is one record. fullmatch checks shape; datetime, ip_address and the status range check semantics. Only line-ending CR/LF is stripped, so meaningful message spaces remain. Reject malformed lines with their 1-based line numbers and continue. Reports have explicit meanings: errors by type count level ERROR; requests by hour count all valid records; top 'offending' IPs count status >= 400, which does not establish malicious intent. Timestamps have no timezone here. The 4096-character cap bounds regex input after the line is read; this teaching implementation retains valid rows and rejects in lists, so it is not a constant-memory analyser for arbitrarily large files."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "match = LOG_PATTERN.fullmatch(line)\nfields = match.groupdict()\n# validate date/IP/status, then count selected fields"
+        },
+        {
+          "t": "code",
+          "v": "import re\nfrom collections import Counter\nfrom datetime import datetime\nfrom ipaddress import ip_address\n\nLOG_PATTERN = re.compile(\n    r\"(?P<time>[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}) \"\n    r\"(?P<level>INFO|WARN|ERROR) \"\n    r\"ip=(?P<ip>[0-9.]+) \"\n    r\"status=(?P<status>[0-9]{3}) \"\n    r\"type=(?P<type>[A-Za-z_]+) \"\n    r\"message=(?P<message>.*)\"\n)\n\ndef parse_line(line):\n    if len(line) > 4096:\n        raise ValueError(\"line too long\")\n    found = LOG_PATTERN.fullmatch(line)\n    if found is None:\n        raise ValueError(\"bad log format\")\n    row = found.groupdict()\n    stamp = datetime.fromisoformat(row[\"time\"])\n    address = ip_address(row[\"ip\"])\n    if address.version != 4:\n        raise ValueError(\"IPv4 required\")\n    status = int(row[\"status\"])\n    if not 100 <= status <= 599:\n        raise ValueError(\"invalid status\")\n    row[\"ip\"] = str(address)\n    row[\"status\"] = status\n    row[\"hour\"] = stamp.strftime(\"%Y-%m-%dT%H\")\n    return row\n\ndef analyse(lines):\n    rows, rejected = [], []\n    for number, line in enumerate(lines, 1):\n        try:\n            rows.append(parse_line(line.rstrip(\"\\r\\n\")))\n        except ValueError as error:\n            rejected.append((number, str(error)))\n    errors = Counter(row[\"type\"] for row in rows if row[\"level\"] == \"ERROR\")\n    hours = Counter(row[\"hour\"] for row in rows)\n    offending = Counter(row[\"ip\"] for row in rows if row[\"status\"] >= 400)\n    top_ips = sorted(offending.items(), key=lambda item: (-item[1], item[0]))\n    return rows, rejected, errors, hours, top_ips\nsample = [\n    \"2026-10-10T09:00:00 INFO ip=192.0.2.1 status=200 type=ok message=ready\",\n    \"2026-10-10T09:10:00 ERROR ip=192.0.2.2 status=500 type=disk message=disk full\",\n    \"2026-10-10T10:00:00 WARN ip=192.0.2.1 status=404 type=missing message=not found\",\n    \"2026-10-10T10:05:00 ERROR ip=192.0.2.2 status=503 type=disk message=retry later\",\n    \"2026-02-31T10:00:00 INFO ip=192.0.2.3 status=200 type=ok message=bad date\",\n    \"malformed line\",\n]\nrows, rejected, errors, hours, top_ips = analyse(sample)\nprint(\"valid:\", len(rows), \"rejected:\", len(rejected))\nprint(\"errors by type:\", sorted(errors.items()))\nprint(\"requests by hour:\", sorted(hours.items()))\nprint(\"IPs with status >= 400:\", top_ips)\nprint(\"rejected line numbers:\", [number for number, reason in rejected])\n"
+        },
+        {
+          "t": "out",
+          "v": "valid: 4 rejected: 2\nerrors by type: [('disk', 2)]\nrequests by hour: [('2026-10-10T09', 2), ('2026-10-10T10', 2)]\nIPs with status >= 400: [('192.0.2.2', 2), ('192.0.2.1', 1)]\nrejected line numbers: [5, 6]"
+        },
+        {
+          "t": "p",
+          "v": "पहिले pattern लाई field अनुसार पढ: time → level → ip → status → type → message। parse_line ले format नमिले तुरुन्त error उठाउँछ। मिल्यो भने captures अझै strings हुन्; datetime/IP validation र int conversion पछि record बनाउँछ। analyse को enumerate(..., 1) ले original line number राख्छ। try/except ले एउटा bad line का कारण बाँकी file रोकिँदैन। Counters मा कुन records गनिने भन्ने filter छुट्टै छ। sorted ले report को क्रम स्थिर बनाउँछ। चार valid records र दुई rejected छन्; disk errors दुई, प्रत्येक hour मा दुई requests, 192.0.2.2 का दुई र 192.0.2.1 को एक status>=400 record छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Capture a timestamp and IP, then assume both are valid",
+          "right": "Validate with datetime.fromisoformat and ip_address; enforce status range explicitly",
+          "why": "2026-02-31 and 999.0.0.1 fit simple shapes but are not valid values. Keep shape checks and semantic checks separate."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.5.3.build",
+          "v": "Test invalid IP, status 999, impossible date, malformed layout and overlong line; each must raise ValueError. Also prove one valid record is accepted."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfrom collections import Counter\nfrom datetime import datetime\nfrom ipaddress import ip_address\n\nLOG_PATTERN = re.compile(\n    r\"(?P<time>[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}) \"\n    r\"(?P<level>INFO|WARN|ERROR) \"\n    r\"ip=(?P<ip>[0-9.]+) \"\n    r\"status=(?P<status>[0-9]{3}) \"\n    r\"type=(?P<type>[A-Za-z_]+) \"\n    r\"message=(?P<message>.*)\"\n)\n\ndef parse_line(line):\n    if len(line) > 4096:\n        raise ValueError(\"line too long\")\n    found = LOG_PATTERN.fullmatch(line)\n    if found is None:\n        raise ValueError(\"bad log format\")\n    row = found.groupdict()\n    stamp = datetime.fromisoformat(row[\"time\"])\n    address = ip_address(row[\"ip\"])\n    if address.version != 4:\n        raise ValueError(\"IPv4 required\")\n    status = int(row[\"status\"])\n    if not 100 <= status <= 599:\n        raise ValueError(\"invalid status\")\n    row[\"ip\"] = str(address)\n    row[\"status\"] = status\n    row[\"hour\"] = stamp.strftime(\"%Y-%m-%dT%H\")\n    return row\n\ndef analyse(lines):\n    rows, rejected = [], []\n    for number, line in enumerate(lines, 1):\n        try:\n            rows.append(parse_line(line.rstrip(\"\\r\\n\")))\n        except ValueError as error:\n            rejected.append((number, str(error)))\n    errors = Counter(row[\"type\"] for row in rows if row[\"level\"] == \"ERROR\")\n    hours = Counter(row[\"hour\"] for row in rows)\n    offending = Counter(row[\"ip\"] for row in rows if row[\"status\"] >= 400)\n    top_ips = sorted(offending.items(), key=lambda item: (-item[1], item[0]))\n    return rows, rejected, errors, hours, top_ips\ngood = \"2026-10-10T09:00:00 INFO ip=192.0.2.1 status=200 type=ok message=ready\"\nbad_values = [\n    good.replace(\"192.0.2.1\", \"999.0.0.1\"),\n    good.replace(\"status=200\", \"status=999\"),\n    good.replace(\"2026-10-10\", \"2026-02-31\"),\n    \"malformed line\",\n    \"x\" * 4097,\n]\nfor value in bad_values:\n    try:\n        parse_line(value)\n    except ValueError:\n        continue\n    raise AssertionError(\"bad input was accepted\")\nassert parse_line(good)[\"status\"] == 200\nprint(\"five rejection checks and one valid record passed\")\n",
+          "out": "five rejection checks and one valid record passed",
+          "why": "Build walkthrough: A useful parser has a declared grammar, semantic validation, an explicit rejection policy and reproducible report counts. Test failing boundaries as well as happy paths. The offline project uses only the standard library."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.5.3.challenge",
+          "v": "Mini challenge: Assert every report result from the six sample lines, including rejected original line numbers and deterministic IP ranking."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfrom collections import Counter\nfrom datetime import datetime\nfrom ipaddress import ip_address\n\nLOG_PATTERN = re.compile(\n    r\"(?P<time>[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}) \"\n    r\"(?P<level>INFO|WARN|ERROR) \"\n    r\"ip=(?P<ip>[0-9.]+) \"\n    r\"status=(?P<status>[0-9]{3}) \"\n    r\"type=(?P<type>[A-Za-z_]+) \"\n    r\"message=(?P<message>.*)\"\n)\n\ndef parse_line(line):\n    if len(line) > 4096:\n        raise ValueError(\"line too long\")\n    found = LOG_PATTERN.fullmatch(line)\n    if found is None:\n        raise ValueError(\"bad log format\")\n    row = found.groupdict()\n    stamp = datetime.fromisoformat(row[\"time\"])\n    address = ip_address(row[\"ip\"])\n    if address.version != 4:\n        raise ValueError(\"IPv4 required\")\n    status = int(row[\"status\"])\n    if not 100 <= status <= 599:\n        raise ValueError(\"invalid status\")\n    row[\"ip\"] = str(address)\n    row[\"status\"] = status\n    row[\"hour\"] = stamp.strftime(\"%Y-%m-%dT%H\")\n    return row\n\ndef analyse(lines):\n    rows, rejected = [], []\n    for number, line in enumerate(lines, 1):\n        try:\n            rows.append(parse_line(line.rstrip(\"\\r\\n\")))\n        except ValueError as error:\n            rejected.append((number, str(error)))\n    errors = Counter(row[\"type\"] for row in rows if row[\"level\"] == \"ERROR\")\n    hours = Counter(row[\"hour\"] for row in rows)\n    offending = Counter(row[\"ip\"] for row in rows if row[\"status\"] >= 400)\n    top_ips = sorted(offending.items(), key=lambda item: (-item[1], item[0]))\n    return rows, rejected, errors, hours, top_ips\nsample = [\n    \"2026-10-10T09:00:00 INFO ip=192.0.2.1 status=200 type=ok message=ready\",\n    \"2026-10-10T09:10:00 ERROR ip=192.0.2.2 status=500 type=disk message=disk full\",\n    \"2026-10-10T10:00:00 WARN ip=192.0.2.1 status=404 type=missing message=not found\",\n    \"2026-10-10T10:05:00 ERROR ip=192.0.2.2 status=503 type=disk message=retry later\",\n    \"2026-02-31T10:00:00 INFO ip=192.0.2.3 status=200 type=ok message=bad date\",\n    \"malformed line\",\n]\nrows, rejected, errors, hours, top_ips = analyse(sample)\nassert len(rows) == 4 and len(rejected) == 2\nassert errors == {\"disk\": 2}\nassert hours == {\"2026-10-10T09\": 2, \"2026-10-10T10\": 2}\nassert top_ips == [(\"192.0.2.2\", 2), (\"192.0.2.1\", 1)]\nassert [number for number, reason in rejected] == [5, 6]\nprint(\"all report expectations passed\")\n",
+          "out": "all report expectations passed",
+          "why": "Challenge check: A useful parser has a declared grammar, semantic validation, an explicit rejection policy and reproducible report counts. Test failing boundaries as well as happy paths. The offline project uses only the standard library."
+        },
+        {
+          "t": "try",
+          "q": "What does requests-by-hour count in this project?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "All valid parsed records",
+          "why": "The hour Counter is built from every valid row; the error-type report has its own filter."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.5.3",
+            "quiz": [
+              {
+                "q": "What does requests-by-hour count in this project?",
+                "options": [
+                  "All valid parsed records",
+                  "Only ERROR records",
+                  "Only rejected lines"
+                ],
+                "correct": 0,
+                "why": "The hour Counter is built from every valid row; the error-type report has its own filter."
+              },
+              {
+                "q": "Does a status>=400 record prove its IP is malicious?",
+                "options": [
+                  "Only with status 500",
+                  "No; this is only a chosen report metric.",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Client/server errors do not establish an actor's intent."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "A useful parser has a declared grammar, semantic validation, an explicit rejection policy and reproducible report counts. Test failing boundaries as well as happy paths. The offline project uses only the standard library."
+        },
+        {
+          "t": "p",
+          "v": "Save the project's definitions as log_analyser.py. To use your own UTF-8 log file, add the following code after the definitions. Keep a copy of rejected line numbers for correction. The definitions and demo are also saved in docs/python-week22-log-analyser.py."
+        },
+        {
+          "t": "syn",
+          "note": "Week 9 file handling: change the filename to your practice log. The with block closes it automatically. This analyser still retains parsed records; a streaming aggregation is a later extension.",
+          "v": "with open(\"server.log\", encoding=\"utf-8\") as handle:\n    rows, rejected, errors, hours, top_ips = analyse(handle)\nprint(sorted(errors.items()))"
+        }
+      ]
+    },
+    {
+      "title": "5. Whole-week review: rebuild, explain, then test",
+      "sections": [
+        {
+          "t": "h",
+          "v": "5. Whole-week review: rebuild, explain, then test"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Recall the week's rules without copying and verify success and failure cases."
+        },
+        {
+          "t": "new",
+          "note": "Try to write the pattern and explain each token before opening a solution. If stuck, revisit the smallest earlier part that supplies the missing concept.",
+          "v": "Review by retrieval"
+        },
+        {
+          "t": "new",
+          "note": "assert expresses a test expectation; optimised Python can remove it. Production validation above uses explicit ValueError, not assertions.",
+          "v": "Assertions in tests"
+        },
+        {
+          "t": "p",
+          "v": "Day 6 is large: study its parts over several sessions if needed. Day 7 remains your existing review/rest day. First redraw the operation table (search/match/fullmatch/findall/finditer). Then practise classes, counts, captures, replacement and context assertions. Finally rebuild parse_line and analyse without a template. For each validator, test empty, valid, too short, too long, trailing junk and a semantic boundary. Explain why csv.reader/date/ip_address are needed, rather than making a regex increasingly complicated. All answers remain inside the site so you can study offline."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "write a candidate pattern → list accepted/rejected inputs → run checks → explain every token"
+        },
+        {
+          "t": "code",
+          "v": "import re\npattern = re.compile(r\"[A-Z]{2}[0-9]{3}\")\nexpected = {\"AB123\": True, \"A123\": False, \"AB123x\": False, \"\": False}\nfor value, wanted in expected.items():\n    actual = pattern.fullmatch(value) is not None\n    assert actual == wanted\n    print(repr(value), actual)\n"
+        },
+        {
+          "t": "out",
+          "v": "'AB123' True\n'A123' False\n'AB123x' False\n'' False"
+        },
+        {
+          "t": "p",
+          "v": "दुई letters र तीन digits भएको ID को नियम पढेर accepted/rejected test बनायौँ। खाली value र extra suffix पनि जाँचिएका छन्। आफ्नै pattern लेखेपछि यस्तो सानो test matrix बनाउने बानी बसाल। Answers खुलाउनुअघि result र कारण मुखले वा नोटमा लेख।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Only test one valid example",
+          "right": "Test boundaries and rejected inputs as well as the happy path",
+          "why": "A pattern may accept your valid example yet also accept trailing junk, empty input, or invalid semantics."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.5.4.build",
+          "v": "Without copying, rebuild an exact two-uppercase-letter/three-digit ID validator. Test valid, short, trailing-junk and empty inputs."
+        },
+        {
+          "t": "sol",
+          "code": "import re\ndef valid_id(value):\n    return re.fullmatch(r\"[A-Z]{2}[0-9]{3}\", value) is not None\nassert valid_id(\"AB123\")\nassert not valid_id(\"A123\")\nassert not valid_id(\"AB123x\")\nassert not valid_id(\"\")\nprint(\"ID success and failure checks passed\")\n",
+          "out": "ID success and failure checks passed",
+          "why": "Build walkthrough: Week 22 mastery: explain every regex token, choose the correct operation, preserve important text, validate semantics with the right parser, and test both accepted and rejected inputs. Revisit weak parts before the next week."
+        },
+        {
+          "t": "ex",
+          "practiceId": "22.5.4.challenge",
+          "v": "Mini challenge: Add a separate errors-by-hour report to the project. Keep the original all-requests-by-hour report and show that each hour has one ERROR but two total requests."
+        },
+        {
+          "t": "sol",
+          "code": "import re\nfrom collections import Counter\nfrom datetime import datetime\nfrom ipaddress import ip_address\n\nLOG_PATTERN = re.compile(\n    r\"(?P<time>[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}) \"\n    r\"(?P<level>INFO|WARN|ERROR) \"\n    r\"ip=(?P<ip>[0-9.]+) \"\n    r\"status=(?P<status>[0-9]{3}) \"\n    r\"type=(?P<type>[A-Za-z_]+) \"\n    r\"message=(?P<message>.*)\"\n)\n\ndef parse_line(line):\n    if len(line) > 4096:\n        raise ValueError(\"line too long\")\n    found = LOG_PATTERN.fullmatch(line)\n    if found is None:\n        raise ValueError(\"bad log format\")\n    row = found.groupdict()\n    stamp = datetime.fromisoformat(row[\"time\"])\n    address = ip_address(row[\"ip\"])\n    if address.version != 4:\n        raise ValueError(\"IPv4 required\")\n    status = int(row[\"status\"])\n    if not 100 <= status <= 599:\n        raise ValueError(\"invalid status\")\n    row[\"ip\"] = str(address)\n    row[\"status\"] = status\n    row[\"hour\"] = stamp.strftime(\"%Y-%m-%dT%H\")\n    return row\n\ndef analyse(lines):\n    rows, rejected = [], []\n    for number, line in enumerate(lines, 1):\n        try:\n            rows.append(parse_line(line.rstrip(\"\\r\\n\")))\n        except ValueError as error:\n            rejected.append((number, str(error)))\n    errors = Counter(row[\"type\"] for row in rows if row[\"level\"] == \"ERROR\")\n    hours = Counter(row[\"hour\"] for row in rows)\n    offending = Counter(row[\"ip\"] for row in rows if row[\"status\"] >= 400)\n    top_ips = sorted(offending.items(), key=lambda item: (-item[1], item[0]))\n    return rows, rejected, errors, hours, top_ips\nsample = [\n    \"2026-10-10T09:00:00 INFO ip=192.0.2.1 status=200 type=ok message=ready\",\n    \"2026-10-10T09:10:00 ERROR ip=192.0.2.2 status=500 type=disk message=disk full\",\n    \"2026-10-10T10:00:00 WARN ip=192.0.2.1 status=404 type=missing message=not found\",\n    \"2026-10-10T10:05:00 ERROR ip=192.0.2.2 status=503 type=disk message=retry later\",\n    \"2026-02-31T10:00:00 INFO ip=192.0.2.3 status=200 type=ok message=bad date\",\n    \"malformed line\",\n]\nrows, rejected, errors, hours, top_ips = analyse(sample)\nerror_hours = Counter(row[\"hour\"] for row in rows if row[\"level\"] == \"ERROR\")\nassert error_hours == {\"2026-10-10T09\": 1, \"2026-10-10T10\": 1}\nassert hours == {\"2026-10-10T09\": 2, \"2026-10-10T10\": 2}\nprint(\"all requests:\", sorted(hours.items()))\nprint(\"errors only:\", sorted(error_hours.items()))\n",
+          "out": "all requests: [('2026-10-10T09', 2), ('2026-10-10T10', 2)]\nerrors only: [('2026-10-10T09', 1), ('2026-10-10T10', 1)]",
+          "why": "Challenge check: Week 22 mastery: explain every regex token, choose the correct operation, preserve important text, validate semantics with the right parser, and test both accepted and rejected inputs. Revisit weak parts before the next week."
+        },
+        {
+          "t": "try",
+          "q": "Which operation checks the complete string?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "fullmatch",
+          "why": "Complete-input matching rejects unmatched suffixes and prefixes."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:22.5.4",
+            "quiz": [
+              {
+                "q": "Which operation checks the complete string?",
+                "options": [
+                  "match",
+                  "fullmatch",
+                  "search"
+                ],
+                "correct": 1,
+                "why": "Complete-input matching rejects unmatched suffixes and prefixes."
+              },
+              {
+                "q": "Does a raw string disable regex syntax?",
+                "options": [
+                  "Yes",
+                  "Only on Windows",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Raw strings change Python's literal processing, not the regex engine."
+              },
+              {
+                "q": "Which repetition requires at least one occurrence?",
+                "options": [
+                  "+",
+                  "*",
+                  "?"
+                ],
+                "correct": 0,
+                "why": "+ has minimum one; the others can permit zero."
+              },
+              {
+                "q": "Are captured numbers automatically integers?",
+                "options": [
+                  "Only in named groups",
+                  "No; convert explicitly.",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Capture values on str input are text."
+              },
+              {
+                "q": "What does (?:...) provide?",
+                "options": [
+                  "A named captured field",
+                  "A literal question mark",
+                  "Grouping without a capture"
+                ],
+                "correct": 2,
+                "why": "Use it for structural choices without adding result fields."
+              },
+              {
+                "q": "Which flag makes dot match newline?",
+                "options": [
+                  "DOTALL",
+                  "MULTILINE",
+                  "IGNORECASE"
+                ],
+                "correct": 0,
+                "why": "DOTALL affects dot, while MULTILINE affects anchors."
+              },
+              {
+                "q": "What does a lookahead consume in the outer match?",
+                "options": [
+                  "One character always",
+                  "No characters",
+                  "Its entire condition"
+                ],
+                "correct": 1,
+                "why": "It tests context at a position without moving the outer match past that condition."
+              },
+              {
+                "q": "How should a variable-width preceding context be handled here?",
+                "options": [
+                  "Ignore the compile error.",
+                  "Make Python guess.",
+                  "Match the prefix and capture the wanted field."
+                ],
+                "correct": 2,
+                "why": "Python re lookbehind requires fixed width."
+              },
+              {
+                "q": "Which tool handles a quoted comma in CSV?",
+                "options": [
+                  "csv.reader",
+                  "split(',') in every case",
+                  "re.findall(r'\\w+')"
+                ],
+                "correct": 0,
+                "why": "The CSV reader understands quoting and separators."
+              },
+              {
+                "q": "Is a date-shaped regex enough to reject February 31?",
+                "options": [
+                  "Only with ASCII",
+                  "No; validate with date or datetime.",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Calendar validity is a semantic rule beyond digit counts."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Week 22 mastery: explain every regex token, choose the correct operation, preserve important text, validate semantics with the right parser, and test both accepted and rejected inputs. Revisit weak parts before the next week."
+        },
+        {
+          "t": "p",
+          "v": "Optional official references: https://docs.python.org/3.12/library/re.html · https://docs.python.org/3.12/howto/regex.html · https://docs.python.org/3.12/library/csv.html · https://docs.python.org/3.12/library/datetime.html. These are extra references; the complete teaching and solutions above need no connection."
+        }
+      ]
+    }
+  ]
+},
 };
 
 const REST_DAY = ["Review & rest",

@@ -18,7 +18,7 @@ async function main(){
   const tabs=await(await fetch("http://127.0.0.1:"+port+"/json/list")).json(),page=tabs.find(x=>x.type==="page");
   const ws=new WebSocket(page.webSocketDebuggerUrl);await new Promise((res,rej)=>{ws.onopen=res;ws.onerror=rej;});
   let seq=0;const pending=new Map(),errors=[];
-  ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.method==="Runtime.exceptionThrown"){const d=m.params.exceptionDetails;errors.push((d.exception&&d.exception.description)||d.text);}if(m.id&&pending.has(m.id)){const p=pending.get(m.id);pending.delete(m.id);m.error?p.reject(Error(JSON.stringify(m.error))):p.resolve(m.result);}};
+  ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.method==="Runtime.exceptionThrown"){const d=m.params.exceptionDetails;errors.push((d.exception&&d.exception.description)||d.text);}if(m.method==="Runtime.consoleAPICalled"&&m.params.type==="error")errors.push(m.params.args.map(a=>a.value||a.description).join(" "));if(m.id&&pending.has(m.id)){const p=pending.get(m.id);pending.delete(m.id);m.error?p.reject(Error(JSON.stringify(m.error))):p.resolve(m.result);}};
   const send=(method,params={})=>new Promise((res,rej)=>{const id=++seq;pending.set(id,{resolve:res,reject:rej});ws.send(JSON.stringify({id,method,params}));});
   const evalJs=async expression=>{const r=await send("Runtime.evaluate",{expression:'window.__courseTestEval ? window.__courseTestEval('+JSON.stringify(expression)+') : eval('+JSON.stringify(expression)+')',returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error((r.exceptionDetails.exception&&r.exceptionDetails.exception.description)||r.exceptionDetails.text);return r.result.value;};
   const assert=(v,m)=>{if(!v)throw Error(m);};
@@ -63,6 +63,19 @@ async function main(){
     await evalJs('courseView={mode:"day",week:21,dayIdx:0,part:0};renderCourseDay();document.querySelector("#partDoneBtn").click();document.querySelector("#dayNote").value="Week21 saved note";document.querySelector("#dayNote").dispatchEvent(new Event("input",{bubbles:true}));save()');
     assert(await evalJs('isPartDone(21,0,0)'),'Week21 part completion failed');
   }
+  if(await evalJs('Boolean(DAY_TEACH["22.0"])')){
+    await evalJs('switchView("course");courseView={mode:"day",week:22,dayIdx:0,part:0};renderCourseDay();document.querySelector("#partNext").click()');
+    assert(await evalJs('courseView.part===1'),'Week22 next part failed');
+    await evalJs('document.querySelector("#partPrev").click();document.querySelector("#nextDay").click()');
+    assert(await evalJs('courseView.week===22 && courseView.dayIdx===1'),'Week22 next day failed');
+    await evalJs('document.querySelector("#prevDay").click()');
+    assert(await evalJs('courseView.dayIdx===0'),'Week22 previous day failed');
+    await evalJs('(()=>{for(let d=0;d<6;d++)for(let p=0;p<dayParts("22."+d).length;p++){courseView={mode:"day",week:22,dayIdx:d,part:p};renderCourseDay();const quiz=dayParts("22."+d)[p].sections.find(s=>s.t==="checkpoint").lesson;quiz.quiz.forEach((q,i)=>document.querySelector(".day-teach [data-lq=\\\""+i+"\\\"][data-lo=\\\""+q.correct+"\\\"]").click());if(DB.lessonQuizScores[quiz.id]!==100)throw Error("Week22 quiz saving "+quiz.id);}})()');
+    await evalJs('courseView={mode:"day",week:22,dayIdx:0,part:0};renderCourseDay();document.querySelector("#partDoneBtn").click();document.querySelector("#dayNote").value="Week22 saved note";document.querySelector("#dayNote").dispatchEvent(new Event("input",{bubbles:true}));save()');
+    assert(await evalJs('isPartDone(22,0,0)'),'Week22 part completion failed');
+    assert(await evalJs('corePool().filter(p=>p.week===22).length===48'),'Week22 practice pool failed');
+    assert(await evalJs('(()=>{const hit=buildSearchIndex().find(e=>e.kind==="day"&&e.week===22&&e.text.includes("Lookbehind"));if(!hit)return false;gotoSearchHit(hit);return courseView.week===22&&courseView.part===hit.part;})()'),'Week22 search exact-part navigation failed');
+  }
   if(await evalJs('Boolean(DAY_TEACH["20.0"])')){
     await evalJs('courseView={mode:"day",week:20,dayIdx:0,part:0};renderCourseDay();document.querySelector("[data-lo]").click()');
     assert(await evalJs('DB.lessonQuizScores["course:20.0.0"]===100'),'Week 20 quiz did not save');
@@ -83,7 +96,9 @@ async function main(){
   await send('Page.reload',{ignoreCache:true});for(let i=0;i<50;i++){if(await evalJs('Boolean(window.__studyHubBooted)'))break;await sleep(100);}
   assert(await evalJs('DB.lessonQuizScores.strings===67 && DB.lessonsDone.strings && DB.course.notes["2.3"]==="Saved day note" && DB.course.practice.solved["1.5.1"] && DB.lessonQuizScores["course:1.0"]===100'),'Saved data failed reload');
   if(await evalJs('Boolean(DAY_TEACH["21.0"])'))assert(await evalJs('isPartDone(21,0,0) && DB.lessonQuizScores["course:21.0.0"]===100 && DB.course.notes["21.0"]==="Week21 saved note"'),'Week21 progress/quiz/note failed reload');
+  if(await evalJs('Boolean(DAY_TEACH["22.0"])'))assert(await evalJs('isPartDone(22,0,0) && DB.lessonQuizScores["course:22.0.0"]===100 && DB.course.notes["22.0"]==="Week22 saved note"'),'Week22 progress/quiz/note failed reload');
   await send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
+  if(await evalJs('Boolean(DAY_TEACH["22.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("22."+d).length;p++){courseView={mode:"day",week:22,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week22 mobile overflow "+d+"."+p);}}})()');
   if(await evalJs('Boolean(DAY_TEACH["21.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("21."+d).length;p++){courseView={mode:"day",week:21,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week21 mobile overflow "+d+"."+p);}}})()');
   if(await evalJs('Boolean(DAY_TEACH["20.0"])'))await evalJs('(()=>{switchView("course");for(let d=0;d<6;d++)for(let p=0;p<dayParts("20."+d).length;p++){courseView={mode:"day",week:20,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week 20 overflow "+d+"."+p);}})()');
   await evalJs('document.querySelector("#themeBtn").click();switchView("course");courseView={mode:"day",week:1,dayIdx:5,part:0};renderCourseDay()');
