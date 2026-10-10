@@ -23,9 +23,17 @@
 .ht-table .ht-habit{position:sticky;left:0;z-index:2;background:var(--bg-elev);width:195px;min-width:195px;max-width:195px;text-align:left;padding:12px;box-shadow:2px 0 0 var(--border);}
 .ht-table thead .ht-habit{background:var(--bg-soft);}
 .ht-name{font-size:13px;font-weight:650;overflow-wrap:anywhere;}
+.ht-name-line{display:flex;align-items:center;gap:8px;}
+.ht-name-line .ht-name{min-width:0;flex:1;}
+.ht-drag-handle{flex-shrink:0;display:grid;place-items:center;width:30px;height:34px;border:1px solid var(--border);border-radius:8px;background:var(--bg-soft);color:var(--text-dim);font-size:24px;line-height:1;cursor:grab;touch-action:none;user-select:none;}
+.ht-drag-handle:hover,.ht-drag-handle:focus-visible{border-color:var(--accent);color:var(--accent);outline:2px solid var(--accent-soft);}
+.ht-drag-handle:active{cursor:grabbing;}
+.ht-dragging>th,.ht-dragging>td{box-shadow:inset 0 2px var(--accent),inset 0 -2px var(--accent);background:var(--accent-soft)!important;}
+.ht-day-badge{border-radius:20px;padding:6px 12px;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:650;}
+.ht-month-controls{padding:12px;background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;}
 .ht-category{font-size:11px;color:var(--text-dim);overflow-wrap:anywhere;margin-top:4px;}
 .ht-row-actions{display:flex;gap:6px;margin-top:9px;}
-.ht-row-actions button{font-size:10px;padding:3px 6px;color:var(--text-dim);background:var(--bg-soft);border:1px solid var(--border);border-radius:5px;cursor:pointer;}
+.ht-row-actions button{font-size:11px;padding:7px 8px;min-height:30px;color:var(--text-dim);background:var(--bg-soft);border:1px solid var(--border);border-radius:7px;cursor:pointer;}
 .ht-row-actions button:hover{color:var(--text);border-color:var(--accent);}
 .ht-table input[type=checkbox]{width:19px;height:19px;display:block;margin:4px auto;accent-color:var(--accent);cursor:pointer;}
 .ht-table .ht-checked{background:var(--accent-soft);}

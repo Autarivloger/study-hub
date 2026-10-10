@@ -72,6 +72,62 @@ async function main(){
  assert(await evaluate('habitMonth()==="2026-11"&&habitStats("2026-11").total===1&&DB.course.done["1.0"]&&DB.japanese.done["1.1"]&&DB.headNotes.legacy==="Keep this note"'),'Merge import lost tracker or original course data');
  await evaluate('confirmMerge('+JSON.stringify(JSON.parse(backup))+');document.querySelector("#impReplace").click()');
  assert(await evaluate('habitMonth()==="2026-11"&&habitStats("2026-11").total===1&&DB.todos.some(t=>t.done)'),'Replace import failed');
+ // Existing personal tasks are imported locally, never put in published source.
+ await evaluate('todoMode="habits";switchView("todo")');
+ const tasksBefore=await evaluate('JSON.stringify(DB.todos)');
+ assert(await evaluate('Object.keys(DB.habitTracker.months).every(month=>habitRows(month).some(item=>item.title==="Existing task works"))'),'Existing tasks were not filled into every saved month');
+ assert(await evaluate('Object.values(DB.habitTracker.checks).filter(check=>check.done).length>0&&habitRows("2026-11").some(item=>item.sourceTodoId)&&habitCount(habitRows("2026-11").find(item=>item.sourceTodoId),"2026-11")===0'),'Completed task incorrectly became daily check-ins');
+ for(const [month,days] of [['2027-02',28],['2028-02',29],['2026-04',30],['2026-07',31]]){
+  await evaluate('habitSelectMonth('+JSON.stringify(month)+')');
+  assert(await evaluate('document.querySelectorAll(".ht-table thead tr:nth-child(2) th").length==='+days+'&&document.querySelectorAll("[data-habit-check]").length===habitRows(habitMonth()).length*'+days+'&&document.querySelector(".ht-day-badge").textContent==="'+days+' days"'),'Rendered calendar incorrect '+month);
+ }
+ await evaluate('habitSelectMonth("2026-11")');
+ // Real mouse pointer drag, followed by keyboard and touch reordering.
+ await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1200,deviceScaleFactor:1,mobile:false});
+ await evaluate('document.querySelector(".ht-table-scroll").scrollIntoView({block:"center"})');
+ async function positions(){return evaluate('[...document.querySelectorAll("[data-habit-drag]")].map(handle=>{const r=handle.getBoundingClientRect(),row=handle.closest("tr").getBoundingClientRect();return {id:handle.dataset.habitDrag,x:r.left+r.width/2,y:r.top+r.height/2,bottom:row.bottom};})');}
+ const beforeDrag=await positions(),dragFirst=beforeDrag[0],dragLast=beforeDrag.at(-1);
+ const ticksBefore=await evaluate('JSON.stringify(DB.habitTracker.checks)');
+ await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:dragFirst.x,y:dragFirst.y});
+ await send('Input.dispatchMouseEvent',{type:'mousePressed',x:dragFirst.x,y:dragFirst.y,button:'left',buttons:1,clickCount:1});
+ await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:dragLast.x,y:dragLast.bottom-8,button:'left',buttons:1});
+ await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:dragLast.x,y:dragLast.bottom-8,button:'left',buttons:0,clickCount:1});
+ assert(await evaluate('habitRows("2026-11").at(-1).id==='+JSON.stringify(dragFirst.id)),'Mouse drag did not persist row order');
+ await evaluate('document.querySelector("[data-habit-drag=\\"'+dragFirst.id+'\\"]").focus()');
+ await send('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowUp',code:'ArrowUp',windowsVirtualKeyCode:38});
+ await send('Input.dispatchKeyEvent',{type:'keyUp',key:'ArrowUp',code:'ArrowUp',windowsVirtualKeyCode:38});
+ assert(await evaluate('habitRows("2026-11").at(-2).id==='+JSON.stringify(dragFirst.id)),'Keyboard reorder failed');
+ await send('Emulation.setDeviceMetricsOverride',{width:375,height:950,deviceScaleFactor:1,mobile:true});
+ await evaluate('renderTodos();document.querySelector(".ht-table-scroll").scrollLeft=0;document.querySelector(".ht-table-scroll").scrollIntoView({block:"center"})');
+ const touchRows=await positions(),touchFirst=touchRows[0],touchLast=touchRows.at(-1);
+ await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:touchFirst.x,y:touchFirst.y,id:1}]});
+ await send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:touchLast.x,y:touchLast.bottom-8,id:1}]});
+ await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ assert(await evaluate('habitRows("2026-11").at(-1).id==='+JSON.stringify(touchFirst.id)),'Touch drag did not persist row order');
+ assert(await evaluate('JSON.stringify(DB.habitTracker.checks)')===ticksBefore,'Reordering changed day checks');
+ const orderedIds=await evaluate('habitRows("2026-11").map(item=>item.id).join(",")');
+ await send('Page.reload',{ignoreCache:true});for(let i=0;i<60;i++){if(await evaluate('Boolean(window.__studyHubBooted)'))break;await sleep(100);}
+ await evaluate('switchView("todo")');
+ assert(await evaluate('habitRows("2026-11").map(item=>item.id).join(",")')===orderedIds,'Reordered rows did not survive reload');
+ await evaluate('window.__habitBackup=null;const captureOriginal=URL.createObjectURL;URL.createObjectURL=function(blob){window.__habitBackup=blob;return captureOriginal(blob);};document.querySelector("#exportBtn").click()');
+ const reorderedBackup=JSON.parse(await evaluate('window.__habitBackup.text()'));
+ await evaluate('DB.habitTracker={months:{},items:{},checks:{},selectedMonth:null};confirmMerge('+JSON.stringify(reorderedBackup)+');document.querySelector("#impReplace").click();todoMode="habits";switchView("todo")');
+ assert(await evaluate('habitRows("2026-11").map(item=>item.id).join(",")')===orderedIds,'Reordered rows did not survive actual backup export/import');
+ // All-month editing preserves every day record and adapts daily goals to month lengths.
+ await evaluate('habitEdit('+JSON.stringify(secondId)+');document.querySelector("#habitTitle").value="Practice everywhere";document.querySelector("#habitEditScope").value="all";document.querySelector("#habitGoal").value=30;document.querySelector("#habitForm").requestSubmit()');
+ assert(await evaluate('Object.values(DB.habitTracker.items).filter(item=>item.id==='+JSON.stringify(secondId)+').every(item=>item.title==="Practice everywhere")'),'All-month name edit failed');
+ assert(await evaluate('JSON.stringify(DB.habitTracker.checks)')===ticksBefore,'All-month edits lost ticks');
+ await evaluate('habitSelectMonth("2029-02")');
+ assert(await evaluate('habitGoal(habitRows("2029-02").find(item=>item.id==='+JSON.stringify(secondId)+'),"2029-02")===28&&habitRows("2029-02").find(item=>item.id==='+JSON.stringify(secondId)+').title==="Practice everywhere"'),'Future month lost all-month edit or goal adaptation');
+ await evaluate('habitSelectMonth("2026-11");window.__importedHabit=habitRows(habitMonth()).find(item=>item.sourceTodoId).id;document.querySelector("[data-habit-remove=\\""+window.__importedHabit+"\\"]").click();document.querySelector("#cdYes").click();renderTodos();renderTodos()');
+ assert(await evaluate('habitRows("2026-11",true).some(item=>item.id===window.__importedHabit)&&!habitRows("2026-11").some(item=>item.id===window.__importedHabit)'),'Automatic filling resurrected a removed imported task');
+ await evaluate('document.querySelector("[data-habit-restore=\\""+window.__importedHabit+"\\"]").click()');
+ assert(await evaluate('JSON.stringify(DB.todos)')===tasksBefore,'Import/edit/reorder modified original Tasks records');
+ await evaluate('habitEdit();document.querySelector("#habitTitle").value="A new recurring habit";document.querySelector("#habitForm").requestSubmit()');
+ assert(await evaluate('Object.keys(DB.habitTracker.months).every(month=>habitRows(month).some(item=>item.title==="A new recurring habit"))'),'New habit was not filled into every saved month');
+ const lengthBefore=await evaluate('habitRows("2026-11").length');
+ await evaluate('DB.todos.push({id:"duplicate_task",title:"A new recurring habit",done:false});renderTodos();renderTodos()');
+ assert(await evaluate('habitRows("2026-11").length')===lengthBefore,'Task with existing habit name was duplicated');
  assert(await evaluate('(()=>{const d=applyDefaults({todos:[{id:"old",title:"Old backup task"}]});return d.todos[0].title==="Old backup task"&&Object.keys(d.habitTracker.items).length===0;})()'),'Old backup compatibility failed');
  for(const width of [375,768,1440]){
   await send('Emulation.setDeviceMetricsOverride',{width,height:950,deviceScaleFactor:1,mobile:width<600});
@@ -85,13 +141,14 @@ async function main(){
  }
  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
  // Fictional screenshot data only; no personal sheet contents are copied into source or test fixtures.
- await evaluate('DB.habitTracker={months:{},items:{},checks:{},selectedMonth:null};habitSelectMonth("2026-10");');
+ await evaluate('DB.todos=[];DB.habitTracker={months:{},items:{},checks:{},selectedMonth:null};habitSelectMonth("2026-10");');
  for(const title of ['Read','Language practice','Walk','Stretch','Plan tomorrow'])await add(title,31);
  await evaluate('(()=>{for(const [index,item] of habitRows("2026-10").entries())for(let day=1;day<=11;day++)if((day+index)%4!==0)DB.habitTracker.checks[habitDayKey("2026-10",item.id,day)]={done:true,updatedAt:nowISO()};save();renderTodos();document.documentElement.dataset.theme="light";document.querySelector("#toast").classList.remove("show");window.scrollTo(0,0);})()');
+ await sleep(350);
  let shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'studyhub-habits-desktop.png'),Buffer.from(shot.data,'base64'));
  await send('Emulation.setDeviceMetricsOverride',{width:375,height:950,deviceScaleFactor:1,mobile:true});await evaluate('renderTodos();window.scrollTo(0,0)');
  shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'studyhub-habits-mobile.png'),Buffer.from(shot.data,'base64'));
  assert(errors.length===0,'JS errors: '+errors.join('; '));
- console.log('PASS: habit add/edit/check/uncheck/remove/restore; independent months and goals; leap dates/year boundaries; month persistence; per-cell sync merge; backup/import merge+replace; legacy tasks; mobile/tablet/desktop light+dark; scroll retention; no JS errors');
+ console.log('PASS: automatic task/all-month filling; independent edits and all-month edits; actual 28/29/30/31-day grids; mouse/touch/keyboard reorder + reload; original tasks/checks retained; habit add/edit/check/uncheck/remove/restore; goals/leap years; backup/import merge+replace; mobile/tablet/desktop light+dark; scroll retention; no JS errors');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{if(ws)ws.close();browser.kill();});

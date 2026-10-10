@@ -950,9 +950,17 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .ht-table .ht-habit{position:sticky;left:0;z-index:2;background:var(--bg-elev);width:195px;min-width:195px;max-width:195px;text-align:left;padding:12px;box-shadow:2px 0 0 var(--border);}
 .ht-table thead .ht-habit{background:var(--bg-soft);}
 .ht-name{font-size:13px;font-weight:650;overflow-wrap:anywhere;}
+.ht-name-line{display:flex;align-items:center;gap:8px;}
+.ht-name-line .ht-name{min-width:0;flex:1;}
+.ht-drag-handle{flex-shrink:0;display:grid;place-items:center;width:30px;height:34px;border:1px solid var(--border);border-radius:8px;background:var(--bg-soft);color:var(--text-dim);font-size:24px;line-height:1;cursor:grab;touch-action:none;user-select:none;}
+.ht-drag-handle:hover,.ht-drag-handle:focus-visible{border-color:var(--accent);color:var(--accent);outline:2px solid var(--accent-soft);}
+.ht-drag-handle:active{cursor:grabbing;}
+.ht-dragging>th,.ht-dragging>td{box-shadow:inset 0 2px var(--accent),inset 0 -2px var(--accent);background:var(--accent-soft)!important;}
+.ht-day-badge{border-radius:20px;padding:6px 12px;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:650;}
+.ht-month-controls{padding:12px;background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;}
 .ht-category{font-size:11px;color:var(--text-dim);overflow-wrap:anywhere;margin-top:4px;}
 .ht-row-actions{display:flex;gap:6px;margin-top:9px;}
-.ht-row-actions button{font-size:10px;padding:3px 6px;color:var(--text-dim);background:var(--bg-soft);border:1px solid var(--border);border-radius:5px;cursor:pointer;}
+.ht-row-actions button{font-size:11px;padding:7px 8px;min-height:30px;color:var(--text-dim);background:var(--bg-soft);border:1px solid var(--border);border-radius:7px;cursor:pointer;}
 .ht-row-actions button:hover{color:var(--text);border-color:var(--accent);}
 .ht-table input[type=checkbox]{width:19px;height:19px;display:block;margin:4px auto;accent-color:var(--accent);cursor:pointer;}
 .ht-table .ht-checked{background:var(--accent-soft);}
@@ -5567,7 +5575,93 @@ function habitMerge(incoming){
 }
 function habitRows(month,removed){
   return Object.entries(DB.habitTracker.items).filter(([key,item])=>habitValidItem(key,item) && item.month===month && !!item.deleted===!!removed)
-    .map(([,item])=>item).sort((a,b)=>String(a.createdAt||"").localeCompare(String(b.createdAt||"")) || a.id.localeCompare(b.id));
+    .map(([,item])=>item).sort((a,b)=>(Number.isFinite(a.order)?a.order:Number.MAX_SAFE_INTEGER)-(Number.isFinite(b.order)?b.order:Number.MAX_SAFE_INTEGER) || String(a.createdAt||"").localeCompare(String(b.createdAt||"")) || a.id.localeCompare(b.id));
+}
+// Fill missing rows only. Names edited in a month, removed rows and daily checks stay intact.
+function habitFillMonths(){
+  const store=DB.habitTracker,latest=new Map();
+  Object.entries(store.items).forEach(([key,item])=>{
+    if(!habitValidItem(key,item)) return;
+    const previous=latest.get(item.id);
+    if(!previous || (Date.parse(item.updatedAt)||0)>(Date.parse(previous.updatedAt)||0)) latest.set(item.id,item);
+  });
+  let changed=false;
+  (DB.todos||[]).forEach(task=>{
+    if(!task || typeof task.title!=="string" || !task.title.trim() || !/^[a-zA-Z0-9_-]{1,90}$/.test(String(task.id))) return;
+    const linked=[...latest.values()].find(item=>item.sourceTodoId===String(task.id) || item.id==='task_'+task.id);
+    if(linked) return;
+    const same=[...latest.values()].find(item=>item.title.trim().toLocaleLowerCase()===task.title.trim().toLocaleLowerCase());
+    if(same){
+      // Link an existing row instead of duplicating a task that was already added as a habit.
+      Object.values(store.items).filter(item=>item.id===same.id).forEach(item=>{item.sourceTodoId=String(task.id);item.updatedAt=nowISO();});
+      changed=true;return;
+    }
+    const at=nowISO();
+    latest.set('task_'+task.id,{id:'task_'+task.id,sourceTodoId:String(task.id),title:task.title.trim(),category:typeof task.subject==="string"?task.subject:"",goalMode:"daily",goalDays:31,deleted:false,createdAt:at,updatedAt:at});
+  });
+  const active=[...latest.values()].filter(item=>!item.deleted);
+  if(!active.length){if(changed)save();return;}
+  const months=new Set(Object.keys(store.months).filter(habitValidMonth));
+  Object.values(store.items).forEach(item=>{if(habitValidMonth(item.month))months.add(item.month);});
+  months.add(habitMonth());
+  months.forEach(month=>{
+    if(!store.months[month]){store.months[month]={updatedAt:nowISO()};changed=true;}
+    const rows=habitRows(month);
+    let order=rows.reduce((max,item)=>Math.max(max,Number.isFinite(item.order)?item.order:-1),-1)+1;
+    rows.filter(item=>!Number.isFinite(item.order)).forEach(item=>{item.order=order++;changed=true;});
+    active.forEach(item=>{
+      const key=habitRecordKey(month,item.id);
+      if(Object.prototype.hasOwnProperty.call(store.items,key))return;
+      const at=nowISO();
+      store.items[key]={...item,month,order:order++,createdAt:at,updatedAt:at};changed=true;
+    });
+  });
+  if(changed)save();
+}
+function habitSaveOrder(month,ids){
+  const rows=habitRows(month),known=new Set(rows.map(item=>item.id));
+  if(ids.length!==rows.length || new Set(ids).size!==rows.length || ids.some(id=>!known.has(id)))return;
+  const at=nowISO();
+  ids.forEach((id,order)=>{const item=DB.habitTracker.items[habitRecordKey(month,id)];item.order=order;item.updatedAt=at;});
+  save();renderTodos();
+}
+function habitBindDrag(pane,month){
+  pane.querySelectorAll('[data-habit-drag]').forEach(handle=>{
+    handle.onkeydown=e=>{
+      if(!['ArrowUp','ArrowDown'].includes(e.key))return;
+      e.preventDefault();
+      const ids=habitRows(month).map(item=>item.id),from=ids.indexOf(handle.dataset.habitDrag),to=from+(e.key==='ArrowUp'?-1:1);
+      if(to<0 || to>=ids.length)return;
+      [ids[from],ids[to]]=[ids[to],ids[from]];habitSaveOrder(month,ids);
+      pane.querySelector('[data-habit-drag="'+handle.dataset.habitDrag+'"]').focus({preventScroll:true});
+    };
+    handle.onpointerdown=e=>{
+      if(e.button!==0 || !e.isPrimary)return;
+      e.preventDefault();
+      const row=handle.closest('[data-habit-row]'),body=row.parentElement,grid=pane.querySelector('.ht-table-scroll'),startY=e.clientY;
+      let moved=false;
+      grid.setPointerCapture(e.pointerId);
+      grid.onpointermove=event=>{
+        if(Math.abs(event.clientY-startY)<6&&!moved)return;
+        moved=true;row.classList.add('ht-dragging');
+        const bounds=grid.getBoundingClientRect();
+        if(event.clientY<bounds.top+35)grid.scrollTop-=18;
+        if(event.clientY>bounds.bottom-35)grid.scrollTop+=18;
+        const target=document.elementFromPoint(Math.max(bounds.left+8,Math.min(event.clientX,bounds.right-8)),event.clientY)?.closest('[data-habit-row]');
+        if(target && target!==row && target.parentElement===body){
+          const rect=target.getBoundingClientRect();body.insertBefore(row,event.clientY<rect.top+rect.height/2?target:target.nextSibling);
+        }
+      };
+      const finish=event=>{
+        grid.onpointermove=null;grid.onpointerup=null;grid.onpointercancel=null;grid.onlostpointercapture=null;
+        if(grid.hasPointerCapture(e.pointerId))grid.releasePointerCapture(e.pointerId);
+        row.classList.remove('ht-dragging');
+        if(event.type==='pointerup' && moved)habitSaveOrder(month,[...body.querySelectorAll('[data-habit-row]')].map(item=>item.dataset.habitRow));
+        else if(moved)renderTodos();
+      };
+      grid.onpointerup=finish;grid.onpointercancel=finish;grid.onlostpointercapture=finish;
+    };
+  });
 }
 function habitGoal(item,month){
   const days=habitDays(month),value=Number(item.goalDays);
@@ -5601,7 +5695,8 @@ function habitCopy(source,target){
 }
 function habitEnsureMonth(month,copy){
   if(!Object.prototype.hasOwnProperty.call(DB.habitTracker.months,month)){
-    const previous=Object.keys(DB.habitTracker.months).filter(m=>habitValidMonth(m) && m<month).sort().pop();
+    const saved=Object.keys(DB.habitTracker.months).filter(habitValidMonth).sort();
+    const previous=saved.filter(m=>m<month).pop() || saved[0];
     DB.habitTracker.months[month]={updatedAt:nowISO()};
     if(copy && previous) habitCopy(previous,month);
   }
@@ -5630,6 +5725,7 @@ function habitChart(stats,month){
     '<text x="'+left+'" y="'+(height-6)+'">1</text><text x="'+(left+plotWidth/2-10)+'" y="'+(height-6)+'">Day</text><text x="'+(width-19)+'" y="'+(height-6)+'">'+stats.daily.length+'</text></svg>';
 }
 function renderHabitTracker(){
+  habitFillMonths();
   const month=habitMonth(),days=habitDays(month),stats=habitStats(month),removed=habitRows(month,true),name=habitMonthName(month),pane=document.getElementById("habitPane");
   const previousGrid=pane.querySelector(".ht-table-scroll");
   const previousScroll=previousGrid && pane.dataset.month===month ? {left:previousGrid.scrollLeft,top:previousGrid.scrollTop} : null;
@@ -5645,18 +5741,19 @@ function renderHabitTracker(){
       const done=DB.habitTracker.checks[habitDayKey(month,item.id,i+1)]?.done===true;
       return '<td class="ht-week-'+(Math.floor(i/7)+1)+(done?' ht-checked':'')+'"><input type="checkbox" data-habit-check="'+escapeAttr(item.id)+'" data-day="'+(i+1)+'" aria-label="'+escapeAttr(item.title+', '+name+', day '+(i+1))+'"'+(done?' checked':'')+'></td>';
     }).join('');
-    return '<tr><th scope="row" class="ht-habit"><div class="ht-name">'+escapeHtml(item.title)+'</div>'+
+    return '<tr data-habit-row="'+escapeAttr(item.id)+'"><th scope="row" class="ht-habit"><div class="ht-name-line"><button type="button" class="ht-drag-handle" data-habit-drag="'+escapeAttr(item.id)+'" aria-label="Reorder '+escapeAttr(item.title)+'" title="Drag to reorder, or use up/down arrow keys">⠿</button><div class="ht-name">'+escapeHtml(item.title)+'</div></div>'+
       (item.category?'<div class="ht-category">'+escapeHtml(item.category)+'</div>':'')+'<div class="ht-row-actions"><button type="button" data-habit-edit="'+escapeAttr(item.id)+'" aria-label="Edit '+escapeAttr(item.title)+'">Edit</button><button type="button" data-habit-remove="'+escapeAttr(item.id)+'" aria-label="Remove '+escapeAttr(item.title)+'">Remove</button></div></th>'+cells+
       '<td class="ht-goal">'+goal+'</td><td class="ht-result"><b>'+count+' / '+goal+'</b><span>'+pct+'%</span>'+progressBar(Math.min(count,goal),goal,true)+'</td></tr>';
   }).join('');
   pane.innerHTML='<div class="ht-toolbar"><div><h2>Monthly Habit Tracker</h2><p>Small habits, steady progress.</p></div><button type="button" class="btn" id="habitAdd">+ Add habit</button></div>'+
-    '<div class="ht-month-controls"><button type="button" class="btn secondary btn-sm" id="habitPrev" aria-label="Previous month"'+(month==='0001-01'?' disabled':'')+'>←</button><label for="habitMonthInput">Month</label><input type="month" id="habitMonthInput" value="'+month+'" min="0001-01" max="9999-12"><button type="button" class="btn secondary btn-sm" id="habitNext" aria-label="Next month"'+(month==='9999-12'?' disabled':'')+'>→</button><button type="button" class="btn secondary btn-sm" id="habitThisMonth">This month</button></div>'+
+    '<div class="ht-month-controls"><button type="button" class="btn secondary btn-sm" id="habitPrev" aria-label="Previous month"'+(month==='0001-01'?' disabled':'')+'>←</button><label for="habitMonthInput">Month</label><input type="month" id="habitMonthInput" value="'+month+'" min="0001-01" max="9999-12"><button type="button" class="btn secondary btn-sm" id="habitNext" aria-label="Next month"'+(month==='9999-12'?' disabled':'')+'>→</button><button type="button" class="btn secondary btn-sm" id="habitThisMonth">This month</button><span class="ht-day-badge">'+days+' days</span></div>'+
     '<div class="ht-layout"><section class="ht-main" aria-label="Habit calendar"><div class="ht-calendar-heading"><h3>'+name+'</h3><span>'+days+' days · '+stats.rows.length+' habits</span></div>'+
-    (stats.rows.length?'<p class="ht-scroll-hint">Check each day as you complete a habit. Scroll sideways for all days.</p><div class="ht-table-scroll" tabindex="0" aria-label="Scrollable monthly habit grid"><table class="ht-table"><caption class="ht-sr">'+name+' habit check-ins</caption><thead><tr><th class="ht-habit" rowspan="2" scope="col">Habit</th>'+weeks+'<th rowspan="2" scope="col">Goal<br>days</th><th rowspan="2" scope="col">Progress</th></tr><tr>'+headings+'</tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="ht-empty"><h3>Start your month</h3><p>Add a habit, choose its monthly goal, and check the days you complete it.</p><button type="button" class="btn secondary" id="habitFirst">+ Add your first habit</button></div>')+
+    (stats.rows.length?'<p class="ht-scroll-hint">Tick completed days. Drag ⠿ to reorder (or focus it and use ↑ / ↓). Scroll sideways for all days.</p><div class="ht-table-scroll" tabindex="0" aria-label="Scrollable monthly habit grid"><table class="ht-table"><caption class="ht-sr">'+name+' habit check-ins</caption><thead><tr><th class="ht-habit" rowspan="2" scope="col">Habit</th>'+weeks+'<th rowspan="2" scope="col">Goal<br>days</th><th rowspan="2" scope="col">Progress</th></tr><tr>'+headings+'</tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="ht-empty"><h3>Start your month</h3><p>Add a habit, choose its monthly goal, and check the days you complete it.</p><button type="button" class="btn secondary" id="habitFirst">+ Add your first habit</button></div>')+
     (sources.length?'<div class="ht-copy"><label for="habitCopySource">Copy habit names and goals from</label><select id="habitCopySource">'+sources.map(m=>'<option value="'+m+'">'+habitMonthName(m)+'</option>').join('')+'</select><button type="button" class="btn secondary btn-sm" id="habitCopy">Copy habits</button><small>Daily checks stay in their original month.</small></div>':'')+
     (removed.length?'<details class="ht-removed"><summary>Removed habits ('+removed.length+')</summary>'+removed.map(item=>'<div><span>'+escapeHtml(item.title)+'</span><button type="button" class="btn secondary btn-sm" data-habit-restore="'+escapeAttr(item.id)+'">Restore</button></div>').join('')+'</details>':'')+
     '</section><aside class="ht-summary" aria-label="Monthly progress"><h3>Monthly progress</h3><div class="ht-ring" style="--ht-progress:'+stats.percent+'%"><div><b id="habitPercent">'+stats.percent+'%</b><span>of monthly goals</span></div></div><div class="ht-stats"><div><b id="habitCheckins">'+stats.total+'</b><span>Recorded check-ins</span></div><div><b>'+stats.goal+'</b><span>Goal check-ins</span></div></div><p class="ht-metric-note">Each habit contributes up to its goal. Extra checked days stay recorded.</p><h4>Daily completion</h4>'+habitChart(stats,month)+
-    '<h4>Habit progress</h4>'+ (stats.rows.length?stats.rows.map(item=>{const count=habitCount(item,month),goal=habitGoal(item,month);return '<div class="ht-ranking"><span>'+escapeHtml(item.title)+'</span><b>'+count+' / '+goal+'</b>'+progressBar(Math.min(count,goal),goal,true)+'</div>';}).join(''):'<p class="ht-muted">Your chart will update as you check days.</p>')+'</aside></div><p class="ht-save-note">Saved automatically. Reopen a month to continue its record.</p>';
+    '<h4>Habit progress</h4>'+ (stats.rows.length?stats.rows.map(item=>{const count=habitCount(item,month),goal=habitGoal(item,month);return '<div class="ht-ranking"><span>'+escapeHtml(item.title)+'</span><b>'+count+' / '+goal+'</b>'+progressBar(Math.min(count,goal),goal,true)+'</div>';}).join(''):'<p class="ht-muted">Your chart will update as you check days.</p>')+'</aside></div><p class="ht-save-note">Saved automatically. Tasks and new habits fill every saved month and appear when you open another month. Each month keeps its own ticks, edits and order.</p>';
+  habitBindDrag(pane,month);
   document.getElementById("habitAdd").onclick=()=>habitEdit();
   if(document.getElementById("habitFirst")) document.getElementById("habitFirst").onclick=()=>habitEdit();
   document.getElementById("habitMonthInput").onchange=e=>habitSelectMonth(e.target.value);
@@ -5693,6 +5790,8 @@ function renderHabitTracker(){
 function habitEdit(id){
   const month=habitMonth(),days=habitDays(month),existing=id && DB.habitTracker.items[habitRecordKey(month,id)];
   openModal('<h2>'+(existing?'Edit habit':'Add habit')+'</h2><p class="ht-muted">For '+habitMonthName(month)+'</p><form id="habitForm"><div class="form-row"><label for="habitTitle">Habit name</label><input id="habitTitle" required maxlength="120" placeholder="e.g. Read for 20 minutes" value="'+escapeAttr(existing?existing.title:'')+'"></div><div class="form-row"><label for="habitCategory">Category (optional)</label><input id="habitCategory" maxlength="60" placeholder="e.g. Learning" value="'+escapeAttr(existing?existing.category||'':'')+'"></div><div class="form-row"><label for="habitGoal">Monthly goal (days)</label><input type="number" id="habitGoal" min="1" max="'+days+'" required value="'+(existing?habitGoal(existing,month):days)+'"><small>Use '+days+' for every day. You can choose a smaller goal.</small></div><p class="ht-form-error" id="habitFormError" role="alert"></p><div class="modal-actions"><button type="button" class="btn secondary" id="habitCancel">Cancel</button><button class="btn" type="submit">'+(existing?'Save changes':'Add habit')+'</button></div></form>');
+  document.getElementById("habitFormError").insertAdjacentHTML('beforebegin','<div class="form-row"><label for="habitEditScope">Apply changes to</label><select id="habitEditScope"><option value="month">This month only</option><option value="all">All saved months and future months</option></select><small>New habits appear in all months. Daily ticks always stay in their own month.</small></div>');
+  if(!existing){document.getElementById("habitEditScope").value='all';document.getElementById("habitEditScope").disabled=true;}
   document.getElementById("habitCancel").onclick=closeModal;
   document.getElementById("habitForm").onsubmit=e=>{
     e.preventDefault();
@@ -5704,6 +5803,11 @@ function habitEdit(id){
     Object.assign(item,{title,category,updatedAt:at});
     if(!unchangedGoal) Object.assign(item,{goalDays:goal,goalMode:goal===days?'daily':'custom'});
     DB.habitTracker.items[habitRecordKey(month,item.id)]=item;
+    if(existing && document.getElementById("habitEditScope").value==='all'){
+      Object.values(DB.habitTracker.items).filter(other=>other.id===item.id).forEach(other=>{
+        Object.assign(other,{title,category,goalDays:item.goalDays,goalMode:item.goalMode,updatedAt:at});
+      });
+    }
     DB.habitTracker.selectedMonth={value:month,updatedAt:at};
     save();closeModal();renderTodos();
   };
