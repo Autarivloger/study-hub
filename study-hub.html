@@ -8219,6 +8219,1017 @@ const CYBERSECURITY_TEACH = {
         "url": "https://www.wireshark.org/docs/wsug_html_chunked/ChapterIntroduction.html"
       }
     ]
+  },
+  "3.1": {
+    "objective": "Explain how an operating system connects users, files and running software; distinguish a program, process and service; and identify what an observation actually proves.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. The next boundary is inside the device"
+      },
+      {
+        "t": "p",
+        "v": "Week 2 explained how information reaches a device. Now ask what happens inside it. Maya’s laptop can receive a page, display it through a browser and save notes. The operating system coordinates the programs, storage and users involved. A network connection working does not prove that the correct user can open the correct local file."
+      },
+      {
+        "t": "new",
+        "v": "Operating system and kernel",
+        "note": "An operating system manages resources and provides services to applications. Its kernel is the central component that manages activities such as processes, memory and access to hardware. Windows and Linux systems both perform these jobs, although their interfaces and details differ."
+      },
+      {
+        "t": "new",
+        "v": "Linux distribution",
+        "note": "A complete Linux-based system assembled with software, installation tools and update sources. Ubuntu is one example. Linux names the kernel, while a distribution supplies a usable system around it."
+      },
+      {
+        "t": "p",
+        "v": "You can learn the security questions on either Windows or Linux: who is using the device, what software runs, what information it can access, how it is maintained and how it can recover. Neither operating-system name is a guarantee of safety. Do not replace your everyday system simply because a security lesson mentions Linux."
+      },
+      {
+        "t": "h",
+        "v": "2. Files, directories and paths"
+      },
+      {
+        "t": "new",
+        "v": "Directory and path",
+        "note": "A directory, often called a folder, organises stored items. A path describes a location within a file system. An absolute path starts from a defined root; a relative path is interpreted from a current location."
+      },
+      {
+        "t": "p",
+        "v": "Imaginary Windows location: C:\\LearningLab\\notes.txt. Imaginary Linux location: /home/maya/learning-lab/notes.txt. These describe locations, not instructions to create or open files. Windows commonly uses drive letters and backslashes; Linux paths use slashes and are commonly case-sensitive. Details can vary by file system and configuration."
+      },
+      {
+        "t": "p",
+        "v": "A file named notes.txt in one folder is not automatically the same file as notes.txt in another. A backup also has its own location. When reporting a problem, identify the relevant path and avoid assuming a familiar filename proves the file is legitimate."
+      },
+      {
+        "t": "new",
+        "v": "File extension",
+        "note": "The ending of a filename, such as .txt or .exe, often used to suggest its format or associated application. It does not prove what the contents are or whether the file is safe."
+      },
+      {
+        "t": "h",
+        "v": "3. Stored software and running software differ"
+      },
+      {
+        "t": "new",
+        "v": "Program, process and process ID (PID)",
+        "note": "A program is stored software. A process is a running instance of software with an execution context and resources. A PID is a number identifying a process on that system at that time. It is not a permanent identity."
+      },
+      {
+        "t": "p",
+        "v": "Opening a browser starts running software. A browser may create several processes for tabs or supporting work. Closing one window does not necessarily end every related process. A downloaded installer is a stored file until something executes it; the file’s presence alone does not prove it ran."
+      },
+      {
+        "t": "new",
+        "v": "Service and daemon",
+        "note": "A service performs ongoing work, often without a visible application window. Windows manages services through its service system; Linux often uses background programs called daemons, commonly managed by a service manager. Different systems arrange these details differently."
+      },
+      {
+        "t": "p",
+        "v": "A backup service can run while its settings window is closed. A service can also be stopped while its program files remain installed. Installed, running and configured to start later are separate observations. They require different evidence."
+      },
+      {
+        "t": "h",
+        "v": "4. Connect observations to security"
+      },
+      {
+        "t": "p",
+        "v": "Imagine a running process has the familiar name helper. That name alone cannot establish its purpose. Useful context includes the executable’s location, the account it runs under, its expected role and trustworthy records of its origin. You do not need to stop it to learn about the observation."
+      },
+      {
+        "t": "p",
+        "v": "On your own permitted device, a process viewer such as Windows Task Manager can help inspect running software. Begin by reading, not ending processes. A high resource reading may concern workload or a software problem; it is not proof of malware. Repeatedly stopping unknown services can interrupt updates, backups or the course itself."
+      },
+      {
+        "t": "p",
+        "v": "Worked example: Maya’s browser opens, but a local note file cannot be read. Network delivery may be fine. The path, file availability and account permissions are now relevant. Ask which action failed and at which boundary, using the same careful reasoning as Week 2."
+      },
+      {
+        "t": "key",
+        "v": "A file is stored information. A program is stored software. A process is running software. A service is managed ongoing work. These are related, but they do not establish the same facts."
+      },
+      {
+        "t": "tip",
+        "v": "Practise describing a fictional file and process first. Record what you can observe and what remains unknown; do not turn an unfamiliar name into a malware diagnosis."
+      }
+    ],
+    "checks": [
+      {
+        "q": "An installer file is present in Downloads. Does that prove it executed?",
+        "a": "No. It shows that a stored file is present, not that a process ran it.",
+        "why": "Execution needs separate evidence, such as a permitted process or installation record. Even the filename alone does not establish the contents."
+      },
+      {
+        "q": "Why might one browser have several processes?",
+        "a": "It may separate tabs or other work into different running instances.",
+        "why": "A process is not the same as a visible window. Multiple browser processes are not automatically suspicious."
+      },
+      {
+        "q": "A web page loads, but opening a local document fails. Which layer should you consider next?",
+        "a": "The local file path, its availability and the user’s permission to access it.",
+        "why": "Successful web delivery does not establish local file access. Describe the failing operation precisely."
+      }
+    ],
+    "reflection": "Describe one imaginary file, program, process and service. Explain which observations distinguish them, and list one question that a process name alone cannot answer.",
+    "references": [
+      {
+        "title": "Microsoft: reading running processes",
+        "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-process"
+      },
+      {
+        "title": "Ubuntu: operating-system and terminal basics",
+        "url": "https://ubuntu.com/tutorials/command-line-for-beginners"
+      }
+    ]
+  },
+  "3.2": {
+    "objective": "Distinguish identity from permission, explain administrator/root access, interpret basic file permissions, and apply least privilege to a fictional learning folder.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. A user account supplies context"
+      },
+      {
+        "t": "new",
+        "v": "User account and group",
+        "note": "A user account represents an identity within a system. A group collects accounts for shared access rules. A program’s allowed actions depend on its execution context and the resource’s rules, not merely who owns the physical computer."
+      },
+      {
+        "t": "p",
+        "v": "Maya and Ravi share a permitted learning machine using separate accounts. Both can read a class worksheet, but only Maya should edit her personal study plan. Signing in successfully answers an identity question; it does not grant permission for every file or setting."
+      },
+      {
+        "t": "new",
+        "v": "Authentication and authorisation",
+        "note": "Authentication establishes an identity through an accepted method. Authorisation decides which actions that identity may perform. You will study accounts and authentication in more depth in Week 4; here we apply the difference to operating-system access."
+      },
+      {
+        "t": "h",
+        "v": "2. Administrative power should fit the task"
+      },
+      {
+        "t": "new",
+        "v": "Administrator, root and elevation",
+        "note": "An administrator has broad management privileges. In Linux, root is the privileged superuser account. Elevation means running an action with greater privileges than the normal context. It should be justified by the specific task."
+      },
+      {
+        "t": "p",
+        "v": "Reading a worksheet normally should not require broad system-management rights. Installing approved system software may require them. If an ordinary task fails, first understand the path and permission. Automatically running everything with greater privileges can make mistakes affect more of the system."
+      },
+      {
+        "t": "new",
+        "v": "UAC and sudo",
+        "note": "Windows User Account Control helps separate ordinary execution from elevated actions and may request consent or administrator credentials. On many Linux systems, sudo lets an authorised account run a permitted command under another user context, commonly root. Neither mechanism makes an unknown action trustworthy."
+      },
+      {
+        "t": "p",
+        "v": "Least privilege, introduced in Week 1, means the smallest access needed for the task. A program running under your ordinary account may still access files that account can read. Standard-user execution limits some harm, but it does not make your personal data immune to misuse."
+      },
+      {
+        "t": "h",
+        "v": "3. Read a simple Linux permission example"
+      },
+      {
+        "t": "new",
+        "v": "Owner, group and other permission classes",
+        "note": "In the basic Linux file-mode model, a file has an owning user, an owning group and permissions for three classes: owner, group and others. Additional access mechanisms can also apply, so this simple example is not a complete model of every system."
+      },
+      {
+        "t": "p",
+        "v": "Invented regular-file example: -rw-r----- with owner maya and group learners.\nThe first character, -, marks a regular file.\nOwner characters rw-: the owner can read and write, but no execute permission is set.\nGroup characters r--: the group can read, but not write or execute.\nOther characters ---: no permissions are granted to other users by these mode bits."
+      },
+      {
+        "t": "new",
+        "v": "Read, write and execute",
+        "note": "For a regular file, read concerns its content, write concerns modifying it, and execute concerns permission to run it as a program. For a directory, these mean different actions: listing names, modifying directory entries and traversing the directory. Context matters."
+      },
+      {
+        "t": "p",
+        "v": "Maya can edit the example file. A non-owner member of learners can read it under these basic rules. A user outside those classes has no access from these mode bits. Real effective access can also involve parent-directory permissions, extra access lists and privileged contexts. Do not use one displayed line to dismiss those factors."
+      },
+      {
+        "t": "p",
+        "v": "A directory’s rules matter when creating or deleting entries. Making a file read-only is therefore not a universal guarantee that nobody can delete it; the containing directory and other rules also matter. Learn the model before changing any permissions."
+      },
+      {
+        "t": "h",
+        "v": "4. Windows uses access lists"
+      },
+      {
+        "t": "new",
+        "v": "Access control list (ACL) and inheritance",
+        "note": "An ACL describes access entries for accounts or groups. Inheritance allows rules from a containing folder to apply to items inside it. Effective access considers applicable rules and the account’s context."
+      },
+      {
+        "t": "p",
+        "v": "Windows file permissions commonly use access lists with rights such as read, modify or full control. The three Linux mode classes are not a direct translation of every Windows rule. Review the actual account, groups, inherited rules and intended action rather than copying an unrelated permission fix."
+      },
+      {
+        "t": "p",
+        "v": "Worked decision: Ravi only needs to read a class worksheet, not edit it or manage its permissions. Give the needed read access in the fictional policy. If access fails, identify which file and action are affected, and review the policy. Granting everyone full control is a different decision with different risks."
+      },
+      {
+        "t": "h",
+        "v": "5. Python’s supporting role"
+      },
+      {
+        "t": "p",
+        "v": "Python can later collect a permitted inventory of paths, sizes and available permission information. This helps identify missing items or compare expected settings. It must run within the approved scope and handle errors. Permission models differ, and one simple field cannot always summarise effective access on every operating system."
+      },
+      {
+        "t": "key",
+        "v": "Identity answers who. Permission answers which action is allowed on which resource. Elevation expands power; least privilege limits it to a justified purpose."
+      },
+      {
+        "t": "tip",
+        "v": "For today, interpret invented permissions and write a policy. Keep real permission changes for a clearly scoped lab with a recovery plan."
+      }
+    ],
+    "checks": [
+      {
+        "q": "In the basic -rw-r----- example, can a non-owner member of learners edit the file?",
+        "a": "Not from these mode bits: the group has read access but no write access.",
+        "why": "The question assumes the stated basic context. Other applicable controls or privileges can affect a real system."
+      },
+      {
+        "q": "A successful login is recorded. Does it prove the account may change system settings?",
+        "a": "No. Authentication and authorisation are separate.",
+        "why": "The allowed action depends on account context, permissions and applicable policy."
+      },
+      {
+        "q": "A worksheet cannot be opened. Why is giving every user full control an unsuitable first response?",
+        "a": "It changes far more access than the reading task needs and may expose editing or permission-management rights.",
+        "why": "First identify the correct path, action and applicable rules. Aim for the smallest justified correction."
+      }
+    ],
+    "reflection": "Write a fictional policy for a shared worksheet and a private study plan. State who may read, who may edit, and why administrative access is unnecessary for ordinary reading.",
+    "references": [
+      {
+        "title": "Microsoft: UAC and execution context",
+        "url": "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/how-it-works"
+      },
+      {
+        "title": "Ubuntu: file permission concepts",
+        "url": "https://help.ubuntu.com/community/FilePermissions"
+      },
+      {
+        "title": "Microsoft: Windows access-list concepts",
+        "url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/icacls"
+      }
+    ]
+  },
+  "3.3": {
+    "objective": "Distinguish terminal, shell and command; use a few read-only commands in the correct environment; and explain their output without assuming every system prints identical results.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Know where a command belongs"
+      },
+      {
+        "t": "new",
+        "v": "Terminal, shell and prompt",
+        "note": "A terminal is the interface used for text-based interaction. A shell interprets commands. A prompt shows that the shell is ready for input. Windows Terminal can host different shells; the terminal window’s name does not determine command syntax."
+      },
+      {
+        "t": "new",
+        "v": "PowerShell and Bash",
+        "note": "PowerShell is a shell with commands called cmdlets, often named Verb-Noun. Bash is a common Linux shell. Their syntax and output models differ. These examples are terminal commands, not Python code."
+      },
+      {
+        "t": "p",
+        "v": "Use an ordinary, non-administrator PowerShell session for the Windows examples, or a Bash terminal on an owned or authorised Linux system. You do not need to install Linux to read its examples. Begin in a harmless learning folder containing invented files. Run one command at a time and read its purpose first."
+      },
+      {
+        "t": "p",
+        "v": "A Python prompt is not the place for these commands. Also distinguish PowerShell from the older Windows Command Prompt. The same-looking command or punctuation can have different behaviour in another shell. Today’s commands inspect information; they do not change files, install software or alter security settings."
+      },
+      {
+        "t": "h",
+        "v": "2. Windows: identify the current location"
+      },
+      {
+        "t": "new",
+        "v": "Get-Location",
+        "note": "A PowerShell cmdlet that reports the current location. It helps you understand where a relative file path would be interpreted."
+      },
+      {
+        "t": "sh",
+        "v": "Get-Location"
+      },
+      {
+        "t": "p",
+        "v": "Read the displayed Path. It depends on where your session started or was moved; it will not necessarily match the imaginary learning paths in this course. This command reports a location. It does not move you into a different folder."
+      },
+      {
+        "t": "new",
+        "v": "Get-ChildItem and -LiteralPath",
+        "note": "Get-ChildItem lists items in a location. -LiteralPath supplies a path without interpreting wildcard characters. A single dot means the current location. Listing items is different from reading every file’s contents."
+      },
+      {
+        "t": "sh",
+        "v": "Get-ChildItem -LiteralPath ."
+      },
+      {
+        "t": "p",
+        "v": "Look for names and whether an item is a folder. Output fields depend on the location and environment. An empty folder can produce no item rows without indicating an attack or a failure. This command does not search every folder on the computer."
+      },
+      {
+        "t": "h",
+        "v": "3. Windows: read time and running processes"
+      },
+      {
+        "t": "new",
+        "v": "Get-Date and -Format o",
+        "note": "Get-Date obtains the current date/time. -Format o asks for a detailed round-trip representation, including offset information for the usual local-time result. It does not change the clock. Your actual date and offset will vary."
+      },
+      {
+        "t": "sh",
+        "v": "Get-Date -Format o"
+      },
+      {
+        "t": "p",
+        "v": "Record that a time has an offset rather than copying only the hour and minute. Day 4 explains why two differently displayed times may refer to the same instant."
+      },
+      {
+        "t": "new",
+        "v": "Get-Process",
+        "note": "A PowerShell cmdlet for inspecting running processes on the local computer. It can display process names and IDs. Reading this list does not stop or modify a process."
+      },
+      {
+        "t": "sh",
+        "v": "Get-Process"
+      },
+      {
+        "t": "p",
+        "v": "The list and order can vary. Some detailed information may be unavailable without additional access. An unfamiliar process name is a question to investigate, not proof of malware. Today you are learning observation, not process termination."
+      },
+      {
+        "t": "h",
+        "v": "4. Linux: inspect location and identity"
+      },
+      {
+        "t": "new",
+        "v": "pwd and ls",
+        "note": "pwd prints the current working directory. ls lists directory entries. In ls -la, -l asks for a long listing and -a includes dot-prefixed entries and the special current/parent directory entries. These are read-only inspection options."
+      },
+      {
+        "t": "sh",
+        "v": "pwd\nls -la"
+      },
+      {
+        "t": "p",
+        "v": "Run these as two separate commands. Interpret the location and the file-mode characters using Day 2. In the listing, . refers to this directory and .. to its parent. Dot-prefixed names are not necessarily dangerous; they are often used for configuration. A directory entry’s presence does not prove that a program ran."
+      },
+      {
+        "t": "new",
+        "v": "id",
+        "note": "A Linux command that reports user and group identity information for the current context by default. Numeric IDs and group membership help explain applicable access rules; they are not passwords."
+      },
+      {
+        "t": "sh",
+        "v": "id"
+      },
+      {
+        "t": "new",
+        "v": "date -Iseconds",
+        "note": "On GNU/Linux systems, date -Iseconds displays the current time in an ISO-style format with seconds and an offset. This option may differ on other systems. It reads the clock; it does not set it."
+      },
+      {
+        "t": "sh",
+        "v": "date -Iseconds"
+      },
+      {
+        "t": "h",
+        "v": "5. Make observations useful"
+      },
+      {
+        "t": "p",
+        "v": "For each command, write: environment, purpose, relevant observation and limitation. Example: PowerShell; list the current folder; no item rows; this does not establish whether another folder contains files. Do not paste a whole personal inventory into public course notes when a fictional example will explain the same idea."
+      },
+      {
+        "t": "p",
+        "v": "If a command is unavailable, check the shell and its documentation. If access is denied, understand the permission boundary before requesting more access. An error message is evidence about an attempted action, not an instruction to disable protections."
+      },
+      {
+        "t": "key",
+        "v": "Know the shell, current location, purpose and side effects before running a command. Compare the meaning of output, not a memorised screenshot."
+      },
+      {
+        "t": "tip",
+        "v": "Practice task: choose your existing permitted environment, inspect a harmless folder with the matching commands, and explain three observations. Reading the other platform’s examples is sufficient if you do not have that platform."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Should Get-ChildItem be entered at the Python interactive prompt?",
+        "a": "No. It belongs in PowerShell.",
+        "why": "The terminal interface can host different interpreters. Identify the active shell before copying a command."
+      },
+      {
+        "q": "An empty learning folder produces no listed item rows. Does that alone show a failed command?",
+        "a": "No. The folder may simply have no matching visible items.",
+        "why": "Check the location, options and any error message. Empty output and an error are different observations."
+      },
+      {
+        "q": "Does Get-Process or ls -la change the running programs or listed file permissions?",
+        "a": "No. The examples inspect information.",
+        "why": "Do not confuse reading a process or permission list with stopping software or changing access rules."
+      }
+    ],
+    "reflection": "Record the environment, purpose, observation and limitation for three read-only commands. Use fictional names if your actual output contains private information.",
+    "references": [
+      {
+        "title": "Microsoft: Get-Location",
+        "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-location"
+      },
+      {
+        "title": "Microsoft: Get-ChildItem",
+        "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-childitem"
+      },
+      {
+        "title": "Microsoft: Get-Date",
+        "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/get-date"
+      },
+      {
+        "title": "Microsoft: Get-Process",
+        "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-process"
+      },
+      {
+        "title": "Ubuntu: terminal basics",
+        "url": "https://ubuntu.com/tutorials/command-line-for-beginners"
+      },
+      {
+        "title": "Ubuntu: id command",
+        "url": "https://manpages.ubuntu.com/manpages/noble/man1/id.1.html"
+      },
+      {
+        "title": "Ubuntu: date command",
+        "url": "https://manpages.ubuntu.com/manpages/noble/man1/date.1.html"
+      }
+    ]
+  },
+  "3.4": {
+    "objective": "Read a simple system/application record, compare timestamps with explicit offsets, and report a timeline without turning an error or missing record into proof of an attack.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. A log records a system’s view"
+      },
+      {
+        "t": "p",
+        "v": "Week 2 used a simplified traffic summary. Operating systems and applications also record events. These can help explain sign-ins, software changes, failures or saved files. A record is evidence from a particular source; it does not automatically contain every action or the correct interpretation of that action."
+      },
+      {
+        "t": "new",
+        "v": "System log, application log and event source",
+        "note": "A system log concerns operating-system activity. An application log concerns a program’s own activity. The event source identifies the component reporting the event. Sources can have different detail, access requirements and recording rules."
+      },
+      {
+        "t": "p",
+        "v": "Windows has event logging facilities and tools such as Event Viewer. Many Linux installations use a system journal or text-based log files. The location and fields depend on the distribution, service and configuration. You are not expected to memorise one path as the location of every Linux security event."
+      },
+      {
+        "t": "new",
+        "v": "Severity and event identifier",
+        "note": "Severity describes the source’s classification, such as information, warning or error. An event identifier names a kind of event within that source. Neither field alone establishes malicious intent."
+      },
+      {
+        "t": "h",
+        "v": "2. Read the fields before the story"
+      },
+      {
+        "t": "p",
+        "v": "Invented application record:\nTime: 2026-10-11T15:05:00+09:00\nSource: PracticeNotes\nAccount: maya\nAction: save document\nResult: denied\nReason: no write access to the selected file.\nThis is fictional teaching data, not a record of your activity."
+      },
+      {
+        "t": "p",
+        "v": "Supported conclusion: this source reports that the stated save attempt was denied for an access reason. It does not prove that the account was stolen or the document was lost. You need the intended file, effective permissions, expected account and possibly other records to explain the cause."
+      },
+      {
+        "t": "p",
+        "v": "Compare a second record: a different permitted save succeeds later. That shows a different result, but it does not by itself establish that someone changed permissions. Perhaps a different file was selected. Preserve the fields and distinguish an explanation from a recorded fact."
+      },
+      {
+        "t": "h",
+        "v": "3. Time zones can change the displayed hour"
+      },
+      {
+        "t": "new",
+        "v": "UTC, offset and Z",
+        "note": "UTC is a common time reference. An offset states the difference from UTC for a displayed time. In these timestamps, Z indicates UTC. A +09:00 offset means the displayed local time is nine hours ahead of UTC."
+      },
+      {
+        "t": "p",
+        "v": "These two fictional timestamps represent the same instant:\n2026-10-11T15:05:00+09:00\n2026-10-11T06:05:00Z\nSubtract nine hours from the first display to compare it with UTC. The date can also change when converting across midnight. An offset is important context, not decorative text."
+      },
+      {
+        "t": "p",
+        "v": "Now compare 15:05:03+09:00 with 06:05:01Z on the same date. The second timestamp is two seconds earlier after conversion, despite its smaller displayed hour. Sorting only the visible hour, or sorting mixed-offset timestamp strings alphabetically, can give the wrong timeline."
+      },
+      {
+        "t": "new",
+        "v": "Clock accuracy and collection time",
+        "note": "A device’s clock may differ from another device’s clock. Collection time is when a record is received or gathered, which may differ from the time the source says the event occurred."
+      },
+      {
+        "t": "p",
+        "v": "Time conversion cannot repair an inaccurate clock. Before claiming that one event caused another, consider clock accuracy, recording delays and the event fields. Two nearby timestamps can suggest a question to investigate without proving a causal relationship."
+      },
+      {
+        "t": "h",
+        "v": "4. Missing records and errors need context"
+      },
+      {
+        "t": "p",
+        "v": "If no matching event appears, possibilities include the event not happening, logging not being enabled, a retention limit, an incomplete collection, different permissions or the wrong source being searched. State that no matching record was found in the inspected source and interval. That is more precise than nothing happened."
+      },
+      {
+        "t": "new",
+        "v": "Retention and redaction",
+        "note": "Retention is how long records are kept. Redaction means removing or masking sensitive information from a copy. Keep enough context to explain your example without publishing passwords, tokens or other people’s personal data."
+      },
+      {
+        "t": "p",
+        "v": "A warning may be expected maintenance information. An error may be a software failure. A successful sign-in may be ordinary use or unauthorised activity. The source, account, expected behaviour and surrounding evidence determine the interpretation; the severity label is not the conclusion."
+      },
+      {
+        "t": "h",
+        "v": "5. Python can organise a permitted timeline"
+      },
+      {
+        "t": "p",
+        "v": "Python can later read authorised sample records, parse their timestamps with offsets, group related events and generate a report. Keep the original timestamp and source information so the report can be checked. Do not pretend that a script knows the device clocks were correct or that unrecorded actions did not occur."
+      },
+      {
+        "t": "key",
+        "v": "A useful timeline preserves source, event time, offset, result and uncertainty. Comparable clock displays are only one part of reliable evidence."
+      },
+      {
+        "t": "tip",
+        "v": "Practice report: observation; possible explanation; missing information; next permitted check. Use the fictional records here rather than copying private logs into course notes."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Do 15:05:00+09:00 and 06:05:00Z on the stated date describe different events nine hours apart?",
+        "a": "No. They can represent the same instant displayed with different offsets.",
+        "why": "Convert both to the same reference before comparing them. The event fields are still needed to decide whether the records describe the same action."
+      },
+      {
+        "q": "A save event says denied because of missing write access. Does it prove an attacker changed the file?",
+        "a": "No. It reports an attempted action and an access result.",
+        "why": "Check the intended file, expected account and applicable rules. Do not invent a cause not present in the record."
+      },
+      {
+        "q": "No sign-in event appears in one collected log. Can you guarantee that no sign-in happened?",
+        "a": "No. Logging, collection, retention, access and source selection may limit the evidence.",
+        "why": "Report the inspected source and interval. A missing record is not automatically proof of a missing action."
+      }
+    ],
+    "reflection": "Write a fictional timeline with one UTC timestamp and one +09:00 timestamp. Convert them, preserve the original displays and explain one uncertainty that conversion cannot solve.",
+    "references": [
+      {
+        "title": "Microsoft: event logging",
+        "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"
+      },
+      {
+        "title": "RFC 3339: timestamps and offsets",
+        "url": "https://www.rfc-editor.org/rfc/rfc3339.html"
+      }
+    ]
+  },
+  "3.5": {
+    "objective": "Explain updates and trusted software sources, distinguish endpoint protection from a safety guarantee, and design a small learning lab with explicit network and recovery boundaries.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Maintenance closes known gaps"
+      },
+      {
+        "t": "new",
+        "v": "Security update and supported release",
+        "note": "A security update fixes or mitigates a known security issue. A supported release is maintained under the vendor’s stated support terms. Whether a product still receives fixes depends on its release, support arrangement and current policy."
+      },
+      {
+        "t": "p",
+        "v": "An installed operating system can keep running after its ordinary support ends. That does not mean it receives the same fixes. Check the official support information for the specific release instead of assuming that any Windows or Linux installation is maintained indefinitely."
+      },
+      {
+        "t": "p",
+        "v": "An update may require a restart or additional steps before the change is active. Downloaded, installed and active are different states. For important work, keep a recovery copy and choose a suitable maintenance time, then check completion. Updating helps address known issues; it does not prove that every setting or file is safe."
+      },
+      {
+        "t": "h",
+        "v": "2. Understand where software comes from"
+      },
+      {
+        "t": "new",
+        "v": "Package, repository and package manager",
+        "note": "A package is a prepared software item. A repository supplies packages and associated information. A package manager helps obtain, install and maintain software from configured sources. Ubuntu commonly uses APT for some system packages; other systems and package formats differ."
+      },
+      {
+        "t": "p",
+        "v": "The update path should be understood: which publisher provides the software, which source is configured and which application performs the update. A link saying security update is not enough evidence. Use the product’s known update mechanism or an independently verified official source."
+      },
+      {
+        "t": "new",
+        "v": "Publisher signature",
+        "note": "A cryptographic signature can help check a software item’s claimed publisher and whether signed content changed. It does not certify that the software is harmless or suitable for your task. Learn detailed integrity checks in Week 4."
+      },
+      {
+        "t": "new",
+        "v": "Endpoint protection",
+        "note": "Protective software and controls on a device, such as malware detection and behavioural monitoring. An endpoint is a participating device such as a laptop. The protection’s active state, updates and configuration affect what it does."
+      },
+      {
+        "t": "p",
+        "v": "Windows includes Microsoft Defender Antivirus on applicable systems, but another provider or organisational configuration may change which protection is active. An icon, a familiar process name or a past clean scan is not a guarantee of current safety. Check the actual provider and status through the system’s trusted security interface."
+      },
+      {
+        "t": "h",
+        "v": "3. Keep the learning environment separate"
+      },
+      {
+        "t": "new",
+        "v": "Host, guest and hypervisor",
+        "note": "The host is the computer running a virtual machine. The guest is the operating system inside the VM. A hypervisor is the software that provides the virtualised environment. The guest still depends on the host’s storage, resources and configuration."
+      },
+      {
+        "t": "p",
+        "v": "You may continue with a folder of fictional files and records if you do not need a VM yet. If you choose a VM later, check the host’s capacity and compatibility, use an official installer source and keep personal accounts and important data out of the guest. Installing software is a separate deliberate step, not a requirement to understand this lesson."
+      },
+      {
+        "t": "new",
+        "v": "Snapshot and independent backup",
+        "note": "A snapshot records a VM state for possible return to that state. An independent backup preserves information separately against relevant loss. A snapshot on the same host drive does not protect against losing that drive."
+      },
+      {
+        "t": "p",
+        "v": "Returning a guest to an earlier state can undo some guest changes. It cannot unsend a message, undo a change already made to another service or restore a host file that was changed through a shared folder. Recovery must match the location and kind of change."
+      },
+      {
+        "t": "h",
+        "v": "4. A VM network mode is a real boundary decision"
+      },
+      {
+        "t": "p",
+        "v": "In a common VirtualBox setup, NAT permits guest-initiated communication through the host’s networking. It is convenient for legitimate updates, but is not an offline isolation guarantee. Bridged networking places the guest onto a connected network in a different way and may expose it to other network participants."
+      },
+      {
+        "t": "p",
+        "v": "Host-only networking permits communication involving the host and participating guests; it does not mean the host is unreachable. Internal networking can connect selected guests without directly including the host on that virtual network. Exact behaviour depends on adapters and configuration. More than one active adapter or forwarding on another component can change the actual paths."
+      },
+      {
+        "t": "p",
+        "v": "For an initial local-only file exercise, no enabled guest network adapter is a simpler boundary than assuming NAT means isolated. Also review shared folders, clipboard sharing, drag-and-drop and device connections, because a disabled network adapter does not remove every host–guest channel. These controls reduce interaction; they are not a promise of perfect containment."
+      },
+      {
+        "t": "h",
+        "v": "5. Write a lab plan before a lab change"
+      },
+      {
+        "t": "p",
+        "v": "A beginner plan can contain: owned practice VM or fictional folder; permitted file inspection; invented data only; known network state; no shared personal folders; a reference copy or recovery method; and a stop condition if the observed boundaries differ from the plan. Use ordinary harmless exercises, not unknown malware."
+      },
+      {
+        "t": "p",
+        "v": "If the lab needs a deliberate update connection, state when connectivity is allowed and recheck its settings afterwards. Permission over a VM does not grant permission to test a school network or a public service. The allowed target and action must still be defined."
+      },
+      {
+        "t": "key",
+        "v": "Know what is maintained, who supplies the software, what protection is active, which systems the lab can reach and what the recovery method can actually restore."
+      },
+      {
+        "t": "tip",
+        "v": "Practice task: design the lab on paper first. State allowed data, allowed actions, network paths, host-sharing paths and a recovery method. Explain why each boundary fits the exercise."
+      }
+    ],
+    "checks": [
+      {
+        "q": "A VM uses NAT. Does that prove it cannot contact outside services?",
+        "a": "No. NAT commonly permits outbound communication.",
+        "why": "Inspect the actual network settings and other channels. Address translation is not the same as no connectivity."
+      },
+      {
+        "q": "Can reverting a snapshot reliably undo a message already sent to an external service?",
+        "a": "No. Returning guest state does not reverse an action already performed outside that guest.",
+        "why": "Recovery boundaries matter. A guest snapshot is not a universal undo button."
+      },
+      {
+        "q": "The computer downloaded an update. Is the fix definitely active?",
+        "a": "Not necessarily. Installation, restart requirements and completion status still matter.",
+        "why": "Check the product’s documented state and maintenance result. Downloading a file alone is not proof of completed protection."
+      }
+    ],
+    "reflection": "Design a small lab without installing anything. Describe its data, permission, network and sharing boundaries, and one failure its recovery method would not cover.",
+    "references": [
+      {
+        "title": "Ubuntu: security update maintenance",
+        "url": "https://documentation.ubuntu.com/security/security-updates/"
+      },
+      {
+        "title": "Microsoft: Defender Antivirus status and modes",
+        "url": "https://learn.microsoft.com/en-us/defender-endpoint/microsoft-defender-antivirus-windows"
+      },
+      {
+        "title": "Oracle: VM network modes",
+        "url": "https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/networkingdetails.html"
+      },
+      {
+        "title": "Oracle: virtualisation overview",
+        "url": "https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/Introduction.html"
+      }
+    ]
+  },
+  "3.6": {
+    "objective": "Create a device-security checklist with reasons and evidence, prioritise improvements, and separate a useful check from a claim of complete safety.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. A checklist must explain its purpose"
+      },
+      {
+        "t": "p",
+        "v": "A row of green ticks can be misleading if nobody knows what was checked. A useful device review names the asset, concern, observed state, evidence, owner and next action. It also records uncertainty. Today you will design that review, using your own permitted device or a fully fictional example."
+      },
+      {
+        "t": "new",
+        "v": "Baseline and verification",
+        "note": "A baseline is an agreed expected state, such as ordinary work using limited privileges and maintained software. Verification checks whether the relevant observation supports that expected state. A checklist tick is not evidence by itself."
+      },
+      {
+        "t": "p",
+        "v": "Use status words such as checked, needs attention and unknown. If you cannot verify a setting, unknown is more honest than guessing. Keep private account details and recovery secrets out of the checklist."
+      },
+      {
+        "t": "h",
+        "v": "2. Identity and access checks"
+      },
+      {
+        "t": "p",
+        "v": "Account context: identify the account used for daily work and whether the task needs administrative power. Purpose: reduce the reach of accidental or unwanted actions. Evidence: the relevant account/group information and intended operation, not a belief that administrator is always necessary."
+      },
+      {
+        "t": "new",
+        "v": "Screen lock",
+        "note": "A control that restricts ordinary interactive access while the device is unattended. It helps with physical access concerns, but does not automatically terminate running services, fix compromised software or create a recovery copy."
+      },
+      {
+        "t": "p",
+        "v": "Local file access: choose one harmless sample folder and describe who should read or edit it. Purpose: protect confidentiality and integrity. Evidence: the account, applicable rules and the actual allowed action. Include parent folders or inherited rules when relevant; a file icon alone does not establish effective access."
+      },
+      {
+        "t": "h",
+        "v": "3. Software, updates and exposure checks"
+      },
+      {
+        "t": "p",
+        "v": "Maintenance: identify the OS release and important applications, their official support path and whether required updates completed. Purpose: reduce harm from known weaknesses. Evidence: the product’s update and support state. A system that turns on successfully has not necessarily passed this check."
+      },
+      {
+        "t": "new",
+        "v": "Attack surface",
+        "note": "The ways a system can be reached or interacted with in a manner relevant to security. Unnecessary applications, services, sharing or remote access can add opportunities for mistakes and misuse."
+      },
+      {
+        "t": "p",
+        "v": "Installed and running software: note whether each relevant item has an expected purpose and a trusted source. Purpose: understand what work and access the device permits. Evidence: an inventory and configuration, not just unfamiliar names. Do not remove or stop a component merely because you have not learned it yet."
+      },
+      {
+        "t": "p",
+        "v": "Network exposure: describe intended inbound and outbound access, file sharing and remote-management needs. Purpose: match reachable services to justified tasks. Evidence: permitted settings and records. A private address or NAT arrangement does not alone establish the right firewall policy."
+      },
+      {
+        "t": "p",
+        "v": "Protection status: identify the active security provider and whether maintenance and relevant checks are current. Purpose: keep that protective layer useful. Evidence: trusted status information and alerts. A clean result supports that check’s observation; it does not prove absence of every threat."
+      },
+      {
+        "t": "h",
+        "v": "4. Recovery and evidence checks"
+      },
+      {
+        "t": "p",
+        "v": "Backup: name what data is covered, where the retained copy lives and which failures it protects against. Purpose: restore availability and trustworthy information. Evidence: a permitted recovery test using harmless sample data. A copy on the same failing drive may share the original’s failure."
+      },
+      {
+        "t": "p",
+        "v": "Logs and time: identify useful sources, their access and retention, and timestamp context. Purpose: investigate problems with a reliable timeline. Evidence: a readable sample and known limits. Do not collect excessive personal information simply to fill a checklist."
+      },
+      {
+        "t": "p",
+        "v": "Lab boundaries: state whether the practice system has network adapters, shared folders or other host channels. Purpose: keep experiments within scope. Evidence: the actual settings and harmless observations. The label virtual machine is not evidence of isolation."
+      },
+      {
+        "t": "h",
+        "v": "5. Prioritise one justified improvement"
+      },
+      {
+        "t": "new",
+        "v": "Remediation and recheck",
+        "note": "Remediation is an action that addresses a problem. A recheck verifies the relevant result afterwards. The action should match the specific concern and stay within permission."
+      },
+      {
+        "t": "p",
+        "v": "Imaginary findings: the only study backup shares the original drive, and a folder icon’s colour is unfamiliar. The missing independent recovery copy has a clear potential consequence. The icon colour alone does not establish a vulnerability. Prioritise based on evidence, impact and the task rather than appearance."
+      },
+      {
+        "t": "p",
+        "v": "Write one improvement as: concern; intended change; permission; recovery preparation; evidence of success. For example, plan a separately retained copy of fictional learning data and a restore check. This is a learning plan; it does not require changing your real device settings during the lesson."
+      },
+      {
+        "t": "key",
+        "v": "A good checklist connects expected state to evidence, then connects a finding to a relevant, permitted action and a recheck."
+      },
+      {
+        "t": "tip",
+        "v": "Mini challenge: write six checklist rows covering access, maintenance, software, network exposure, recovery and logs. Include an unknown rather than inventing evidence."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Your review says secure because the protection icon is green. What important parts are missing?",
+        "a": "The specific concern, active state, relevant evidence, limitations and next action if something is unknown.",
+        "why": "A visible status is one observation. It cannot replace a review of access, updates, exposure and recovery."
+      },
+      {
+        "q": "Which finding is more clearly actionable: no separate copy of irreplaceable notes, or an unfamiliar folder icon?",
+        "a": "The missing separate recovery copy has a clear consequence and a matching improvement to investigate.",
+        "why": "The icon alone does not establish a security weakness. Priority should follow evidence and impact."
+      },
+      {
+        "q": "You cannot confirm a service’s purpose. Should the checklist automatically mark it malicious and recommend deletion?",
+        "a": "No. Record the purpose as unknown and propose a permitted investigation.",
+        "why": "Uncertainty is not proof. Removing a legitimate dependency could harm availability."
+      }
+    ],
+    "reflection": "Write six evidence-based checklist rows and one prioritised improvement. Give each a purpose, observation, uncertainty and permitted next step.",
+    "references": [
+      {
+        "title": "Microsoft: account execution context",
+        "url": "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/how-it-works"
+      },
+      {
+        "title": "Ubuntu: maintenance expectations",
+        "url": "https://documentation.ubuntu.com/security/security-updates/"
+      },
+      {
+        "title": "Oracle: network boundaries",
+        "url": "https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/networkingdetails.html"
+      }
+    ]
+  },
+  "3.7": {
+    "objective": "Combine operating-system, permission, log and network reasoning in one case, justify a small device-review plan, and identify what to revise before Week 4.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Recall the operating-system picture"
+      },
+      {
+        "t": "p",
+        "v": "Explain a stored program, running process, service, file path and account context without looking at the definitions. Then explain why successful sign-in does not grant every permission and why an installed service is not necessarily running. If a distinction feels vague, give a new example and return to its definition."
+      },
+      {
+        "t": "p",
+        "v": "Connect the weeks: Week 1 identifies what matters and the harm to reduce. Week 2 explains delivery and network observations. Week 3 explains what runs on a device, what it may access and how you maintain and observe it. Each layer supplies part of the picture."
+      },
+      {
+        "t": "h",
+        "v": "2. A connected fictional case"
+      },
+      {
+        "t": "p",
+        "v": "Maya uses an ordinary account on a learning laptop. She opens a web lesson successfully, then tries to save a file in a shared practice folder. An application record reports denied write access at 2026-10-11T15:05:00+09:00. Another source lists an event at 2026-10-11T06:05:00Z. The folder’s policy permits learners to read, while only the owner may edit. Maya’s independent backup has not yet been tested."
+      },
+      {
+        "t": "p",
+        "v": "She also has a practice VM with NAT networking and a shared host folder. Someone suggests running the browser as administrator, disabling protection and relying on a VM snapshot because it can undo everything. The suggestions are claims to evaluate; they are not the required response."
+      },
+      {
+        "t": "p",
+        "v": "First separate observations from assumptions: the lesson displayed; a save was reported denied; the stated policy distinguishes reading and editing; two time displays may represent one instant; the backup’s restore result is unknown; the guest has network and host-sharing paths. None of this by itself proves an attacker is present."
+      },
+      {
+        "t": "h",
+        "v": "3. Explain the boundaries and consequences"
+      },
+      {
+        "t": "p",
+        "v": "A web request succeeding does not establish write permission to a local folder. Giving the browser broad rights changes more than that folder’s policy. A sensible next step is to confirm the intended file, account and policy, then choose an authorised task location or a justified scoped change."
+      },
+      {
+        "t": "p",
+        "v": "The two timestamp displays can be equal after offset conversion, but matching times alone do not prove the records describe the same action. Compare sources and fields, and consider clock accuracy. A report should preserve those uncertainties rather than force a dramatic story."
+      },
+      {
+        "t": "p",
+        "v": "NAT can allow external communication. A shared folder connects guest activity to host data. A guest snapshot does not reverse external requests or guarantee recovery of changed host files. The lab therefore needs boundaries matching the exercise, plus an appropriate recovery method."
+      },
+      {
+        "t": "h",
+        "v": "4. Mini challenge: produce a small review report"
+      },
+      {
+        "t": "p",
+        "v": "Write four findings: local write access, timestamp interpretation, VM interaction paths and backup recovery. For each, state the observation, consequence or question, uncertainty and next permitted check. Use the Day Notes box to draft your report before revealing the answers below."
+      },
+      {
+        "t": "p",
+        "v": "Then choose one high-value improvement supported by the case. A restore test on harmless sample data could resolve a recovery uncertainty. A lab plan could limit unnecessary sharing. Your reasoning should name the concern and verification, not recommend deleting unknown programs or disabling protections without evidence."
+      },
+      {
+        "t": "h",
+        "v": "5. Weekly summary and readiness"
+      },
+      {
+        "t": "p",
+        "v": "Day 1: identify stored data, programs, processes and services.\nDay 2: distinguish identity, permission and administrative power.\nDay 3: choose the correct shell and interpret read-only observations.\nDay 4: preserve log context and compare timestamps carefully.\nDay 5: understand maintenance, software sources and lab boundaries.\nDay 6: connect checklist findings to evidence and a recheck."
+      },
+      {
+        "t": "p",
+        "v": "Common confusions to correct: a filename is not a guarantee; a PID is not permanent; a login is not unlimited access; a permission error is not proof of compromise; an error label is not attacker intent; no matching log is not proof that no action occurred; NAT is not offline isolation; a snapshot is not universal recovery."
+      },
+      {
+        "t": "p",
+        "v": "You are ready for Week 4 when you can explain the fictional case, choose commands by environment, justify access for a task and describe what a recovery method cannot cover. Week 4 expands accounts, authentication, passwords, sessions and data protection. You do not need to memorise every operating-system option before continuing."
+      },
+      {
+        "t": "key",
+        "v": "Observe first, identify the exact boundary, explain the uncertainty, choose a permitted action and verify its result."
+      },
+      {
+        "t": "tip",
+        "v": "Attempt the review from memory, compare your reasoning and revisit one weak idea. Later, repeat with different filenames, accounts or times so that you practise the concept rather than a fixed answer."
+      }
+    ],
+    "checks": [
+      {
+        "q": "The browser’s program file exists. Does that establish that a browser process is running now?",
+        "a": "No. Stored software and current execution are different states.",
+        "why": "Use a relevant permitted observation of running software. A filename or installation record alone cannot answer the process question."
+      },
+      {
+        "q": "The lesson page displays, but a local save fails. Does the network success contradict the permission failure?",
+        "a": "No. They concern different operations and boundaries.",
+        "why": "The page can be delivered while the account lacks write access to a selected local file."
+      },
+      {
+        "q": "In the basic file example -rw-r-----, which mode-bit class has write access?",
+        "a": "The owner class has write access; the group and other classes do not.",
+        "why": "Read the owner, group and other positions separately. Real access may also involve additional rules and parent directories."
+      },
+      {
+        "q": "What is wrong with always elevating the browser to solve a folder write error?",
+        "a": "It expands the browser’s power without first establishing the intended policy or smallest correction.",
+        "why": "Check the file, account and permitted task. Greater privileges can increase harm and are not the default answer to every access issue."
+      },
+      {
+        "q": "Which shell should run Get-Location, and what does it report?",
+        "a": "PowerShell. It reports the current location.",
+        "why": "It is not Python syntax and does not move the session into another folder. Know the interpreter and purpose."
+      },
+      {
+        "q": "Are the case’s 15:05:00+09:00 and 06:05:00Z time displays compatible with the same instant?",
+        "a": "Yes. The first is nine hours ahead of UTC.",
+        "why": "Offset conversion makes the times comparable. Event identity and clock accuracy still need other evidence."
+      },
+      {
+        "q": "A log labels a failed action an error. Does that classify the cause as an attacker?",
+        "a": "No. Severity describes the source’s classification, not confirmed intent.",
+        "why": "Use the action, result, context and other records to investigate explanations. Keep the original fields."
+      },
+      {
+        "q": "Name two interaction paths still present in Maya’s VM setup.",
+        "a": "NAT can permit external communication, and the shared folder links guest access with selected host data.",
+        "why": "The VM label does not prove isolation. Review every enabled adapter and sharing channel against the permitted exercise."
+      },
+      {
+        "q": "Can a guest snapshot replace an independent recovery test for Maya’s host notes?",
+        "a": "No. A guest snapshot does not establish recovery of host data or protect against loss of the host drive.",
+        "why": "The backup should cover the relevant information and failures. A harmless restore test helps verify that claim."
+      },
+      {
+        "q": "Write the structure of one justified checklist improvement.",
+        "a": "State the concern, observation, uncertainty, intended permitted action, recovery preparation and evidence for a successful recheck.",
+        "why": "For example, test restoration of fictional data from the retained backup. The plan should reduce a stated problem and preserve useful evidence."
+      }
+    ],
+    "reflection": "Draft the four-finding case report, then record three concepts you can explain and one topic to revisit. Include a supported next step rather than an unverified attacker claim.",
+    "references": [
+      {
+        "title": "Microsoft: execution context and elevation",
+        "url": "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/how-it-works"
+      },
+      {
+        "title": "RFC 3339: comparing timestamps",
+        "url": "https://www.rfc-editor.org/rfc/rfc3339.html"
+      },
+      {
+        "title": "Oracle: VM network behaviour",
+        "url": "https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/networkingdetails.html"
+      }
+    ]
   }
 };
 let cyberPage = {mode:"overview", week:1, day:1};

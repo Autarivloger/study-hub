@@ -24,14 +24,16 @@ const previousDays=JSON.parse(cp.execFileSync('git',['show','c3e1897:scripts/cyb
 assert.deepEqual(weeks.slice(1),previousDays.slice(1),'Weeks 2–8 changed');
 const week1=require('../scripts/cybersecurity-week1-content.cjs');
 const week2=require('../scripts/cybersecurity-week2-content.cjs');
-const lessons={...week1,...week2};
+const week3=require('../scripts/cybersecurity-week3-content.cjs');
+const lessons={...week1,...week2,...week3};
 assert.deepEqual(Object.keys(week1),['1.1','1.2','1.3','1.4','1.5','1.6','1.7']);
 assert.deepEqual(Object.keys(week2),['2.1','2.2','2.3','2.4','2.5','2.6','2.7']);
+assert.deepEqual(Object.keys(week3),['3.1','3.2','3.3','3.4','3.5','3.6','3.7']);
 for(const [id,lesson] of Object.entries(lessons)){
  assert(lesson.objective&&lesson.reflection,'Missing objective/reflection '+id);
  assert(lesson.sections.filter(s=>s.t==='h').length>=4,'Thin lesson '+id);
  assert(lesson.checks.length>=3&&lesson.checks.every(c=>c.q&&c.a&&c.why),'Missing reasoned checks '+id);
- assert(lesson.sections.every(s=>['h','p','new','key','tip'].includes(s.t)),'Unexpected code section '+id);
+ assert(lesson.sections.every(s=>['h','p','new','key','tip'].includes(s.t)||(id==='3.3'&&s.t==='sh')),'Unexpected code section '+id);
  assert(!/[\u0900-\u097f]/.test(JSON.stringify(lesson)),'Non-English lesson '+id);
  const text=lesson.sections.map(s=>s.v+' '+(s.note||'')).join(' ');
  assert(text.split(/\s+/).length>=450,'Insufficient explanation '+id);
@@ -40,9 +42,16 @@ const inline=html.slice(html.indexOf('const CYBERSECURITY_TEACH = ')+28,html.ind
 assert.deepEqual(JSON.parse(inline),lessons,'Published lesson data differs from source');
 assert.equal(lessons['1.7'].checks.length,10,'Incomplete weekly review');
 assert.equal(lessons['2.7'].checks.length,10,'Incomplete Week 2 review');
+assert.equal(lessons['3.7'].checks.length,10,'Incomplete Week 3 review');
+assert.equal(week3['3.3'].sections.filter(s=>s.t==='sh').length,7,'Missing terminal examples');
+assert.equal(Date.parse('2026-10-11T15:05:00+09:00'),Date.parse('2026-10-11T06:05:00Z'),'Incorrect timestamp example');
 const previousTeaching=cp.execFileSync('git',['show','fcac667:study-hub.html'],{encoding:'utf8',maxBuffer:32e6});
 const oldTeaching=JSON.parse(previousTeaching.slice(previousTeaching.indexOf('const CYBERSECURITY_TEACH = ')+28,previousTeaching.indexOf(';\nlet cyberPage')));
 assert.deepEqual(week1,oldTeaching,'Week 1 lessons changed');
 for(const [id,lesson] of Object.entries(week2))assert(lesson.references.length&&lesson.references.every(r=>r.title&&r.url.startsWith('https://')),'Missing primary references '+id);
+const previousWeek2=cp.execFileSync('git',['show','1368217:study-hub.html'],{encoding:'utf8',maxBuffer:32e6});
+const oldWeeks=JSON.parse(previousWeek2.slice(previousWeek2.indexOf('const CYBERSECURITY_TEACH = ')+28,previousWeek2.indexOf(';\nlet cyberPage')));
+assert.deepEqual({...week1,...week2},oldWeeks,'Weeks 1–2 changed');
+for(const [id,lesson] of Object.entries(week3))assert(lesson.references.length&&lesson.references.every(r=>r.title&&r.url.startsWith('https://')),'Missing primary references '+id);
 for(const m of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g))new Function(m[1]);
-console.log('PASS: 14 English lessons/56 checks; Week 1 content and all roadmap topics retained; Python teaching, quizzes and storage/sync unchanged; JS valid.');
+console.log('PASS: 21 English lessons/84 checks; Weeks 1–2 and roadmap topics retained; Python teaching, quizzes and storage/sync unchanged; JS valid.');
