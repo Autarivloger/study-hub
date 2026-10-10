@@ -1,0 +1,44 @@
+function renderCybersecurityRoadmap(){
+  const body = document.getElementById("cybersecurityBody");
+  document.getElementById("backBtn").style.display = "none";
+  document.getElementById("quizSplit").classList.remove("detail-open");
+  document.getElementById("backBtn").style.display = "none";
+  document.getElementById("quizSplit").classList.remove("detail-open");
+  document.getElementById("legacyQuizArea").hidden = true;
+  body.hidden = false;
+  body.innerHTML =
+    '<div class="cyber-heading"><div><h1>Cybersecurity Roadmap</h1>' +
+    '<p class="cyber-subtitle">2 months · 8 weeks · Start from scratch</p></div>' +
+    '<button type="button" class="btn secondary btn-sm" id="cyberExpand">Show all weeks</button></div>' +
+    CYBERSECURITY_ROADMAP.map(function(week){
+      return '<details class="cyber-week" data-cyber-week="' + week.week + '"' + (week.week===1 ? ' open' : '') + '>' +
+        '<summary><span class="cyber-week-number">Week ' + week.week + '</span><span>' + escapeHtml(week.title) + '</span></summary>' +
+        '<div class="cyber-week-content"><section><h2>What to study</h2><ul>' +
+        week.topics.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') +
+        '</ul></section><section class="cyber-python"><h2>Where Python helps</h2><ul>' +
+        week.python.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') +
+        '</ul></section></div></details>';
+    }).join('') +
+    '<div class="cyber-footer"><div class="cyber-references">References: ' +
+    '<a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener noreferrer">NIST</a> · ' +
+    '<a href="https://owasp.org/projects/top-ten" target="_blank" rel="noopener noreferrer">OWASP</a></div>' +
+    '<button type="button" class="btn secondary btn-sm" id="cyberOldQuizzes">Previous quizzes</button></div>';
+  document.getElementById("cyberExpand").onclick = function(){
+    const weeks = Array.from(body.querySelectorAll(".cyber-week"));
+    const open = !weeks.every(function(week){ return week.open; });
+    weeks.forEach(function(week){ week.open = open; });
+  };
+  body.querySelectorAll(".cyber-week").forEach(function(week){
+    week.addEventListener("toggle", function(){
+      document.getElementById("cyberExpand").textContent =
+        Array.from(body.querySelectorAll(".cyber-week")).every(function(item){ return item.open; }) ?
+        "Hide all weeks" : "Show all weeks";
+    });
+  });
+  document.getElementById("cyberOldQuizzes").onclick = function(){
+    body.hidden = true;
+    document.getElementById("legacyQuizArea").hidden = false;
+    renderQuizList();
+    renderQuizDetail();
+  };
+}

@@ -26,6 +26,20 @@ async function main(){
   for(let i=0;i<50;i++){if(await evalJs("Boolean(window.__studyHubBooted)"))break;await sleep(100);}
   assert(await evalJs("window.__studyHubBooted"),"App did not boot: "+errors.join("; "));
 
+  if(await evalJs('typeof CYBERSECURITY_ROADMAP!=="undefined"')){
+    await evalJs('DB.quizzes.push({id:"cyber-legacy",name:"Saved quiz",questions:[{id:"q1",text:"Saved question",options:["Yes","No"],correct:0}],lastScore:67});save();document.querySelector("#sidebar [data-view=quiz]").click()');
+    assert(await evalJs('document.querySelector("#brandTitle").textContent==="Cybersecurity" && document.querySelectorAll(".cyber-week").length===8 && document.querySelector("#legacyQuizArea").hidden'),'Cybersecurity tab replacement failed');
+    assert(await evalJs('document.querySelectorAll(".cyber-python").length===8 && !document.querySelector("#cybersecurityBody pre")'),'Python help topics or roadmap-only structure failed');
+    await evalJs('document.querySelector("#cyberExpand").click()');
+    assert(await evalJs('[...document.querySelectorAll(".cyber-week")].every(w=>w.open)'),'Expand all weeks failed');
+    await evalJs('document.querySelector("#cyberExpand").click()');
+    assert(await evalJs('[...document.querySelectorAll(".cyber-week")].every(w=>!w.open)'),'Collapse all weeks failed');
+    await evalJs('document.querySelector("#cyberOldQuizzes").click();document.querySelector("#quizList [data-id=cyber-legacy]").click()');
+    assert(await evalJs('document.querySelector("#quizDetail").textContent.includes("Saved question") && DB.quizzes.find(q=>q.id==="cyber-legacy").lastScore===67'),'Saved quizzes not retained/reachable');
+    await evalJs('document.querySelector("#cyberBack").click()');
+    assert(await evalJs('!document.querySelector("#cybersecurityBody").hidden && document.querySelector("#legacyQuizArea").hidden'),'Roadmap return failed');
+  }
+
   // Real mouse input: plain reading text supports drag selection; reveal
   // labels act as controls, not selectable reading text.
   await evalJs('jpPage={mode:"lesson",week:1,lesson:"1.1"};switchView("japanese");renderJapanese();');
@@ -126,6 +140,12 @@ async function main(){
   if(await evalJs('Boolean(DAY_TEACH["23.0"])'))assert(await evalJs('isPartDone(23,0,0) && DB.lessonQuizScores["course:23.0.0"]===100 && DB.course.notes["23.0"]==="Week23 saved note"'),'Week23 progress/quiz/note failed reload');
   if(await evalJs('Boolean(DAY_TEACH["24.0"])'))assert(await evalJs('isPartDone(24,0,0) && DB.lessonQuizScores["course:24.0.0"]===100 && DB.course.notes["24.0"]==="Week24 saved note"'),'Week24 progress/quiz/note failed reload');
   await send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
+  if(await evalJs('typeof CYBERSECURITY_ROADMAP!=="undefined"')){
+    await evalJs('(()=>{switchView("quiz");document.querySelector("#cyberExpand").click();for(let n=0;n<2;n++){document.querySelector("#themeBtn").click();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Cybersecurity mobile overflow");}document.querySelector("#cyberOldQuizzes").click();document.querySelector("#quizList [data-id=cyber-legacy]").click();document.querySelector("#cyberBack").click();if(document.querySelector("#backBtn").style.display!=="none")throw Error("Stale mobile back button");})()');
+    assert(await evalJs('DB.quizzes.some(q=>q.id==="cyber-legacy" && q.lastScore===67)'),'Old quizzes failed refresh');
+    const cyberShot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+    fs.writeFileSync(path.join(os.tmpdir(),'studyhub-cybersecurity-mobile.png'),Buffer.from(cyberShot.data,'base64'));
+  }
   if(await evalJs('Boolean(DAY_TEACH["22.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("22."+d).length;p++){courseView={mode:"day",week:22,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week22 mobile overflow "+d+"."+p);}}})()');
   if(await evalJs('Boolean(DAY_TEACH["23.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("23."+d).length;p++){courseView={mode:"day",week:23,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week23 mobile overflow "+d+"."+p);}}})()');
   if(await evalJs('Boolean(DAY_TEACH["24.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("24."+d).length;p++){courseView={mode:"day",week:24,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week24 mobile overflow "+d+"."+p);}}})()');

@@ -1246,6 +1246,24 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 #yogaPracticeNotes .hn-btn{width:auto;min-width:90px;padding:0 10px;white-space:nowrap;font-size:12px}
 #yogaPracticeNotes .hn-text{min-height:150px}
 #yogaPracticeNotes{scroll-margin-top:150px}
+/* Cybersecurity roadmap: existing theme colours. */
+#cybersecurityBody{max-width:1100px;margin:0 auto;padding:18px 16px;}
+.cyber-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+.cyber-heading h1{font-size:25px;margin:0 0 6px;}
+.cyber-subtitle{margin:0;color:var(--text-dim);font-size:14px;}
+.cyber-week{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);margin:0 0 12px;overflow:hidden;}
+.cyber-week summary{cursor:pointer;padding:17px 18px;font-size:16px;font-weight:700;line-height:1.5;}
+.cyber-week-number{color:var(--accent);display:inline-block;margin-right:14px;}
+.cyber-week-content{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:24px;padding:0 20px 20px;}
+.cyber-week h2{font-size:13px;color:var(--text-dim);margin:4px 0 12px;}
+.cyber-week ul{margin:0;padding-left:20px;}
+.cyber-week li{font-size:15px;line-height:1.65;margin:0 0 9px;overflow-wrap:anywhere;}
+.cyber-python{background:var(--bg-soft);border-radius:10px;padding:14px 16px;align-self:start;}
+.cyber-python h2{color:var(--accent);}
+.cyber-footer{display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:22px;}
+.cyber-references{color:var(--text-dim);font-size:13px;}
+#cyberBack{margin-bottom:14px;}
+@media(max-width:700px){.cyber-week-content{grid-template-columns:minmax(0,1fr);gap:12px;padding:0 15px 15px;}.cyber-week summary{padding:15px;}.cyber-heading h1{font-size:22px;}}
 </style>
 </head>
 <body>
@@ -1279,7 +1297,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
   <button type="button" data-view="timer"><span class="ic">⏱️</span>Timer</button>
   <button type="button" data-view="flashcards"><span class="ic">🗂️</span>Cards</button>
   <button type="button" data-view="todo"><span class="ic">✅</span>To-Do</button>
-  <button type="button" data-view="quiz"><span class="ic">❓</span>Quiz</button>
+  <button type="button" data-view="quiz"><span class="ic">🛡️</span>Cybersecurity</button>
 </nav>
 
 <div id="backupBar" class="backup-bar" hidden></div>
@@ -1297,7 +1315,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
     <button type="button" class="nav-item" data-view="timer"><span class="ic">⏱️</span>Timer</button>
     <button type="button" class="nav-item" data-view="flashcards"><span class="ic">🗂️</span>Flashcards</button>
     <button type="button" class="nav-item" data-view="todo"><span class="ic">✅</span>To-Do</button>
-    <button type="button" class="nav-item" data-view="quiz"><span class="ic">❓</span>Quizzes</button>
+    <button type="button" class="nav-item" data-view="quiz"><span class="ic">🛡️</span>Cybersecurity</button>
     <div class="side-footer">
       <div class="stat" id="sideStats">Loading…</div>
     </div>
@@ -1423,11 +1441,15 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
       <div id="todoList"></div>
     </div>
 
-    <!-- QUIZ VIEW -->
+    <!-- CYBERSECURITY ROADMAP / RETAINED QUIZ DATA -->
     <div class="view" id="view-quiz">
+      <div id="cybersecurityBody"></div>
+      <div id="legacyQuizArea" hidden>
+        <button type="button" class="btn secondary btn-sm" id="cyberBack">← Cybersecurity roadmap</button>
       <div class="split" id="quizSplit">
         <div class="list-col" id="quizList"></div>
         <div class="detail-col" id="quizDetail"></div>
+      </div>
       </div>
     </div>
 
@@ -1720,7 +1742,7 @@ function switchView(name){
   });
   document.querySelectorAll("#sidebar .nav-item").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
   document.querySelectorAll("#tabnav button").forEach(b=> b.classList.toggle("active", b.dataset.view===name));
-  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Yoga & Meditation", journal:"Daily Journal", wisdom:"Life Lessons", liked:"I Liked", typing:"Typing", japanese:"Japanese Language", reviews:"Today's Review", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Quizzes"}[name];
+  document.getElementById("brandTitle").textContent = {course:"Python Course", lessons:"Yoga & Meditation", journal:"Daily Journal", wisdom:"Life Lessons", liked:"I Liked", typing:"Typing", japanese:"Japanese Language", reviews:"Today's Review", notes:"Notes", timer:"Timer", flashcards:"Flashcards", todo:"To-Do", quiz:"Cybersecurity"}[name];
   document.getElementById("backBtn").style.display = "none";
   if(name!=="typing") typingLeave();
   if(name==="course") renderCourse();
@@ -1735,7 +1757,7 @@ function switchView(name){
   if(name==="timer") renderTimer();
   if(name==="flashcards") renderDecks();
   if(name==="todo") renderTodos();
-  if(name==="quiz") renderQuizList();
+  if(name==="quiz") renderCybersecurityRoadmap();
 }
 /* Delegated navigation: one handler on the document, so nav can never
    become unresponsive even if a section fails to render. */
@@ -5782,6 +5804,207 @@ document.getElementById("timerSettingsBtn").addEventListener("click", ()=>{
     setTimerMode(timerMode);
   };
 });
+
+const CYBERSECURITY_ROADMAP = [
+  {
+    "week": 1,
+    "title": "Cybersecurity from scratch",
+    "topics": [
+      "Cybersecurity भनेको के हो र यसको काम के हो",
+      "Computer, operating system, applications, files and data",
+      "Devices, accounts and information as assets",
+      "Confidentiality, integrity and availability",
+      "Threat, vulnerability, risk and security control",
+      "Malware, phishing, scams and data breaches: overview",
+      "Prevention, detection, response and recovery",
+      "Defensive security, application security and authorised testing",
+      "Practice permission, scope and a separate learning lab"
+    ],
+    "python": [
+      "Device/file inventory automation",
+      "Organising security information and simple reports"
+    ]
+  },
+  {
+    "week": 2,
+    "title": "How the internet and networks work",
+    "topics": [
+      "Client, server, browser and internet request journey",
+      "Router, switch, Wi-Fi and local network",
+      "IP address, MAC address, subnet and gateway",
+      "Private/public IP addresses; IPv4 and IPv6",
+      "DNS and DHCP",
+      "TCP, UDP, ports and common services",
+      "HTTP, HTTPS and TLS: overview",
+      "Firewalls and traffic flow",
+      "Reading a simple network diagram and a sample packet capture"
+    ],
+    "python": [
+      "Checking and organising IP-address data",
+      "Summarising saved network observations and packet metadata"
+    ]
+  },
+  {
+    "week": 3,
+    "title": "Windows, Linux and a learning lab",
+    "topics": [
+      "Windows and Linux security basics",
+      "Files, directories, processes and services",
+      "Users, groups, administrator/root and least privilege",
+      "File permissions and ownership",
+      "Terminal basics and reading system information",
+      "System/application logs and timestamps",
+      "Updates, software sources and endpoint protection",
+      "Virtual machines, snapshots and isolated lab networking",
+      "Personal device security checklist"
+    ],
+    "python": [
+      "Collecting an approved inventory of files and system information",
+      "Organising local log records and configuration data"
+    ]
+  },
+  {
+    "week": 4,
+    "title": "Accounts, identity and data protection",
+    "topics": [
+      "Authentication versus authorisation",
+      "Passwords, passphrases and password managers",
+      "MFA, passkeys and account recovery",
+      "Session, token and access permission basics",
+      "Phishing indicators and social engineering awareness",
+      "Encryption versus hashing versus encoding",
+      "File checksums versus password hashing",
+      "TLS certificates and secure connections",
+      "Backups, recovery tests and sensitive-data handling"
+    ],
+    "python": [
+      "File-integrity checks and comparison reports",
+      "Identifying accidental sensitive-data exposure in approved sample data"
+    ]
+  },
+  {
+    "week": 5,
+    "title": "Web and application security foundations",
+    "topics": [
+      "Browser/server requests, responses and HTTP status codes",
+      "Headers, cookies, sessions and login flow",
+      "Frontend, backend, API and database boundaries",
+      "Input validation and output encoding",
+      "Access control and broken-access-control awareness",
+      "SQL injection and parameterised-query awareness",
+      "XSS and CSRF awareness",
+      "OWASP Top 10 2025: beginner overview",
+      "Following a request through an intentionally designed local training app"
+    ],
+    "python": [
+      "Organising approved API/HTTP response information",
+      "Supporting input checks and repeatable security tests"
+    ]
+  },
+  {
+    "week": 6,
+    "title": "Security controls and vulnerability management",
+    "topics": [
+      "Security baseline and configuration hardening",
+      "Patch/update management and software inventory",
+      "Vulnerability, CVE, severity and prioritisation",
+      "Exposure versus exploitable weakness",
+      "Firewall rules, network segmentation and endpoint controls",
+      "Cloud accounts and shared-responsibility basics",
+      "Public/private repositories and secret exposure",
+      "Backup verification and recovery planning",
+      "Documenting findings, evidence and remediation"
+    ],
+    "python": [
+      "Comparing inventory/configuration records with a known baseline",
+      "Combining and prioritising vulnerability findings in reports"
+    ]
+  },
+  {
+    "week": 7,
+    "title": "Monitoring, incidents and evidence",
+    "topics": [
+      "Security monitoring and the SOC role",
+      "Logs, events, alerts and SIEM: overview",
+      "Normal behaviour, suspicious patterns and false positives",
+      "Login, endpoint, application and network log sources",
+      "Timestamps, time zones and event timelines",
+      "Incident triage, containment and communication",
+      "Recovery and lessons learned",
+      "Evidence preservation and file-integrity records",
+      "Reviewing a simulated incident using prepared sample logs"
+    ],
+    "python": [
+      "Sorting/correlating log events and counting suspicious patterns",
+      "Preparing incident timelines and evidence summaries"
+    ]
+  },
+  {
+    "week": 8,
+    "title": "Connect the foundations and review",
+    "topics": [
+      "Review: assets, threats, vulnerabilities and controls",
+      "Trace one login/request from device to server",
+      "Review personal accounts, updates, backups and permissions",
+      "Map controls to govern, identify, protect, detect, respond and recover",
+      "Review sample network, endpoint and application logs together",
+      "Write a small security assessment of your own learning lab",
+      "Prepare an incident response and recovery checklist",
+      "Collect a glossary, network diagram and sample findings report",
+      "Identify weak areas before choosing the next learning stage"
+    ],
+    "python": [
+      "Connecting inventory, integrity and log-analysis automation",
+      "Reducing repetitive security work and producing consistent reports"
+    ]
+  }
+];
+function renderCybersecurityRoadmap(){
+  const body = document.getElementById("cybersecurityBody");
+  document.getElementById("backBtn").style.display = "none";
+  document.getElementById("quizSplit").classList.remove("detail-open");
+  document.getElementById("backBtn").style.display = "none";
+  document.getElementById("quizSplit").classList.remove("detail-open");
+  document.getElementById("legacyQuizArea").hidden = true;
+  body.hidden = false;
+  body.innerHTML =
+    '<div class="cyber-heading"><div><h1>Cybersecurity Roadmap</h1>' +
+    '<p class="cyber-subtitle">2 months · 8 weeks · Start from scratch</p></div>' +
+    '<button type="button" class="btn secondary btn-sm" id="cyberExpand">Show all weeks</button></div>' +
+    CYBERSECURITY_ROADMAP.map(function(week){
+      return '<details class="cyber-week" data-cyber-week="' + week.week + '"' + (week.week===1 ? ' open' : '') + '>' +
+        '<summary><span class="cyber-week-number">Week ' + week.week + '</span><span>' + escapeHtml(week.title) + '</span></summary>' +
+        '<div class="cyber-week-content"><section><h2>What to study</h2><ul>' +
+        week.topics.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') +
+        '</ul></section><section class="cyber-python"><h2>Where Python helps</h2><ul>' +
+        week.python.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') +
+        '</ul></section></div></details>';
+    }).join('') +
+    '<div class="cyber-footer"><div class="cyber-references">References: ' +
+    '<a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener noreferrer">NIST</a> · ' +
+    '<a href="https://owasp.org/projects/top-ten" target="_blank" rel="noopener noreferrer">OWASP</a></div>' +
+    '<button type="button" class="btn secondary btn-sm" id="cyberOldQuizzes">Previous quizzes</button></div>';
+  document.getElementById("cyberExpand").onclick = function(){
+    const weeks = Array.from(body.querySelectorAll(".cyber-week"));
+    const open = !weeks.every(function(week){ return week.open; });
+    weeks.forEach(function(week){ week.open = open; });
+  };
+  body.querySelectorAll(".cyber-week").forEach(function(week){
+    week.addEventListener("toggle", function(){
+      document.getElementById("cyberExpand").textContent =
+        Array.from(body.querySelectorAll(".cyber-week")).every(function(item){ return item.open; }) ?
+        "Hide all weeks" : "Show all weeks";
+    });
+  });
+  document.getElementById("cyberOldQuizzes").onclick = function(){
+    body.hidden = true;
+    document.getElementById("legacyQuizArea").hidden = false;
+    renderQuizList();
+    renderQuizDetail();
+  };
+}
+
+document.getElementById("cyberBack").onclick = renderCybersecurityRoadmap;
 
 /* ================= QUIZZES ================= */
 let activeQuizId = null;
