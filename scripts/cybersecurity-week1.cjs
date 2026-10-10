@@ -1,7 +1,16 @@
 const fs=require('fs'),path=require('path');
 const root=path.join(__dirname,'..'),target=path.join(root,'study-hub.html');
 const weeks=JSON.parse(fs.readFileSync(path.join(__dirname,'cybersecurity-roadmap.json'),'utf8'));
-const lessons=require('./cybersecurity-week1-content.cjs');
+// Keep the original build command compatible while including every authored week.
+const lessons={};
+const contentFiles=fs.readdirSync(__dirname).filter(name=>/^cybersecurity-week[1-8]-content\.cjs$/.test(name)).sort();
+for(const file of contentFiles){
+ const items=require('./'+file),week=file.match(/week([1-8])/)[1];
+ for(const [id,lesson] of Object.entries(items)){
+  if(!id.startsWith(week+'.')||lessons[id])throw Error('Incorrect or duplicate lesson key: '+id);
+  lessons[id]=lesson;
+ }
+}
 weeks[0].topics[0]='What cybersecurity is and what it protects';
 weeks[0].days[0].topics[0]=weeks[0].topics[0];
 let html=fs.readFileSync(target,'utf8');
@@ -34,4 +43,4 @@ for(const m of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g))new Functio
 fs.writeFileSync(target+'.tmp',html,'utf8');fs.renameSync(target+'.tmp',target);
 const dataPath=path.join(__dirname,'cybersecurity-roadmap.json');
 fs.writeFileSync(dataPath+'.tmp',JSON.stringify(weeks,null,2)+'\n','utf8');fs.renameSync(dataPath+'.tmp',dataPath);
-console.log('Added seven English cybersecurity lessons with '+Object.values(lessons).reduce((n,l)=>n+l.checks.length,0)+' self-checks and stable day notes.');
+console.log('Built '+Object.keys(lessons).length+' English cybersecurity lessons with '+Object.values(lessons).reduce((n,l)=>n+l.checks.length,0)+' self-checks and stable day notes.');

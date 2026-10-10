@@ -73,6 +73,27 @@ async function main(){
     assert(await evalJs('document.querySelector("#cyberDayNotes textarea").value.startsWith("Cyber day 2 note") && DB.headNotes["cyber:1.7|day-notes"]'),'Cyber notes did not survive reload');
   }
 
+  if(await evalJs('Boolean(CYBERSECURITY_TEACH["2.1"])')){
+    await evalJs('switchView("quiz");cyberPage={mode:"week",week:2,day:1};renderCybersecurityRoadmap()');
+    assert(await evalJs('document.querySelector("#cybersecurityBody .section-label").textContent==="Daily lessons"'),'Week 2 still labeled roadmap');
+    for(let day=1;day<=7;day++){
+      await evalJs('cyberPage={mode:"day",week:2,day:'+day+'};renderCybersecurityRoadmap()');
+      assert(await evalJs('document.querySelectorAll(".cyber-teaching>.ls-h").length>=4 && document.querySelectorAll(".cyber-check").length===CYBERSECURITY_TEACH["2.'+day+'"].checks.length && !document.querySelector("#cybersecurityBody pre")'),'Week 2 lesson incomplete '+day);
+      await evalJs('(()=>{for(const button of document.querySelectorAll(".cyber-check [data-reveal]")){button.click();const answer=document.querySelector("#tryA"+button.dataset.reveal);if(answer.hidden||answer.textContent.length<40)throw Error("Missing Week 2 answer");button.click();if(!answer.hidden)throw Error("Cannot hide Week 2 answer");}})()');
+      await evalJs('(()=>{const ta=document.querySelector("#cyberDayNotes textarea");ta.value="Network week 2 day '+day+' saved note";ta.dispatchEvent(new Event("input",{bubbles:true}));})()');await sleep(600);
+      assert(await evalJs('DB.headNotes["cyber:2.'+day+'|day-notes"]==="Network week 2 day '+day+' saved note" && DB.headNotes["cyber:1.2|day-notes"].startsWith("Cyber day 2 note")'),'Week 2 save overwrote another week '+day);
+    }
+    await evalJs('document.querySelector("#cyberDayNotes [data-hn]").click();document.querySelector("[data-cyber-notes]").click()');
+    assert(await evalJs('!document.querySelector("#cyberDayNotes .hn-box").hidden && document.activeElement===document.querySelector("#cyberDayNotes textarea")'),'Week 2 jump/show notes failed');
+    await evalJs('document.querySelector("[data-cyber-step]").click()');
+    assert(await evalJs('cyberPage.week===2&&cyberPage.day===6'),'Week 2 previous day failed');
+    await send('Page.reload',{ignoreCache:true});for(let i=0;i<50;i++){if(await evalJs('Boolean(window.__studyHubBooted)'))break;await sleep(100);}
+    await evalJs('switchView("quiz");cyberPage={mode:"day",week:2,day:2};renderCybersecurityRoadmap()');
+    assert(await evalJs('document.querySelector("#cyberDayNotes textarea").value==="Network week 2 day 2 saved note" && DB.headNotes["cyber:1.2|day-notes"].startsWith("Cyber day 2 note")'),'Week 2/Week 1 notes failed reload');
+    await evalJs('cyberPage={mode:"day",week:2,day:7};renderCybersecurityRoadmap();document.querySelector("[data-cyber-step=\\"1\\"]").click()');
+    assert(await evalJs('cyberPage.week===3&&cyberPage.day===1&&!document.querySelector(".cyber-teaching")'),'Week 2 next boundary changed future roadmap');
+  }
+
   // Real mouse input: plain reading text supports drag selection; reveal
   // labels act as controls, not selectable reading text.
   await evalJs('jpPage={mode:"lesson",week:1,lesson:"1.1"};switchView("japanese");renderJapanese();');

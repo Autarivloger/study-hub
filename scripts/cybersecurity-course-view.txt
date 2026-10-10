@@ -41,7 +41,7 @@ function renderCybersecurityRoadmap(){
     content = '<button type="button" class="back-link" data-cyber-all>← All weeks</button>' +
       '<div class="week-header"><div class="wh-eyebrow">Week ' + week.week + ' · Cybersecurity</div>' +
       '<h2>' + escapeHtml(week.title) + '</h2></div>' +
-      '<div class="section-label">' + (week.week===1 ? 'Daily lessons' : 'Daily roadmap') + '</div><div class="day-list">' +
+      '<div class="section-label">' + (CYBERSECURITY_TEACH[week.week+".1"] ? 'Daily lessons' : 'Daily roadmap') + '</div><div class="day-list">' +
       week.days.map(function(day){
         return '<div class="day-row"><button type="button" class="day-open" data-cyber-day="' + day.day + '">' +
           '<div class="dr-title">Day ' + day.day + '</div><div class="dr-meta">' +
@@ -69,7 +69,10 @@ function renderCybersecurityRoadmap(){
     '<div class="cyber-footer"><div class="cyber-references">References: ' +
     '<a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener noreferrer">NIST</a> · ' +
     '<a href="https://owasp.org/projects/top-ten" target="_blank" rel="noopener noreferrer">OWASP</a>' +
-    (cyberPage.mode==="day" && week.week===1 ? ' · <a href="https://consumer.ftc.gov/articles/how-recognize-avoid-phishing-scams" target="_blank" rel="noopener noreferrer">FTC: phishing</a> · <a href="https://www.ncsc.gov.uk/collection/top-tips-for-staying-secure-online" target="_blank" rel="noopener noreferrer">NCSC: online security</a>' : '') + '</div>' +
+    (cyberPage.mode==="day" && week.week===1 ? ' · <a href="https://consumer.ftc.gov/articles/how-recognize-avoid-phishing-scams" target="_blank" rel="noopener noreferrer">FTC: phishing</a> · <a href="https://www.ncsc.gov.uk/collection/top-tips-for-staying-secure-online" target="_blank" rel="noopener noreferrer">NCSC: online security</a>' : '') +
+    (cyberPage.mode==="day" ? ((CYBERSECURITY_TEACH[week.week+"."+cyberPage.day]||{}).references||[]).map(function(item){
+      return ' · <a href="'+escapeAttr(item.url)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(item.title)+'</a>';
+    }).join('') : '') + '</div>' +
     '<button type="button" class="btn secondary btn-sm" id="cyberOldQuizzes">Previous quizzes</button></div>';
   wireRevealButtons(body);
   wireHeadNotes(body);
