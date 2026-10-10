@@ -89,6 +89,19 @@ async function main(){
     assert(await evalJs('corePool().filter(p=>p.week===23).length===48'),'Week23 practice pool failed');
     assert(await evalJs('(()=>{const hit=buildSearchIndex().find(e=>e.kind==="day"&&e.week===23&&e.text.includes("schema-specific toolkit"));if(!hit)return false;gotoSearchHit(hit);return courseView.week===23&&courseView.part===hit.part;})()'),'Week23 search exact-part navigation failed');
   }
+  if(await evalJs('Boolean(DAY_TEACH["24.0"])')){
+    await evalJs('switchView("course");courseView={mode:"day",week:24,dayIdx:0,part:0};renderCourseDay();document.querySelector("#partNext").click()');
+    assert(await evalJs('courseView.part===1'),'Week24 next part failed');
+    await evalJs('document.querySelector("#partPrev").click();document.querySelector("#nextDay").click()');
+    assert(await evalJs('courseView.week===24 && courseView.dayIdx===1'),'Week24 next day failed');
+    await evalJs('document.querySelector("#prevDay").click()');
+    assert(await evalJs('courseView.dayIdx===0'),'Week24 previous day failed');
+    await evalJs('(()=>{for(let d=0;d<6;d++)for(let p=0;p<dayParts("24."+d).length;p++){courseView={mode:"day",week:24,dayIdx:d,part:p};renderCourseDay();const quiz=dayParts("24."+d)[p].sections.find(s=>s.t==="checkpoint").lesson;quiz.quiz.forEach((q,i)=>document.querySelector(".day-teach [data-lq=\\\""+i+"\\\"][data-lo=\\\""+q.correct+"\\\"]").click());if(DB.lessonQuizScores[quiz.id]!==100)throw Error("Week24 quiz saving "+quiz.id);}})()');
+    await evalJs('courseView={mode:"day",week:24,dayIdx:0,part:0};renderCourseDay();document.querySelector("#partDoneBtn").click();document.querySelector("#dayNote").value="Week24 saved note";document.querySelector("#dayNote").dispatchEvent(new Event("input",{bubbles:true}));save()');
+    assert(await evalJs('isPartDone(24,0,0)'),'Week24 part completion failed');
+    assert(await evalJs('corePool().filter(p=>p.week===24).length===48'),'Week24 practice pool failed');
+    assert(await evalJs('(()=>{const hit=buildSearchIndex().find(e=>e.kind==="day"&&e.week===24&&e.text.includes("Staging directory"));if(!hit)return false;gotoSearchHit(hit);return courseView.week===24&&courseView.part===hit.part;})()'),'Week24 search exact-part navigation failed');
+  }
   if(await evalJs('Boolean(DAY_TEACH["20.0"])')){
     await evalJs('courseView={mode:"day",week:20,dayIdx:0,part:0};renderCourseDay();document.querySelector("[data-lo]").click()');
     assert(await evalJs('DB.lessonQuizScores["course:20.0.0"]===100'),'Week 20 quiz did not save');
@@ -111,9 +124,11 @@ async function main(){
   if(await evalJs('Boolean(DAY_TEACH["21.0"])'))assert(await evalJs('isPartDone(21,0,0) && DB.lessonQuizScores["course:21.0.0"]===100 && DB.course.notes["21.0"]==="Week21 saved note"'),'Week21 progress/quiz/note failed reload');
   if(await evalJs('Boolean(DAY_TEACH["22.0"])'))assert(await evalJs('isPartDone(22,0,0) && DB.lessonQuizScores["course:22.0.0"]===100 && DB.course.notes["22.0"]==="Week22 saved note"'),'Week22 progress/quiz/note failed reload');
   if(await evalJs('Boolean(DAY_TEACH["23.0"])'))assert(await evalJs('isPartDone(23,0,0) && DB.lessonQuizScores["course:23.0.0"]===100 && DB.course.notes["23.0"]==="Week23 saved note"'),'Week23 progress/quiz/note failed reload');
+  if(await evalJs('Boolean(DAY_TEACH["24.0"])'))assert(await evalJs('isPartDone(24,0,0) && DB.lessonQuizScores["course:24.0.0"]===100 && DB.course.notes["24.0"]==="Week24 saved note"'),'Week24 progress/quiz/note failed reload');
   await send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
   if(await evalJs('Boolean(DAY_TEACH["22.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("22."+d).length;p++){courseView={mode:"day",week:22,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week22 mobile overflow "+d+"."+p);}}})()');
   if(await evalJs('Boolean(DAY_TEACH["23.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("23."+d).length;p++){courseView={mode:"day",week:23,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week23 mobile overflow "+d+"."+p);}}})()');
+  if(await evalJs('Boolean(DAY_TEACH["24.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("24."+d).length;p++){courseView={mode:"day",week:24,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week24 mobile overflow "+d+"."+p);}}})()');
   if(await evalJs('Boolean(DAY_TEACH["21.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("21."+d).length;p++){courseView={mode:"day",week:21,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week21 mobile overflow "+d+"."+p);}}})()');
   if(await evalJs('Boolean(DAY_TEACH["20.0"])'))await evalJs('(()=>{switchView("course");for(let d=0;d<6;d++)for(let p=0;p<dayParts("20."+d).length;p++){courseView={mode:"day",week:20,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week 20 overflow "+d+"."+p);}})()');
   await evalJs('document.querySelector("#themeBtn").click();switchView("course");courseView={mode:"day",week:1,dayIdx:5,part:0};renderCourseDay()');
