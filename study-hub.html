@@ -21917,6 +21917,2893 @@ const DAY_TEACH = {
     }
   ]
 },
+"23.0": {
+  "parts": [
+    {
+      "title": "1. CSV records: delimiters, quoting and text values",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. CSV records: delimiters, quoting and text values"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Read a table correctly without splitting quoted commas."
+        },
+        {
+          "t": "new",
+          "note": "Comma-separated values describe tabular records. A delimiter separates fields; a quoted field can contain that delimiter and even a newline.",
+          "v": "CSV; record; field"
+        },
+        {
+          "t": "new",
+          "note": "csv.reader interprets CSV quoting rules and yields lists of field strings. StringIO presents example text as an in-memory text file.",
+          "v": "csv.reader; io.StringIO"
+        },
+        {
+          "t": "new",
+          "note": "Open CSV files with newline='' so the csv module handles line endings and embedded newlines correctly, including on Windows.",
+          "v": "newline='' for CSV files"
+        },
+        {
+          "t": "p",
+          "v": "Week 22 showed why regex is not a complete CSV parser. This week builds a reliable import/export workflow. Use Python 3.11+ for the whole week because Day 4 uses built-in tomllib. Most examples use only the standard library; PyYAML and python-dotenv are optional local practice dependencies on Day 4. Reading this website always works offline. CSV has no automatic schema: the characters 007 are text until your program deliberately converts them. A quoted comma belongs inside a field. Doubled quote characters inside a quoted field represent one literal quote."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "reader = csv.reader(handle)\nfor row in reader:\n    print(row)\n# real file: open(\"people.csv\", newline=\"\", encoding=\"utf-8\")"
+        },
+        {
+          "t": "code",
+          "v": "import csv\nimport io\ntext = 'name,city,id\\nSita,\"Kathmandu, Nepal\",007\\nHari,\"says \"\"hello\"\"\",008\\n'\nfor row in csv.reader(io.StringIO(text, newline=\"\")):\n    print(row)\n"
+        },
+        {
+          "t": "out",
+          "v": "['name', 'city', 'id']\n['Sita', 'Kathmandu, Nepal', '007']\n['Hari', 'says \"hello\"', '008']"
+        },
+        {
+          "t": "p",
+          "v": "पहिलो record headers हुन्; त्यसपछि data आउँछ। Kathmandu, Nepal मा comma भए पनि quoted भएकाले एउटै field हुन्छ। 007 string भएकाले अगाडिको zero बच्यो। ID लाई integer बनाउने हो कि text राख्ने हो भन्ने निर्णय schema ले गर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "line.split(',') parses every CSV row",
+          "right": "csv.reader interprets quoting and separators",
+          "why": "A comma or newline can be part of a quoted field, so splitting physical lines or commas loses the CSV structure."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.0.0.build",
+          "v": "Read a quoted field containing a newline and prove it is one CSV record with two fields."
+        },
+        {
+          "t": "sol",
+          "code": "import csv\nimport io\ntext = 'name,note\\nSita,\"first line\\nsecond line\"\\n'\nrows = list(csv.reader(io.StringIO(text, newline=\"\")))\nprint(len(rows), len(rows[1]))\nprint(repr(rows[1][1]))\n",
+          "out": "2 2\n'first line\\nsecond line'",
+          "why": "Build walkthrough: Use a CSV parser, preserve quoted fields and choose conversions intentionally. CSV field text is not a typed database column. Keep meaningful leading zeros."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.0.0.challenge",
+          "v": "Mini challenge: Read IDs 007 and 010; show their text values before and after int conversion. Explain why contact IDs should often stay strings."
+        },
+        {
+          "t": "sol",
+          "code": "import csv\nimport io\nrows = list(csv.reader(io.StringIO(\"007,010\\n\")))\nprint(rows[0])\nprint([int(value) for value in rows[0]])\n",
+          "out": "['007', '010']\n[7, 10]",
+          "why": "Challenge check: Use a CSV parser, preserve quoted fields and choose conversions intentionally. CSV field text is not a typed database column. Keep meaningful leading zeros."
+        },
+        {
+          "t": "try",
+          "q": "What does csv.reader return for 007 by default?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "The string '007'",
+          "why": "Default reader fields are strings; conversion is explicit."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.0.0",
+            "quiz": [
+              {
+                "q": "What does csv.reader return for 007 by default?",
+                "options": [
+                  "The string '007'",
+                  "The integer 7",
+                  "A float"
+                ],
+                "correct": 0,
+                "why": "Default reader fields are strings; conversion is explicit."
+              },
+              {
+                "q": "Can a quoted CSV field contain a newline?",
+                "options": [
+                  "Only with JSON",
+                  "Yes",
+                  "No"
+                ],
+                "correct": 1,
+                "why": "CSV records need not correspond one-to-one with physical lines."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Use a CSV parser, preserve quoted fields and choose conversions intentionally. CSV field text is not a typed database column. Keep meaningful leading zeros."
+        }
+      ]
+    },
+    {
+      "title": "2. DictReader: named columns and row-shape checks",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. DictReader: named columns and row-shape checks"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Use header names and reject extra, missing or duplicate fields."
+        },
+        {
+          "t": "new",
+          "note": "DictReader uses the first record as field names and returns dictionaries for subsequent records.",
+          "v": "csv.DictReader"
+        },
+        {
+          "t": "new",
+          "note": "fieldnames reveals the header; restkey collects extra values; restval supplies missing values. Neither automatically establishes valid row shape.",
+          "v": "fieldnames; restkey; restval"
+        },
+        {
+          "t": "new",
+          "note": "Check required names, duplicates and unexpected columns before reading rows. Duplicate headers can hide one field behind another.",
+          "v": "Header validation"
+        },
+        {
+          "t": "p",
+          "v": "Named fields avoid remembering that score is column 2. However, DictReader is a parser, not a validator. By default, extra values appear under the None key and missing values become None. Inspect both before conversion. Blank fields are empty strings, distinct from a missing column. Validate the header separately; silently overwriting duplicate names loses information."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "reader = csv.DictReader(handle)\ncheck reader.fieldnames\nfor row in reader:\n    check shape before converting row[\"score\"]"
+        },
+        {
+          "t": "code",
+          "v": "import csv\nimport io\nreader = csv.DictReader(io.StringIO(\"name,score\\nSita,90\\nHari\\nMina,80,extra\\n\"))\nprint(reader.fieldnames)\nfor row in reader:\n    if None in row or any(value is None for value in row.values()):\n        print(\"bad shape\", row[\"name\"])\n    else:\n        print(row[\"name\"], row[\"score\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "['name', 'score']\nSita 90\nbad shape Hari\nbad shape Mina"
+        },
+        {
+          "t": "p",
+          "v": "Header ले name र score keys बनाउँछ। Hari को score missing छ; Mina को extra column छ। दुवै reject गर्छौँ। नाम आएपछि पनि values strings नै हुन्। Parser ले table पढ्छ, application ले आफ्नो नियम जाँच्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Trust every DictReader row merely because it is a dict",
+          "right": "Validate headers, extra fields, missing values and domain rules",
+          "why": "A parsed dictionary can still have lost duplicate-header data or incomplete fields."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.0.1.build",
+          "v": "Validate headers exactly ['name','score']; reject name,name and name,score,extra before processing rows."
+        },
+        {
+          "t": "sol",
+          "code": "import csv\nimport io\nfor text in (\"name,score\\n\", \"name,name\\n\", \"name,score,extra\\n\"):\n    reader = csv.DictReader(io.StringIO(text))\n    print(reader.fieldnames, reader.fieldnames == [\"name\", \"score\"])\n",
+          "out": "['name', 'score'] True\n['name', 'name'] False\n['name', 'score', 'extra'] False",
+          "why": "Build walkthrough: A dictionary result is not evidence of valid input. Check the header before rows, retain missing-versus-blank distinctions, and never ignore surplus columns silently."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.0.1.challenge",
+          "v": "Mini challenge: Contrast a blank score with a missing score; print repr for each and retain the distinction."
+        },
+        {
+          "t": "sol",
+          "code": "import csv\nimport io\nfor row in csv.DictReader(io.StringIO(\"name,score\\nSita,\\nHari\\n\")):\n    print(row[\"name\"], repr(row[\"score\"]))\n",
+          "out": "Sita ''\nHari None",
+          "why": "Challenge check: A dictionary result is not evidence of valid input. Check the header before rows, retain missing-versus-blank distinctions, and never ignore surplus columns silently."
+        },
+        {
+          "t": "try",
+          "q": "What does a missing CSV column become by default in DictReader?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "None",
+          "why": "Missing values use restval, which defaults to None."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.0.1",
+            "quiz": [
+              {
+                "q": "What does a missing CSV column become by default in DictReader?",
+                "options": [
+                  "Zero",
+                  "None",
+                  "Always an empty string"
+                ],
+                "correct": 1,
+                "why": "Missing values use restval, which defaults to None."
+              },
+              {
+                "q": "Why check duplicate headers first?",
+                "options": [
+                  "They always raise automatically.",
+                  "They improve sorting.",
+                  "One key can overwrite another column's value."
+                ],
+                "correct": 2,
+                "why": "Dictionary keys cannot preserve two separate columns with the same name."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "A dictionary result is not evidence of valid input. Check the header before rows, retain missing-versus-blank distinctions, and never ignore surplus columns silently."
+        }
+      ]
+    },
+    {
+      "title": "3. Clean and validate rows; calculate a column average",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Clean and validate rows; calculate a column average"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Convert scores safely and retain a useful rejection report."
+        },
+        {
+          "t": "new",
+          "note": "Parse structure, normalise chosen fields, convert types, then enforce domain constraints. Each stage answers a different question.",
+          "v": "Validation pipeline"
+        },
+        {
+          "t": "new",
+          "note": "enumerate on parsed rows counts CSV records. reader.line_num counts physical lines consumed; quoted multiline fields make these different.",
+          "v": "Record number vs physical line number"
+        },
+        {
+          "t": "p",
+          "v": "For this score table, names must be nonempty and scores must be integer text in 0..100. Strip name/score edges, but do not lowercase personal names or remove internal spaces without a policy. Catch only ValueError from conversion/domain checks. Retain rejected record numbers and reasons. An empty accepted list has no average; do not divide by zero or invent a score."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "clean name → convert score with int → check 0 <= score <= 100\naverage = total / count only when count > 0"
+        },
+        {
+          "t": "code",
+          "v": "import csv\nimport io\naccepted, rejected = [], []\ntext = \"name,score\\n Sita ,90\\nHari,80\\nMina,oops\\nRam,101\\n\"\nfor number, row in enumerate(csv.DictReader(io.StringIO(text)), 1):\n    try:\n        if None in row or any(value is None for value in row.values()):\n            raise ValueError(\"row shape\")\n        name = row[\"name\"].strip()\n        score = int(row[\"score\"].strip())\n        if not name or not 0 <= score <= 100:\n            raise ValueError(\"name or score range\")\n        accepted.append({\"name\": name, \"score\": score})\n    except ValueError:\n        rejected.append(number)\nprint(accepted)\nprint(\"rejected records:\", rejected)\nif accepted:\n    print(\"average:\", sum(row[\"score\"] for row in accepted) / len(accepted))\n"
+        },
+        {
+          "t": "out",
+          "v": "[{'name': 'Sita', 'score': 90}, {'name': 'Hari', 'score': 80}]\nrejected records: [3, 4]\naverage: 85.0"
+        },
+        {
+          "t": "p",
+          "v": "पहिले structure जाँचियो, त्यसपछि trim र int conversion। Mina को text संख्या होइन; Ram को 101 range बाहिर छ। Sita र Hari मात्र accepted भएकाले average 85 हुन्छ। Rejection report मा parsed data-record number राखिएको छ, file line होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Compute average before excluding invalid rows",
+          "right": "Validate each row, then aggregate accepted records only",
+          "why": "Invalid values can cause a conversion error or corrupt the computed result."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.0.2.build",
+          "v": "Write a reusable checked_score function. Test 0, 100, 101 and 'bad'; print accepted or rejected."
+        },
+        {
+          "t": "sol",
+          "code": "def checked_score(text):\n    score = int(text.strip())\n    if not 0 <= score <= 100:\n        raise ValueError(\"out of range\")\n    return score\nfor value in (\"0\", \"100\", \"101\", \"bad\"):\n    try:\n        print(value, checked_score(value))\n    except ValueError:\n        print(value, \"rejected\")\n",
+          "out": "0 0\n100 100\n101 rejected\nbad rejected",
+          "why": "Build walkthrough: Normalisation, conversion and validation are separate. Preserve rejected record positions. Aggregate only valid values and define the empty-result policy explicitly."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.0.2.challenge",
+          "v": "Mini challenge: Calculate an average for [90,80], then handle an empty collection with None instead of zero or division by zero."
+        },
+        {
+          "t": "sol",
+          "code": "def average(scores):\n    return sum(scores) / len(scores) if scores else None\nprint(average([90, 80]))\nprint(average([]))\n",
+          "out": "85.0\nNone",
+          "why": "Challenge check: Normalisation, conversion and validation are separate. Preserve rejected record positions. Aggregate only valid values and define the empty-result policy explicitly."
+        },
+        {
+          "t": "try",
+          "q": "Is score 101 valid under our policy?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "The score must satisfy the 0..100 domain rule."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.0.2",
+            "quiz": [
+              {
+                "q": "Is score 101 valid under our policy?",
+                "options": [
+                  "Yes, because it is an int",
+                  "Only in CSV",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "The score must satisfy the 0..100 domain rule."
+              },
+              {
+                "q": "Do parsed CSV record numbers always equal physical line numbers?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only after int conversion"
+                ],
+                "correct": 0,
+                "why": "A quoted field can span several physical lines."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Normalisation, conversion and validation are separate. Preserve rejected record positions. Aggregate only valid values and define the empty-result policy explicitly."
+        }
+      ]
+    },
+    {
+      "title": "4. Writers, dialects, UTF-8 and a real file round trip",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Writers, dialects, UTF-8 and a real file round trip"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Write a clean table with explicit columns and preserve Unicode and IDs."
+        },
+        {
+          "t": "new",
+          "note": "writer writes sequences; DictWriter writes mappings in the specified fieldnames order. writeheader emits those names as the header record.",
+          "v": "csv.writer; csv.DictWriter; writeheader"
+        },
+        {
+          "t": "new",
+          "note": "A dialect is a collection of CSV formatting rules. Choose the known delimiter explicitly; a heuristic Sniffer is not a guarantee.",
+          "v": "delimiter; quoting dialect"
+        },
+        {
+          "t": "new",
+          "note": "A UTF-8 byte-order mark can appear in spreadsheet exports. Reading as utf-8-sig removes an optional initial BOM; ordinary UTF-8 preserves all normal Unicode text.",
+          "v": "utf-8-sig; BOM"
+        },
+        {
+          "t": "new",
+          "note": "TemporaryDirectory gives these file examples an isolated disposable folder; Path composes file paths. The context closes and cleans up the practice folder automatically.",
+          "v": "TemporaryDirectory; Path"
+        },
+        {
+          "t": "p",
+          "v": "Write one clean row per validated record. Fix column order using fieldnames rather than trusting arbitrary dictionary insertion. newline='' lets csv manage line endings. Use UTF-8 for Nepali/Japanese text; use utf-8-sig when a known input may have a BOM. For a spreadsheet semicolon export, pass delimiter=';'. DictWriter raises on unexpected fields by default, which helps detect lost schema agreement."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "with open(path, \"w\", newline=\"\", encoding=\"utf-8\") as handle:\n    writer = csv.DictWriter(handle, fieldnames=[\"id\", \"name\"])\n    writer.writeheader()\n    writer.writerows(records)"
+        },
+        {
+          "t": "code",
+          "v": "import csv\nimport tempfile\nfrom pathlib import Path\nrecords = [{\"id\": \"007\", \"name\": \"सीता\"}, {\"id\": \"008\", \"name\": \"東京\"}]\nwith tempfile.TemporaryDirectory() as folder:\n    path = Path(folder) / \"people.csv\"\n    with path.open(\"w\", newline=\"\", encoding=\"utf-8\") as handle:\n        writer = csv.DictWriter(handle, fieldnames=[\"id\", \"name\"])\n        writer.writeheader()\n        writer.writerows(records)\n    with path.open(newline=\"\", encoding=\"utf-8\") as handle:\n        restored = list(csv.DictReader(handle))\n    print(restored == records)\n    print(restored[0][\"id\"], restored[0][\"name\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "True\n007 सीता"
+        },
+        {
+          "t": "p",
+          "v": "Temporary folder प्रयोग भएकाले example चलाउँदा आफ्नो file मेटिँदैन। Header र rows त्यही क्रमले लेखिन्छन्। Read-back equality ले IDs र Unicode text सुरक्षित गएको जाँच्छ। Real app मा output path आफ्नो practice folder मा छान।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Open CSV files with platform-default encoding/newline handling",
+          "right": "Specify UTF-8 and newline='' for CSV text files",
+          "why": "Explicit encoding avoids platform-dependent corruption; newline control delegates CSV line handling to its parser."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.0.3.build",
+          "v": "Read a semicolon-delimited table containing a quoted semicolon; write a comma-delimited clean version."
+        },
+        {
+          "t": "sol",
+          "code": "import csv\nimport io\nreader = csv.DictReader(io.StringIO('id;name\\n007;\"Sita; Hari\"\\n'), delimiter=\";\")\nbuffer = io.StringIO(newline=\"\")\nwriter = csv.DictWriter(buffer, fieldnames=[\"id\", \"name\"], lineterminator=\"\\n\")\nwriter.writeheader()\nwriter.writerows(reader)\nprint(buffer.getvalue(), end=\"\")\n",
+          "out": "id,name\n007,Sita; Hari",
+          "why": "Build walkthrough: Explicit columns, delimiters, newline handling and encoding make a round trip predictable. Keep identifiers as text and check equality after reading your output."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.0.3.challenge",
+          "v": "Mini challenge: Decode a BOM-prefixed CSV byte string as utf-8-sig and prove the first header is id, without a hidden BOM character."
+        },
+        {
+          "t": "sol",
+          "code": "import csv\nimport io\nraw = b\"\\xef\\xbb\\xbfid,name\\n007,Sita\\n\"\nreader = csv.DictReader(io.StringIO(raw.decode(\"utf-8-sig\")))\nprint(reader.fieldnames)\nprint(next(reader))\n",
+          "out": "['id', 'name']\n{'id': '007', 'name': 'Sita'}",
+          "why": "Challenge check: Explicit columns, delimiters, newline handling and encoding make a round trip predictable. Keep identifiers as text and check equality after reading your output."
+        },
+        {
+          "t": "try",
+          "q": "What fixes DictWriter column order?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "fieldnames",
+          "why": "The fieldnames sequence determines written columns."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.0.3",
+            "quiz": [
+              {
+                "q": "What fixes DictWriter column order?",
+                "options": [
+                  "fieldnames",
+                  "The longest value",
+                  "The filename extension"
+                ],
+                "correct": 0,
+                "why": "The fieldnames sequence determines written columns."
+              },
+              {
+                "q": "Why use utf-8-sig for a known BOM-bearing input?",
+                "options": [
+                  "It turns every ID into int.",
+                  "It removes an optional initial UTF-8 BOM.",
+                  "It encrypts the table."
+                ],
+                "correct": 1,
+                "why": "Otherwise the first field name may contain an invisible BOM character."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Explicit columns, delimiters, newline handling and encoding make a round trip predictable. Keep identifiers as text and check equality after reading your output."
+        }
+      ]
+    }
+  ]
+},
+"23.1": {
+  "parts": [
+    {
+      "title": "1. JSON: objects, arrays and the dumps/loads pair",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. JSON: objects, arrays and the dumps/loads pair"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish Python values from JSON text and round-trip a nested record."
+        },
+        {
+          "t": "new",
+          "note": "Serialisation encodes Python values as interchange text; deserialisation parses that text back into values.",
+          "v": "Serialisation; deserialisation"
+        },
+        {
+          "t": "new",
+          "note": "dumps returns a JSON string; loads parses a JSON string. The s helps remember string, unlike the file-oriented dump/load pair.",
+          "v": "json.dumps; json.loads"
+        },
+        {
+          "t": "new",
+          "note": "JSON objects become dicts, arrays become lists, null becomes None, and true/false become True/False. Object keys must be strings in portable schemas.",
+          "v": "JSON object/array/null/boolean"
+        },
+        {
+          "t": "p",
+          "v": "JSON is a data format, not Python source. It uses double-quoted strings, true/false and null; not Python's single-quoted repr, True or None. A Python dictionary is a value, while its dumps result is text. Parse with json.loads, never eval. Portable data uses string keys and explicit shapes; tuples turn into JSON arrays and return as lists."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "text = json.dumps(value, ensure_ascii=False, indent=2)\nrestored = json.loads(text)"
+        },
+        {
+          "t": "code",
+          "v": "import json\ncontact = {\"name\": \"सीता\", \"phones\": [\"007\"], \"active\": True, \"note\": None}\ntext = json.dumps(contact, ensure_ascii=False, sort_keys=True)\nprint(text)\nrestored = json.loads(text)\nprint(restored == contact)\nprint(type(text).__name__, type(restored).__name__)\n"
+        },
+        {
+          "t": "out",
+          "v": "{\"active\": true, \"name\": \"सीता\", \"note\": null, \"phones\": [\"007\"]}\nTrue\nstr dict"
+        },
+        {
+          "t": "p",
+          "v": "dumps पछि result str हो; loads पछि dict भयो। ensure_ascii=False ले नेपाली text पढ्न सजिलो बनाउँछ, encryption गर्दैन। JSON null र true फेरि Python None र True बन्छन्। Sort_keys यहाँ reproducible display का लागि मात्र हो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "str(data) is valid portable JSON",
+          "right": "json.dumps(data) produces JSON text",
+          "why": "Python repr may contain single quotes, True and None, which are not JSON syntax."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.1.0.build",
+          "v": "Parse a JSON array with true and null; print the Python value and element types."
+        },
+        {
+          "t": "sol",
+          "code": "import json\nvalues = json.loads('[true, null, \"007\"]')\nprint(values)\nprint([type(value).__name__ for value in values])\n",
+          "out": "[True, None, '007']\n['bool', 'NoneType', 'str']",
+          "why": "Build walkthrough: JSON text and Python objects are different layers. dumps/loads operate on strings. Some Python types change shape, so choose an explicit portable schema."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.1.0.challenge",
+          "v": "Mini challenge: Round-trip a tuple and explain why equality with the original tuple is not preserved."
+        },
+        {
+          "t": "sol",
+          "code": "import json\noriginal = (1, 2)\nrestored = json.loads(json.dumps(original))\nprint(original, restored)\nprint(original == restored)\n",
+          "out": "(1, 2) [1, 2]\nFalse",
+          "why": "Challenge check: JSON text and Python objects are different layers. dumps/loads operate on strings. Some Python types change shape, so choose an explicit portable schema."
+        },
+        {
+          "t": "try",
+          "q": "What does json.dumps return?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "str",
+          "why": "It serialises the value into JSON text."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.1.0",
+            "quiz": [
+              {
+                "q": "What does json.dumps return?",
+                "options": [
+                  "str",
+                  "dict",
+                  "An open file"
+                ],
+                "correct": 0,
+                "why": "It serialises the value into JSON text."
+              },
+              {
+                "q": "What does JSON null become in Python?",
+                "options": [
+                  "Zero",
+                  "None",
+                  "'null' always"
+                ],
+                "correct": 1,
+                "why": "null maps to Python's None value."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "JSON text and Python objects are different layers. dumps/loads operate on strings. Some Python types change shape, so choose an explicit portable schema."
+        }
+      ]
+    },
+    {
+      "title": "2. dump/load files: Unicode, failures and safe replacement",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. dump/load files: Unicode, failures and safe replacement"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Save one whole document without damaging an existing file on serialisation failure."
+        },
+        {
+          "t": "new",
+          "note": "dump writes one JSON document to an open file; load reads one document from an open file.",
+          "v": "json.dump; json.load"
+        },
+        {
+          "t": "new",
+          "note": "Serialise first, write a temporary file in the destination directory, then replace the destination after success. This avoids truncating the old file before serialisation finishes.",
+          "v": "Temporary output + replace"
+        },
+        {
+          "t": "new",
+          "note": "A JSON syntax error and a text-encoding error are different failures. Report them rather than silently overwriting bad input with defaults.",
+          "v": "JSONDecodeError; UnicodeDecodeError"
+        },
+        {
+          "t": "p",
+          "v": "dump and load are useful for an opened UTF-8 file. Do not repeatedly append separate JSON objects to one file and call it a valid JSON document. For important data, first produce the complete text with dumps, then write a temporary sibling and replace the destination. This protects the old document from serialisation failure; full durability, concurrent writers and crash recovery require additional design. Never respond to a failed load by automatically saving an empty dataset over the old one."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "text = json.dumps(data, ensure_ascii=False, allow_nan=False)\nwrite temporary sibling → replace only after successful write"
+        },
+        {
+          "t": "code",
+          "v": "import json\nimport tempfile\nfrom pathlib import Path\nwith tempfile.TemporaryDirectory() as folder:\n    target = Path(folder) / \"contacts.json\"\n    data = {\"contacts\": [{\"id\": \"007\", \"name\": \"सीता\"}]}\n    text = json.dumps(data, ensure_ascii=False, allow_nan=False)\n    temporary = target.with_suffix(\".json.tmp\")\n    temporary.write_text(text, encoding=\"utf-8\")\n    temporary.replace(target)\n    with target.open(encoding=\"utf-8\") as handle:\n        print(json.load(handle) == data)\n"
+        },
+        {
+          "t": "out",
+          "v": "True"
+        },
+        {
+          "t": "p",
+          "v": "पहिले serialisation सफल हुन्छ, त्यसपछि मात्रै file लेखिन्छ। Temporary sibling पूरा लेखिएपछि replace हुन्छ। यो practice example मा folder isolated छ। आफूले save गरेको document load गरेर equality जाँच। File-save logic नै progress storage हो भन्ने नसम्झ; Study Hub को storage यहाँ बदलिएको छैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Open the existing file in w mode before checking whether data can be serialised",
+          "right": "Serialise first; write a temporary sibling; replace after success",
+          "why": "Opening in w truncates immediately. If serialisation then fails, the old data may already be gone."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.1.1.build",
+          "v": "Use dump/load with StringIO to demonstrate the file interface without touching a real file."
+        },
+        {
+          "t": "sol",
+          "code": "import json\nimport io\nhandle = io.StringIO()\njson.dump({\"name\": \"Sita\", \"score\": 90}, handle)\nhandle.seek(0)\nprint(json.load(handle))\n",
+          "out": "{'name': 'Sita', 'score': 90}",
+          "why": "Build walkthrough: One document per JSON file. Keep syntax errors, decoding errors and I/O errors distinct. Preserve old files on failed saves; a parse failure is not permission to erase data."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.1.1.challenge",
+          "v": "Mini challenge: Catch JSON syntax failure from a trailing comma, and separately catch UTF-8 decoding failure from invalid bytes."
+        },
+        {
+          "t": "sol",
+          "code": "import json\ntry:\n    json.loads('{\"score\": 90,}')\nexcept json.JSONDecodeError:\n    print(\"JSON syntax rejected\")\ntry:\n    b\"\\xff\".decode(\"utf-8\")\nexcept UnicodeDecodeError:\n    print(\"UTF-8 decoding rejected\")\n",
+          "out": "JSON syntax rejected\nUTF-8 decoding rejected",
+          "why": "Challenge check: One document per JSON file. Keep syntax errors, decoding errors and I/O errors distinct. Preserve old files on failed saves; a parse failure is not permission to erase data."
+        },
+        {
+          "t": "try",
+          "q": "Which pair reads/writes opened files?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "dump/load",
+          "why": "The file pair accepts file-like handles."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.1.1",
+            "quiz": [
+              {
+                "q": "Which pair reads/writes opened files?",
+                "options": [
+                  "repr/eval",
+                  "dump/load",
+                  "dumps/loads"
+                ],
+                "correct": 1,
+                "why": "The file pair accepts file-like handles."
+              },
+              {
+                "q": "Is appending two separate dump results one valid JSON document?",
+                "options": [
+                  "Yes",
+                  "Only with indent=2",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "JSON is not automatically framed; use one array/document or a deliberately different format."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "One document per JSON file. Keep syntax errors, decoding errors and I/O errors distinct. Preserve old files on failed saves; a parse failure is not permission to erase data."
+        }
+      ]
+    },
+    {
+      "title": "3. Strict JSON and validation after parsing",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Strict JSON and validation after parsing"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Reject duplicate keys and non-finite values, then verify the expected schema."
+        },
+        {
+          "t": "new",
+          "note": "Python's default encoder permits NaN/Infinity extensions. allow_nan=False rejects them when writing standards-compatible JSON.",
+          "v": "allow_nan=False"
+        },
+        {
+          "t": "new",
+          "note": "parse_constant can reject non-finite numeric constants on input; object_pairs_hook receives key/value pairs and can detect duplicate object keys.",
+          "v": "parse_constant; object_pairs_hook"
+        },
+        {
+          "t": "new",
+          "note": "isinstance(True, int) is True. If a schema requires an actual integer, use type(value) is int to reject booleans.",
+          "v": "bool is a subclass of int"
+        },
+        {
+          "t": "p",
+          "v": "Valid JSON syntax does not guarantee an object with the right fields. It can be a list, a string or an object with invalid values. Python accepts duplicate keys with the last value winning unless you intervene. A strict importer can reject duplicates instead of silently losing data. Use precise type/range checks after parsing. A boolean is not an acceptable score merely because Python treats bool as an int subclass."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "json.loads(text, object_pairs_hook=unique_object, parse_constant=reject_constant)\nif type(score) is not int: raise ValueError(...)"
+        },
+        {
+          "t": "code",
+          "v": "import json\ndef unique_object(pairs):\n    result = {}\n    for key, value in pairs:\n        if key in result:\n            raise ValueError(\"duplicate key\")\n        result[key] = value\n    return result\ndef reject_constant(value):\n    raise ValueError(\"non-finite constant\")\nfor text in ('{\"score\":90}', '{\"score\":90,\"score\":80}', '{\"score\":NaN}'):\n    try:\n        print(json.loads(text, object_pairs_hook=unique_object,\n                         parse_constant=reject_constant))\n    except ValueError:\n        print(\"rejected\")\nprint(isinstance(True, int), type(True) is int)\n"
+        },
+        {
+          "t": "out",
+          "v": "{'score': 90}\nrejected\nrejected\nTrue False"
+        },
+        {
+          "t": "p",
+          "v": "Hook ले duplicate key दोस्रो पटक आएपछि reject गर्छ। parse_constant ले NaN रोक्छ। यी JSON parsing policies हुन्; score 0..100 rule अझै छुट्टै चाहिन्छ। True लाई integer score मान्ने गल्ती रोक्न exact type check प्रयोग गरिएको छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Parsed JSON is automatically safe and schema-valid",
+          "right": "Apply a declared schema and strict parsing policy",
+          "why": "Parsing identifies values; it does not decide which types, keys or ranges your application permits."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.1.2.build",
+          "v": "Validate scores 90, True and 101 as actual integers in 0..100."
+        },
+        {
+          "t": "sol",
+          "code": "def valid_score(value):\n    return type(value) is int and 0 <= value <= 100\nfor value in (90, True, 101):\n    print(repr(value), valid_score(value))\n",
+          "out": "90 True\nTrue False\n101 False",
+          "why": "Build walkthrough: Strict parsing prevents silent duplicate-key loss and non-finite extensions. Domain validation follows parsing. Reject booleans where actual integers are required."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.1.2.challenge",
+          "v": "Mini challenge: Attempt to serialise infinity with allow_nan=False and catch the intended error."
+        },
+        {
+          "t": "sol",
+          "code": "import json\ntry:\n    json.dumps({\"value\": float(\"inf\")}, allow_nan=False)\nexcept ValueError:\n    print(\"non-finite output rejected\")\n",
+          "out": "non-finite output rejected",
+          "why": "Challenge check: Strict parsing prevents silent duplicate-key loss and non-finite extensions. Domain validation follows parsing. Reject booleans where actual integers are required."
+        },
+        {
+          "t": "try",
+          "q": "What does a default JSON duplicate-key decode usually retain?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "The last value for the key",
+          "why": "A duplicate-key hook is needed if your policy rejects this."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.1.2",
+            "quiz": [
+              {
+                "q": "What does a default JSON duplicate-key decode usually retain?",
+                "options": [
+                  "Both values under one key",
+                  "It always raises",
+                  "The last value for the key"
+                ],
+                "correct": 2,
+                "why": "A duplicate-key hook is needed if your policy rejects this."
+              },
+              {
+                "q": "Why use type(score) is int here?",
+                "options": [
+                  "To reject booleans as scores.",
+                  "To make JSON faster.",
+                  "To convert strings."
+                ],
+                "correct": 0,
+                "why": "bool is an int subclass, so isinstance alone is broader than the schema."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Strict parsing prevents silent duplicate-key loss and non-finite extensions. Domain validation follows parsing. Reject booleans where actual integers are required."
+        }
+      ]
+    },
+    {
+      "title": "4. Custom encoders: dates and explicit type decisions",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Custom encoders: dates and explicit type decisions"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Encode unsupported values deliberately without hiding mistakes."
+        },
+        {
+          "t": "new",
+          "note": "A default callback handles otherwise unsupported values. A JSONEncoder subclass can override default; delegate unsupported cases to the parent to raise TypeError.",
+          "v": "default callback; JSONEncoder.default"
+        },
+        {
+          "t": "new",
+          "note": "Encode a date as a documented YYYY-MM-DD string, then explicitly parse that field on restoration. JSON does not remember Python date objects.",
+          "v": "ISO date representation"
+        },
+        {
+          "t": "p",
+          "v": "Dates and ordinary custom objects are not automatically JSON values. Decide a schema instead of using default=str for everything. A generic string fallback can hide an unexpected object. For a date field, ISO text is clear and portable. Use Week 19 method overriding to customise an encoder; defer unknown types to super().default so a bug stays visible. A parsed string becomes a date only when your schema explicitly says to parse that field."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "class Encoder(json.JSONEncoder):\n    def default(self, value):\n        if isinstance(value, date): return value.isoformat()\n        return super().default(value)"
+        },
+        {
+          "t": "code",
+          "v": "import json\nfrom datetime import date\nclass DateEncoder(json.JSONEncoder):\n    def default(self, value):\n        if type(value) is date:\n            return value.isoformat()\n        return super().default(value)\ntext = json.dumps({\"birthday\": date(2000, 1, 2)}, cls=DateEncoder)\nprint(text)\nrestored = json.loads(text)\nprint(type(restored[\"birthday\"]).__name__)\nprint(date.fromisoformat(restored[\"birthday\"]).year)\n"
+        },
+        {
+          "t": "out",
+          "v": "{\"birthday\": \"2000-01-02\"}\nstr\n2000"
+        },
+        {
+          "t": "p",
+          "v": "Encoder ले date मात्र चिन्छ र ISO string दिन्छ। loads पछि birthday str हो, date होइन। fromisoformat ले documented field मात्र restore गर्छ। Unknown object आए parent method ले TypeError उठाउनुपर्छ, silently string होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "default=str silently encodes every unexpected object",
+          "right": "Handle supported types explicitly and raise on unsupported ones",
+          "why": "A catch-all fallback can conceal data modelling mistakes and loses type meaning."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.1.3.build",
+          "v": "Use a default function for dates and prove a set is still rejected."
+        },
+        {
+          "t": "sol",
+          "code": "import json\nfrom datetime import date\ndef encode(value):\n    if type(value) is date:\n        return value.isoformat()\n    raise TypeError(\"unsupported type\")\nprint(json.dumps({\"day\": date(2026, 10, 10)}, default=encode))\ntry:\n    json.dumps({\"items\": {1, 2}}, default=encode)\nexcept TypeError:\n    print(\"set rejected\")\n",
+          "out": "{\"day\": \"2026-10-10\"}\nset rejected",
+          "why": "Build walkthrough: Custom encoding needs a documented restoration policy. Unknown types should fail clearly. Date strings and integer minor units are explicit representations, not magical preservation of Python types."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.1.3.challenge",
+          "v": "Mini challenge: Model money as integer minor units and an explicit currency string rather than assuming a binary float preserves decimal money."
+        },
+        {
+          "t": "sol",
+          "code": "import json\ninvoice = {\"currency\": \"NPR\", \"amount_minor\": 1999}\nrestored = json.loads(json.dumps(invoice))\nprint(restored)\nprint(type(restored[\"amount_minor\"]).__name__)\n",
+          "out": "{'currency': 'NPR', 'amount_minor': 1999}\nint",
+          "why": "Challenge check: Custom encoding needs a documented restoration policy. Unknown types should fail clearly. Date strings and integer minor units are explicit representations, not magical preservation of Python types."
+        },
+        {
+          "t": "try",
+          "q": "Does JSON remember that an ISO string originally came from date?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "Restoration follows your schema, not the string's appearance alone."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.1.3",
+            "quiz": [
+              {
+                "q": "Does JSON remember that an ISO string originally came from date?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only with indent"
+                ],
+                "correct": 0,
+                "why": "Restoration follows your schema, not the string's appearance alone."
+              },
+              {
+                "q": "What should an encoder do with an unsupported unexpected type?",
+                "options": [
+                  "Drop the field silently.",
+                  "Raise TypeError through the parent/default policy.",
+                  "Always stringify it."
+                ],
+                "correct": 1,
+                "why": "Visible failure exposes a schema mismatch."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Custom encoding needs a documented restoration policy. Unknown types should fail clearly. Date strings and integer minor units are explicit representations, not magical preservation of Python types."
+        }
+      ]
+    }
+  ]
+},
+"23.2": {
+  "parts": [
+    {
+      "title": "1. Read the JSON shape before indexing",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Read the JSON shape before indexing"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Trace dictionaries and lists one level at a time and preserve meaningful falsey values."
+        },
+        {
+          "t": "new",
+          "note": "A shape describes where objects, arrays and scalar values occur. A path may alternate dictionary keys and list indexes.",
+          "v": "Data shape; nested path"
+        },
+        {
+          "t": "new",
+          "note": "A missing key, None, empty list and zero can have different meanings. A truthiness fallback such as value or default merges these cases.",
+          "v": "Missing vs null vs empty vs zero"
+        },
+        {
+          "t": "new",
+          "note": "A unique object() value can distinguish a missing key from an explicitly stored None when dict.get is used.",
+          "v": "Sentinel object"
+        },
+        {
+          "t": "p",
+          "v": "An API response is just data once fetched. This lesson uses saved fixture JSON and requires no network. Write the path on paper: root dict → data dict → users list → first user dict → name string. Do not chain indexes before checking shape. A field score=0 is valid here; replacing it with a default because it is falsey would corrupt meaning."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "root[\"data\"][\"users\"][0][\"name\"]\nmissing = object()\nvalue = mapping.get(\"field\", missing)"
+        },
+        {
+          "t": "code",
+          "v": "import json\nroot = json.loads('{\"data\":{\"users\":[{\"name\":\"Sita\",\"score\":0}]},\"next\":null}')\nusers = root[\"data\"][\"users\"]\nprint(type(root).__name__, type(users).__name__)\nprint(users[0][\"name\"], users[0][\"score\"])\nmissing = object()\nprint(root.get(\"absent\", missing) is missing)\nprint(root.get(\"next\", missing) is None)\nprint(users[0][\"score\"] or 99)\n"
+        },
+        {
+          "t": "out",
+          "v": "dict list\nSita 0\nTrue\nTrue\n99"
+        },
+        {
+          "t": "p",
+          "v": "User array मा index 0 पछि dict name key आउँछ। Explicit null को अर्थ None हो; missing key भने अलग sentinel हो। अन्तिम line मा 0 or 99 ले 99 दिएको देख: यो score को सही fallback होइन। Data contract अनुसार missing मात्र default गर्ने कि null पनि गर्ने भन्ने कुरा छुट्टै लेख।"
+        },
+        {
+          "t": "mis",
+          "wrong": "score = record.get('score') or 99",
+          "right": "Use an explicit missing/null policy that preserves score 0",
+          "why": "Truthiness also treats zero, False and empty collections as absent."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.2.0.build",
+          "v": "Check a missing score, an explicit None and score 0 separately without merging them."
+        },
+        {
+          "t": "sol",
+          "code": "missing = object()\nfor row in ({}, {\"score\": None}, {\"score\": 0}):\n    value = row.get(\"score\", missing)\n    if value is missing:\n        print(\"missing\")\n    elif value is None:\n        print(\"null\")\n    else:\n        print(\"score\", value)\n",
+          "out": "missing\nnull\nscore 0",
+          "why": "Build walkthrough: Trace keys and indexes according to shape. Missing, null, empty and zero are different states. Avoid truthiness defaults when zero or False is valid data."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.2.0.challenge",
+          "v": "Mini challenge: Read nested users with no users present; avoid indexing position 0 on an empty list."
+        },
+        {
+          "t": "sol",
+          "code": "root = {\"data\": {\"users\": []}}\nusers = root[\"data\"][\"users\"]\nprint(users[0][\"name\"] if users else \"no users\")\n",
+          "out": "no users",
+          "why": "Challenge check: Trace keys and indexes according to shape. Missing, null, empty and zero are different states. Avoid truthiness defaults when zero or False is valid data."
+        },
+        {
+          "t": "try",
+          "q": "What is wrong with score or 99 when score=0 is valid?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "It replaces valid zero with 99.",
+          "why": "Zero is falsey but not necessarily missing."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.2.0",
+            "quiz": [
+              {
+                "q": "What is wrong with score or 99 when score=0 is valid?",
+                "options": [
+                  "It replaces valid zero with 99.",
+                  "Nothing",
+                  "It validates the score."
+                ],
+                "correct": 0,
+                "why": "Zero is falsey but not necessarily missing."
+              },
+              {
+                "q": "What follows a list in a nested path?",
+                "options": [
+                  "json.dumps",
+                  "An index or iteration, not an assumed dictionary key",
+                  "Always ['name']"
+                ],
+                "correct": 1,
+                "why": "A list contains positional values; inspect those before dictionary access."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Trace keys and indexes according to shape. Missing, null, empty and zero are different states. Avoid truthiness defaults when zero or False is valid data."
+        }
+      ]
+    },
+    {
+      "title": "2. Safe traversal: report invalid shapes instead of hiding them",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Safe traversal: report invalid shapes instead of hiding them"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Handle optional paths while rejecting a wrong container type."
+        },
+        {
+          "t": "new",
+          "note": "A documented absent field can have a default. A present field of the wrong type should usually be reported as invalid, not silently treated as missing.",
+          "v": "Optional path vs malformed shape"
+        },
+        {
+          "t": "new",
+          "note": "Check a container's type before calling dictionary methods or iterating it as a list of records.",
+          "v": "isinstance(container, dict/list)"
+        },
+        {
+          "t": "p",
+          "v": "root.get('data', {}).get('users', []) is short, but it fails if data is None or a list. Repeated get calls are not general schema validation. A named read_users function can establish each expected container. This example permits missing data/users as an empty collection but rejects null or wrong types when present. That is a declared policy, not the only possible API contract."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "if not isinstance(root, dict): raise ValueError(...)\ncheck each present container\nreturn validated list"
+        },
+        {
+          "t": "code",
+          "v": "def read_users(root):\n    if not isinstance(root, dict):\n        raise ValueError(\"root must be an object\")\n    data = root.get(\"data\", {})\n    if not isinstance(data, dict):\n        raise ValueError(\"data must be an object\")\n    users = data.get(\"users\", [])\n    if not isinstance(users, list):\n        raise ValueError(\"users must be an array\")\n    if any(not isinstance(user, dict) for user in users):\n        raise ValueError(\"each user must be an object\")\n    return users\nfor root in ({}, {\"data\": {\"users\": [{\"name\": \"Sita\"}]}}, {\"data\": None}):\n    try:\n        print(read_users(root))\n    except ValueError as error:\n        print(error)\n"
+        },
+        {
+          "t": "out",
+          "v": "[]\n[{'name': 'Sita'}]\ndata must be an object"
+        },
+        {
+          "t": "p",
+          "v": "हरेक स्तरमा आफ्नो type check छ। Missing data मा हाम्रो policy empty users हो। तर data:null आएको छ भने present-but-invalid मानिन्छ। यसरी malformed response लाई सामान्य empty result भनेर लुकाइँदैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Catch every exception and return []",
+          "right": "Validate each container and report the intended ValueError",
+          "why": "A blanket fallback hides wrong types, programming errors and unexpected data contracts."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.2.1.build",
+          "v": "Write read_items requiring an object with an items list. Reject items=None and items='text'."
+        },
+        {
+          "t": "sol",
+          "code": "def read_items(root):\n    if not isinstance(root, dict) or not isinstance(root.get(\"items\"), list):\n        raise ValueError(\"items array required\")\n    return root[\"items\"]\nfor root in ({\"items\": []}, {\"items\": None}, {\"items\": \"text\"}):\n    try:\n        print(read_items(root))\n    except ValueError:\n        print(\"invalid shape\")\n",
+          "out": "[]\ninvalid shape\ninvalid shape",
+          "why": "Build walkthrough: Default only what the contract permits. Check container types and field types in named functions; report malformed data instead of concealing it behind an empty result."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.2.1.challenge",
+          "v": "Mini challenge: Validate a profile/name path as a nonempty string and reject a list or a blank name."
+        },
+        {
+          "t": "sol",
+          "code": "def read_name(root):\n    if not isinstance(root, dict) or not isinstance(root.get(\"profile\"), dict):\n        raise ValueError(\"profile object required\")\n    name = root[\"profile\"].get(\"name\")\n    if not isinstance(name, str) or not name.strip():\n        raise ValueError(\"nonempty name required\")\n    return name.strip()\nfor root in ({\"profile\": {\"name\": \" Sita \"}}, {\"profile\": []},\n             {\"profile\": {\"name\": \" \"}}):\n    try:\n        print(read_name(root))\n    except ValueError:\n        print(\"rejected\")\n",
+          "out": "Sita\nrejected\nrejected",
+          "why": "Challenge check: Default only what the contract permits. Check container types and field types in named functions; report malformed data instead of concealing it behind an empty result."
+        },
+        {
+          "t": "try",
+          "q": "Is chained get enough if a present parent is null?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "None is not a dict and has no get method."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.2.1",
+            "quiz": [
+              {
+                "q": "Is chained get enough if a present parent is null?",
+                "options": [
+                  "Only with indent",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "None is not a dict and has no get method."
+              },
+              {
+                "q": "Why avoid except Exception: return [] for parsing?",
+                "options": [
+                  "It is too strict.",
+                  "It preserves every field.",
+                  "It hides malformed shapes and unrelated bugs."
+                ],
+                "correct": 2,
+                "why": "Catch only expected failures and communicate the rejection."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Default only what the contract permits. Check container types and field types in named functions; report malformed data instead of concealing it behind an empty result."
+        }
+      ]
+    },
+    {
+      "title": "3. Flatten nested records without changing their meaning",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Flatten nested records without changing their meaning"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose one output row per item and repeat its parent identifiers deliberately."
+        },
+        {
+          "t": "new",
+          "note": "The grain states what one row represents. Here one row is one purchased item within an order, not one customer or one whole order.",
+          "v": "Row grain"
+        },
+        {
+          "t": "new",
+          "note": "One customer can have multiple orders and each order multiple items. Flattening repeats parent identifiers to retain these relationships.",
+          "v": "One-to-many relationship"
+        },
+        {
+          "t": "new",
+          "note": "No items means no item rows in this report. A separate order report is needed if empty orders must still be counted.",
+          "v": "Empty-child policy"
+        },
+        {
+          "t": "p",
+          "v": "Start with a three-level saved response: customer → orders → items. Write nested loops from the outside inward. Copy customer_id and order_id into each item row so its origin is not lost. Do not zip independent arrays and assume they align. Flattening is a deliberate projection: only selected fields survive. Keep the original document when other fields matter."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "for customer in customers:\n    for order in customer[\"orders\"]:\n        for item in order[\"items\"]:\n            rows.append(parent identifiers + item fields)"
+        },
+        {
+          "t": "code",
+          "v": "data = {\"customers\": [\n    {\"id\": \"C1\", \"orders\": [\n        {\"id\": \"O1\", \"items\": [{\"sku\": \"B1\", \"qty\": 2}, {\"sku\": \"P1\", \"qty\": 1}]},\n        {\"id\": \"O2\", \"items\": []}\n    ]}\n]}\nrows = []\nfor customer in data[\"customers\"]:\n    for order in customer[\"orders\"]:\n        for item in order[\"items\"]:\n            rows.append({\"customer_id\": customer[\"id\"], \"order_id\": order[\"id\"],\n                         \"sku\": item[\"sku\"], \"quantity\": item[\"qty\"]})\nfor row in rows:\n    print(row)\nprint(\"item rows:\", len(rows))\n"
+        },
+        {
+          "t": "out",
+          "v": "{'customer_id': 'C1', 'order_id': 'O1', 'sku': 'B1', 'quantity': 2}\n{'customer_id': 'C1', 'order_id': 'O1', 'sku': 'P1', 'quantity': 1}\nitem rows: 2"
+        },
+        {
+          "t": "p",
+          "v": "Outer loop customer, त्यसपछि order र item हो। हरेक row मा parent IDs repeat भएको छ, त्यसैले origin थाहा हुन्छ। O2 empty भएकाले item rows मा आउँदैन। यसको अर्थ O2 थिएन होइन; हाम्रो report को grain item हो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "One flattened row always represents one parent",
+          "right": "Define the row grain before flattening",
+          "why": "A one-to-many child array can create several output rows for one parent or none for an empty child collection."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.2.2.build",
+          "v": "Flatten a school/classes/students structure into class_id and student_name rows."
+        },
+        {
+          "t": "sol",
+          "code": "school = {\"classes\": [\n    {\"id\": \"A\", \"students\": [{\"name\": \"Sita\"}, {\"name\": \"Hari\"}]},\n    {\"id\": \"B\", \"students\": [{\"name\": \"Mina\"}]}\n]}\nrows = [{\"class_id\": group[\"id\"], \"student_name\": student[\"name\"]}\n        for group in school[\"classes\"] for student in group[\"students\"]]\nprint(rows)\n",
+          "out": "[{'class_id': 'A', 'student_name': 'Sita'}, {'class_id': 'A', 'student_name': 'Hari'}, {'class_id': 'B', 'student_name': 'Mina'}]",
+          "why": "Build walkthrough: Choose row grain explicitly, carry parent IDs, and state how empty child arrays are handled. Flattening can lose fields; retain the original when the projection is not sufficient."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.2.2.challenge",
+          "v": "Mini challenge: Count orders separately from item rows, including an empty order, and explain the difference."
+        },
+        {
+          "t": "sol",
+          "code": "orders = [{\"id\": \"O1\", \"items\": [1, 2]}, {\"id\": \"O2\", \"items\": []}]\nprint(\"orders:\", len(orders))\nprint(\"item rows:\", sum(len(order[\"items\"]) for order in orders))\nprint(\"empty orders:\", sum(not order[\"items\"] for order in orders))\n",
+          "out": "orders: 2\nitem rows: 2\nempty orders: 1",
+          "why": "Challenge check: Choose row grain explicitly, carry parent IDs, and state how empty child arrays are handled. Flattening can lose fields; retain the original when the projection is not sufficient."
+        },
+        {
+          "t": "try",
+          "q": "What does one row represent in the worked order example?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "One item within an order",
+          "why": "The innermost loop emits one row per item."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.2.2",
+            "quiz": [
+              {
+                "q": "What does one row represent in the worked order example?",
+                "options": [
+                  "One customer",
+                  "Every order regardless of items",
+                  "One item within an order"
+                ],
+                "correct": 2,
+                "why": "The innermost loop emits one row per item."
+              },
+              {
+                "q": "Why repeat customer/order IDs in item rows?",
+                "options": [
+                  "To preserve each item's parent relationship.",
+                  "To encrypt data.",
+                  "To remove duplicates automatically."
+                ],
+                "correct": 0,
+                "why": "Without those fields the flattened rows lose their origin."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Choose row grain explicitly, carry parent IDs, and state how empty child arrays are handled. Flattening can lose fields; retain the original when the projection is not sufficient."
+        }
+      ]
+    },
+    {
+      "title": "4. Contact-manager JSON: validate, save and restore",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Contact-manager JSON: validate, save and restore"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Give a small app a versioned JSON document while preserving text identifiers."
+        },
+        {
+          "t": "new",
+          "note": "Wrap records in an object with schema_version and contacts. This lets future code identify the layout instead of guessing.",
+          "v": "Versioned envelope"
+        },
+        {
+          "t": "new",
+          "note": "IDs must be unique within the dataset; a parser alone does not enforce that rule.",
+          "v": "Uniqueness constraint"
+        },
+        {
+          "t": "p",
+          "v": "Your contact manager can store an envelope with schema_version=1 and contacts containing id, name and phones. IDs and phone numbers remain strings; they are identifiers, not arithmetic values. Validate required types and uniqueness before saving. A malformed old file should be reported and retained, not replaced by an empty address book. This is a practice program, separate from Study Hub's existing storage schema."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "{\"schema_version\": 1, \"contacts\": [{\"id\": \"007\", \"name\": \"Sita\", \"phones\": [\"0123\"]}]}"
+        },
+        {
+          "t": "code",
+          "v": "import json\ndef validate(document):\n    if not isinstance(document, dict) or type(document.get(\"schema_version\")) is not int or document[\"schema_version\"] != 1:\n        raise ValueError(\"unsupported schema\")\n    contacts = document.get(\"contacts\")\n    if not isinstance(contacts, list):\n        raise ValueError(\"contacts array required\")\n    seen = set()\n    for contact in contacts:\n        if not isinstance(contact, dict) or set(contact) != {\"id\", \"name\", \"phones\"}:\n            raise ValueError(\"contact fields\")\n        if any(not isinstance(contact[key], str) or not contact[key].strip() for key in (\"id\", \"name\")):\n            raise ValueError(\"id and name required\")\n        if contact[\"id\"] in seen:\n            raise ValueError(\"duplicate id\")\n        phones = contact[\"phones\"]\n        if not isinstance(phones, list) or any(not isinstance(p, str) for p in phones):\n            raise ValueError(\"phone strings required\")\n        seen.add(contact[\"id\"])\n    return document\ndata = {\"schema_version\": 1, \"contacts\": [{\"id\": \"007\", \"name\": \"Sita\", \"phones\": [\"0123\"]}]}\nvalidate(data)\nrestored = validate(json.loads(json.dumps(data)))\nprint(restored == data)\nprint(restored[\"contacts\"][0][\"phones\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "True\n['0123']"
+        },
+        {
+          "t": "p",
+          "v": "Version पहिले जाँचिन्छ, त्यसपछि list र contact fields। ID duplicates set मा रोकिएका छन्। Phones strings भएकाले leading zero बच्यो। JSON syntax valid हुँदा पनि गलत structure reject हुन्छ। यो आफ्नै practice app मा प्रयोग गर्ने schema हो, हाम्रो website को progress format मा migration होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Convert every contact ID and phone to int",
+          "right": "Keep textual identifiers as strings",
+          "why": "Leading zeros and formatting can be meaningful; arithmetic conversion destroys them."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.2.3.build",
+          "v": "Reject duplicate contact IDs before writing any output file."
+        },
+        {
+          "t": "sol",
+          "code": "contacts = [{\"id\": \"007\"}, {\"id\": \"007\"}]\nseen = set()\ntry:\n    for contact in contacts:\n        if contact[\"id\"] in seen:\n            raise ValueError(\"duplicate contact id\")\n        seen.add(contact[\"id\"])\nexcept ValueError as error:\n    print(error)\n",
+          "out": "duplicate contact id",
+          "why": "Build walkthrough: Version the practice document, validate uniqueness and types before saving, and preserve identifiers as text. Keep a failed input file for diagnosis instead of erasing it."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.2.3.challenge",
+          "v": "Mini challenge: Save and restore a versioned contact envelope in an isolated temporary folder with UTF-8."
+        },
+        {
+          "t": "sol",
+          "code": "import json\nimport tempfile\nfrom pathlib import Path\ndata = {\"schema_version\": 1, \"contacts\": [{\"id\": \"007\", \"name\": \"सीता\", \"phones\": []}]}\nwith tempfile.TemporaryDirectory() as folder:\n    path = Path(folder) / \"contacts.json\"\n    text = json.dumps(data, ensure_ascii=False, allow_nan=False)\n    temp = path.with_suffix(\".json.tmp\")\n    temp.write_text(text, encoding=\"utf-8\")\n    temp.replace(path)\n    restored = json.loads(path.read_text(encoding=\"utf-8\"))\n    print(restored == data)\n",
+          "out": "True",
+          "why": "Challenge check: Version the practice document, validate uniqueness and types before saving, and preserve identifiers as text. Keep a failed input file for diagnosis instead of erasing it."
+        },
+        {
+          "t": "try",
+          "q": "Should a phone number usually be converted to int for storage?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No; it is a textual identifier.",
+          "why": "Text preserves formatting and leading zeros."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.2.3",
+            "quiz": [
+              {
+                "q": "Should a phone number usually be converted to int for storage?",
+                "options": [
+                  "No; it is a textual identifier.",
+                  "Yes, to remove zeroes.",
+                  "Only in JSON"
+                ],
+                "correct": 0,
+                "why": "Text preserves formatting and leading zeros."
+              },
+              {
+                "q": "Why put schema_version around the records?",
+                "options": [
+                  "To avoid validation.",
+                  "To identify the document layout for controlled changes.",
+                  "To encrypt contacts."
+                ],
+                "correct": 1,
+                "why": "Versioning makes evolution explicit; it does not replace validation."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Version the practice document, validate uniqueness and types before saving, and preserve identifiers as text. Keep a failed input file for diagnosis instead of erasing it."
+        }
+      ]
+    }
+  ]
+},
+"23.3": {
+  "parts": [
+    {
+      "title": "1. INI settings with configparser",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. INI settings with configparser"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Separate human-editable settings from code and convert values explicitly."
+        },
+        {
+          "t": "new",
+          "note": "A standard-library parser for section/key INI configuration. Values are normally stored as strings.",
+          "v": "configparser.ConfigParser"
+        },
+        {
+          "t": "new",
+          "note": "read_string parses INI text; typed getters convert known settings. getboolean understands values such as yes/no and true/false.",
+          "v": "read_string; getint; getboolean"
+        },
+        {
+          "t": "new",
+          "note": "Default INI interpolation gives % special meaning. Disable it when literal values should not use interpolation.",
+          "v": "Interpolation; interpolation=None"
+        },
+        {
+          "t": "p",
+          "v": "Configuration is an input contract, not just a place to move constants. Our app section contains retries and debug. Read the types you need, then enforce a range such as retries 0..5. bool('false') is True because the string is nonempty; use the parser's boolean getter. ConfigParser lowercases option names by default. A local config file is plain text, not encryption."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "config = configparser.ConfigParser(interpolation=None)\nconfig.read_string(text)\nretries = config.getint(\"app\", \"retries\")\ndebug = config.getboolean(\"app\", \"debug\")"
+        },
+        {
+          "t": "code",
+          "v": "import configparser\nconfig = configparser.ConfigParser(interpolation=None)\nconfig.read_string(\"[app]\\nretries = 3\\ndebug = false\\nlabel = 50% done\\n\")\nretries = config.getint(\"app\", \"retries\")\nif not 0 <= retries <= 5:\n    raise ValueError(\"retry range\")\nprint(type(config[\"app\"][\"retries\"]).__name__, retries)\nprint(config.getboolean(\"app\", \"debug\"))\nprint(config[\"app\"][\"label\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "str 3\nFalse\n50% done"
+        },
+        {
+          "t": "p",
+          "v": "INI मा 3 पनि पहिले string हुन्छ। getint ले integer र getboolean ले सही False निकाल्छ। interpolation=None भएकाले 50% literal text बच्यो। App-specific range parser ले आफैँ जाँच्दैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "debug = bool(config['app']['debug'])",
+          "right": "debug = config.getboolean('app', 'debug')",
+          "why": "Any nonempty string, including 'false', is truthy; getboolean interprets the intended setting."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.3.0.build",
+          "v": "Parse yes/no settings and compare getboolean with Python's ordinary bool on the string 'no'."
+        },
+        {
+          "t": "sol",
+          "code": "import configparser\nconfig = configparser.ConfigParser()\nconfig.read_string(\"[app]\\ndebug=no\\n\")\nprint(bool(config[\"app\"][\"debug\"]))\nprint(config.getboolean(\"app\", \"debug\"))\n",
+          "out": "True\nFalse",
+          "why": "Build walkthrough: INI values start as strings. Use typed getters, validate ranges, choose an interpolation policy, and check required files/sections rather than assuming successful loading."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.3.0.challenge",
+          "v": "Mini challenge: Read an INI file from a temporary folder and verify that a section and expected setting were loaded."
+        },
+        {
+          "t": "sol",
+          "code": "import configparser\nimport tempfile\nfrom pathlib import Path\nwith tempfile.TemporaryDirectory() as folder:\n    path = Path(folder) / \"settings.ini\"\n    path.write_text(\"[app]\\nretries=2\\n\", encoding=\"utf-8\")\n    config = configparser.ConfigParser()\n    loaded = config.read(path, encoding=\"utf-8\")\n    print(len(loaded), config.getint(\"app\", \"retries\"))\n",
+          "out": "1 2",
+          "why": "Challenge check: INI values start as strings. Use typed getters, validate ranges, choose an interpolation policy, and check required files/sections rather than assuming successful loading."
+        },
+        {
+          "t": "try",
+          "q": "What is bool('false')?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "True",
+          "why": "It is a nonempty string; use an intentional boolean conversion."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.3.0",
+            "quiz": [
+              {
+                "q": "What is bool('false')?",
+                "options": [
+                  "True",
+                  "False",
+                  "A parse error"
+                ],
+                "correct": 0,
+                "why": "It is a nonempty string; use an intentional boolean conversion."
+              },
+              {
+                "q": "Does getint enforce retries <= 5?",
+                "options": [
+                  "Only with interpolation",
+                  "No; that range is your application rule.",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "A numeric conversion and a domain range are different checks."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "INI values start as strings. Use typed getters, validate ranges, choose an interpolation policy, and check required files/sections rather than assuming successful loading."
+        }
+      ]
+    },
+    {
+      "title": "2. TOML: typed settings with tomllib",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. TOML: typed settings with tomllib"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Read typed configuration with Python 3.11+ and validate its domain."
+        },
+        {
+          "t": "new",
+          "note": "A [section] creates a table; TOML also has typed strings, integers, booleans and arrays. The resulting structure is nested Python dictionaries/lists.",
+          "v": "TOML tables and arrays"
+        },
+        {
+          "t": "new",
+          "note": "Built into Python 3.11+. loads accepts a TOML string; load reads a binary file. tomllib reads TOML; it does not write it.",
+          "v": "tomllib.loads; tomllib.load"
+        },
+        {
+          "t": "new",
+          "note": "Malformed TOML raises a parse exception. A successfully parsed value may still violate your application's schema.",
+          "v": "TOMLDecodeError"
+        },
+        {
+          "t": "p",
+          "v": "Use TOML when human-readable configuration benefits from explicit types. Unlike basic INI values, retries is already an int and debug a bool. Read real TOML files in binary mode ('rb'); the module handles encoding. These examples use basic TOML 1.0 syntax supported in Python 3.11/3.12, not newer-version features. Do not promise tomllib.dump—it does not exist."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "settings = tomllib.loads(text)\nwith open(\"settings.toml\", \"rb\") as handle:\n    settings = tomllib.load(handle)"
+        },
+        {
+          "t": "code",
+          "v": "import tomllib\ntext = '[app]\\nname=\"Study\"\\nretries=3\\ndebug=false\\nlanguages=[\"python\",\"japanese\"]\\n'\nconfig = tomllib.loads(text)\napp = config[\"app\"]\nprint(app[\"name\"], app[\"retries\"], app[\"debug\"])\nprint(type(app[\"retries\"]).__name__, type(app[\"debug\"]).__name__)\nprint(app[\"languages\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "Study 3 False\nint bool\n['python', 'japanese']"
+        },
+        {
+          "t": "p",
+          "v": "TOML table app nested dict हो। Integer र boolean को type parser बाटै आउँछ। तर retries=100 valid TOML हुन सक्छ; app ले range अझै जाँच्नुपर्छ। Built-in module Python 3.11 भन्दा पुरानो version मा छैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "tomllib.dump writes your edited settings",
+          "right": "tomllib only reads TOML",
+          "why": "Use a deliberately chosen TOML writer package if you need writing; the standard library module has no dump function."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.3.1.build",
+          "v": "Load a TOML file in binary mode from a temporary folder and inspect the parsed port."
+        },
+        {
+          "t": "sol",
+          "code": "import tomllib\nimport tempfile\nfrom pathlib import Path\nwith tempfile.TemporaryDirectory() as folder:\n    path = Path(folder) / \"settings.toml\"\n    path.write_text(\"[server]\\nport=8000\\n\", encoding=\"utf-8\")\n    with path.open(\"rb\") as handle:\n        print(tomllib.load(handle)[\"server\"][\"port\"])\n",
+          "out": "8000",
+          "why": "Build walkthrough: tomllib is Python 3.11+ and read-only. load expects a binary handle; loads expects text. Typed parsing still needs schema and domain checks."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.3.1.challenge",
+          "v": "Mini challenge: Reject a malformed TOML integer, then separately reject a well-formed but out-of-range retry value."
+        },
+        {
+          "t": "sol",
+          "code": "import tomllib\ntry:\n    tomllib.loads(\"retries = ???\")\nexcept tomllib.TOMLDecodeError:\n    print(\"syntax rejected\")\nconfig = tomllib.loads(\"retries=100\")\nprint(\"valid application range:\", type(config[\"retries\"]) is int and 0 <= config[\"retries\"] <= 5)\n",
+          "out": "syntax rejected\nvalid application range: False",
+          "why": "Challenge check: tomllib is Python 3.11+ and read-only. load expects a binary handle; loads expects text. Typed parsing still needs schema and domain checks."
+        },
+        {
+          "t": "try",
+          "q": "Which mode does tomllib.load expect for a real file?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "rb",
+          "why": "The file-oriented reader consumes binary input."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.3.1",
+            "quiz": [
+              {
+                "q": "Which mode does tomllib.load expect for a real file?",
+                "options": [
+                  "a",
+                  "rb",
+                  "w"
+                ],
+                "correct": 1,
+                "why": "The file-oriented reader consumes binary input."
+              },
+              {
+                "q": "Is retries=100 invalid TOML syntax?",
+                "options": [
+                  "Yes, always.",
+                  "Only if debug=false.",
+                  "No; it may only violate the app's range rule."
+                ],
+                "correct": 2,
+                "why": "TOML syntax validity does not decide application-specific limits."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "tomllib is Python 3.11+ and read-only. load expects a binary handle; loads expects text. Typed parsing still needs schema and domain checks."
+        }
+      ]
+    },
+    {
+      "title": "3. YAML: optional PyYAML and safe data loading",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. YAML: optional PyYAML and safe data loading"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Read basic YAML through safe_load and verify its resulting types."
+        },
+        {
+          "t": "new",
+          "note": "YAML can represent nested mappings/lists with indentation. Indentation affects structure; tabs and guessing are not a good editing strategy.",
+          "v": "YAML mapping, sequence and indentation"
+        },
+        {
+          "t": "sh",
+          "note": "Optional YAML practice setup. Install once using your own Python environment; these examples then run locally. Do not install anything to read the offline page.",
+          "v": "python -m pip install PyYAML"
+        },
+        {
+          "t": "new",
+          "note": "PyYAML is an optional installed package, not the standard library. safe_load avoids arbitrary Python-object construction; safe_dump emits basic data.",
+          "v": "PyYAML; yaml.safe_load; yaml.safe_dump"
+        },
+        {
+          "t": "new",
+          "note": "PyYAML may interpret unquoted words such as yes/no/on/off as booleans. Quote values intended to remain text, especially identifiers.",
+          "v": "Scalar interpretation"
+        },
+        {
+          "t": "p",
+          "v": "Install PyYAML only if practising this optional format: python -m pip install PyYAML. The initial installation needs a connection; running these local examples after installation can be offline. Use safe_load rather than unsafe object-loading recipes. 'Safe' here is about allowed construction, not a guarantee against all resource exhaustion or a replacement for schema checks. An empty YAML document yields None. Keep identifiers quoted and inspect resulting types."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "data = yaml.safe_load(text)\ntext = yaml.safe_dump(data, allow_unicode=True, sort_keys=True)"
+        },
+        {
+          "t": "code",
+          "v": "import yaml\ntext = 'app:\\n  name: Study\\n  retries: 3\\n  debug: false\\n  code: \"007\"\\n'\nconfig = yaml.safe_load(text)\nprint(config[\"app\"])\nprint(yaml.safe_load(\"label: yes\")[\"label\"])\nprint(yaml.safe_load('label: \"yes\"')[\"label\"])\nrestored = yaml.safe_load(yaml.safe_dump(config, allow_unicode=True))\nprint(restored == config)\n"
+        },
+        {
+          "t": "out",
+          "v": "{'name': 'Study', 'retries': 3, 'debug': False, 'code': '007'}\nTrue\nyes\nTrue"
+        },
+        {
+          "t": "p",
+          "v": "Indentation ले app भित्रका settings राखेको छ। Quoted 007 text नै रहन्छ। Unquoted yes boolean हुन सक्छ; quoted yes string हुन्छ। Print गर्दा उस्तै देखिन सक्ने values को type पनि जाँच्ने बानी बसाल। Package installed नभए import error आउँछ; website पढ्न package चाहिँदैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "yaml.load arbitrary documents with a Python-object loader",
+          "right": "Use yaml.safe_load for basic data and then validate the schema",
+          "why": "Unrestricted object construction can execute unintended behaviour; safe loading still needs data and size policies."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.3.2.build",
+          "v": "Compare empty YAML, an empty mapping and an empty list."
+        },
+        {
+          "t": "sol",
+          "code": "import yaml\nfor text in (\"\", \"{}\", \"[]\"):\n    value = yaml.safe_load(text)\n    print(repr(value), type(value).__name__)\n",
+          "out": "None NoneType\n{} dict\n[] list",
+          "why": "Build walkthrough: YAML is an optional package exercise. Use safe_load, quote textual identifiers, inspect scalar types, and validate the result. Safe construction is not a complete security or schema guarantee."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.3.2.challenge",
+          "v": "Mini challenge: Round-trip Nepali text and a quoted string ID through safe_dump/safe_load; assert equality."
+        },
+        {
+          "t": "sol",
+          "code": "import yaml\ndata = {\"id\": \"007\", \"name\": \"सीता\"}\ntext = yaml.safe_dump(data, allow_unicode=True)\nrestored = yaml.safe_load(text)\nassert restored == data\nprint(restored)\n",
+          "out": "{'id': '007', 'name': 'सीता'}",
+          "why": "Challenge check: YAML is an optional package exercise. Use safe_load, quote textual identifiers, inspect scalar types, and validate the result. Safe construction is not a complete security or schema guarantee."
+        },
+        {
+          "t": "try",
+          "q": "Is PyYAML built into Python's standard library?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "Install the optional package for these local examples."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.3.2",
+            "quiz": [
+              {
+                "q": "Is PyYAML built into Python's standard library?",
+                "options": [
+                  "Yes",
+                  "Only on Windows",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Install the optional package for these local examples."
+              },
+              {
+                "q": "What does safe_load('') return?",
+                "options": [
+                  "None",
+                  "Always {}",
+                  "Always []"
+                ],
+                "correct": 0,
+                "why": "An empty document is null-like; do not assume it is a mapping."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "YAML is an optional package exercise. Use safe_load, quote textual identifiers, inspect scalar types, and validate the result. Safe construction is not a complete security or schema guarantee."
+        }
+      ]
+    },
+    {
+      "title": "4. .env files: strings, precedence and private settings",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. .env files: strings, precedence and private settings"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Read development settings without printing credentials or assuming .env is secret storage."
+        },
+        {
+          "t": "new",
+          "note": "The optional python-dotenv package parses .env settings. dotenv_values returns a mapping without modifying process environment variables.",
+          "v": "python-dotenv; dotenv_values"
+        },
+        {
+          "t": "sh",
+          "note": "Optional .env practice setup. Only demo settings are used; never paste a real token into a public file.",
+          "v": "python -m pip install python-dotenv"
+        },
+        {
+          "t": "new",
+          "note": "load_dotenv populates the environment; by default an existing environment variable wins. Pass an explicit file path so loading location is predictable.",
+          "v": "load_dotenv; override=False"
+        },
+        {
+          "t": "new",
+          "note": "Environment variables are strings supplied to a process. Convert and validate them; choose whether deployment settings or a local file wins.",
+          "v": "os.environ; environment precedence"
+        },
+        {
+          "t": "p",
+          "v": "Install python-dotenv for this optional practice part: python -m pip install python-dotenv. A .env file is plain text, not encrypted storage. In a private local Python app, keep it out of Git and use an example file with placeholders. Never place real tokens in public HTML/JS, public repository files, or this lesson's examples: visitors can read downloaded frontend files. These snippets use only demo limits, no credentials. Loading a config file does not hide secrets in a static website."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "settings = dotenv_values(stream=StringIO(text), interpolate=False)\n# explicit file:\nload_dotenv(path, override=False)"
+        },
+        {
+          "t": "code",
+          "v": "from dotenv import dotenv_values\nfrom io import StringIO\nsettings = dotenv_values(stream=StringIO(\"STUDY_LIMIT=20\\nSTUDY_DEBUG=false\\n\"), interpolate=False)\nlimit = int(settings[\"STUDY_LIMIT\"])\ndebug = settings[\"STUDY_DEBUG\"].lower() == \"true\"\nif not 1 <= limit <= 100:\n    raise ValueError(\"limit range\")\nprint(limit, type(limit).__name__)\nprint(debug)\n"
+        },
+        {
+          "t": "out",
+          "v": "20 int\nFalse"
+        },
+        {
+          "t": "p",
+          "v": "Values strings छन्, त्यसैले limit int बनायौँ। false लाई bool('false') बाट नबनाऊ। यो दुई accepted boolean values भएको demo हो; real loader मा unknown values reject गर्ने validation राख। dotenv_values ले environment बदल्दैन। Secret राख्ने file public push भए secret हुँदैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Put a real token in public JS or commit .env, then hide it with CSS",
+          "right": "Keep private credentials out of public frontend files and repository history",
+          "why": "Anyone can read public source/downloaded files. A .env extension or hidden UI is not encryption."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.3.3.build",
+          "v": "Parse true/false text with a function that rejects an unexpected value such as 'maybe'."
+        },
+        {
+          "t": "sol",
+          "code": "def parse_bool(value):\n    value = value.strip().lower()\n    if value not in {\"true\", \"false\"}:\n        raise ValueError(\"true or false required\")\n    return value == \"true\"\nfor value in (\"true\", \"false\", \"maybe\"):\n    try:\n        print(value, parse_bool(value))\n    except ValueError:\n        print(value, \"rejected\")\n",
+          "out": "true True\nfalse False\nmaybe rejected",
+          "why": "Build walkthrough: A .env file is plaintext configuration for a local process. Declare precedence, convert and validate strings, use explicit paths, and keep real secrets out of public source and logs."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.3.3.challenge",
+          "v": "Mini challenge: Show that an existing demo environment value wins with load_dotenv's default override=False. Use only a temporary demo file."
+        },
+        {
+          "t": "sol",
+          "code": "import os\nimport tempfile\nfrom pathlib import Path\nfrom dotenv import load_dotenv\nwith tempfile.TemporaryDirectory() as folder:\n    path = Path(folder) / \"demo.env\"\n    path.write_text(\"STUDY_DEMO_LIMIT=20\\n\", encoding=\"utf-8\")\n    os.environ[\"STUDY_DEMO_LIMIT\"] = \"30\"\n    load_dotenv(path, override=False)\n    print(os.environ[\"STUDY_DEMO_LIMIT\"])\n",
+          "out": "30",
+          "why": "Challenge check: A .env file is plaintext configuration for a local process. Declare precedence, convert and validate strings, use explicit paths, and keep real secrets out of public source and logs."
+        },
+        {
+          "t": "try",
+          "q": "Does the .env filename encrypt its contents?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "Git exclusion avoids publication but is not encryption."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.3.3",
+            "quiz": [
+              {
+                "q": "Does the .env filename encrypt its contents?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only if gitignored"
+                ],
+                "correct": 0,
+                "why": "Git exclusion avoids publication but is not encryption."
+              },
+              {
+                "q": "With override=False, which value wins when already present?",
+                "options": [
+                  "The alphabetically first value",
+                  "The existing environment value",
+                  "Always the file value"
+                ],
+                "correct": 1,
+                "why": "load_dotenv preserves existing environment variables by default."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "A .env file is plaintext configuration for a local process. Declare precedence, convert and validate strings, use explicit paths, and keep real secrets out of public source and logs."
+        }
+      ]
+    }
+  ]
+},
+"23.4": {
+  "parts": [
+    {
+      "title": "1. XML: elements, attributes and text",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. XML: elements, attributes and text"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Read a small well-formed XML feed without treating it as a flat delimiter format."
+        },
+        {
+          "t": "new",
+          "note": "An XML element has a tag, attributes and possibly child elements/text. Matching opening/closing tags forms a tree.",
+          "v": "XML element; attribute; text"
+        },
+        {
+          "t": "new",
+          "note": "ElementTree is the standard-library XML API. fromstring parses XML text into the root Element.",
+          "v": "xml.etree.ElementTree; fromstring"
+        },
+        {
+          "t": "new",
+          "note": "find returns the first matching child or None; findall returns a list; findtext gets child text; get reads an attribute.",
+          "v": "find; findall; findtext; get"
+        },
+        {
+          "t": "p",
+          "v": "Our feed contains books with an id attribute and title/pages children. Read the tree according to that schema. Do not assume title is always present; missing children need a stated policy. Attribute values and element text are strings. This lesson uses small local fixtures; do not treat the example parser as a hardened public XML import service."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "root = ET.fromstring(text)\nfor element in root.findall(\"book\"):\n    identifier = element.get(\"id\")\n    title = element.findtext(\"title\")"
+        },
+        {
+          "t": "code",
+          "v": "import xml.etree.ElementTree as ET\ntext = '<library><book id=\"007\"><title>Python</title><pages>120</pages></book></library>'\nroot = ET.fromstring(text)\nprint(root.tag)\nfor book in root.findall(\"book\"):\n    print(book.get(\"id\"), book.findtext(\"title\"), int(book.findtext(\"pages\")))\nprint(root.find(\"missing\") is None)\n"
+        },
+        {
+          "t": "out",
+          "v": "library\n007 Python 120\nTrue"
+        },
+        {
+          "t": "p",
+          "v": "Root library हो। findall('book') ले child books दिन्छ। id attribute get बाट र title/pages child text findtext बाट पढिन्छ। Pages लाई int बनाउनु conversion हो; negative वा missing pages को rule validation मा जाँचिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Use regex to reconstruct arbitrary nested XML",
+          "right": "Parse a tree and validate expected fields",
+          "why": "XML has nesting, escaping, attributes and namespaces; a flat regex recipe does not implement its grammar."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.4.0.build",
+          "v": "Parse two entry elements into dictionaries with id and title fields."
+        },
+        {
+          "t": "sol",
+          "code": "import xml.etree.ElementTree as ET\nroot = ET.fromstring('<feed><entry id=\"A\"><title>One</title></entry><entry id=\"B\"><title>Two</title></entry></feed>')\nrows = [{\"id\": item.get(\"id\"), \"title\": item.findtext(\"title\")}\n        for item in root.findall(\"entry\")]\nprint(rows)\n",
+          "out": "[{'id': 'A', 'title': 'One'}, {'id': 'B', 'title': 'Two'}]",
+          "why": "Build walkthrough: Read attributes and child text through the tree API. Handle missing children explicitly; find may return None. Parsing structure and validating values are separate."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.4.0.challenge",
+          "v": "Mini challenge: Reject a book with no title. Check None explicitly instead of relying on an Element's truthiness."
+        },
+        {
+          "t": "sol",
+          "code": "import xml.etree.ElementTree as ET\nbook = ET.fromstring('<book id=\"007\"><pages>120</pages></book>')\ntitle = book.find(\"title\")\nif title is None:\n    print(\"title missing\")\nelse:\n    print(title.text)\n",
+          "out": "title missing",
+          "why": "Challenge check: Read attributes and child text through the tree API. Handle missing children explicitly; find may return None. Parsing structure and validating values are separate."
+        },
+        {
+          "t": "try",
+          "q": "How do you read an id attribute?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "element.get('id')",
+          "why": "get reads attributes; findtext reads child element text."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.4.0",
+            "quiz": [
+              {
+                "q": "How do you read an id attribute?",
+                "options": [
+                  "element.get('id')",
+                  "element.findtext('id') always",
+                  "element.id()"
+                ],
+                "correct": 0,
+                "why": "get reads attributes; findtext reads child element text."
+              },
+              {
+                "q": "What can find return when no child matches?",
+                "options": [
+                  "Zero",
+                  "None",
+                  "Always an empty Element"
+                ],
+                "correct": 1,
+                "why": "Check absence before accessing .text."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Read attributes and child text through the tree API. Handle missing children explicitly; find may return None. Parsing structure and validating values are separate."
+        }
+      ]
+    },
+    {
+      "title": "2. Write XML and let the serializer escape text",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Write XML and let the serializer escape text"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Construct elements without interpolating raw user text into markup."
+        },
+        {
+          "t": "new",
+          "note": "Element creates a node; SubElement creates and attaches a child to a parent.",
+          "v": "ET.Element; ET.SubElement"
+        },
+        {
+          "t": "new",
+          "note": "tostring serialises a tree. Unicode mode returns str; byte encoding modes return bytes.",
+          "v": "ET.tostring; encoding='unicode'"
+        },
+        {
+          "t": "new",
+          "note": "Assign data to .text so the serializer escapes characters such as & and <. String-concatenating raw data into XML can break structure.",
+          "v": "Element text vs markup"
+        },
+        {
+          "t": "p",
+          "v": "Construct a fixed schema tree, put attributes in a dictionary and assign content to .text. Do not use f'<name>{user_text}</name>' for arbitrary text. The serializer handles XML syntax escaping; it does not prove that every possible control character is legal XML or that your domain values are valid. Our examples use ordinary valid text, then parse the output back to check content."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "root = ET.Element(\"students\")\nstudent = ET.SubElement(root, \"student\", {\"id\": \"007\"})\nET.SubElement(student, \"name\").text = name"
+        },
+        {
+          "t": "code",
+          "v": "import xml.etree.ElementTree as ET\nroot = ET.Element(\"students\")\nstudent = ET.SubElement(root, \"student\", {\"id\": \"007\"})\nET.SubElement(student, \"name\").text = \"Sita & Hari <team>\"\ntext = ET.tostring(root, encoding=\"unicode\")\nprint(text)\nrestored = ET.fromstring(text)\nprint(restored.findtext(\"student/name\"))\n"
+        },
+        {
+          "t": "out",
+          "v": "<students><student id=\"007\"><name>Sita &amp; Hari &lt;team&gt;</name></student></students>\nSita & Hari <team>"
+        },
+        {
+          "t": "p",
+          "v": "Content text राख्दा ampersand र angle brackets escape हुन्छन्। Parse गरेपछि original name फिर्ता आउँछ। Encoding='unicode' मा result str हो; encoding='utf-8' मा bytes हुन्छ। File write mode त्यसअनुसार मिलाऊ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Concatenate raw names into XML tags",
+          "right": "Assign names to Element.text and serialise the tree",
+          "why": "Raw & or < can create malformed markup or unintended structure."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.4.1.build",
+          "v": "Serialise a Nepali name as UTF-8 bytes and parse it back, retaining a text ID."
+        },
+        {
+          "t": "sol",
+          "code": "import xml.etree.ElementTree as ET\nroot = ET.Element(\"person\", {\"id\": \"007\"})\nroot.text = \"सीता\"\nencoded = ET.tostring(root, encoding=\"utf-8\", xml_declaration=True)\nrestored = ET.fromstring(encoded)\nprint(type(encoded).__name__)\nprint(restored.get(\"id\"), restored.text)\n",
+          "out": "bytes\n007 सीता",
+          "why": "Build walkthrough: Construct the tree, assign data as text/attributes, then serialise. Escaping preserves syntax; schema validity and legal-character policies still belong to your application."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.4.1.challenge",
+          "v": "Mini challenge: Write/read an XML tree through a temporary file; check that escaped text returns unchanged."
+        },
+        {
+          "t": "sol",
+          "code": "import tempfile\nfrom pathlib import Path\nimport xml.etree.ElementTree as ET\nwith tempfile.TemporaryDirectory() as folder:\n    path = Path(folder) / \"person.xml\"\n    root = ET.Element(\"person\")\n    root.text = \"A & B\"\n    ET.ElementTree(root).write(path, encoding=\"utf-8\", xml_declaration=True)\n    print(ET.parse(path).getroot().text)\n",
+          "out": "A & B",
+          "why": "Challenge check: Construct the tree, assign data as text/attributes, then serialise. Escaping preserves syntax; schema validity and legal-character policies still belong to your application."
+        },
+        {
+          "t": "try",
+          "q": "What type does tostring(..., encoding='unicode') return?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "str",
+          "why": "Unicode mode produces a text string; byte encodings produce bytes."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.4.1",
+            "quiz": [
+              {
+                "q": "What type does tostring(..., encoding='unicode') return?",
+                "options": [
+                  "dict",
+                  "str",
+                  "bytes"
+                ],
+                "correct": 1,
+                "why": "Unicode mode produces a text string; byte encodings produce bytes."
+              },
+              {
+                "q": "Why assign data to .text?",
+                "options": [
+                  "It encrypts the data.",
+                  "It creates extra nested tags.",
+                  "The serializer escapes markup-sensitive characters."
+                ],
+                "correct": 2,
+                "why": "Data text should not become raw markup."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Construct the tree, assign data as text/attributes, then serialise. Escaping preserves syntax; schema validity and legal-character policies still belong to your application."
+        }
+      ]
+    },
+    {
+      "title": "3. Namespaces and field validation in an XML feed",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Namespaces and field validation in an XML feed"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Use namespace URIs and reject missing or impossible values."
+        },
+        {
+          "t": "new",
+          "note": "A namespaced tag is identified by its URI plus local name. Prefix spelling is only a document alias, not the identity.",
+          "v": "XML namespace; {uri}local-name"
+        },
+        {
+          "t": "new",
+          "note": "Pass a prefix-to-URI dictionary to findall/findtext and use that chosen prefix in the search expression.",
+          "v": "Namespace mapping in findall"
+        },
+        {
+          "t": "new",
+          "note": "Use element is None for absence. An existing element without children can be falsey on older Python versions; truthiness is not a reliable presence test.",
+          "v": "Element absence vs empty element"
+        },
+        {
+          "t": "p",
+          "v": "A default namespace makes book become {urn:study}book, so findall('book') alone no longer finds it. Choose your own search prefix, map it to the URI and read fields under that mapping. Validate required names and pages > 0; report invalid records. An empty <title/> exists but may have text None, so check the text as well as element existence."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "ns = {\"s\": \"urn:study\"}\nroot.findall(\"s:book\", ns)\nbook.findtext(\"s:title\", namespaces=ns)"
+        },
+        {
+          "t": "code",
+          "v": "import xml.etree.ElementTree as ET\nroot = ET.fromstring('<library xmlns=\"urn:study\"><book id=\"007\"><title>Python</title><pages>120</pages></book></library>')\nns = {\"s\": \"urn:study\"}\nprint(len(root.findall(\"book\")), len(root.findall(\"s:book\", ns)))\nfor book in root.findall(\"s:book\", ns):\n    title = book.findtext(\"s:title\", namespaces=ns)\n    pages = book.findtext(\"s:pages\", namespaces=ns)\n    if not title or pages is None or int(pages) <= 0:\n        raise ValueError(\"invalid book fields\")\n    print(book.get(\"id\"), title, int(pages))\n"
+        },
+        {
+          "t": "out",
+          "v": "0 1\n007 Python 120"
+        },
+        {
+          "t": "p",
+          "v": "Default namespace भए plain tag search खाली आयो। s prefix हाम्रो code को alias हो; URI मिल्नु मुख्य कुरा हो। Title text खाली भयो वा pages invalid भए parsed tree हुँदा पनि record reject गर्नुपर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Match XML namespace identity by prefix spelling only",
+          "right": "Map a chosen prefix to the namespace URI",
+          "why": "Different prefixes can name the same URI; prefixes themselves are not the semantic identity."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.4.2.build",
+          "v": "Read a prefixed feed using a different code-side prefix that points to the same URI."
+        },
+        {
+          "t": "sol",
+          "code": "import xml.etree.ElementTree as ET\nroot = ET.fromstring('<x:feed xmlns:x=\"urn:demo\"><x:title>Study</x:title></x:feed>')\nprint(root.findtext(\"d:title\", namespaces={\"d\": \"urn:demo\"}))\n",
+          "out": "Study",
+          "why": "Build walkthrough: Namespaces are URI-based. Use explicit mappings in searches and explicit None checks for presence. Validate required text and numeric domain rules after tree parsing."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.4.2.challenge",
+          "v": "Mini challenge: Distinguish a missing title element from a present empty title element without truthiness tests."
+        },
+        {
+          "t": "sol",
+          "code": "import xml.etree.ElementTree as ET\nfor text in (\"<book/>\", \"<book><title/></book>\"):\n    title = ET.fromstring(text).find(\"title\")\n    print(\"missing\" if title is None else \"present with text \" + repr(title.text))\n",
+          "out": "missing\npresent with text None",
+          "why": "Challenge check: Namespaces are URI-based. Use explicit mappings in searches and explicit None checks for presence. Validate required text and numeric domain rules after tree parsing."
+        },
+        {
+          "t": "try",
+          "q": "Why may findall('book') miss a default-namespaced book?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "Its tag includes a namespace URI.",
+          "why": "The expanded tag is not the unqualified name book."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.4.2",
+            "quiz": [
+              {
+                "q": "Why may findall('book') miss a default-namespaced book?",
+                "options": [
+                  "All XML is case-insensitive.",
+                  "It has an attribute.",
+                  "Its tag includes a namespace URI."
+                ],
+                "correct": 2,
+                "why": "The expanded tag is not the unqualified name book."
+              },
+              {
+                "q": "Which presence check is reliable for a find result?",
+                "options": [
+                  "element is None",
+                  "not element in every Python version",
+                  "len(element)==0 means missing"
+                ],
+                "correct": 0,
+                "why": "An existing childless Element can have misleading truthiness."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Namespaces are URI-based. Use explicit mappings in searches and explicit None checks for presence. Validate required text and numeric domain rules after tree parsing."
+        }
+      ]
+    },
+    {
+      "title": "4. XML errors and why HTML needs a different parser",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. XML errors and why HTML needs a different parser"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Catch malformed XML and use HTMLParser for a modest HTML text exercise."
+        },
+        {
+          "t": "new",
+          "note": "Malformed XML raises ParseError. XML requires well-formed nesting; HTML uses different syntax and error handling.",
+          "v": "ET.ParseError"
+        },
+        {
+          "t": "new",
+          "note": "A standard-library HTML event parser can invoke a subclass's handle_data for text. It is not an XML parser or a complete browser.",
+          "v": "HTMLParser; handle_data"
+        },
+        {
+          "t": "new",
+          "note": "For unfamiliar/untrusted XML, resource limits and deliberately hardened XML tooling matter. The teaching examples use small local files; do not assume arbitrary DTD/entity input is safe.",
+          "v": "Small trusted fixtures vs hardened import"
+        },
+        {
+          "t": "p",
+          "v": "XML and HTML are not interchangeable just because both have angle brackets. XML requires well-formed structure; HTML commonly contains void tags and omitted closing tags. Use HTMLParser for this small text-collection task. Collecting text is not sanitisation or faithful browser-visible text extraction: spacing, scripts and hidden content need additional policy. Keep parsing errors visible and preserve the original input for diagnosis."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "try: root = ET.fromstring(text)\nexcept ET.ParseError: report invalid XML\n# HTML uses HTMLParser, not ElementTree.fromstring"
+        },
+        {
+          "t": "code",
+          "v": "import xml.etree.ElementTree as ET\nfrom html.parser import HTMLParser\ntry:\n    ET.fromstring(\"<root><item></root>\")\nexcept ET.ParseError:\n    print(\"malformed XML rejected\")\nclass TextCollector(HTMLParser):\n    def __init__(self):\n        super().__init__(convert_charrefs=True)\n        self.parts = []\n    def handle_data(self, data):\n        self.parts.append(data)\nparser = TextCollector()\nparser.feed(\"<p>Study &amp; practise.</p>\")\nparser.close()\nprint(\"\".join(parser.parts))\n"
+        },
+        {
+          "t": "out",
+          "v": "malformed XML rejected\nStudy & practise."
+        },
+        {
+          "t": "p",
+          "v": "Mismatched XML tags मा ParseError आउँछ। HTMLParser subclass ले data chunks जम्मा गर्छ; &amp; ordinary text मा & बन्छ। यो text extraction demo हो, security sanitizer होइन। Input गलत हुँदा empty data save गरेर पुरानो original नहटाऊ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Feed every HTML page to ElementTree as though it were well-formed XML",
+          "right": "Choose a parser that understands the input format",
+          "why": "HTML's syntax and recovery rules differ from XML's well-formedness requirements."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.4.3.build",
+          "v": "Parse valid and invalid small XML strings, printing the root tag or a rejection."
+        },
+        {
+          "t": "sol",
+          "code": "import xml.etree.ElementTree as ET\nfor text in (\"<root/>\", \"<root><x></root>\"):\n    try:\n        print(ET.fromstring(text).tag)\n    except ET.ParseError:\n        print(\"XML rejected\")\n",
+          "out": "root\nXML rejected",
+          "why": "Build walkthrough: Use the correct parser, expose intended parse failures and retain originals. Text extraction is not sanitisation; a small local XML exercise is not a hardened arbitrary-input service."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.4.3.challenge",
+          "v": "Mini challenge: Collect text from an HTML paragraph with a bold child. Keep existing text spacing rather than inserting spaces into every character chunk."
+        },
+        {
+          "t": "sol",
+          "code": "from html.parser import HTMLParser\nclass TextCollector(HTMLParser):\n    def __init__(self):\n        super().__init__(convert_charrefs=True)\n        self.parts = []\n    def handle_data(self, data):\n        self.parts.append(data)\nparser = TextCollector()\nparser.feed(\"<p>Learn <b>Python</b> daily.</p>\")\nparser.close()\nprint(\"\".join(parser.parts))\n",
+          "out": "Learn Python daily.",
+          "why": "Challenge check: Use the correct parser, expose intended parse failures and retain originals. Text extraction is not sanitisation; a small local XML exercise is not a hardened arbitrary-input service."
+        },
+        {
+          "t": "try",
+          "q": "Are XML and HTML parsing rules identical?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "They have different grammars and error handling."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.4.3",
+            "quiz": [
+              {
+                "q": "Are XML and HTML parsing rules identical?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only with UTF-8"
+                ],
+                "correct": 0,
+                "why": "They have different grammars and error handling."
+              },
+              {
+                "q": "Does handle_data collection sanitise HTML?",
+                "options": [
+                  "Only if joined with spaces",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "It collects text callbacks, not a complete security or visibility policy."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Use the correct parser, expose intended parse failures and retain originals. Text extraction is not sanitisation; a small local XML exercise is not a hardened arbitrary-input service."
+        }
+      ]
+    }
+  ]
+},
+"23.5": {
+  "parts": [
+    {
+      "title": "1. Choose a format from the data and the job",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Choose a format from the data and the job"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Compare tables, nested documents, configuration and transactional storage."
+        },
+        {
+          "t": "new",
+          "note": "A portable export format and a live storage system serve different needs. CSV/JSON exports do not supply database transactions, indexing or concurrent-write coordination.",
+          "v": "Interchange vs storage requirements"
+        },
+        {
+          "t": "new",
+          "note": "A conversion may discard nesting, types, comments or empty/missing distinctions. State the supported schema and what survives.",
+          "v": "Projection and lossy conversion"
+        },
+        {
+          "t": "p",
+          "v": "CSV fits a flat table with fixed columns; JSON fits nested documents and many APIs; XML fits tree/attribute contracts used by feeds and established systems. INI/TOML/YAML suit configuration; .env supplies local process strings. A database is useful for constrained updates, queries, indexes and concurrency rather than repeatedly rewriting a large document. Database implementation comes later in the course. There is no universal converter for all possible CSV/JSON/XML documents. Our toolkit supports one declared student table only."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "Choose: row grain + types + required fields + consumer contract + update needs\nThen choose the format; do not decide from the filename alone."
+        },
+        {
+          "t": "code",
+          "v": "import csv\nimport io\nimport json\nstudent = {\"id\": \"007\", \"name\": \"Sita\", \"score\": 90}\nbuffer = io.StringIO(newline=\"\")\nwriter = csv.DictWriter(buffer, fieldnames=[\"id\", \"name\", \"score\"], lineterminator=\"\\n\")\nwriter.writeheader()\nwriter.writerow(student)\nrestored_csv = next(csv.DictReader(io.StringIO(buffer.getvalue())))\nrestored_json = json.loads(json.dumps(student))\nprint(type(restored_csv[\"score\"]).__name__, type(restored_json[\"score\"]).__name__)\nrestored_csv[\"score\"] = int(restored_csv[\"score\"])\nprint(restored_csv == restored_json)\n"
+        },
+        {
+          "t": "out",
+          "v": "str int\nTrue"
+        },
+        {
+          "t": "p",
+          "v": "CSV मा score read-back string भयो; JSON मा integer बच्यो। हाम्रो schema अनुसार int conversion गरेपछि equality मिल्यो। त्यही conversion नियम नभए दुई format को result समान हुँदैन। Nested phone arrays CSV मा flatten गर्दा अर्को schema चाहिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Any JSON document can be converted to CSV without a schema or information loss",
+          "right": "Declare a supported table projection and its losses",
+          "why": "CSV cannot directly preserve every arbitrary nested structure and type."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.5.0.build",
+          "v": "Show that a JSON phone list stays nested. Produce one flat row per phone, retaining the owner ID."
+        },
+        {
+          "t": "sol",
+          "code": "import json\nperson = json.loads('{\"id\":\"007\",\"phones\":[\"0123\",\"0456\"]}')\nrows = [{\"owner_id\": person[\"id\"], \"phone\": phone} for phone in person[\"phones\"]]\nprint(rows)\n",
+          "out": "[{'owner_id': '007', 'phone': '0123'}, {'owner_id': '007', 'phone': '0456'}]",
+          "why": "Build walkthrough: Choose from the shape, consumer and update requirements. Export files are not transactional databases. Explicit schemas make conversions reproducible and reveal losses."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.5.0.challenge",
+          "v": "Mini challenge: Write a small decision mapping for exporting scores, storing nested contacts and handling concurrent stock updates. Explain why their needs differ."
+        },
+        {
+          "t": "sol",
+          "code": "choices = {\n    \"flat score export\": \"CSV with an explicit score schema\",\n    \"nested contact document\": \"JSON with a versioned envelope\",\n    \"concurrent stock updates\": \"database with transactions and constraints\",\n}\nfor job, choice in choices.items():\n    print(job + \": \" + choice)\n",
+          "out": "flat score export: CSV with an explicit score schema\nnested contact document: JSON with a versioned envelope\nconcurrent stock updates: database with transactions and constraints",
+          "why": "Challenge check: Choose from the shape, consumer and update requirements. Export files are not transactional databases. Explicit schemas make conversions reproducible and reveal losses."
+        },
+        {
+          "t": "try",
+          "q": "Is an arbitrary nested JSON-to-CSV conversion automatically lossless?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "A table projection must define how nested and missing values are represented."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.5.0",
+            "quiz": [
+              {
+                "q": "Is an arbitrary nested JSON-to-CSV conversion automatically lossless?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only with UTF-8"
+                ],
+                "correct": 0,
+                "why": "A table projection must define how nested and missing values are represented."
+              },
+              {
+                "q": "Which requirement particularly favours a database?",
+                "options": [
+                  "A .csv extension",
+                  "Coordinated transactional updates and queries",
+                  "A single tiny static export"
+                ],
+                "correct": 1,
+                "why": "Transactions and indexing address live storage needs beyond a text export."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Choose from the shape, consumer and update requirements. Export files are not transactional databases. Explicit schemas make conversions reproducible and reveal losses."
+        }
+      ]
+    },
+    {
+      "title": "2. Schema evolution: a controlled migration",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Schema evolution: a controlled migration"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Migrate an older practice document without mutating its original."
+        },
+        {
+          "t": "new",
+          "note": "A migration is an explicit transformation from one supported layout/version to another. Validate input and output, and keep a backup of the original.",
+          "v": "Schema migration"
+        },
+        {
+          "t": "new",
+          "note": "A pure migration returns new data instead of changing the caller's original object or silently rewriting its file.",
+          "v": "Pure transformation"
+        },
+        {
+          "t": "p",
+          "v": "In a separate student practice app, version 1 stores points and version 2 stores score. Read version exactly, reject unsupported versions, validate old field shapes, then build a fresh version-2 document. Do not guess version from a key's presence, and do not silently turn missing points into zero. The example never migrates Study Hub's localStorage; its existing maps stay unchanged."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "read version → validate old document → construct new document → validate new document → save separately/back up original"
+        },
+        {
+          "t": "code",
+          "v": "import json\ndef migrate(document):\n    if not isinstance(document, dict) or type(document.get(\"version\")) is not int or document[\"version\"] != 1:\n        raise ValueError(\"version 1 required\")\n    records = document.get(\"students\")\n    if not isinstance(records, list):\n        raise ValueError(\"students array required\")\n    rows = []\n    for row in records:\n        if not isinstance(row, dict) or set(row) != {\"id\", \"name\", \"points\"}:\n            raise ValueError(\"old fields\")\n        if any(not isinstance(row[key], str) or not row[key].strip() for key in (\"id\", \"name\")):\n            raise ValueError(\"text fields\")\n        if type(row[\"points\"]) is not int or not 0 <= row[\"points\"] <= 100:\n            raise ValueError(\"points range\")\n        rows.append({\"id\": row[\"id\"], \"name\": row[\"name\"], \"score\": row[\"points\"]})\n    if len({row[\"id\"] for row in rows}) != len(rows):\n        raise ValueError(\"duplicate ids\")\n    return {\"version\": 2, \"students\": rows}\nold = {\"version\": 1, \"students\": [{\"id\": \"007\", \"name\": \"Sita\", \"points\": 90}]}\nsnapshot = json.dumps(old, sort_keys=True)\nprint(migrate(old))\nprint(json.dumps(old, sort_keys=True) == snapshot)\n"
+        },
+        {
+          "t": "out",
+          "v": "{'version': 2, 'students': [{'id': '007', 'name': 'Sita', 'score': 90}]}\nTrue"
+        },
+        {
+          "t": "p",
+          "v": "Migration ले old dict मा score थपेर points मेट्दैन; नयाँ rows बनाउँछ। Snapshot comparison ले original unchanged भएको देखाउँछ। Version field exact integer हुनुपर्छ; boolean True लाई version 1 भनेर स्वीकारिँदैन। Save छुट्टै step भएपछि validation failure ले original file छुँदैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Modify the original file while guessing its layout",
+          "right": "Validate a recognised version and build a new document",
+          "why": "Unrecognised layouts and failed partial rewrites can destroy meaningful data."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.5.1.build",
+          "v": "Make a tiny non-mutating points-to-score transformation and assert that the source still has points."
+        },
+        {
+          "t": "sol",
+          "code": "old = {\"id\": \"007\", \"points\": 90}\nnew = {\"id\": old[\"id\"], \"score\": old[\"points\"]}\nassert old == {\"id\": \"007\", \"points\": 90}\nprint(old)\nprint(new)\n",
+          "out": "{'id': '007', 'points': 90}\n{'id': '007', 'score': 90}",
+          "why": "Build walkthrough: Versioning requires explicit recognised layouts, validation and backups. Transform in memory without mutating the original, then save only a validated result."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.5.1.challenge",
+          "v": "Mini challenge: Check versions 1, True and 3 with an exact-integer policy; reject booleans and unsupported layouts."
+        },
+        {
+          "t": "sol",
+          "code": "for version in (1, True, 3):\n    recognised = type(version) is int and version in {1, 2}\n    print(repr(version), recognised)\n",
+          "out": "1 True\nTrue False\n3 False",
+          "why": "Challenge check: Versioning requires explicit recognised layouts, validation and backups. Transform in memory without mutating the original, then save only a validated result."
+        },
+        {
+          "t": "try",
+          "q": "Should a migration guess layout and overwrite immediately?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No",
+          "why": "Recognise and validate the version; preserve a recoverable original."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.5.1",
+            "quiz": [
+              {
+                "q": "Should a migration guess layout and overwrite immediately?",
+                "options": [
+                  "Only for JSON",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Recognise and validate the version; preserve a recoverable original."
+              },
+              {
+                "q": "Why return new rows instead of mutating source rows?",
+                "options": [
+                  "To skip validation.",
+                  "To encrypt fields.",
+                  "So a failed transformation leaves the original available."
+                ],
+                "correct": 2,
+                "why": "Separating transformation from saving makes errors recoverable."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Versioning requires explicit recognised layouts, validation and backups. Transform in memory without mutating the original, then save only a validated result."
+        }
+      ]
+    },
+    {
+      "title": "3. Complete project: a validated conversion CLI",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Complete project: a validated conversion CLI"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Convert a declared student schema among CSV, JSON and XML, with clear errors and protected output."
+        },
+        {
+          "t": "new",
+          "note": "argparse defines command-line positional inputs and options, parses them, and generates help. Passing a list to main enables reproducible examples without typing commands.",
+          "v": "argparse.ArgumentParser; add_argument; parse_args"
+        },
+        {
+          "t": "new",
+          "note": "choices restricts a format option to csv/json/xml; required=True makes the user supply it. The file extension alone does not decide the format.",
+          "v": "choices; required=True"
+        },
+        {
+          "t": "new",
+          "note": "Error messages go to stderr; main returns 1 for a conversion failure and 0 for success. sys.exit(main()) exposes that result to the shell.",
+          "v": "sys.stderr; exit status"
+        },
+        {
+          "t": "new",
+          "note": "A uniquely named temporary sibling avoids a fixed temporary filename. After writing, replace publishes the output; finally removes a leftover temporary file on failure.",
+          "v": "NamedTemporaryFile; unlink; finally"
+        },
+        {
+          "t": "new",
+          "note": "The project checks XML-compatible text ranges because content is exported to all three formats. Numeric hexadecimal ranges are code-point limits, not a new text encoding.",
+          "v": "XML 1.0 character policy"
+        },
+        {
+          "t": "p",
+          "v": "This is a schema-specific toolkit, not an arbitrary-document converter. One row has a 1..32-character ASCII letter/digit/_/- ID, a nonempty name of at most 200 characters, and an actual integer score 0..100. Names have outer whitespace trimmed; IDs stay text. CSV has exact id,name,score headers; JSON is {version:2, students:[...]}; XML is a students/version=2 tree. Duplicate IDs, JSON duplicate keys, unsupported fields and invalid types are rejected. The input policy is UTF-8 with an optional BOM, at most 1 MB and 10000 records; errors='ignore' is never used. The CLI refuses a same input/output path or an already-existing destination. It validates and renders before writing a unique temporary sibling. This teaching implementation is for a small local file and one writer; it is not a concurrent transaction system or a hardened public importer. DTD/entity declarations are unsupported in this small XML contract."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "python data_converter.py scores.csv scores.json --input-format csv --output-format json\npython data_converter.py scores.json scores.xml --input-format json --output-format xml\npython data_converter.py --help"
+        },
+        {
+          "t": "code",
+          "v": "import argparse\nimport csv\nimport io\nimport json\nimport os\nfrom pathlib import Path\nimport re\nimport sys\nimport tempfile\nimport xml.etree.ElementTree as ET\n\nFIELDS = [\"id\", \"name\", \"score\"]\nMAX_BYTES = 1_000_000\n\ndef unique_object(pairs):\n    result = {}\n    for key, value in pairs:\n        if key in result:\n            raise ValueError(\"duplicate JSON key: \" + key)\n        result[key] = value\n    return result\n\ndef reject_constant(value):\n    raise ValueError(\"non-finite JSON constant\")\n\ndef valid_xml_text(text):\n    return all(ch in \"\\t\\n\\r\" or 0x20 <= ord(ch) <= 0xD7FF\n               or 0xE000 <= ord(ch) <= 0xFFFD\n               or 0x10000 <= ord(ch) <= 0x10FFFF for ch in text)\n\ndef validate_rows(rows):\n    if not isinstance(rows, list) or len(rows) > 10000:\n        raise ValueError(\"array of at most 10000 students required\")\n    result, seen = [], set()\n    for number, row in enumerate(rows, 1):\n        if not isinstance(row, dict) or set(row) != set(FIELDS):\n            raise ValueError(f\"record {number}: fields must be id/name/score\")\n        identifier, name, score = row[\"id\"], row[\"name\"], row[\"score\"]\n        if not isinstance(identifier, str) or re.fullmatch(r\"[A-Za-z0-9_-]{1,32}\", identifier) is None:\n            raise ValueError(f\"record {number}: invalid text id\")\n        if identifier in seen:\n            raise ValueError(f\"record {number}: duplicate id\")\n        if not isinstance(name, str) or not name.strip() or len(name) > 200 or not valid_xml_text(name):\n            raise ValueError(f\"record {number}: invalid name\")\n        if type(score) is not int or not 0 <= score <= 100:\n            raise ValueError(f\"record {number}: score must be integer 0..100\")\n        seen.add(identifier)\n        result.append({\"id\": identifier, \"name\": name.strip(), \"score\": score})\n    return result\n\ndef parse_score(value, number):\n    if not isinstance(value, str) or re.fullmatch(r\"[0-9]{1,3}\", value.strip()) is None:\n        raise ValueError(f\"record {number}: score needs ASCII integer text\")\n    return int(value.strip())\n\ndef read_rows(path, kind):\n    path = Path(path)\n    with path.open(\"rb\") as handle:\n        raw = handle.read(MAX_BYTES + 1)\n    if len(raw) > MAX_BYTES:\n        raise ValueError(\"input exceeds 1 MB policy\")\n    text = raw.decode(\"utf-8-sig\")\n    if kind == \"csv\":\n        reader = csv.DictReader(io.StringIO(text, newline=\"\"), strict=True)\n        if reader.fieldnames != FIELDS:\n            raise ValueError(\"CSV header must be id,name,score\")\n        rows = []\n        for number, row in enumerate(reader, 1):\n            if None in row or any(value is None for value in row.values()):\n                raise ValueError(f\"record {number}: incomplete or extra columns\")\n            rows.append({\"id\": row[\"id\"], \"name\": row[\"name\"],\n                         \"score\": parse_score(row[\"score\"], number)})\n    elif kind == \"json\":\n        document = json.loads(text, object_pairs_hook=unique_object,\n                              parse_constant=reject_constant)\n        if not isinstance(document, dict) or set(document) != {\"version\", \"students\"}:\n            raise ValueError(\"JSON envelope fields\")\n        if type(document[\"version\"]) is not int or document[\"version\"] != 2:\n            raise ValueError(\"JSON version 2 required\")\n        rows = document[\"students\"]\n    elif kind == \"xml\":\n        if \"<!DOCTYPE\" in text or \"<!ENTITY\" in text:\n            raise ValueError(\"DTD/entity declarations not supported\")\n        root = ET.fromstring(text)\n        if root.tag != \"students\" or root.attrib != {\"version\": \"2\"} or (root.text or \"\").strip():\n            raise ValueError(\"XML students version 2 required\")\n        rows = []\n        for number, element in enumerate(root, 1):\n            if element.tag != \"student\" or set(element.attrib) != {\"id\"}:\n                raise ValueError(f\"record {number}: XML student/id required\")\n            children = list(element)\n            if len(children) != 2 or {child.tag for child in children} != {\"name\", \"score\"}:\n                raise ValueError(f\"record {number}: XML name/score children required\")\n            if (element.text or \"\").strip() or (element.tail or \"\").strip():\n                raise ValueError(f\"record {number}: mixed XML text\")\n            if any(child.attrib or len(child) or (child.tail or \"\").strip() for child in children):\n                raise ValueError(f\"record {number}: unsupported XML child content\")\n            rows.append({\"id\": element.get(\"id\"), \"name\": element.findtext(\"name\"),\n                         \"score\": parse_score(element.findtext(\"score\"), number)})\n    else:\n        raise ValueError(\"unsupported format\")\n    return validate_rows(rows)\n\ndef render_rows(rows, kind):\n    rows = validate_rows(rows)\n    if kind == \"json\":\n        return json.dumps({\"version\": 2, \"students\": rows}, ensure_ascii=False,\n                          allow_nan=False, indent=2) + \"\\n\"\n    if kind == \"csv\":\n        buffer = io.StringIO(newline=\"\")\n        writer = csv.DictWriter(buffer, fieldnames=FIELDS, lineterminator=\"\\n\")\n        writer.writeheader()\n        writer.writerows(rows)\n        return buffer.getvalue()\n    if kind == \"xml\":\n        root = ET.Element(\"students\", {\"version\": \"2\"})\n        for row in rows:\n            element = ET.SubElement(root, \"student\", {\"id\": row[\"id\"]})\n            ET.SubElement(element, \"name\").text = row[\"name\"]\n            ET.SubElement(element, \"score\").text = str(row[\"score\"])\n        return ET.tostring(root, encoding=\"unicode\") + \"\\n\"\n    raise ValueError(\"unsupported format\")\n\ndef convert(source, destination, input_format, output_format):\n    source, destination = Path(source), Path(destination)\n    if source.resolve() == destination.resolve():\n        raise ValueError(\"input and output must differ\")\n    if destination.exists():\n        raise ValueError(\"output already exists; choose a new filename\")\n    rows = read_rows(source, input_format)\n    text = render_rows(rows, output_format)\n    # Unique temporary sibling; replace only after successful writing.\n    temporary = None\n    try:\n        with tempfile.NamedTemporaryFile(mode=\"w\", encoding=\"utf-8\", newline=\"\",\n                dir=destination.parent, prefix=\".convert-\", suffix=\".tmp\", delete=False) as handle:\n            temporary = Path(handle.name)\n            handle.write(text)\n        # This teaching CLI assumes one writer; it is not concurrent-write coordination.\n        temporary.replace(destination)\n    finally:\n        if temporary is not None and temporary.exists():\n            temporary.unlink()\n    return len(rows)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Convert a validated student table\")\n    parser.add_argument(\"source\")\n    parser.add_argument(\"destination\")\n    parser.add_argument(\"--input-format\", required=True, choices=[\"csv\", \"json\", \"xml\"])\n    parser.add_argument(\"--output-format\", required=True, choices=[\"csv\", \"json\", \"xml\"])\n    args = parser.parse_args(argv)\n    try:\n        count = convert(args.source, args.destination, args.input_format, args.output_format)\n    except (OSError, ValueError, csv.Error, ET.ParseError) as error:\n        print(\"Conversion failed:\", error, file=sys.stderr)\n        return 1\n    print(f\"Converted {count} records\")\n    return 0\nrecords = [{\"id\": \"007\", \"name\": \"सीता & Hari\", \"score\": 90},\n           {\"id\": \"008\", \"name\": \"東京\", \"score\": 80}]\nwith tempfile.TemporaryDirectory() as folder:\n    folder = Path(folder)\n    paths = {}\n    for kind in (\"csv\", \"json\", \"xml\"):\n        paths[kind] = folder / (\"input.\" + kind)\n        paths[kind].write_text(render_rows(records, kind), encoding=\"utf-8\")\n    for input_format in (\"csv\", \"json\", \"xml\"):\n        for output_format in (\"csv\", \"json\", \"xml\"):\n            if input_format == output_format:\n                continue\n            destination = folder / (input_format + \"-to-\" + output_format + \".\" + output_format)\n            count = convert(paths[input_format], destination, input_format, output_format)\n            assert count == 2\n            assert read_rows(destination, output_format) == records\n            print(input_format + \" -> \" + output_format + \": passed\")\n"
+        },
+        {
+          "t": "out",
+          "v": "csv -> json: passed\ncsv -> xml: passed\njson -> csv: passed\njson -> xml: passed\nxml -> csv: passed\nxml -> json: passed"
+        },
+        {
+          "t": "p",
+          "v": "Code लाई पाँच चरणमा पढ: validate_rows → read_rows → render_rows → convert → main। read_rows ले bytes limit, UTF-8 decode र format parser चलाउँछ; सबै routes अन्ततः एउटै row validator मा पुग्छन्। render_rows ले एउटै canonical records बाट output बनाउँछ। convert ले पुराना files नछोई validation पूरा गर्छ, temporary output सफल भएपछि replace गर्छ। main ले user options र readable errors सम्हाल्छ। Demo मा छ वटा फरक-format directions चल्छन् र हरेक output फेरि पढेर original records सँग equality जाँचिन्छ। पूरा source docs/python-week23-data-converter.py मा पनि छ; अभ्यासको copy data_converter.py भनेर save गर्न सक्छौ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Write a destination first, ignore decoding errors, then hope conversion worked",
+          "right": "Decode strictly, validate the schema, render, and publish output only after success",
+          "why": "Ignoring encoding errors silently loses characters. Writing too early can destroy an old file even when conversion is invalid."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.5.2.build",
+          "v": "Prove that invalid score and bad UTF-8 create no output, and an existing destination remains unchanged."
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport csv\nimport io\nimport json\nimport os\nfrom pathlib import Path\nimport re\nimport sys\nimport tempfile\nimport xml.etree.ElementTree as ET\n\nFIELDS = [\"id\", \"name\", \"score\"]\nMAX_BYTES = 1_000_000\n\ndef unique_object(pairs):\n    result = {}\n    for key, value in pairs:\n        if key in result:\n            raise ValueError(\"duplicate JSON key: \" + key)\n        result[key] = value\n    return result\n\ndef reject_constant(value):\n    raise ValueError(\"non-finite JSON constant\")\n\ndef valid_xml_text(text):\n    return all(ch in \"\\t\\n\\r\" or 0x20 <= ord(ch) <= 0xD7FF\n               or 0xE000 <= ord(ch) <= 0xFFFD\n               or 0x10000 <= ord(ch) <= 0x10FFFF for ch in text)\n\ndef validate_rows(rows):\n    if not isinstance(rows, list) or len(rows) > 10000:\n        raise ValueError(\"array of at most 10000 students required\")\n    result, seen = [], set()\n    for number, row in enumerate(rows, 1):\n        if not isinstance(row, dict) or set(row) != set(FIELDS):\n            raise ValueError(f\"record {number}: fields must be id/name/score\")\n        identifier, name, score = row[\"id\"], row[\"name\"], row[\"score\"]\n        if not isinstance(identifier, str) or re.fullmatch(r\"[A-Za-z0-9_-]{1,32}\", identifier) is None:\n            raise ValueError(f\"record {number}: invalid text id\")\n        if identifier in seen:\n            raise ValueError(f\"record {number}: duplicate id\")\n        if not isinstance(name, str) or not name.strip() or len(name) > 200 or not valid_xml_text(name):\n            raise ValueError(f\"record {number}: invalid name\")\n        if type(score) is not int or not 0 <= score <= 100:\n            raise ValueError(f\"record {number}: score must be integer 0..100\")\n        seen.add(identifier)\n        result.append({\"id\": identifier, \"name\": name.strip(), \"score\": score})\n    return result\n\ndef parse_score(value, number):\n    if not isinstance(value, str) or re.fullmatch(r\"[0-9]{1,3}\", value.strip()) is None:\n        raise ValueError(f\"record {number}: score needs ASCII integer text\")\n    return int(value.strip())\n\ndef read_rows(path, kind):\n    path = Path(path)\n    with path.open(\"rb\") as handle:\n        raw = handle.read(MAX_BYTES + 1)\n    if len(raw) > MAX_BYTES:\n        raise ValueError(\"input exceeds 1 MB policy\")\n    text = raw.decode(\"utf-8-sig\")\n    if kind == \"csv\":\n        reader = csv.DictReader(io.StringIO(text, newline=\"\"), strict=True)\n        if reader.fieldnames != FIELDS:\n            raise ValueError(\"CSV header must be id,name,score\")\n        rows = []\n        for number, row in enumerate(reader, 1):\n            if None in row or any(value is None for value in row.values()):\n                raise ValueError(f\"record {number}: incomplete or extra columns\")\n            rows.append({\"id\": row[\"id\"], \"name\": row[\"name\"],\n                         \"score\": parse_score(row[\"score\"], number)})\n    elif kind == \"json\":\n        document = json.loads(text, object_pairs_hook=unique_object,\n                              parse_constant=reject_constant)\n        if not isinstance(document, dict) or set(document) != {\"version\", \"students\"}:\n            raise ValueError(\"JSON envelope fields\")\n        if type(document[\"version\"]) is not int or document[\"version\"] != 2:\n            raise ValueError(\"JSON version 2 required\")\n        rows = document[\"students\"]\n    elif kind == \"xml\":\n        if \"<!DOCTYPE\" in text or \"<!ENTITY\" in text:\n            raise ValueError(\"DTD/entity declarations not supported\")\n        root = ET.fromstring(text)\n        if root.tag != \"students\" or root.attrib != {\"version\": \"2\"} or (root.text or \"\").strip():\n            raise ValueError(\"XML students version 2 required\")\n        rows = []\n        for number, element in enumerate(root, 1):\n            if element.tag != \"student\" or set(element.attrib) != {\"id\"}:\n                raise ValueError(f\"record {number}: XML student/id required\")\n            children = list(element)\n            if len(children) != 2 or {child.tag for child in children} != {\"name\", \"score\"}:\n                raise ValueError(f\"record {number}: XML name/score children required\")\n            if (element.text or \"\").strip() or (element.tail or \"\").strip():\n                raise ValueError(f\"record {number}: mixed XML text\")\n            if any(child.attrib or len(child) or (child.tail or \"\").strip() for child in children):\n                raise ValueError(f\"record {number}: unsupported XML child content\")\n            rows.append({\"id\": element.get(\"id\"), \"name\": element.findtext(\"name\"),\n                         \"score\": parse_score(element.findtext(\"score\"), number)})\n    else:\n        raise ValueError(\"unsupported format\")\n    return validate_rows(rows)\n\ndef render_rows(rows, kind):\n    rows = validate_rows(rows)\n    if kind == \"json\":\n        return json.dumps({\"version\": 2, \"students\": rows}, ensure_ascii=False,\n                          allow_nan=False, indent=2) + \"\\n\"\n    if kind == \"csv\":\n        buffer = io.StringIO(newline=\"\")\n        writer = csv.DictWriter(buffer, fieldnames=FIELDS, lineterminator=\"\\n\")\n        writer.writeheader()\n        writer.writerows(rows)\n        return buffer.getvalue()\n    if kind == \"xml\":\n        root = ET.Element(\"students\", {\"version\": \"2\"})\n        for row in rows:\n            element = ET.SubElement(root, \"student\", {\"id\": row[\"id\"]})\n            ET.SubElement(element, \"name\").text = row[\"name\"]\n            ET.SubElement(element, \"score\").text = str(row[\"score\"])\n        return ET.tostring(root, encoding=\"unicode\") + \"\\n\"\n    raise ValueError(\"unsupported format\")\n\ndef convert(source, destination, input_format, output_format):\n    source, destination = Path(source), Path(destination)\n    if source.resolve() == destination.resolve():\n        raise ValueError(\"input and output must differ\")\n    if destination.exists():\n        raise ValueError(\"output already exists; choose a new filename\")\n    rows = read_rows(source, input_format)\n    text = render_rows(rows, output_format)\n    # Unique temporary sibling; replace only after successful writing.\n    temporary = None\n    try:\n        with tempfile.NamedTemporaryFile(mode=\"w\", encoding=\"utf-8\", newline=\"\",\n                dir=destination.parent, prefix=\".convert-\", suffix=\".tmp\", delete=False) as handle:\n            temporary = Path(handle.name)\n            handle.write(text)\n        # This teaching CLI assumes one writer; it is not concurrent-write coordination.\n        temporary.replace(destination)\n    finally:\n        if temporary is not None and temporary.exists():\n            temporary.unlink()\n    return len(rows)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Convert a validated student table\")\n    parser.add_argument(\"source\")\n    parser.add_argument(\"destination\")\n    parser.add_argument(\"--input-format\", required=True, choices=[\"csv\", \"json\", \"xml\"])\n    parser.add_argument(\"--output-format\", required=True, choices=[\"csv\", \"json\", \"xml\"])\n    args = parser.parse_args(argv)\n    try:\n        count = convert(args.source, args.destination, args.input_format, args.output_format)\n    except (OSError, ValueError, csv.Error, ET.ParseError) as error:\n        print(\"Conversion failed:\", error, file=sys.stderr)\n        return 1\n    print(f\"Converted {count} records\")\n    return 0\nrecords = [{\"id\": \"007\", \"name\": \"सीता & Hari\", \"score\": 90},\n           {\"id\": \"008\", \"name\": \"東京\", \"score\": 80}]\nwith tempfile.TemporaryDirectory() as folder:\n    folder = Path(folder)\n    output = folder / \"result.json\"\n    bad = folder / \"bad.csv\"\n    bad.write_text(\"id,name,score\\n007,Sita,101\\n\", encoding=\"utf-8\")\n    try:\n        convert(bad, output, \"csv\", \"json\")\n    except ValueError:\n        print(\"invalid score rejected\")\n    assert not output.exists()\n    bad.write_bytes(b\"\\xff\")\n    try:\n        convert(bad, output, \"csv\", \"json\")\n    except UnicodeDecodeError:\n        print(\"invalid UTF-8 rejected\")\n    assert not output.exists()\n    good = folder / \"good.csv\"\n    good.write_text(render_rows(records, \"csv\"), encoding=\"utf-8\")\n    output.write_text(\"KEEP\", encoding=\"utf-8\")\n    try:\n        convert(good, output, \"csv\", \"json\")\n    except ValueError:\n        print(\"existing output protected\")\n    assert output.read_text(encoding=\"utf-8\") == \"KEEP\"\n",
+          "out": "invalid score rejected\ninvalid UTF-8 rejected\nexisting output protected",
+          "why": "Build walkthrough: Use one canonical validated model across formats. Preserve Unicode and text IDs; reject bad data explicitly. Validate before writing and check both output contents and failure-state preservation."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.5.2.challenge",
+          "v": "Mini challenge: Call main with an explicit list of CLI arguments, convert CSV to JSON, and verify exit status 0 plus complete record equality."
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport csv\nimport io\nimport json\nimport os\nfrom pathlib import Path\nimport re\nimport sys\nimport tempfile\nimport xml.etree.ElementTree as ET\n\nFIELDS = [\"id\", \"name\", \"score\"]\nMAX_BYTES = 1_000_000\n\ndef unique_object(pairs):\n    result = {}\n    for key, value in pairs:\n        if key in result:\n            raise ValueError(\"duplicate JSON key: \" + key)\n        result[key] = value\n    return result\n\ndef reject_constant(value):\n    raise ValueError(\"non-finite JSON constant\")\n\ndef valid_xml_text(text):\n    return all(ch in \"\\t\\n\\r\" or 0x20 <= ord(ch) <= 0xD7FF\n               or 0xE000 <= ord(ch) <= 0xFFFD\n               or 0x10000 <= ord(ch) <= 0x10FFFF for ch in text)\n\ndef validate_rows(rows):\n    if not isinstance(rows, list) or len(rows) > 10000:\n        raise ValueError(\"array of at most 10000 students required\")\n    result, seen = [], set()\n    for number, row in enumerate(rows, 1):\n        if not isinstance(row, dict) or set(row) != set(FIELDS):\n            raise ValueError(f\"record {number}: fields must be id/name/score\")\n        identifier, name, score = row[\"id\"], row[\"name\"], row[\"score\"]\n        if not isinstance(identifier, str) or re.fullmatch(r\"[A-Za-z0-9_-]{1,32}\", identifier) is None:\n            raise ValueError(f\"record {number}: invalid text id\")\n        if identifier in seen:\n            raise ValueError(f\"record {number}: duplicate id\")\n        if not isinstance(name, str) or not name.strip() or len(name) > 200 or not valid_xml_text(name):\n            raise ValueError(f\"record {number}: invalid name\")\n        if type(score) is not int or not 0 <= score <= 100:\n            raise ValueError(f\"record {number}: score must be integer 0..100\")\n        seen.add(identifier)\n        result.append({\"id\": identifier, \"name\": name.strip(), \"score\": score})\n    return result\n\ndef parse_score(value, number):\n    if not isinstance(value, str) or re.fullmatch(r\"[0-9]{1,3}\", value.strip()) is None:\n        raise ValueError(f\"record {number}: score needs ASCII integer text\")\n    return int(value.strip())\n\ndef read_rows(path, kind):\n    path = Path(path)\n    with path.open(\"rb\") as handle:\n        raw = handle.read(MAX_BYTES + 1)\n    if len(raw) > MAX_BYTES:\n        raise ValueError(\"input exceeds 1 MB policy\")\n    text = raw.decode(\"utf-8-sig\")\n    if kind == \"csv\":\n        reader = csv.DictReader(io.StringIO(text, newline=\"\"), strict=True)\n        if reader.fieldnames != FIELDS:\n            raise ValueError(\"CSV header must be id,name,score\")\n        rows = []\n        for number, row in enumerate(reader, 1):\n            if None in row or any(value is None for value in row.values()):\n                raise ValueError(f\"record {number}: incomplete or extra columns\")\n            rows.append({\"id\": row[\"id\"], \"name\": row[\"name\"],\n                         \"score\": parse_score(row[\"score\"], number)})\n    elif kind == \"json\":\n        document = json.loads(text, object_pairs_hook=unique_object,\n                              parse_constant=reject_constant)\n        if not isinstance(document, dict) or set(document) != {\"version\", \"students\"}:\n            raise ValueError(\"JSON envelope fields\")\n        if type(document[\"version\"]) is not int or document[\"version\"] != 2:\n            raise ValueError(\"JSON version 2 required\")\n        rows = document[\"students\"]\n    elif kind == \"xml\":\n        if \"<!DOCTYPE\" in text or \"<!ENTITY\" in text:\n            raise ValueError(\"DTD/entity declarations not supported\")\n        root = ET.fromstring(text)\n        if root.tag != \"students\" or root.attrib != {\"version\": \"2\"} or (root.text or \"\").strip():\n            raise ValueError(\"XML students version 2 required\")\n        rows = []\n        for number, element in enumerate(root, 1):\n            if element.tag != \"student\" or set(element.attrib) != {\"id\"}:\n                raise ValueError(f\"record {number}: XML student/id required\")\n            children = list(element)\n            if len(children) != 2 or {child.tag for child in children} != {\"name\", \"score\"}:\n                raise ValueError(f\"record {number}: XML name/score children required\")\n            if (element.text or \"\").strip() or (element.tail or \"\").strip():\n                raise ValueError(f\"record {number}: mixed XML text\")\n            if any(child.attrib or len(child) or (child.tail or \"\").strip() for child in children):\n                raise ValueError(f\"record {number}: unsupported XML child content\")\n            rows.append({\"id\": element.get(\"id\"), \"name\": element.findtext(\"name\"),\n                         \"score\": parse_score(element.findtext(\"score\"), number)})\n    else:\n        raise ValueError(\"unsupported format\")\n    return validate_rows(rows)\n\ndef render_rows(rows, kind):\n    rows = validate_rows(rows)\n    if kind == \"json\":\n        return json.dumps({\"version\": 2, \"students\": rows}, ensure_ascii=False,\n                          allow_nan=False, indent=2) + \"\\n\"\n    if kind == \"csv\":\n        buffer = io.StringIO(newline=\"\")\n        writer = csv.DictWriter(buffer, fieldnames=FIELDS, lineterminator=\"\\n\")\n        writer.writeheader()\n        writer.writerows(rows)\n        return buffer.getvalue()\n    if kind == \"xml\":\n        root = ET.Element(\"students\", {\"version\": \"2\"})\n        for row in rows:\n            element = ET.SubElement(root, \"student\", {\"id\": row[\"id\"]})\n            ET.SubElement(element, \"name\").text = row[\"name\"]\n            ET.SubElement(element, \"score\").text = str(row[\"score\"])\n        return ET.tostring(root, encoding=\"unicode\") + \"\\n\"\n    raise ValueError(\"unsupported format\")\n\ndef convert(source, destination, input_format, output_format):\n    source, destination = Path(source), Path(destination)\n    if source.resolve() == destination.resolve():\n        raise ValueError(\"input and output must differ\")\n    if destination.exists():\n        raise ValueError(\"output already exists; choose a new filename\")\n    rows = read_rows(source, input_format)\n    text = render_rows(rows, output_format)\n    # Unique temporary sibling; replace only after successful writing.\n    temporary = None\n    try:\n        with tempfile.NamedTemporaryFile(mode=\"w\", encoding=\"utf-8\", newline=\"\",\n                dir=destination.parent, prefix=\".convert-\", suffix=\".tmp\", delete=False) as handle:\n            temporary = Path(handle.name)\n            handle.write(text)\n        # This teaching CLI assumes one writer; it is not concurrent-write coordination.\n        temporary.replace(destination)\n    finally:\n        if temporary is not None and temporary.exists():\n            temporary.unlink()\n    return len(rows)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Convert a validated student table\")\n    parser.add_argument(\"source\")\n    parser.add_argument(\"destination\")\n    parser.add_argument(\"--input-format\", required=True, choices=[\"csv\", \"json\", \"xml\"])\n    parser.add_argument(\"--output-format\", required=True, choices=[\"csv\", \"json\", \"xml\"])\n    args = parser.parse_args(argv)\n    try:\n        count = convert(args.source, args.destination, args.input_format, args.output_format)\n    except (OSError, ValueError, csv.Error, ET.ParseError) as error:\n        print(\"Conversion failed:\", error, file=sys.stderr)\n        return 1\n    print(f\"Converted {count} records\")\n    return 0\nrecords = [{\"id\": \"007\", \"name\": \"सीता & Hari\", \"score\": 90},\n           {\"id\": \"008\", \"name\": \"東京\", \"score\": 80}]\nwith tempfile.TemporaryDirectory() as folder:\n    source = Path(folder) / \"scores.csv\"\n    destination = Path(folder) / \"scores.json\"\n    source.write_text(render_rows(records, \"csv\"), encoding=\"utf-8\")\n    code = main([str(source), str(destination), \"--input-format\", \"csv\",\n                 \"--output-format\", \"json\"])\n    print(\"exit status:\", code)\n    print(\"round trip:\", read_rows(destination, \"json\") == records)\n",
+          "out": "Converted 2 records\nexit status: 0\nround trip: True",
+          "why": "Challenge check: Use one canonical validated model across formats. Preserve Unicode and text IDs; reject bad data explicitly. Validate before writing and check both output contents and failure-state preservation."
+        },
+        {
+          "t": "try",
+          "q": "Does this CLI convert every possible XML/JSON schema?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "No; only its declared student table.",
+          "why": "Each format adapter implements one explicit agreed schema."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.5.2",
+            "quiz": [
+              {
+                "q": "Does this CLI convert every possible XML/JSON schema?",
+                "options": [
+                  "Yes",
+                  "Only if files are small",
+                  "No; only its declared student table."
+                ],
+                "correct": 2,
+                "why": "Each format adapter implements one explicit agreed schema."
+              },
+              {
+                "q": "What happens if the destination already exists?",
+                "options": [
+                  "Conversion is refused and it stays unchanged.",
+                  "It is erased automatically.",
+                  "Its rows are merged silently."
+                ],
+                "correct": 0,
+                "why": "The teaching CLI requires a new output filename."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Use one canonical validated model across formats. Preserve Unicode and text IDs; reject bad data explicitly. Validate before writing and check both output contents and failure-state preservation."
+        },
+        {
+          "t": "sh",
+          "note": "Save the complete project as data_converter.py in a practice folder and prepare its declared CSV header. Run from that folder; output must use a new filename.",
+          "v": "python data_converter.py scores.csv scores.json --input-format csv --output-format json\npython data_converter.py --help"
+        }
+      ]
+    },
+    {
+      "title": "4. Whole-week review: retrieval, round trips and rejection tests",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Whole-week review: retrieval, round trips and rejection tests"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Rebuild a small adapter, explain its schema, and test the failure paths."
+        },
+        {
+          "t": "new",
+          "note": "Encode, parse and compare the canonical values, not byte formatting alone. Whitespace/key order can change while values remain equal.",
+          "v": "Round-trip test"
+        },
+        {
+          "t": "new",
+          "note": "A rejected conversion should leave the source and existing output unchanged and avoid a misleading partial result.",
+          "v": "Failure-state test"
+        },
+        {
+          "t": "p",
+          "v": "Use as many study sessions as you need. Day 7 remains your existing review/rest day. First explain reader/DictReader, dump/dumps/load/loads, nested path/container checks and configuration precedence. Then rebuild one format adapter without a template. Add tests for empty valid tables, Unicode names, leading-zero IDs, missing/extra fields, duplicate IDs, invalid scores, wrong versions and malformed input. All exercises and answers are stored in the page for offline study; only optional package installation needs an initial connection."
+        },
+        {
+          "t": "syn",
+          "note": "Read the pattern, then trace the complete example below.",
+          "v": "parse → validate canonical model → serialise → parse again → compare values\nFor rejection: assert no new output and preserved existing files."
+        },
+        {
+          "t": "code",
+          "v": "import json\ndata = {\"name\": \"Sita\", \"score\": 90}\ncompact = json.dumps(data, separators=(\",\", \":\"))\npretty = json.dumps(data, indent=2)\nprint(compact == pretty)\nprint(json.loads(compact) == json.loads(pretty))\n"
+        },
+        {
+          "t": "out",
+          "v": "False\nTrue"
+        },
+        {
+          "t": "p",
+          "v": "पहिलो comparison text formatting को हो, त्यसैले False। दोस्रो parsed values को हो, त्यसैले True। Round-trip test ले हाम्रो schema को values सही फर्किए कि हेर्छ; byte-identical output मात्र माग्दैन। असफल conversions मा source/output दुवै सुरक्षित छन् कि छुट्टै assert गर।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Only compare pretty printed text or test one valid example",
+          "right": "Compare canonical values and test meaningful rejection boundaries",
+          "why": "Equivalent documents can have different formatting; invalid inputs can reveal destructive save behaviour."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.5.3.build",
+          "v": "Using the project validator, reject duplicate IDs, boolean scores, out-of-range scores and unknown fields. Confirm an empty table is valid."
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport csv\nimport io\nimport json\nimport os\nfrom pathlib import Path\nimport re\nimport sys\nimport tempfile\nimport xml.etree.ElementTree as ET\n\nFIELDS = [\"id\", \"name\", \"score\"]\nMAX_BYTES = 1_000_000\n\ndef unique_object(pairs):\n    result = {}\n    for key, value in pairs:\n        if key in result:\n            raise ValueError(\"duplicate JSON key: \" + key)\n        result[key] = value\n    return result\n\ndef reject_constant(value):\n    raise ValueError(\"non-finite JSON constant\")\n\ndef valid_xml_text(text):\n    return all(ch in \"\\t\\n\\r\" or 0x20 <= ord(ch) <= 0xD7FF\n               or 0xE000 <= ord(ch) <= 0xFFFD\n               or 0x10000 <= ord(ch) <= 0x10FFFF for ch in text)\n\ndef validate_rows(rows):\n    if not isinstance(rows, list) or len(rows) > 10000:\n        raise ValueError(\"array of at most 10000 students required\")\n    result, seen = [], set()\n    for number, row in enumerate(rows, 1):\n        if not isinstance(row, dict) or set(row) != set(FIELDS):\n            raise ValueError(f\"record {number}: fields must be id/name/score\")\n        identifier, name, score = row[\"id\"], row[\"name\"], row[\"score\"]\n        if not isinstance(identifier, str) or re.fullmatch(r\"[A-Za-z0-9_-]{1,32}\", identifier) is None:\n            raise ValueError(f\"record {number}: invalid text id\")\n        if identifier in seen:\n            raise ValueError(f\"record {number}: duplicate id\")\n        if not isinstance(name, str) or not name.strip() or len(name) > 200 or not valid_xml_text(name):\n            raise ValueError(f\"record {number}: invalid name\")\n        if type(score) is not int or not 0 <= score <= 100:\n            raise ValueError(f\"record {number}: score must be integer 0..100\")\n        seen.add(identifier)\n        result.append({\"id\": identifier, \"name\": name.strip(), \"score\": score})\n    return result\n\ndef parse_score(value, number):\n    if not isinstance(value, str) or re.fullmatch(r\"[0-9]{1,3}\", value.strip()) is None:\n        raise ValueError(f\"record {number}: score needs ASCII integer text\")\n    return int(value.strip())\n\ndef read_rows(path, kind):\n    path = Path(path)\n    with path.open(\"rb\") as handle:\n        raw = handle.read(MAX_BYTES + 1)\n    if len(raw) > MAX_BYTES:\n        raise ValueError(\"input exceeds 1 MB policy\")\n    text = raw.decode(\"utf-8-sig\")\n    if kind == \"csv\":\n        reader = csv.DictReader(io.StringIO(text, newline=\"\"), strict=True)\n        if reader.fieldnames != FIELDS:\n            raise ValueError(\"CSV header must be id,name,score\")\n        rows = []\n        for number, row in enumerate(reader, 1):\n            if None in row or any(value is None for value in row.values()):\n                raise ValueError(f\"record {number}: incomplete or extra columns\")\n            rows.append({\"id\": row[\"id\"], \"name\": row[\"name\"],\n                         \"score\": parse_score(row[\"score\"], number)})\n    elif kind == \"json\":\n        document = json.loads(text, object_pairs_hook=unique_object,\n                              parse_constant=reject_constant)\n        if not isinstance(document, dict) or set(document) != {\"version\", \"students\"}:\n            raise ValueError(\"JSON envelope fields\")\n        if type(document[\"version\"]) is not int or document[\"version\"] != 2:\n            raise ValueError(\"JSON version 2 required\")\n        rows = document[\"students\"]\n    elif kind == \"xml\":\n        if \"<!DOCTYPE\" in text or \"<!ENTITY\" in text:\n            raise ValueError(\"DTD/entity declarations not supported\")\n        root = ET.fromstring(text)\n        if root.tag != \"students\" or root.attrib != {\"version\": \"2\"} or (root.text or \"\").strip():\n            raise ValueError(\"XML students version 2 required\")\n        rows = []\n        for number, element in enumerate(root, 1):\n            if element.tag != \"student\" or set(element.attrib) != {\"id\"}:\n                raise ValueError(f\"record {number}: XML student/id required\")\n            children = list(element)\n            if len(children) != 2 or {child.tag for child in children} != {\"name\", \"score\"}:\n                raise ValueError(f\"record {number}: XML name/score children required\")\n            if (element.text or \"\").strip() or (element.tail or \"\").strip():\n                raise ValueError(f\"record {number}: mixed XML text\")\n            if any(child.attrib or len(child) or (child.tail or \"\").strip() for child in children):\n                raise ValueError(f\"record {number}: unsupported XML child content\")\n            rows.append({\"id\": element.get(\"id\"), \"name\": element.findtext(\"name\"),\n                         \"score\": parse_score(element.findtext(\"score\"), number)})\n    else:\n        raise ValueError(\"unsupported format\")\n    return validate_rows(rows)\n\ndef render_rows(rows, kind):\n    rows = validate_rows(rows)\n    if kind == \"json\":\n        return json.dumps({\"version\": 2, \"students\": rows}, ensure_ascii=False,\n                          allow_nan=False, indent=2) + \"\\n\"\n    if kind == \"csv\":\n        buffer = io.StringIO(newline=\"\")\n        writer = csv.DictWriter(buffer, fieldnames=FIELDS, lineterminator=\"\\n\")\n        writer.writeheader()\n        writer.writerows(rows)\n        return buffer.getvalue()\n    if kind == \"xml\":\n        root = ET.Element(\"students\", {\"version\": \"2\"})\n        for row in rows:\n            element = ET.SubElement(root, \"student\", {\"id\": row[\"id\"]})\n            ET.SubElement(element, \"name\").text = row[\"name\"]\n            ET.SubElement(element, \"score\").text = str(row[\"score\"])\n        return ET.tostring(root, encoding=\"unicode\") + \"\\n\"\n    raise ValueError(\"unsupported format\")\n\ndef convert(source, destination, input_format, output_format):\n    source, destination = Path(source), Path(destination)\n    if source.resolve() == destination.resolve():\n        raise ValueError(\"input and output must differ\")\n    if destination.exists():\n        raise ValueError(\"output already exists; choose a new filename\")\n    rows = read_rows(source, input_format)\n    text = render_rows(rows, output_format)\n    # Unique temporary sibling; replace only after successful writing.\n    temporary = None\n    try:\n        with tempfile.NamedTemporaryFile(mode=\"w\", encoding=\"utf-8\", newline=\"\",\n                dir=destination.parent, prefix=\".convert-\", suffix=\".tmp\", delete=False) as handle:\n            temporary = Path(handle.name)\n            handle.write(text)\n        # This teaching CLI assumes one writer; it is not concurrent-write coordination.\n        temporary.replace(destination)\n    finally:\n        if temporary is not None and temporary.exists():\n            temporary.unlink()\n    return len(rows)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Convert a validated student table\")\n    parser.add_argument(\"source\")\n    parser.add_argument(\"destination\")\n    parser.add_argument(\"--input-format\", required=True, choices=[\"csv\", \"json\", \"xml\"])\n    parser.add_argument(\"--output-format\", required=True, choices=[\"csv\", \"json\", \"xml\"])\n    args = parser.parse_args(argv)\n    try:\n        count = convert(args.source, args.destination, args.input_format, args.output_format)\n    except (OSError, ValueError, csv.Error, ET.ParseError) as error:\n        print(\"Conversion failed:\", error, file=sys.stderr)\n        return 1\n    print(f\"Converted {count} records\")\n    return 0\nbad_sets = [\n    [{\"id\": \"007\", \"name\": \"Sita\", \"score\": 90},\n     {\"id\": \"007\", \"name\": \"Hari\", \"score\": 80}],\n    [{\"id\": \"007\", \"name\": \"Sita\", \"score\": True}],\n    [{\"id\": \"007\", \"name\": \"Sita\", \"score\": 101}],\n    [{\"id\": \"007\", \"name\": \"Sita\", \"score\": 90, \"extra\": 1}],\n]\nfor rows in bad_sets:\n    try:\n        validate_rows(rows)\n    except ValueError:\n        print(\"invalid rows rejected\")\n    else:\n        raise AssertionError(\"invalid rows accepted\")\nassert validate_rows([]) == []\nprint(\"empty table accepted\")\n",
+          "out": "invalid rows rejected\ninvalid rows rejected\ninvalid rows rejected\ninvalid rows rejected\nempty table accepted",
+          "why": "Build walkthrough: Week 23 mastery: read/write CSV and JSON, validate nested shapes, select typed config APIs, parse XML/HTML appropriately, explain schema versioning, and build a conversion CLI with protected failure paths. Revisit any weak part before Week 24."
+        },
+        {
+          "t": "ex",
+          "practiceId": "23.5.3.challenge",
+          "v": "Mini challenge: Round-trip an empty table through each format and preserve a BOM-bearing CSV ID 007. Explain why an empty document and an empty table differ."
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport csv\nimport io\nimport json\nimport os\nfrom pathlib import Path\nimport re\nimport sys\nimport tempfile\nimport xml.etree.ElementTree as ET\n\nFIELDS = [\"id\", \"name\", \"score\"]\nMAX_BYTES = 1_000_000\n\ndef unique_object(pairs):\n    result = {}\n    for key, value in pairs:\n        if key in result:\n            raise ValueError(\"duplicate JSON key: \" + key)\n        result[key] = value\n    return result\n\ndef reject_constant(value):\n    raise ValueError(\"non-finite JSON constant\")\n\ndef valid_xml_text(text):\n    return all(ch in \"\\t\\n\\r\" or 0x20 <= ord(ch) <= 0xD7FF\n               or 0xE000 <= ord(ch) <= 0xFFFD\n               or 0x10000 <= ord(ch) <= 0x10FFFF for ch in text)\n\ndef validate_rows(rows):\n    if not isinstance(rows, list) or len(rows) > 10000:\n        raise ValueError(\"array of at most 10000 students required\")\n    result, seen = [], set()\n    for number, row in enumerate(rows, 1):\n        if not isinstance(row, dict) or set(row) != set(FIELDS):\n            raise ValueError(f\"record {number}: fields must be id/name/score\")\n        identifier, name, score = row[\"id\"], row[\"name\"], row[\"score\"]\n        if not isinstance(identifier, str) or re.fullmatch(r\"[A-Za-z0-9_-]{1,32}\", identifier) is None:\n            raise ValueError(f\"record {number}: invalid text id\")\n        if identifier in seen:\n            raise ValueError(f\"record {number}: duplicate id\")\n        if not isinstance(name, str) or not name.strip() or len(name) > 200 or not valid_xml_text(name):\n            raise ValueError(f\"record {number}: invalid name\")\n        if type(score) is not int or not 0 <= score <= 100:\n            raise ValueError(f\"record {number}: score must be integer 0..100\")\n        seen.add(identifier)\n        result.append({\"id\": identifier, \"name\": name.strip(), \"score\": score})\n    return result\n\ndef parse_score(value, number):\n    if not isinstance(value, str) or re.fullmatch(r\"[0-9]{1,3}\", value.strip()) is None:\n        raise ValueError(f\"record {number}: score needs ASCII integer text\")\n    return int(value.strip())\n\ndef read_rows(path, kind):\n    path = Path(path)\n    with path.open(\"rb\") as handle:\n        raw = handle.read(MAX_BYTES + 1)\n    if len(raw) > MAX_BYTES:\n        raise ValueError(\"input exceeds 1 MB policy\")\n    text = raw.decode(\"utf-8-sig\")\n    if kind == \"csv\":\n        reader = csv.DictReader(io.StringIO(text, newline=\"\"), strict=True)\n        if reader.fieldnames != FIELDS:\n            raise ValueError(\"CSV header must be id,name,score\")\n        rows = []\n        for number, row in enumerate(reader, 1):\n            if None in row or any(value is None for value in row.values()):\n                raise ValueError(f\"record {number}: incomplete or extra columns\")\n            rows.append({\"id\": row[\"id\"], \"name\": row[\"name\"],\n                         \"score\": parse_score(row[\"score\"], number)})\n    elif kind == \"json\":\n        document = json.loads(text, object_pairs_hook=unique_object,\n                              parse_constant=reject_constant)\n        if not isinstance(document, dict) or set(document) != {\"version\", \"students\"}:\n            raise ValueError(\"JSON envelope fields\")\n        if type(document[\"version\"]) is not int or document[\"version\"] != 2:\n            raise ValueError(\"JSON version 2 required\")\n        rows = document[\"students\"]\n    elif kind == \"xml\":\n        if \"<!DOCTYPE\" in text or \"<!ENTITY\" in text:\n            raise ValueError(\"DTD/entity declarations not supported\")\n        root = ET.fromstring(text)\n        if root.tag != \"students\" or root.attrib != {\"version\": \"2\"} or (root.text or \"\").strip():\n            raise ValueError(\"XML students version 2 required\")\n        rows = []\n        for number, element in enumerate(root, 1):\n            if element.tag != \"student\" or set(element.attrib) != {\"id\"}:\n                raise ValueError(f\"record {number}: XML student/id required\")\n            children = list(element)\n            if len(children) != 2 or {child.tag for child in children} != {\"name\", \"score\"}:\n                raise ValueError(f\"record {number}: XML name/score children required\")\n            if (element.text or \"\").strip() or (element.tail or \"\").strip():\n                raise ValueError(f\"record {number}: mixed XML text\")\n            if any(child.attrib or len(child) or (child.tail or \"\").strip() for child in children):\n                raise ValueError(f\"record {number}: unsupported XML child content\")\n            rows.append({\"id\": element.get(\"id\"), \"name\": element.findtext(\"name\"),\n                         \"score\": parse_score(element.findtext(\"score\"), number)})\n    else:\n        raise ValueError(\"unsupported format\")\n    return validate_rows(rows)\n\ndef render_rows(rows, kind):\n    rows = validate_rows(rows)\n    if kind == \"json\":\n        return json.dumps({\"version\": 2, \"students\": rows}, ensure_ascii=False,\n                          allow_nan=False, indent=2) + \"\\n\"\n    if kind == \"csv\":\n        buffer = io.StringIO(newline=\"\")\n        writer = csv.DictWriter(buffer, fieldnames=FIELDS, lineterminator=\"\\n\")\n        writer.writeheader()\n        writer.writerows(rows)\n        return buffer.getvalue()\n    if kind == \"xml\":\n        root = ET.Element(\"students\", {\"version\": \"2\"})\n        for row in rows:\n            element = ET.SubElement(root, \"student\", {\"id\": row[\"id\"]})\n            ET.SubElement(element, \"name\").text = row[\"name\"]\n            ET.SubElement(element, \"score\").text = str(row[\"score\"])\n        return ET.tostring(root, encoding=\"unicode\") + \"\\n\"\n    raise ValueError(\"unsupported format\")\n\ndef convert(source, destination, input_format, output_format):\n    source, destination = Path(source), Path(destination)\n    if source.resolve() == destination.resolve():\n        raise ValueError(\"input and output must differ\")\n    if destination.exists():\n        raise ValueError(\"output already exists; choose a new filename\")\n    rows = read_rows(source, input_format)\n    text = render_rows(rows, output_format)\n    # Unique temporary sibling; replace only after successful writing.\n    temporary = None\n    try:\n        with tempfile.NamedTemporaryFile(mode=\"w\", encoding=\"utf-8\", newline=\"\",\n                dir=destination.parent, prefix=\".convert-\", suffix=\".tmp\", delete=False) as handle:\n            temporary = Path(handle.name)\n            handle.write(text)\n        # This teaching CLI assumes one writer; it is not concurrent-write coordination.\n        temporary.replace(destination)\n    finally:\n        if temporary is not None and temporary.exists():\n            temporary.unlink()\n    return len(rows)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Convert a validated student table\")\n    parser.add_argument(\"source\")\n    parser.add_argument(\"destination\")\n    parser.add_argument(\"--input-format\", required=True, choices=[\"csv\", \"json\", \"xml\"])\n    parser.add_argument(\"--output-format\", required=True, choices=[\"csv\", \"json\", \"xml\"])\n    args = parser.parse_args(argv)\n    try:\n        count = convert(args.source, args.destination, args.input_format, args.output_format)\n    except (OSError, ValueError, csv.Error, ET.ParseError) as error:\n        print(\"Conversion failed:\", error, file=sys.stderr)\n        return 1\n    print(f\"Converted {count} records\")\n    return 0\nwith tempfile.TemporaryDirectory() as folder:\n    for kind in (\"csv\", \"json\", \"xml\"):\n        path = Path(folder) / (\"empty.\" + kind)\n        path.write_text(render_rows([], kind), encoding=\"utf-8\")\n        assert read_rows(path, kind) == []\n        print(kind, \"empty table passed\")\n    path = Path(folder) / \"bom.csv\"\n    path.write_bytes(b\"\\xef\\xbb\\xbfid,name,score\\n007,Sita,90\\n\")\n    print(read_rows(path, \"csv\")[0][\"id\"])\n",
+          "out": "csv empty table passed\njson empty table passed\nxml empty table passed\n007",
+          "why": "Challenge check: Week 23 mastery: read/write CSV and JSON, validate nested shapes, select typed config APIs, parse XML/HTML appropriately, explain schema versioning, and build a conversion CLI with protected failure paths. Revisit any weak part before Week 24."
+        },
+        {
+          "t": "try",
+          "q": "Which CSV tool handles quoted delimiters?",
+          "code": "# Explain your prediction before revealing.",
+          "a": "csv.reader/DictReader",
+          "why": "The csv parser implements CSV quoting rules."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:23.5.3",
+            "quiz": [
+              {
+                "q": "Which CSV tool handles quoted delimiters?",
+                "options": [
+                  "csv.reader/DictReader",
+                  "split(',') in every case",
+                  "json.loads"
+                ],
+                "correct": 0,
+                "why": "The csv parser implements CSV quoting rules."
+              },
+              {
+                "q": "What is the s in dumps/loads useful for remembering?",
+                "options": [
+                  "Schema validation",
+                  "String-oriented JSON operations",
+                  "Secret encryption"
+                ],
+                "correct": 1,
+                "why": "The file-oriented pair is dump/load."
+              },
+              {
+                "q": "Are parsed JSON values automatically schema-valid?",
+                "options": [
+                  "Yes",
+                  "Only with indent",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Check types, fields, uniqueness and ranges separately."
+              },
+              {
+                "q": "Why is score or default risky?",
+                "options": [
+                  "It discards valid zero.",
+                  "It always raises.",
+                  "It converts strings to int."
+                ],
+                "correct": 0,
+                "why": "Falsey values and missing values need not mean the same thing."
+              },
+              {
+                "q": "What must flattening define first?",
+                "options": [
+                  "A regex for every tag",
+                  "What one output row represents",
+                  "Only the output filename"
+                ],
+                "correct": 1,
+                "why": "Grain and parent relationships determine the projection."
+              },
+              {
+                "q": "Which INI method interprets true/false text?",
+                "options": [
+                  "bool on any string",
+                  "getint",
+                  "getboolean"
+                ],
+                "correct": 2,
+                "why": "Nonempty 'false' is truthy under ordinary bool."
+              },
+              {
+                "q": "Does tomllib write TOML?",
+                "options": [
+                  "No; it is a reader.",
+                  "Yes, with dump.",
+                  "Only in binary mode."
+                ],
+                "correct": 0,
+                "why": "Writing requires a separately selected library."
+              },
+              {
+                "q": "Is a .env file encrypted secret storage?",
+                "options": [
+                  "Only if named .env",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "It is plaintext; keep real credentials out of public files and history."
+              },
+              {
+                "q": "How should missing XML elements be checked?",
+                "options": [
+                  "not element reliably in all versions",
+                  "len(element)==0 means absent",
+                  "element is None"
+                ],
+                "correct": 2,
+                "why": "Presence and childless-element truthiness are not the same."
+              },
+              {
+                "q": "What should happen before writing conversion output?",
+                "options": [
+                  "Validate and render the complete supported data.",
+                  "Erase old output immediately.",
+                  "Ignore UTF-8 errors."
+                ],
+                "correct": 0,
+                "why": "Failure must not produce a misleading partial file or corrupt an old one."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Week 23 mastery: read/write CSV and JSON, validate nested shapes, select typed config APIs, parse XML/HTML appropriately, explain schema versioning, and build a conversion CLI with protected failure paths. Revisit any weak part before Week 24."
+        },
+        {
+          "t": "p",
+          "v": "Optional official references: https://docs.python.org/3.12/library/csv.html · https://docs.python.org/3.12/library/json.html · https://docs.python.org/3.12/library/configparser.html · https://docs.python.org/3.12/library/tomllib.html · https://docs.python.org/3.12/library/xml.etree.elementtree.html · https://pyyaml.org/wiki/PyYAMLDocumentation · https://bbc2.github.io/python-dotenv/. The full teaching is already included for offline reading."
+        }
+      ]
+    }
+  ]
+},
 };
 
 const REST_DAY = ["Review & rest",
