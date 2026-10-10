@@ -925,6 +925,79 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .deck-card .due-badge{ align-self:flex-start; background:var(--accent-soft); color:var(--accent); font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:20px; }
 .deck-card .row-actions{ display:flex; gap:6px; margin-top:auto; }
 
+/* Monthly tracker uses Study Hub's theme and local components. */
+.ht-tabs{display:flex;gap:8px;padding:0 18px 16px;}
+.ht-tabs [aria-pressed=true]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
+#habitPane{padding:0 18px 20px;min-width:0;}
+.ht-toolbar,.ht-month-controls,.ht-calendar-heading{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.ht-toolbar{justify-content:space-between;margin-bottom:20px;}
+.ht-toolbar h2{margin:0;font-size:22px;}
+.ht-toolbar p{color:var(--text-dim);margin:6px 0 0;font-size:14px;}
+.ht-month-controls{margin-bottom:18px;}
+.ht-month-controls input{max-width:175px;min-width:0;}
+.ht-month-controls label{font-size:13px;}
+.ht-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start;}
+.ht-main,.ht-summary{min-width:0;background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.ht-calendar-heading{justify-content:space-between;}
+.ht-calendar-heading h3,.ht-summary h3{font-size:17px;margin:0;}
+.ht-calendar-heading span,.ht-scroll-hint,.ht-muted{font-size:13px;color:var(--text-dim);}
+.ht-scroll-hint{margin:12px 0;}
+.ht-table-scroll{overflow:auto;max-width:100%;border:1px solid var(--border);border-radius:10px;max-height:650px;}
+.ht-table{border-collapse:separate;border-spacing:0;font-size:12px;min-width:max-content;}
+.ht-table th,.ht-table td{padding:6px 5px;text-align:center;border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-width:36px;}
+.ht-table thead th{background:var(--bg-soft);font-weight:600;}
+.ht-table thead th span{display:block;font-size:10px;color:var(--text-dim);margin-top:3px;}
+.ht-table .ht-habit{position:sticky;left:0;z-index:2;background:var(--bg-elev);width:195px;min-width:195px;max-width:195px;text-align:left;padding:12px;box-shadow:2px 0 0 var(--border);}
+.ht-table thead .ht-habit{background:var(--bg-soft);}
+.ht-name{font-size:13px;font-weight:650;overflow-wrap:anywhere;}
+.ht-category{font-size:11px;color:var(--text-dim);overflow-wrap:anywhere;margin-top:4px;}
+.ht-row-actions{display:flex;gap:6px;margin-top:9px;}
+.ht-row-actions button{font-size:10px;padding:3px 6px;color:var(--text-dim);background:var(--bg-soft);border:1px solid var(--border);border-radius:5px;cursor:pointer;}
+.ht-row-actions button:hover{color:var(--text);border-color:var(--accent);}
+.ht-table input[type=checkbox]{width:19px;height:19px;display:block;margin:4px auto;accent-color:var(--accent);cursor:pointer;}
+.ht-table .ht-checked{background:var(--accent-soft);}
+.ht-week-1,.ht-week-3,.ht-week-5{background:color-mix(in srgb,var(--accent-soft) 35%,var(--bg-elev));}
+.ht-table thead .ht-week{padding:8px;background:var(--accent-soft);color:var(--accent);}
+.ht-table thead .ht-week-2,.ht-table thead .ht-week-4{background:var(--bg-soft);color:var(--text);}
+.ht-table thead .ht-today{outline:2px solid var(--accent);outline-offset:-2px;}
+.ht-result{min-width:98px!important;}
+.ht-result b,.ht-result span{display:block;font-size:11px;}
+.ht-result span{color:var(--text-dim);margin-top:4px;}
+.ht-result .pbar{margin-top:6px;}
+.ht-ring{width:145px;height:145px;border-radius:50%;margin:20px auto;background:conic-gradient(var(--accent) var(--ht-progress),var(--bg-soft) 0);padding:14px;display:grid;place-items:center;}
+.ht-ring>div{background:var(--bg-elev);border-radius:50%;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;}
+.ht-ring b{font-size:29px;}
+.ht-ring span{font-size:10px;color:var(--text-dim);}
+.ht-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center;}
+.ht-stats b,.ht-stats span{display:block;}
+.ht-stats b{font-size:19px;}
+.ht-stats span{font-size:11px;color:var(--text-dim);margin-top:4px;}
+.ht-metric-note{font-size:11px;color:var(--text-dim);line-height:1.6;margin:16px 0;}
+.ht-summary h4{font-size:13px;margin:22px 0 12px;}
+.ht-chart{display:block;width:100%;height:auto;overflow:visible;}
+.ht-chart text{fill:var(--text-dim);font-size:9px;}
+.ht-gridline{stroke:var(--border);stroke-width:1;}
+.ht-bar{fill:var(--accent);}
+.ht-ranking{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;font-size:12px;margin-top:14px;}
+.ht-ranking>span{overflow-wrap:anywhere;}
+.ht-ranking>b{font-size:11px;}
+.ht-ranking>.pbar{grid-column:1/-1;}
+.ht-copy{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:18px;font-size:12px;}
+.ht-copy select{max-width:100%;}
+.ht-copy small{flex-basis:100%;color:var(--text-dim);}
+.ht-empty{text-align:center;padding:32px 12px;color:var(--text-dim);}
+.ht-empty h3{color:var(--text);}
+.ht-empty p{font-size:14px;line-height:1.7;}
+.ht-removed{margin-top:20px;font-size:13px;}
+.ht-removed summary{cursor:pointer;color:var(--text-dim);}
+.ht-removed>div{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;}
+.ht-removed>div>span{overflow-wrap:anywhere;min-width:0;}
+.ht-save-note{font-size:12px;color:var(--text-dim);margin-top:14px;}
+.ht-form-error{color:var(--danger);font-size:12px;}
+.ht-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+@media(max-width:1100px){.ht-layout{grid-template-columns:minmax(0,1fr);}.ht-summary{max-width:none;}.ht-chart{max-width:500px;margin:auto;}}
+@media(max-width:600px){#habitPane{padding:0 10px 16px;}.ht-main,.ht-summary{padding:12px;}.ht-toolbar h2{font-size:20px;}.ht-table .ht-habit{min-width:140px;max-width:140px;width:140px;padding:9px;}.ht-row-actions{gap:4px;}.ht-month-controls{gap:7px;}.ht-table input[type=checkbox]{width:22px;height:22px;}}
+
 /* Todo */
 .todo-item{
   display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border-bottom:1px solid var(--border);
@@ -1446,7 +1519,9 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
         <h1>To-Do</h1>
         <button type="button" class="btn secondary" id="newTodoBtn">+ Add task</button>
       </div>
-      <div id="todoList"></div>
+      <div class="ht-tabs" role="group" aria-label="To-do sections"><button type="button" class="btn secondary btn-sm" data-todo-mode="habits" aria-pressed="true">Habits</button><button type="button" class="btn secondary btn-sm" data-todo-mode="tasks" aria-pressed="false">Tasks</button></div>
+      <div id="habitPane"></div>
+      <div id="taskPane" hidden><div id="todoList"></div></div>
     </div>
 
     <!-- CYBERSECURITY ROADMAP / RETAINED QUIZ DATA -->
@@ -1541,6 +1616,12 @@ function applyDefaults(d){
   d = (d && typeof d === "object") ? d : {};
   d.notes = d.notes||[]; d.decks = d.decks||[]; d.cards = d.cards||[];
   d.todos = d.todos||[]; d.quizzes = d.quizzes||[];
+  // Additive monthly habits; existing tasks and course stores retain their structure.
+  if(!d.habitTracker || typeof d.habitTracker!=="object" || Array.isArray(d.habitTracker)) d.habitTracker={};
+  ["months","items","checks"].forEach(function(key){
+    if(!d.habitTracker[key] || typeof d.habitTracker[key]!=="object" || Array.isArray(d.habitTracker[key])) d.habitTracker[key]={};
+  });
+  if(!d.habitTracker.selectedMonth || !habitValidMonth(d.habitTracker.selectedMonth.value)) d.habitTracker.selectedMonth=null;
   d.timerSettings = d.timerSettings || { focus:25, short:5, long:15, longEvery:4 };
   if(d.timerSettings.sound === undefined) d.timerSettings.sound = true;
   if(!d.timerSettings.subject) d.timerSettings.subject = "python";
@@ -1668,6 +1749,8 @@ function mergeIntoDB(incoming){
   const sessionSeen=new Set(DB.reviews.sessions.map(function(x){return x.id;}));
   incoming.reviews.sessions.forEach(function(x){if(x && !sessionSeen.has(x.id)){sessionSeen.add(x.id);DB.reviews.sessions.push(x);}});
   DB.reviews.migrationVersion=Math.max(DB.reviews.migrationVersion||0,incoming.reviews.migrationVersion||0);
+
+  habitMerge(incoming.habitTracker);
 
   applyDefaults(DB);
 }
@@ -5439,7 +5522,205 @@ function gradeCard(card, grade){
 }
 
 /* ================= TODO ================= */
+/* Monthly habit tracker: one additive store, independent records for each month. */
+let todoMode = "habits";
+function habitValidMonth(value){ return typeof value==="string" && /^(?!0000)\d{4}-(0[1-9]|1[0-2])$/.test(value); }
+function habitCurrentMonth(){ return todayStr().slice(0,7); }
+function habitMonth(){
+  const pref=DB.habitTracker.selectedMonth;
+  return pref && habitValidMonth(pref.value) ? pref.value : habitCurrentMonth();
+}
+function habitDays(month){
+  const [year,number]=month.split("-").map(Number);
+  if(number===2) return year%4===0 && (year%100!==0 || year%400===0) ? 29 : 28;
+  return [4,6,9,11].includes(number) ? 30 : 31;
+}
+function habitMonthName(month){
+  const names=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  return names[Number(month.slice(5))-1]+" "+Number(month.slice(0,4));
+}
+function habitRecordKey(month,id){ return month+"|"+id; }
+function habitDayKey(month,id,day){ return habitRecordKey(month,id)+"|"+String(day).padStart(2,"0"); }
+function habitValidItem(key,item){
+  return item && habitValidMonth(item.month) && typeof item.id==="string" && /^[a-zA-Z0-9_-]{1,100}$/.test(item.id) &&
+    key===habitRecordKey(item.month,item.id) && typeof item.title==="string" && typeof item.deleted==="boolean";
+}
+function habitValidCheck(key,item){
+  const parts=key.split("|");
+  return parts.length===3 && habitValidMonth(parts[0]) && /^[a-zA-Z0-9_-]{1,100}$/.test(parts[1]) &&
+    /^(0[1-9]|[12]\d|3[01])$/.test(parts[2]) && Number(parts[2])<=habitDays(parts[0]) && item && typeof item.done==="boolean";
+}
+function habitMerge(incoming){
+  const target=DB.habitTracker;
+  const time=item=>Number.isFinite(Date.parse(item && item.updatedAt)) ? Date.parse(item.updatedAt) : 0;
+  const valid={months:(k,v)=>habitValidMonth(k) && v && typeof v==="object",items:habitValidItem,checks:habitValidCheck};
+  Object.keys(valid).forEach(function(map){
+    Object.entries(incoming[map] || {}).forEach(function([key,item]){
+      if(!valid[map](key,item)) return;
+      const mine=target[map][key];
+      // False checks and deleted rows are retained, so old backups cannot resurrect them.
+      if(!Object.prototype.hasOwnProperty.call(target[map],key) || time(item)>time(mine)) target[map][key]=item;
+    });
+  });
+  const pref=incoming.selectedMonth;
+  if(pref && habitValidMonth(pref.value) && (!target.selectedMonth || time(pref)>time(target.selectedMonth))) target.selectedMonth=pref;
+}
+function habitRows(month,removed){
+  return Object.entries(DB.habitTracker.items).filter(([key,item])=>habitValidItem(key,item) && item.month===month && !!item.deleted===!!removed)
+    .map(([,item])=>item).sort((a,b)=>String(a.createdAt||"").localeCompare(String(b.createdAt||"")) || a.id.localeCompare(b.id));
+}
+function habitGoal(item,month){
+  const days=habitDays(month),value=Number(item.goalDays);
+  return item.goalMode==="daily" ? days : Math.max(1,Math.min(days,Number.isFinite(value)?Math.floor(value):days));
+}
+function habitCount(item,month){
+  let count=0;
+  for(let day=1;day<=habitDays(month);day++) if(DB.habitTracker.checks[habitDayKey(month,item.id,day)]?.done===true) count++;
+  return count;
+}
+function habitStats(month){
+  const rows=habitRows(month),daily=Array.from({length:habitDays(month)},()=>0);
+  let total=0,goal=0,earned=0;
+  rows.forEach(function(item){
+    const count=habitCount(item,month),target=habitGoal(item,month);
+    total+=count;goal+=target;earned+=Math.min(count,target);
+    daily.forEach((_,i)=>{ if(DB.habitTracker.checks[habitDayKey(month,item.id,i+1)]?.done===true) daily[i]++; });
+  });
+  return {rows,daily,total,goal,earned,percent:goal ? Math.round(earned/goal*100) : 0};
+}
+function habitCopy(source,target){
+  let copied=0;
+  const at=nowISO();
+  habitRows(source).forEach(function(item){
+    const key=habitRecordKey(target,item.id);
+    if(Object.prototype.hasOwnProperty.call(DB.habitTracker.items,key)) return;
+    DB.habitTracker.items[key]={...item,month:target,deleted:false,createdAt:at,updatedAt:at};
+    copied++;
+  });
+  return copied;
+}
+function habitEnsureMonth(month,copy){
+  if(!Object.prototype.hasOwnProperty.call(DB.habitTracker.months,month)){
+    const previous=Object.keys(DB.habitTracker.months).filter(m=>habitValidMonth(m) && m<month).sort().pop();
+    DB.habitTracker.months[month]={updatedAt:nowISO()};
+    if(copy && previous) habitCopy(previous,month);
+  }
+}
+function habitSelectMonth(month){
+  if(!habitValidMonth(month)){toast("Choose a valid month.");renderTodos();return;}
+  habitEnsureMonth(month,true);
+  DB.habitTracker.selectedMonth={value:month,updatedAt:nowISO()};
+  save();renderTodos();
+}
+function habitStepMonth(step){
+  const [year,number]=habitMonth().split("-").map(Number),index=year*12+number-1+step;
+  const y=Math.floor(index/12),m=index%12+1;
+  if(y<1 || y>9999) return;
+  habitSelectMonth(String(y).padStart(4,"0")+"-"+String(m).padStart(2,"0"));
+}
+function habitChart(stats,month){
+  const width=310,height=145,top=10,left=27,bottom=25,plotHeight=height-top-bottom,plotWidth=width-left-5;
+  const size=plotWidth/stats.daily.length;
+  const bars=stats.daily.map(function(count,index){
+    const pct=stats.rows.length ? count/stats.rows.length*100 : 0,h=pct/100*plotHeight;
+    return '<rect class="ht-bar" x="'+(left+index*size+1).toFixed(2)+'" y="'+(top+plotHeight-h).toFixed(2)+'" width="'+Math.max(2,size-2).toFixed(2)+'" height="'+h.toFixed(2)+'"><title>Day '+(index+1)+': '+count+' of '+stats.rows.length+' habits ('+Math.round(pct)+'%)</title></rect>';
+  }).join('');
+  return '<svg class="ht-chart" viewBox="0 0 '+width+' '+height+'" role="img" aria-label="Daily habit completion for '+escapeAttr(habitMonthName(month))+'"><title>Daily completion</title><desc>'+escapeHtml(stats.daily.map((n,i)=>'Day '+(i+1)+': '+n+' of '+stats.rows.length).join('; '))+'</desc>' +
+    [0,50,100].map(function(pct){const y=top+plotHeight-pct/100*plotHeight;return '<line class="ht-gridline" x1="'+left+'" y1="'+y+'" x2="'+width+'" y2="'+y+'"/><text x="1" y="'+(y+4)+'">'+pct+'%</text>';}).join('') + bars +
+    '<text x="'+left+'" y="'+(height-6)+'">1</text><text x="'+(left+plotWidth/2-10)+'" y="'+(height-6)+'">Day</text><text x="'+(width-19)+'" y="'+(height-6)+'">'+stats.daily.length+'</text></svg>';
+}
+function renderHabitTracker(){
+  const month=habitMonth(),days=habitDays(month),stats=habitStats(month),removed=habitRows(month,true),name=habitMonthName(month),pane=document.getElementById("habitPane");
+  const previousGrid=pane.querySelector(".ht-table-scroll");
+  const previousScroll=previousGrid && pane.dataset.month===month ? {left:previousGrid.scrollLeft,top:previousGrid.scrollTop} : null;
+  pane.dataset.month=month;
+  const now=todayStr(),weekday=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const first=new Date(2000,0,1);first.setFullYear(Number(month.slice(0,4)),Number(month.slice(5))-1,1);first.setHours(12,0,0,0);
+  const sources=Object.keys(DB.habitTracker.months).filter(m=>habitValidMonth(m)&&m!==month&&habitRows(m).length).sort().reverse();
+  const weeks=Array.from({length:Math.ceil(days/7)},(_,i)=>'<th class="ht-week ht-week-'+(i+1)+'" colspan="'+Math.min(7,days-i*7)+'" scope="colgroup">Week '+(i+1)+'</th>').join('');
+  const headings=Array.from({length:days},(_,i)=>'<th scope="col" class="'+(now===month+'-'+String(i+1).padStart(2,'0')?'ht-today':'')+'">'+(i+1)+'<span>'+weekday[(first.getDay()+i)%7]+'</span></th>').join('');
+  const rows=stats.rows.map(function(item){
+    const count=habitCount(item,month),goal=habitGoal(item,month),pct=Math.min(100,Math.round(count/goal*100));
+    const cells=Array.from({length:days},(_,i)=>{
+      const done=DB.habitTracker.checks[habitDayKey(month,item.id,i+1)]?.done===true;
+      return '<td class="ht-week-'+(Math.floor(i/7)+1)+(done?' ht-checked':'')+'"><input type="checkbox" data-habit-check="'+escapeAttr(item.id)+'" data-day="'+(i+1)+'" aria-label="'+escapeAttr(item.title+', '+name+', day '+(i+1))+'"'+(done?' checked':'')+'></td>';
+    }).join('');
+    return '<tr><th scope="row" class="ht-habit"><div class="ht-name">'+escapeHtml(item.title)+'</div>'+
+      (item.category?'<div class="ht-category">'+escapeHtml(item.category)+'</div>':'')+'<div class="ht-row-actions"><button type="button" data-habit-edit="'+escapeAttr(item.id)+'" aria-label="Edit '+escapeAttr(item.title)+'">Edit</button><button type="button" data-habit-remove="'+escapeAttr(item.id)+'" aria-label="Remove '+escapeAttr(item.title)+'">Remove</button></div></th>'+cells+
+      '<td class="ht-goal">'+goal+'</td><td class="ht-result"><b>'+count+' / '+goal+'</b><span>'+pct+'%</span>'+progressBar(Math.min(count,goal),goal,true)+'</td></tr>';
+  }).join('');
+  pane.innerHTML='<div class="ht-toolbar"><div><h2>Monthly Habit Tracker</h2><p>Small habits, steady progress.</p></div><button type="button" class="btn" id="habitAdd">+ Add habit</button></div>'+
+    '<div class="ht-month-controls"><button type="button" class="btn secondary btn-sm" id="habitPrev" aria-label="Previous month"'+(month==='0001-01'?' disabled':'')+'>←</button><label for="habitMonthInput">Month</label><input type="month" id="habitMonthInput" value="'+month+'" min="0001-01" max="9999-12"><button type="button" class="btn secondary btn-sm" id="habitNext" aria-label="Next month"'+(month==='9999-12'?' disabled':'')+'>→</button><button type="button" class="btn secondary btn-sm" id="habitThisMonth">This month</button></div>'+
+    '<div class="ht-layout"><section class="ht-main" aria-label="Habit calendar"><div class="ht-calendar-heading"><h3>'+name+'</h3><span>'+days+' days · '+stats.rows.length+' habits</span></div>'+
+    (stats.rows.length?'<p class="ht-scroll-hint">Check each day as you complete a habit. Scroll sideways for all days.</p><div class="ht-table-scroll" tabindex="0" aria-label="Scrollable monthly habit grid"><table class="ht-table"><caption class="ht-sr">'+name+' habit check-ins</caption><thead><tr><th class="ht-habit" rowspan="2" scope="col">Habit</th>'+weeks+'<th rowspan="2" scope="col">Goal<br>days</th><th rowspan="2" scope="col">Progress</th></tr><tr>'+headings+'</tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="ht-empty"><h3>Start your month</h3><p>Add a habit, choose its monthly goal, and check the days you complete it.</p><button type="button" class="btn secondary" id="habitFirst">+ Add your first habit</button></div>')+
+    (sources.length?'<div class="ht-copy"><label for="habitCopySource">Copy habit names and goals from</label><select id="habitCopySource">'+sources.map(m=>'<option value="'+m+'">'+habitMonthName(m)+'</option>').join('')+'</select><button type="button" class="btn secondary btn-sm" id="habitCopy">Copy habits</button><small>Daily checks stay in their original month.</small></div>':'')+
+    (removed.length?'<details class="ht-removed"><summary>Removed habits ('+removed.length+')</summary>'+removed.map(item=>'<div><span>'+escapeHtml(item.title)+'</span><button type="button" class="btn secondary btn-sm" data-habit-restore="'+escapeAttr(item.id)+'">Restore</button></div>').join('')+'</details>':'')+
+    '</section><aside class="ht-summary" aria-label="Monthly progress"><h3>Monthly progress</h3><div class="ht-ring" style="--ht-progress:'+stats.percent+'%"><div><b id="habitPercent">'+stats.percent+'%</b><span>of monthly goals</span></div></div><div class="ht-stats"><div><b id="habitCheckins">'+stats.total+'</b><span>Recorded check-ins</span></div><div><b>'+stats.goal+'</b><span>Goal check-ins</span></div></div><p class="ht-metric-note">Each habit contributes up to its goal. Extra checked days stay recorded.</p><h4>Daily completion</h4>'+habitChart(stats,month)+
+    '<h4>Habit progress</h4>'+ (stats.rows.length?stats.rows.map(item=>{const count=habitCount(item,month),goal=habitGoal(item,month);return '<div class="ht-ranking"><span>'+escapeHtml(item.title)+'</span><b>'+count+' / '+goal+'</b>'+progressBar(Math.min(count,goal),goal,true)+'</div>';}).join(''):'<p class="ht-muted">Your chart will update as you check days.</p>')+'</aside></div><p class="ht-save-note">Saved automatically. Reopen a month to continue its record.</p>';
+  document.getElementById("habitAdd").onclick=()=>habitEdit();
+  if(document.getElementById("habitFirst")) document.getElementById("habitFirst").onclick=()=>habitEdit();
+  document.getElementById("habitMonthInput").onchange=e=>habitSelectMonth(e.target.value);
+  document.getElementById("habitPrev").onclick=()=>habitStepMonth(-1);
+  document.getElementById("habitNext").onclick=()=>habitStepMonth(1);
+  document.getElementById("habitThisMonth").onclick=()=>habitSelectMonth(habitCurrentMonth());
+  pane.querySelectorAll("[data-habit-check]").forEach(function(box){
+    box.onchange=()=>{
+      DB.habitTracker.checks[habitDayKey(month,box.dataset.habitCheck,Number(box.dataset.day))]={done:box.checked,updatedAt:nowISO()};
+      save();renderTodos();
+      const next=pane.querySelector('[data-habit-check="'+box.dataset.habitCheck+'"][data-day="'+box.dataset.day+'"]');
+      if(next) next.focus({preventScroll:true});
+    };
+  });
+  pane.querySelectorAll("[data-habit-edit]").forEach(button=>button.onclick=()=>habitEdit(button.dataset.habitEdit));
+  pane.querySelectorAll("[data-habit-remove]").forEach(button=>button.onclick=()=>{
+    const item=DB.habitTracker.items[habitRecordKey(month,button.dataset.habitRemove)];
+    confirmDialog('Remove <b>'+escapeHtml(item.title)+'</b> from '+name+'? You can restore it with its checked days from Removed habits.',()=>{
+      item.deleted=true;item.updatedAt=nowISO();save();renderTodos();
+    });
+  });
+  pane.querySelectorAll("[data-habit-restore]").forEach(button=>button.onclick=()=>{
+    const item=DB.habitTracker.items[habitRecordKey(month,button.dataset.habitRestore)];
+    item.deleted=false;item.updatedAt=nowISO();save();renderTodos();
+  });
+  if(document.getElementById("habitCopy")) document.getElementById("habitCopy").onclick=()=>{
+    habitEnsureMonth(month,false);
+    const count=habitCopy(document.getElementById("habitCopySource").value,month);
+    save();renderTodos();toast(count ? count+" habits copied. Daily checks start empty." : "Those habits are already saved in this month.");
+  };
+  const grid=pane.querySelector(".ht-table-scroll");
+  if(grid && previousScroll){grid.scrollLeft=previousScroll.left;grid.scrollTop=previousScroll.top;}
+}
+function habitEdit(id){
+  const month=habitMonth(),days=habitDays(month),existing=id && DB.habitTracker.items[habitRecordKey(month,id)];
+  openModal('<h2>'+(existing?'Edit habit':'Add habit')+'</h2><p class="ht-muted">For '+habitMonthName(month)+'</p><form id="habitForm"><div class="form-row"><label for="habitTitle">Habit name</label><input id="habitTitle" required maxlength="120" placeholder="e.g. Read for 20 minutes" value="'+escapeAttr(existing?existing.title:'')+'"></div><div class="form-row"><label for="habitCategory">Category (optional)</label><input id="habitCategory" maxlength="60" placeholder="e.g. Learning" value="'+escapeAttr(existing?existing.category||'':'')+'"></div><div class="form-row"><label for="habitGoal">Monthly goal (days)</label><input type="number" id="habitGoal" min="1" max="'+days+'" required value="'+(existing?habitGoal(existing,month):days)+'"><small>Use '+days+' for every day. You can choose a smaller goal.</small></div><p class="ht-form-error" id="habitFormError" role="alert"></p><div class="modal-actions"><button type="button" class="btn secondary" id="habitCancel">Cancel</button><button class="btn" type="submit">'+(existing?'Save changes':'Add habit')+'</button></div></form>');
+  document.getElementById("habitCancel").onclick=closeModal;
+  document.getElementById("habitForm").onsubmit=e=>{
+    e.preventDefault();
+    const title=document.getElementById("habitTitle").value.trim(),category=document.getElementById("habitCategory").value.trim(),goal=Number(document.getElementById("habitGoal").value);
+    if(!title || !Number.isInteger(goal) || goal<1 || goal>days){document.getElementById("habitFormError").textContent="Enter a habit name and a valid goal for this month.";return;}
+    habitEnsureMonth(month,false);
+    const at=nowISO(),item=existing || {id:uid(),month,createdAt:at,deleted:false};
+    const unchangedGoal=existing && goal===habitGoal(existing,month);
+    Object.assign(item,{title,category,updatedAt:at});
+    if(!unchangedGoal) Object.assign(item,{goalDays:goal,goalMode:goal===days?'daily':'custom'});
+    DB.habitTracker.items[habitRecordKey(month,item.id)]=item;
+    DB.habitTracker.selectedMonth={value:month,updatedAt:at};
+    save();closeModal();renderTodos();
+  };
+  document.getElementById("habitTitle").focus();
+}
 function renderTodos(){
+  renderHabitTracker();renderTaskList();
+  document.getElementById("habitPane").hidden=todoMode!=="habits";
+  document.getElementById("taskPane").hidden=todoMode!=="tasks";
+  document.getElementById("newTodoBtn").hidden=todoMode!=="tasks";
+  document.querySelectorAll("[data-todo-mode]").forEach(function(button){
+    button.setAttribute("aria-pressed",String(button.dataset.todoMode===todoMode));
+    button.onclick=()=>{todoMode=button.dataset.todoMode;renderTodos();};
+  });
+}
+
+function renderTaskList(){
   const list = document.getElementById("todoList");
   if(DB.todos.length===0){
     list.innerHTML = `<div class="empty-state"><div class="big">✅</div><div>Nothing on your list. Add a task to get started.</div></div>`;
