@@ -1,0 +1,76 @@
+let cyberPage = {mode:"overview", week:1, day:1};
+function renderCybersecurityRoadmap(){
+  const body = document.getElementById("cybersecurityBody");
+  document.getElementById("backBtn").style.display = "none";
+  document.getElementById("quizSplit").classList.remove("detail-open");
+  document.getElementById("legacyQuizArea").hidden = true;
+  body.hidden = false;
+  let week = CYBERSECURITY_ROADMAP.find(function(item){ return item.week===cyberPage.week; });
+  if(!week){ cyberPage = {mode:"overview", week:1, day:1}; week = CYBERSECURITY_ROADMAP[0]; }
+  let content = "";
+  if(cyberPage.mode==="overview"){
+    content = '<div class="cyber-heading"><div><h1>Cybersecurity Roadmap</h1>' +
+      '<p class="cyber-subtitle">2 months · 8 weeks · Start from scratch</p></div></div>' +
+      '<div class="section-label">Choose a week</div><div class="week-grid">' +
+      CYBERSECURITY_ROADMAP.map(function(item){
+        return '<button type="button" class="week-chip" data-cyber-week="' + item.week + '">' +
+          '<span class="wc-num">Week ' + item.week + '</span>' +
+          '<span class="wc-title">' + escapeHtml(item.title) + '</span>' +
+          '<span class="wc-prog">Day 1–Day 7</span></button>';
+      }).join('') + '</div>';
+  } else if(cyberPage.mode==="week"){
+    content = '<button type="button" class="back-link" data-cyber-all>← All weeks</button>' +
+      '<div class="week-header"><div class="wh-eyebrow">Week ' + week.week + ' · Cybersecurity</div>' +
+      '<h2>' + escapeHtml(week.title) + '</h2></div>' +
+      '<div class="section-label">Daily roadmap</div><div class="day-list">' +
+      week.days.map(function(day){
+        return '<div class="day-row"><button type="button" class="day-open" data-cyber-day="' + day.day + '">' +
+          '<div class="dr-title">Day ' + day.day + '</div><div class="dr-meta">' +
+          escapeHtml(day.focus) + '</div></button></div>';
+      }).join('') + '</div>';
+  } else {
+    const day = week.days.find(function(item){ return item.day===cyberPage.day; }) || week.days[0];
+    cyberPage.day = day.day;
+    const position = (week.week-1)*7 + day.day-1;
+    content = '<button type="button" class="back-link" data-cyber-week="' + week.week + '">← Week ' + week.week + '</button>' +
+      '<div class="week-header"><div class="wh-eyebrow">Week ' + week.week + ' · Day ' + day.day + ' of 7</div>' +
+      '<h2>Day ' + day.day + '</h2><p class="wh-goal">' + escapeHtml(day.focus) + '</p></div>' +
+      '<section class="cyber-day-topics"><h3>आज यी विषय पढ्नुहोस्</h3><ul class="ex-list">' +
+      day.topics.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') + '</ul></section>' +
+      (day.python.length ? '<section class="cyber-python"><h3>Where Python helps</h3><ul class="ex-list">' +
+        day.python.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') + '</ul></section>' : '') +
+      '<div class="cyber-day-navigation"><button type="button" class="btn secondary" data-cyber-step="-1"' +
+      (position===0 ? ' disabled' : '') + '>← Previous day</button>' +
+      '<button type="button" class="btn" data-cyber-step="1"' +
+      (position===55 ? ' disabled' : '') + '>Next day →</button></div>';
+  }
+  body.innerHTML = content +
+    '<div class="cyber-footer"><div class="cyber-references">References: ' +
+    '<a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener noreferrer">NIST</a> · ' +
+    '<a href="https://owasp.org/projects/top-ten" target="_blank" rel="noopener noreferrer">OWASP</a></div>' +
+    '<button type="button" class="btn secondary btn-sm" id="cyberOldQuizzes">Previous quizzes</button></div>';
+  function update(){ renderCybersecurityRoadmap(); body.scrollIntoView({block:"start"}); }
+  body.querySelectorAll("[data-cyber-all]").forEach(function(button){
+    button.onclick = function(){ cyberPage.mode="overview"; update(); };
+  });
+  body.querySelectorAll("[data-cyber-week]").forEach(function(button){
+    button.onclick = function(){ cyberPage={mode:"week", week:Number(button.dataset.cyberWeek), day:1}; update(); };
+  });
+  body.querySelectorAll("[data-cyber-day]").forEach(function(button){
+    button.onclick = function(){ cyberPage.mode="day"; cyberPage.day=Number(button.dataset.cyberDay); update(); };
+  });
+  body.querySelectorAll("[data-cyber-step]").forEach(function(button){
+    button.onclick = function(){
+      const position=(cyberPage.week-1)*7+cyberPage.day-1+Number(button.dataset.cyberStep);
+      if(position<0 || position>=56) return;
+      cyberPage={mode:"day", week:Math.floor(position/7)+1, day:position%7+1};
+      update();
+    };
+  });
+  document.getElementById("cyberOldQuizzes").onclick = function(){
+    body.hidden=true;
+    document.getElementById("legacyQuizArea").hidden=false;
+    renderQuizList();
+    renderQuizDetail();
+  };
+}

@@ -28,12 +28,16 @@ async function main(){
 
   if(await evalJs('typeof CYBERSECURITY_ROADMAP!=="undefined"')){
     await evalJs('DB.quizzes.push({id:"cyber-legacy",name:"Saved quiz",questions:[{id:"q1",text:"Saved question",options:["Yes","No"],correct:0}],lastScore:67});save();document.querySelector("#sidebar [data-view=quiz]").click()');
-    assert(await evalJs('document.querySelector("#brandTitle").textContent==="Cybersecurity" && document.querySelectorAll(".cyber-week").length===8 && document.querySelector("#legacyQuizArea").hidden'),'Cybersecurity tab replacement failed');
-    assert(await evalJs('document.querySelectorAll(".cyber-python").length===8 && !document.querySelector("#cybersecurityBody pre")'),'Python help topics or roadmap-only structure failed');
-    await evalJs('document.querySelector("#cyberExpand").click()');
-    assert(await evalJs('[...document.querySelectorAll(".cyber-week")].every(w=>w.open)'),'Expand all weeks failed');
-    await evalJs('document.querySelector("#cyberExpand").click()');
-    assert(await evalJs('[...document.querySelectorAll(".cyber-week")].every(w=>!w.open)'),'Collapse all weeks failed');
+    assert(await evalJs('document.querySelector("#brandTitle").textContent==="Cybersecurity" && document.querySelectorAll("#cybersecurityBody .week-chip").length===8 && document.querySelector("#legacyQuizArea").hidden'),'Cybersecurity overview failed');
+    await evalJs('(()=>{const stored=JSON.stringify(DB);for(let w=1;w<=8;w++){cyberPage={mode:"overview",week:1,day:1};renderCybersecurityRoadmap();document.querySelector("[data-cyber-week=\\\""+w+"\\\"]").click();if(document.querySelectorAll("[data-cyber-day]").length!==7)throw Error("Missing days "+w);for(let d=1;d<=7;d++){document.querySelector("[data-cyber-day=\\\""+d+"\\\"]").click();const expected=CYBERSECURITY_ROADMAP[w-1].days[d-1];const actual=[...document.querySelectorAll(".cyber-day-topics li")].map(e=>e.textContent);if(JSON.stringify(actual)!==JSON.stringify(expected.topics))throw Error("Wrong daily topics "+w+"."+d);if(document.querySelector("#cybersecurityBody pre"))throw Error("Unexpected Python code");document.querySelector("[data-cyber-week]").click();}document.querySelector("[data-cyber-all]").click();}if(JSON.stringify(DB)!==stored)throw Error("Roadmap navigation changed saved data");})()');
+    await evalJs('cyberPage={mode:"day",week:1,day:1};renderCybersecurityRoadmap()');
+    assert(await evalJs('document.querySelector("[data-cyber-step=\\\"-1\\\"]").disabled'),'First-day previous boundary failed');
+    await evalJs('cyberPage={mode:"day",week:1,day:7};renderCybersecurityRoadmap();document.querySelector("[data-cyber-step=\\\"1\\\"]").click()');
+    assert(await evalJs('cyberPage.week===2 && cyberPage.day===1'),'Next-day week boundary failed');
+    await evalJs('document.querySelector("[data-cyber-step=\\\"-1\\\"]").click()');
+    assert(await evalJs('cyberPage.week===1 && cyberPage.day===7'),'Previous-day week boundary failed');
+    await evalJs('cyberPage={mode:"day",week:8,day:7};renderCybersecurityRoadmap()');
+    assert(await evalJs('document.querySelector("[data-cyber-step=\\\"1\\\"]").disabled'),'Last-day next boundary failed');
     await evalJs('document.querySelector("#cyberOldQuizzes").click();document.querySelector("#quizList [data-id=cyber-legacy]").click()');
     assert(await evalJs('document.querySelector("#quizDetail").textContent.includes("Saved question") && DB.quizzes.find(q=>q.id==="cyber-legacy").lastScore===67'),'Saved quizzes not retained/reachable');
     await evalJs('document.querySelector("#cyberBack").click()');
@@ -141,7 +145,7 @@ async function main(){
   if(await evalJs('Boolean(DAY_TEACH["24.0"])'))assert(await evalJs('isPartDone(24,0,0) && DB.lessonQuizScores["course:24.0.0"]===100 && DB.course.notes["24.0"]==="Week24 saved note"'),'Week24 progress/quiz/note failed reload');
   await send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
   if(await evalJs('typeof CYBERSECURITY_ROADMAP!=="undefined"')){
-    await evalJs('(()=>{switchView("quiz");document.querySelector("#cyberExpand").click();for(let n=0;n<2;n++){document.querySelector("#themeBtn").click();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Cybersecurity mobile overflow");}document.querySelector("#cyberOldQuizzes").click();document.querySelector("#quizList [data-id=cyber-legacy]").click();document.querySelector("#cyberBack").click();if(document.querySelector("#backBtn").style.display!=="none")throw Error("Stale mobile back button");})()');
+    await evalJs('(()=>{switchView("quiz");for(let n=0;n<2;n++){document.querySelector("#themeBtn").click();for(const w of CYBERSECURITY_ROADMAP){cyberPage={mode:"week",week:w.week,day:1};renderCybersecurityRoadmap();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Cyber week mobile overflow");for(const d of w.days){cyberPage={mode:"day",week:w.week,day:d.day};renderCybersecurityRoadmap();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Cyber day mobile overflow");}}}document.querySelector("#cyberOldQuizzes").click();document.querySelector("#quizList [data-id=cyber-legacy]").click();document.querySelector("#cyberBack").click();if(document.querySelector("#backBtn").style.display!=="none")throw Error("Stale mobile back button");cyberPage={mode:"week",week:1,day:1};renderCybersecurityRoadmap();})()');
     assert(await evalJs('DB.quizzes.some(q=>q.id==="cyber-legacy" && q.lastScore===67)'),'Old quizzes failed refresh');
     const cyberShot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
     fs.writeFileSync(path.join(os.tmpdir(),'studyhub-cybersecurity-mobile.png'),Buffer.from(cyberShot.data,'base64'));

@@ -1246,24 +1246,21 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 #yogaPracticeNotes .hn-btn{width:auto;min-width:90px;padding:0 10px;white-space:nowrap;font-size:12px}
 #yogaPracticeNotes .hn-text{min-height:150px}
 #yogaPracticeNotes{scroll-margin-top:150px}
-/* Cybersecurity roadmap: existing theme colours. */
+/* Cybersecurity roadmap: reuse Python week/day components. */
 #cybersecurityBody{max-width:1100px;margin:0 auto;padding:18px 16px;}
-.cyber-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+.cyber-heading{margin-bottom:20px;}
 .cyber-heading h1{font-size:25px;margin:0 0 6px;}
 .cyber-subtitle{margin:0;color:var(--text-dim);font-size:14px;}
-.cyber-week{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);margin:0 0 12px;overflow:hidden;}
-.cyber-week summary{cursor:pointer;padding:17px 18px;font-size:16px;font-weight:700;line-height:1.5;}
-.cyber-week-number{color:var(--accent);display:inline-block;margin-right:14px;}
-.cyber-week-content{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:24px;padding:0 20px 20px;}
-.cyber-week h2{font-size:13px;color:var(--text-dim);margin:4px 0 12px;}
-.cyber-week ul{margin:0;padding-left:20px;}
-.cyber-week li{font-size:15px;line-height:1.65;margin:0 0 9px;overflow-wrap:anywhere;}
-.cyber-python{background:var(--bg-soft);border-radius:10px;padding:14px 16px;align-self:start;}
-.cyber-python h2{color:var(--accent);}
-.cyber-footer{display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:22px;}
+.cyber-python{background:var(--bg-soft);border-radius:10px;padding:14px 16px;margin-top:20px;}
+.cyber-python h3,.cyber-day-topics h3{font-size:15px;margin:0 0 12px;}
+.cyber-python h3{color:var(--accent);}
+.cyber-day-topics{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.cyber-day-topics li,.cyber-python li{overflow-wrap:anywhere;}
+.cyber-day-navigation{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:24px;}
+.cyber-footer{display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:24px;}
 .cyber-references{color:var(--text-dim);font-size:13px;}
 #cyberBack{margin-bottom:14px;}
-@media(max-width:700px){.cyber-week-content{grid-template-columns:minmax(0,1fr);gap:12px;padding:0 15px 15px;}.cyber-week summary{padding:15px;}.cyber-heading h1{font-size:22px;}}
+@media(max-width:700px){.cyber-heading h1{font-size:22px;}}
 </style>
 </head>
 <body>
@@ -5823,6 +5820,73 @@ const CYBERSECURITY_ROADMAP = [
     "python": [
       "Device/file inventory automation",
       "Organising security information and simple reports"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "What cybersecurity is",
+        "topics": [
+          "Cybersecurity भनेको के हो र यसको काम के हो",
+          "Computer, operating system, applications, files and data"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "Assets and CIA",
+        "topics": [
+          "Devices, accounts and information as assets",
+          "Confidentiality, integrity and availability"
+        ],
+        "python": [
+          "Device/file inventory automation"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Threats, vulnerabilities and risk",
+        "topics": [
+          "Threat, vulnerability, risk and security control"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Common cyber threats",
+        "topics": [
+          "Malware, phishing, scams and data breaches: overview"
+        ],
+        "python": []
+      },
+      {
+        "day": 5,
+        "focus": "How security works",
+        "topics": [
+          "Prevention, detection, response and recovery",
+          "Defensive security, application security and authorised testing"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Learning scope and lab",
+        "topics": [
+          "Practice permission, scope and a separate learning lab"
+        ],
+        "python": [
+          "Organising security information and simple reports"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 1 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
     ]
   },
   {
@@ -5842,6 +5906,73 @@ const CYBERSECURITY_ROADMAP = [
     "python": [
       "Checking and organising IP-address data",
       "Summarising saved network observations and packet metadata"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Internet and local networks",
+        "topics": [
+          "Client, server, browser and internet request journey",
+          "Router, switch, Wi-Fi and local network"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "Network addresses",
+        "topics": [
+          "IP address, MAC address, subnet and gateway",
+          "Private/public IP addresses; IPv4 and IPv6"
+        ],
+        "python": [
+          "Checking and organising IP-address data"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "DNS and DHCP",
+        "topics": [
+          "DNS and DHCP"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Protocols, ports and services",
+        "topics": [
+          "TCP, UDP, ports and common services"
+        ],
+        "python": []
+      },
+      {
+        "day": 5,
+        "focus": "HTTPS and firewalls",
+        "topics": [
+          "HTTP, HTTPS and TLS: overview",
+          "Firewalls and traffic flow"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Diagrams and sample traffic",
+        "topics": [
+          "Reading a simple network diagram and a sample packet capture"
+        ],
+        "python": [
+          "Summarising saved network observations and packet metadata"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 2 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
     ]
   },
   {
@@ -5861,6 +5992,73 @@ const CYBERSECURITY_ROADMAP = [
     "python": [
       "Collecting an approved inventory of files and system information",
       "Organising local log records and configuration data"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Windows/Linux and running software",
+        "topics": [
+          "Windows and Linux security basics",
+          "Files, directories, processes and services"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "Users and file permissions",
+        "topics": [
+          "Users, groups, administrator/root and least privilege",
+          "File permissions and ownership"
+        ],
+        "python": [
+          "Collecting an approved inventory of files and system information"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Terminal basics",
+        "topics": [
+          "Terminal basics and reading system information"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Logs and timestamps",
+        "topics": [
+          "System/application logs and timestamps"
+        ],
+        "python": [
+          "Organising local log records and configuration data"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Updates and a learning lab",
+        "topics": [
+          "Updates, software sources and endpoint protection",
+          "Virtual machines, snapshots and isolated lab networking"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Personal device security",
+        "topics": [
+          "Personal device security checklist"
+        ],
+        "python": []
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 3 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
     ]
   },
   {
@@ -5880,6 +6078,73 @@ const CYBERSECURITY_ROADMAP = [
     "python": [
       "File-integrity checks and comparison reports",
       "Identifying accidental sensitive-data exposure in approved sample data"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Identity and passwords",
+        "topics": [
+          "Authentication versus authorisation",
+          "Passwords, passphrases and password managers"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "MFA, sessions and permissions",
+        "topics": [
+          "MFA, passkeys and account recovery",
+          "Session, token and access permission basics"
+        ],
+        "python": []
+      },
+      {
+        "day": 3,
+        "focus": "Phishing awareness",
+        "topics": [
+          "Phishing indicators and social engineering awareness"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Encryption, hashing and encoding",
+        "topics": [
+          "Encryption versus hashing versus encoding"
+        ],
+        "python": [
+          "File-integrity checks and comparison reports"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Checksums and secure connections",
+        "topics": [
+          "File checksums versus password hashing",
+          "TLS certificates and secure connections"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Backups and sensitive data",
+        "topics": [
+          "Backups, recovery tests and sensitive-data handling"
+        ],
+        "python": [
+          "Identifying accidental sensitive-data exposure in approved sample data"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 4 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
     ]
   },
   {
@@ -5899,6 +6164,73 @@ const CYBERSECURITY_ROADMAP = [
     "python": [
       "Organising approved API/HTTP response information",
       "Supporting input checks and repeatable security tests"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Web requests and login flow",
+        "topics": [
+          "Browser/server requests, responses and HTTP status codes",
+          "Headers, cookies, sessions and login flow"
+        ],
+        "python": [
+          "Organising approved API/HTTP response information"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Application boundaries and input",
+        "topics": [
+          "Frontend, backend, API and database boundaries",
+          "Input validation and output encoding"
+        ],
+        "python": []
+      },
+      {
+        "day": 3,
+        "focus": "Access control",
+        "topics": [
+          "Access control and broken-access-control awareness"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Injection awareness",
+        "topics": [
+          "SQL injection and parameterised-query awareness"
+        ],
+        "python": [
+          "Supporting input checks and repeatable security tests"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Browser risks and OWASP overview",
+        "topics": [
+          "XSS and CSRF awareness",
+          "OWASP Top 10 2025: beginner overview"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "A local request journey",
+        "topics": [
+          "Following a request through an intentionally designed local training app"
+        ],
+        "python": []
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 5 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
     ]
   },
   {
@@ -5918,6 +6250,73 @@ const CYBERSECURITY_ROADMAP = [
     "python": [
       "Comparing inventory/configuration records with a known baseline",
       "Combining and prioritising vulnerability findings in reports"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Security baselines and updates",
+        "topics": [
+          "Security baseline and configuration hardening",
+          "Patch/update management and software inventory"
+        ],
+        "python": [
+          "Comparing inventory/configuration records with a known baseline"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Vulnerabilities, prioritisation and exposure",
+        "topics": [
+          "Vulnerability, CVE, severity and prioritisation",
+          "Exposure versus exploitable weakness"
+        ],
+        "python": []
+      },
+      {
+        "day": 3,
+        "focus": "Network and endpoint controls",
+        "topics": [
+          "Firewall rules, network segmentation and endpoint controls"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Cloud accounts and responsibility",
+        "topics": [
+          "Cloud accounts and shared-responsibility basics"
+        ],
+        "python": []
+      },
+      {
+        "day": 5,
+        "focus": "Repository security and backups",
+        "topics": [
+          "Public/private repositories and secret exposure",
+          "Backup verification and recovery planning"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Findings and remediation",
+        "topics": [
+          "Documenting findings, evidence and remediation"
+        ],
+        "python": [
+          "Combining and prioritising vulnerability findings in reports"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 6 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
     ]
   },
   {
@@ -5937,6 +6336,73 @@ const CYBERSECURITY_ROADMAP = [
     "python": [
       "Sorting/correlating log events and counting suspicious patterns",
       "Preparing incident timelines and evidence summaries"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Monitoring and security events",
+        "topics": [
+          "Security monitoring and the SOC role",
+          "Logs, events, alerts and SIEM: overview"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "Normal behaviour and log sources",
+        "topics": [
+          "Normal behaviour, suspicious patterns and false positives",
+          "Login, endpoint, application and network log sources"
+        ],
+        "python": []
+      },
+      {
+        "day": 3,
+        "focus": "Time and event ordering",
+        "topics": [
+          "Timestamps, time zones and event timelines"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Incident triage",
+        "topics": [
+          "Incident triage, containment and communication"
+        ],
+        "python": [
+          "Sorting/correlating log events and counting suspicious patterns"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Recovery and evidence",
+        "topics": [
+          "Recovery and lessons learned",
+          "Evidence preservation and file-integrity records"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "A simulated incident",
+        "topics": [
+          "Reviewing a simulated incident using prepared sample logs"
+        ],
+        "python": [
+          "Preparing incident timelines and evidence summaries"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 7 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
     ]
   },
   {
@@ -5956,49 +6422,148 @@ const CYBERSECURITY_ROADMAP = [
     "python": [
       "Connecting inventory, integrity and log-analysis automation",
       "Reducing repetitive security work and producing consistent reports"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Foundations and request flow",
+        "topics": [
+          "Review: assets, threats, vulnerabilities and controls",
+          "Trace one login/request from device to server"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "Personal security and control review",
+        "topics": [
+          "Review personal accounts, updates, backups and permissions",
+          "Map controls to govern, identify, protect, detect, respond and recover"
+        ],
+        "python": []
+      },
+      {
+        "day": 3,
+        "focus": "Connected logs",
+        "topics": [
+          "Review sample network, endpoint and application logs together"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Learning-lab assessment",
+        "topics": [
+          "Write a small security assessment of your own learning lab"
+        ],
+        "python": [
+          "Connecting inventory, integrity and log-analysis automation"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Recovery planning and portfolio",
+        "topics": [
+          "Prepare an incident response and recovery checklist",
+          "Collect a glossary, network diagram and sample findings report"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Next-stage readiness",
+        "topics": [
+          "Identify weak areas before choosing the next learning stage"
+        ],
+        "python": [
+          "Reducing repetitive security work and producing consistent reports"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 8 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
     ]
   }
 ];
+let cyberPage = {mode:"overview", week:1, day:1};
 function renderCybersecurityRoadmap(){
   const body = document.getElementById("cybersecurityBody");
   document.getElementById("backBtn").style.display = "none";
   document.getElementById("quizSplit").classList.remove("detail-open");
-  document.getElementById("backBtn").style.display = "none";
-  document.getElementById("quizSplit").classList.remove("detail-open");
   document.getElementById("legacyQuizArea").hidden = true;
   body.hidden = false;
-  body.innerHTML =
-    '<div class="cyber-heading"><div><h1>Cybersecurity Roadmap</h1>' +
-    '<p class="cyber-subtitle">2 months · 8 weeks · Start from scratch</p></div>' +
-    '<button type="button" class="btn secondary btn-sm" id="cyberExpand">Show all weeks</button></div>' +
-    CYBERSECURITY_ROADMAP.map(function(week){
-      return '<details class="cyber-week" data-cyber-week="' + week.week + '"' + (week.week===1 ? ' open' : '') + '>' +
-        '<summary><span class="cyber-week-number">Week ' + week.week + '</span><span>' + escapeHtml(week.title) + '</span></summary>' +
-        '<div class="cyber-week-content"><section><h2>What to study</h2><ul>' +
-        week.topics.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') +
-        '</ul></section><section class="cyber-python"><h2>Where Python helps</h2><ul>' +
-        week.python.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') +
-        '</ul></section></div></details>';
-    }).join('') +
+  let week = CYBERSECURITY_ROADMAP.find(function(item){ return item.week===cyberPage.week; });
+  if(!week){ cyberPage = {mode:"overview", week:1, day:1}; week = CYBERSECURITY_ROADMAP[0]; }
+  let content = "";
+  if(cyberPage.mode==="overview"){
+    content = '<div class="cyber-heading"><div><h1>Cybersecurity Roadmap</h1>' +
+      '<p class="cyber-subtitle">2 months · 8 weeks · Start from scratch</p></div></div>' +
+      '<div class="section-label">Choose a week</div><div class="week-grid">' +
+      CYBERSECURITY_ROADMAP.map(function(item){
+        return '<button type="button" class="week-chip" data-cyber-week="' + item.week + '">' +
+          '<span class="wc-num">Week ' + item.week + '</span>' +
+          '<span class="wc-title">' + escapeHtml(item.title) + '</span>' +
+          '<span class="wc-prog">Day 1–Day 7</span></button>';
+      }).join('') + '</div>';
+  } else if(cyberPage.mode==="week"){
+    content = '<button type="button" class="back-link" data-cyber-all>← All weeks</button>' +
+      '<div class="week-header"><div class="wh-eyebrow">Week ' + week.week + ' · Cybersecurity</div>' +
+      '<h2>' + escapeHtml(week.title) + '</h2></div>' +
+      '<div class="section-label">Daily roadmap</div><div class="day-list">' +
+      week.days.map(function(day){
+        return '<div class="day-row"><button type="button" class="day-open" data-cyber-day="' + day.day + '">' +
+          '<div class="dr-title">Day ' + day.day + '</div><div class="dr-meta">' +
+          escapeHtml(day.focus) + '</div></button></div>';
+      }).join('') + '</div>';
+  } else {
+    const day = week.days.find(function(item){ return item.day===cyberPage.day; }) || week.days[0];
+    cyberPage.day = day.day;
+    const position = (week.week-1)*7 + day.day-1;
+    content = '<button type="button" class="back-link" data-cyber-week="' + week.week + '">← Week ' + week.week + '</button>' +
+      '<div class="week-header"><div class="wh-eyebrow">Week ' + week.week + ' · Day ' + day.day + ' of 7</div>' +
+      '<h2>Day ' + day.day + '</h2><p class="wh-goal">' + escapeHtml(day.focus) + '</p></div>' +
+      '<section class="cyber-day-topics"><h3>आज यी विषय पढ्नुहोस्</h3><ul class="ex-list">' +
+      day.topics.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') + '</ul></section>' +
+      (day.python.length ? '<section class="cyber-python"><h3>Where Python helps</h3><ul class="ex-list">' +
+        day.python.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') + '</ul></section>' : '') +
+      '<div class="cyber-day-navigation"><button type="button" class="btn secondary" data-cyber-step="-1"' +
+      (position===0 ? ' disabled' : '') + '>← Previous day</button>' +
+      '<button type="button" class="btn" data-cyber-step="1"' +
+      (position===55 ? ' disabled' : '') + '>Next day →</button></div>';
+  }
+  body.innerHTML = content +
     '<div class="cyber-footer"><div class="cyber-references">References: ' +
     '<a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener noreferrer">NIST</a> · ' +
     '<a href="https://owasp.org/projects/top-ten" target="_blank" rel="noopener noreferrer">OWASP</a></div>' +
     '<button type="button" class="btn secondary btn-sm" id="cyberOldQuizzes">Previous quizzes</button></div>';
-  document.getElementById("cyberExpand").onclick = function(){
-    const weeks = Array.from(body.querySelectorAll(".cyber-week"));
-    const open = !weeks.every(function(week){ return week.open; });
-    weeks.forEach(function(week){ week.open = open; });
-  };
-  body.querySelectorAll(".cyber-week").forEach(function(week){
-    week.addEventListener("toggle", function(){
-      document.getElementById("cyberExpand").textContent =
-        Array.from(body.querySelectorAll(".cyber-week")).every(function(item){ return item.open; }) ?
-        "Hide all weeks" : "Show all weeks";
-    });
+  function update(){ renderCybersecurityRoadmap(); body.scrollIntoView({block:"start"}); }
+  body.querySelectorAll("[data-cyber-all]").forEach(function(button){
+    button.onclick = function(){ cyberPage.mode="overview"; update(); };
+  });
+  body.querySelectorAll("[data-cyber-week]").forEach(function(button){
+    button.onclick = function(){ cyberPage={mode:"week", week:Number(button.dataset.cyberWeek), day:1}; update(); };
+  });
+  body.querySelectorAll("[data-cyber-day]").forEach(function(button){
+    button.onclick = function(){ cyberPage.mode="day"; cyberPage.day=Number(button.dataset.cyberDay); update(); };
+  });
+  body.querySelectorAll("[data-cyber-step]").forEach(function(button){
+    button.onclick = function(){
+      const position=(cyberPage.week-1)*7+cyberPage.day-1+Number(button.dataset.cyberStep);
+      if(position<0 || position>=56) return;
+      cyberPage={mode:"day", week:Math.floor(position/7)+1, day:position%7+1};
+      update();
+    };
   });
   document.getElementById("cyberOldQuizzes").onclick = function(){
-    body.hidden = true;
-    document.getElementById("legacyQuizArea").hidden = false;
+    body.hidden=true;
+    document.getElementById("legacyQuizArea").hidden=false;
     renderQuizList();
     renderQuizDetail();
   };

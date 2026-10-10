@@ -1,10 +1,690 @@
 [
-  {"week":1,"title":"Cybersecurity from scratch","topics":["Cybersecurity भनेको के हो र यसको काम के हो","Computer, operating system, applications, files and data","Devices, accounts and information as assets","Confidentiality, integrity and availability","Threat, vulnerability, risk and security control","Malware, phishing, scams and data breaches: overview","Prevention, detection, response and recovery","Defensive security, application security and authorised testing","Practice permission, scope and a separate learning lab"],"python":["Device/file inventory automation","Organising security information and simple reports"]},
-  {"week":2,"title":"How the internet and networks work","topics":["Client, server, browser and internet request journey","Router, switch, Wi-Fi and local network","IP address, MAC address, subnet and gateway","Private/public IP addresses; IPv4 and IPv6","DNS and DHCP","TCP, UDP, ports and common services","HTTP, HTTPS and TLS: overview","Firewalls and traffic flow","Reading a simple network diagram and a sample packet capture"],"python":["Checking and organising IP-address data","Summarising saved network observations and packet metadata"]},
-  {"week":3,"title":"Windows, Linux and a learning lab","topics":["Windows and Linux security basics","Files, directories, processes and services","Users, groups, administrator/root and least privilege","File permissions and ownership","Terminal basics and reading system information","System/application logs and timestamps","Updates, software sources and endpoint protection","Virtual machines, snapshots and isolated lab networking","Personal device security checklist"],"python":["Collecting an approved inventory of files and system information","Organising local log records and configuration data"]},
-  {"week":4,"title":"Accounts, identity and data protection","topics":["Authentication versus authorisation","Passwords, passphrases and password managers","MFA, passkeys and account recovery","Session, token and access permission basics","Phishing indicators and social engineering awareness","Encryption versus hashing versus encoding","File checksums versus password hashing","TLS certificates and secure connections","Backups, recovery tests and sensitive-data handling"],"python":["File-integrity checks and comparison reports","Identifying accidental sensitive-data exposure in approved sample data"]},
-  {"week":5,"title":"Web and application security foundations","topics":["Browser/server requests, responses and HTTP status codes","Headers, cookies, sessions and login flow","Frontend, backend, API and database boundaries","Input validation and output encoding","Access control and broken-access-control awareness","SQL injection and parameterised-query awareness","XSS and CSRF awareness","OWASP Top 10 2025: beginner overview","Following a request through an intentionally designed local training app"],"python":["Organising approved API/HTTP response information","Supporting input checks and repeatable security tests"]},
-  {"week":6,"title":"Security controls and vulnerability management","topics":["Security baseline and configuration hardening","Patch/update management and software inventory","Vulnerability, CVE, severity and prioritisation","Exposure versus exploitable weakness","Firewall rules, network segmentation and endpoint controls","Cloud accounts and shared-responsibility basics","Public/private repositories and secret exposure","Backup verification and recovery planning","Documenting findings, evidence and remediation"],"python":["Comparing inventory/configuration records with a known baseline","Combining and prioritising vulnerability findings in reports"]},
-  {"week":7,"title":"Monitoring, incidents and evidence","topics":["Security monitoring and the SOC role","Logs, events, alerts and SIEM: overview","Normal behaviour, suspicious patterns and false positives","Login, endpoint, application and network log sources","Timestamps, time zones and event timelines","Incident triage, containment and communication","Recovery and lessons learned","Evidence preservation and file-integrity records","Reviewing a simulated incident using prepared sample logs"],"python":["Sorting/correlating log events and counting suspicious patterns","Preparing incident timelines and evidence summaries"]},
-  {"week":8,"title":"Connect the foundations and review","topics":["Review: assets, threats, vulnerabilities and controls","Trace one login/request from device to server","Review personal accounts, updates, backups and permissions","Map controls to govern, identify, protect, detect, respond and recover","Review sample network, endpoint and application logs together","Write a small security assessment of your own learning lab","Prepare an incident response and recovery checklist","Collect a glossary, network diagram and sample findings report","Identify weak areas before choosing the next learning stage"],"python":["Connecting inventory, integrity and log-analysis automation","Reducing repetitive security work and producing consistent reports"]}
+  {
+    "week": 1,
+    "title": "Cybersecurity from scratch",
+    "topics": [
+      "Cybersecurity भनेको के हो र यसको काम के हो",
+      "Computer, operating system, applications, files and data",
+      "Devices, accounts and information as assets",
+      "Confidentiality, integrity and availability",
+      "Threat, vulnerability, risk and security control",
+      "Malware, phishing, scams and data breaches: overview",
+      "Prevention, detection, response and recovery",
+      "Defensive security, application security and authorised testing",
+      "Practice permission, scope and a separate learning lab"
+    ],
+    "python": [
+      "Device/file inventory automation",
+      "Organising security information and simple reports"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "What cybersecurity is",
+        "topics": [
+          "Cybersecurity भनेको के हो र यसको काम के हो",
+          "Computer, operating system, applications, files and data"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "Assets and CIA",
+        "topics": [
+          "Devices, accounts and information as assets",
+          "Confidentiality, integrity and availability"
+        ],
+        "python": [
+          "Device/file inventory automation"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Threats, vulnerabilities and risk",
+        "topics": [
+          "Threat, vulnerability, risk and security control"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Common cyber threats",
+        "topics": [
+          "Malware, phishing, scams and data breaches: overview"
+        ],
+        "python": []
+      },
+      {
+        "day": 5,
+        "focus": "How security works",
+        "topics": [
+          "Prevention, detection, response and recovery",
+          "Defensive security, application security and authorised testing"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Learning scope and lab",
+        "topics": [
+          "Practice permission, scope and a separate learning lab"
+        ],
+        "python": [
+          "Organising security information and simple reports"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 1 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
+    ]
+  },
+  {
+    "week": 2,
+    "title": "How the internet and networks work",
+    "topics": [
+      "Client, server, browser and internet request journey",
+      "Router, switch, Wi-Fi and local network",
+      "IP address, MAC address, subnet and gateway",
+      "Private/public IP addresses; IPv4 and IPv6",
+      "DNS and DHCP",
+      "TCP, UDP, ports and common services",
+      "HTTP, HTTPS and TLS: overview",
+      "Firewalls and traffic flow",
+      "Reading a simple network diagram and a sample packet capture"
+    ],
+    "python": [
+      "Checking and organising IP-address data",
+      "Summarising saved network observations and packet metadata"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Internet and local networks",
+        "topics": [
+          "Client, server, browser and internet request journey",
+          "Router, switch, Wi-Fi and local network"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "Network addresses",
+        "topics": [
+          "IP address, MAC address, subnet and gateway",
+          "Private/public IP addresses; IPv4 and IPv6"
+        ],
+        "python": [
+          "Checking and organising IP-address data"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "DNS and DHCP",
+        "topics": [
+          "DNS and DHCP"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Protocols, ports and services",
+        "topics": [
+          "TCP, UDP, ports and common services"
+        ],
+        "python": []
+      },
+      {
+        "day": 5,
+        "focus": "HTTPS and firewalls",
+        "topics": [
+          "HTTP, HTTPS and TLS: overview",
+          "Firewalls and traffic flow"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Diagrams and sample traffic",
+        "topics": [
+          "Reading a simple network diagram and a sample packet capture"
+        ],
+        "python": [
+          "Summarising saved network observations and packet metadata"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 2 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
+    ]
+  },
+  {
+    "week": 3,
+    "title": "Windows, Linux and a learning lab",
+    "topics": [
+      "Windows and Linux security basics",
+      "Files, directories, processes and services",
+      "Users, groups, administrator/root and least privilege",
+      "File permissions and ownership",
+      "Terminal basics and reading system information",
+      "System/application logs and timestamps",
+      "Updates, software sources and endpoint protection",
+      "Virtual machines, snapshots and isolated lab networking",
+      "Personal device security checklist"
+    ],
+    "python": [
+      "Collecting an approved inventory of files and system information",
+      "Organising local log records and configuration data"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Windows/Linux and running software",
+        "topics": [
+          "Windows and Linux security basics",
+          "Files, directories, processes and services"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "Users and file permissions",
+        "topics": [
+          "Users, groups, administrator/root and least privilege",
+          "File permissions and ownership"
+        ],
+        "python": [
+          "Collecting an approved inventory of files and system information"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Terminal basics",
+        "topics": [
+          "Terminal basics and reading system information"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Logs and timestamps",
+        "topics": [
+          "System/application logs and timestamps"
+        ],
+        "python": [
+          "Organising local log records and configuration data"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Updates and a learning lab",
+        "topics": [
+          "Updates, software sources and endpoint protection",
+          "Virtual machines, snapshots and isolated lab networking"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Personal device security",
+        "topics": [
+          "Personal device security checklist"
+        ],
+        "python": []
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 3 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
+    ]
+  },
+  {
+    "week": 4,
+    "title": "Accounts, identity and data protection",
+    "topics": [
+      "Authentication versus authorisation",
+      "Passwords, passphrases and password managers",
+      "MFA, passkeys and account recovery",
+      "Session, token and access permission basics",
+      "Phishing indicators and social engineering awareness",
+      "Encryption versus hashing versus encoding",
+      "File checksums versus password hashing",
+      "TLS certificates and secure connections",
+      "Backups, recovery tests and sensitive-data handling"
+    ],
+    "python": [
+      "File-integrity checks and comparison reports",
+      "Identifying accidental sensitive-data exposure in approved sample data"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Identity and passwords",
+        "topics": [
+          "Authentication versus authorisation",
+          "Passwords, passphrases and password managers"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "MFA, sessions and permissions",
+        "topics": [
+          "MFA, passkeys and account recovery",
+          "Session, token and access permission basics"
+        ],
+        "python": []
+      },
+      {
+        "day": 3,
+        "focus": "Phishing awareness",
+        "topics": [
+          "Phishing indicators and social engineering awareness"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Encryption, hashing and encoding",
+        "topics": [
+          "Encryption versus hashing versus encoding"
+        ],
+        "python": [
+          "File-integrity checks and comparison reports"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Checksums and secure connections",
+        "topics": [
+          "File checksums versus password hashing",
+          "TLS certificates and secure connections"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Backups and sensitive data",
+        "topics": [
+          "Backups, recovery tests and sensitive-data handling"
+        ],
+        "python": [
+          "Identifying accidental sensitive-data exposure in approved sample data"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 4 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
+    ]
+  },
+  {
+    "week": 5,
+    "title": "Web and application security foundations",
+    "topics": [
+      "Browser/server requests, responses and HTTP status codes",
+      "Headers, cookies, sessions and login flow",
+      "Frontend, backend, API and database boundaries",
+      "Input validation and output encoding",
+      "Access control and broken-access-control awareness",
+      "SQL injection and parameterised-query awareness",
+      "XSS and CSRF awareness",
+      "OWASP Top 10 2025: beginner overview",
+      "Following a request through an intentionally designed local training app"
+    ],
+    "python": [
+      "Organising approved API/HTTP response information",
+      "Supporting input checks and repeatable security tests"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Web requests and login flow",
+        "topics": [
+          "Browser/server requests, responses and HTTP status codes",
+          "Headers, cookies, sessions and login flow"
+        ],
+        "python": [
+          "Organising approved API/HTTP response information"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Application boundaries and input",
+        "topics": [
+          "Frontend, backend, API and database boundaries",
+          "Input validation and output encoding"
+        ],
+        "python": []
+      },
+      {
+        "day": 3,
+        "focus": "Access control",
+        "topics": [
+          "Access control and broken-access-control awareness"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Injection awareness",
+        "topics": [
+          "SQL injection and parameterised-query awareness"
+        ],
+        "python": [
+          "Supporting input checks and repeatable security tests"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Browser risks and OWASP overview",
+        "topics": [
+          "XSS and CSRF awareness",
+          "OWASP Top 10 2025: beginner overview"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "A local request journey",
+        "topics": [
+          "Following a request through an intentionally designed local training app"
+        ],
+        "python": []
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 5 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
+    ]
+  },
+  {
+    "week": 6,
+    "title": "Security controls and vulnerability management",
+    "topics": [
+      "Security baseline and configuration hardening",
+      "Patch/update management and software inventory",
+      "Vulnerability, CVE, severity and prioritisation",
+      "Exposure versus exploitable weakness",
+      "Firewall rules, network segmentation and endpoint controls",
+      "Cloud accounts and shared-responsibility basics",
+      "Public/private repositories and secret exposure",
+      "Backup verification and recovery planning",
+      "Documenting findings, evidence and remediation"
+    ],
+    "python": [
+      "Comparing inventory/configuration records with a known baseline",
+      "Combining and prioritising vulnerability findings in reports"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Security baselines and updates",
+        "topics": [
+          "Security baseline and configuration hardening",
+          "Patch/update management and software inventory"
+        ],
+        "python": [
+          "Comparing inventory/configuration records with a known baseline"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Vulnerabilities, prioritisation and exposure",
+        "topics": [
+          "Vulnerability, CVE, severity and prioritisation",
+          "Exposure versus exploitable weakness"
+        ],
+        "python": []
+      },
+      {
+        "day": 3,
+        "focus": "Network and endpoint controls",
+        "topics": [
+          "Firewall rules, network segmentation and endpoint controls"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Cloud accounts and responsibility",
+        "topics": [
+          "Cloud accounts and shared-responsibility basics"
+        ],
+        "python": []
+      },
+      {
+        "day": 5,
+        "focus": "Repository security and backups",
+        "topics": [
+          "Public/private repositories and secret exposure",
+          "Backup verification and recovery planning"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Findings and remediation",
+        "topics": [
+          "Documenting findings, evidence and remediation"
+        ],
+        "python": [
+          "Combining and prioritising vulnerability findings in reports"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 6 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
+    ]
+  },
+  {
+    "week": 7,
+    "title": "Monitoring, incidents and evidence",
+    "topics": [
+      "Security monitoring and the SOC role",
+      "Logs, events, alerts and SIEM: overview",
+      "Normal behaviour, suspicious patterns and false positives",
+      "Login, endpoint, application and network log sources",
+      "Timestamps, time zones and event timelines",
+      "Incident triage, containment and communication",
+      "Recovery and lessons learned",
+      "Evidence preservation and file-integrity records",
+      "Reviewing a simulated incident using prepared sample logs"
+    ],
+    "python": [
+      "Sorting/correlating log events and counting suspicious patterns",
+      "Preparing incident timelines and evidence summaries"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Monitoring and security events",
+        "topics": [
+          "Security monitoring and the SOC role",
+          "Logs, events, alerts and SIEM: overview"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "Normal behaviour and log sources",
+        "topics": [
+          "Normal behaviour, suspicious patterns and false positives",
+          "Login, endpoint, application and network log sources"
+        ],
+        "python": []
+      },
+      {
+        "day": 3,
+        "focus": "Time and event ordering",
+        "topics": [
+          "Timestamps, time zones and event timelines"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Incident triage",
+        "topics": [
+          "Incident triage, containment and communication"
+        ],
+        "python": [
+          "Sorting/correlating log events and counting suspicious patterns"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Recovery and evidence",
+        "topics": [
+          "Recovery and lessons learned",
+          "Evidence preservation and file-integrity records"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "A simulated incident",
+        "topics": [
+          "Reviewing a simulated incident using prepared sample logs"
+        ],
+        "python": [
+          "Preparing incident timelines and evidence summaries"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 7 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
+    ]
+  },
+  {
+    "week": 8,
+    "title": "Connect the foundations and review",
+    "topics": [
+      "Review: assets, threats, vulnerabilities and controls",
+      "Trace one login/request from device to server",
+      "Review personal accounts, updates, backups and permissions",
+      "Map controls to govern, identify, protect, detect, respond and recover",
+      "Review sample network, endpoint and application logs together",
+      "Write a small security assessment of your own learning lab",
+      "Prepare an incident response and recovery checklist",
+      "Collect a glossary, network diagram and sample findings report",
+      "Identify weak areas before choosing the next learning stage"
+    ],
+    "python": [
+      "Connecting inventory, integrity and log-analysis automation",
+      "Reducing repetitive security work and producing consistent reports"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Foundations and request flow",
+        "topics": [
+          "Review: assets, threats, vulnerabilities and controls",
+          "Trace one login/request from device to server"
+        ],
+        "python": []
+      },
+      {
+        "day": 2,
+        "focus": "Personal security and control review",
+        "topics": [
+          "Review personal accounts, updates, backups and permissions",
+          "Map controls to govern, identify, protect, detect, respond and recover"
+        ],
+        "python": []
+      },
+      {
+        "day": 3,
+        "focus": "Connected logs",
+        "topics": [
+          "Review sample network, endpoint and application logs together"
+        ],
+        "python": []
+      },
+      {
+        "day": 4,
+        "focus": "Learning-lab assessment",
+        "topics": [
+          "Write a small security assessment of your own learning lab"
+        ],
+        "python": [
+          "Connecting inventory, integrity and log-analysis automation"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Recovery planning and portfolio",
+        "topics": [
+          "Prepare an incident response and recovery checklist",
+          "Collect a glossary, network diagram and sample findings report"
+        ],
+        "python": []
+      },
+      {
+        "day": 6,
+        "focus": "Next-stage readiness",
+        "topics": [
+          "Identify weak areas before choosing the next learning stage"
+        ],
+        "python": [
+          "Reducing repetitive security work and producing consistent reports"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review & rest",
+        "topics": [
+          "Review Week 8 topics",
+          "Review this week’s terms and connections",
+          "Revisit topics that are still unclear"
+        ],
+        "python": []
+      }
+    ]
+  }
 ]
