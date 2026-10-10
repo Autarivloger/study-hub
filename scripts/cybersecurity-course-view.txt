@@ -1,4 +1,23 @@
 let cyberPage = {mode:"overview", week:1, day:1};
+function cyberLessonHtml(lesson, context){
+  const checks = lesson.checks.map(function(item, index){
+    const id = tryCount++;
+    return '<div class="ls-try cyber-check"><div class="ls-try-q">' +
+      '<span class="cyber-check-number">Question ' + (index+1) + '</span>' + escapeHtml(item.q) + '</div>' +
+      '<button type="button" class="btn secondary btn-sm" data-reveal="' + id + '">Show answer</button>' +
+      '<div class="ls-try-a" id="tryA' + id + '" hidden><div class="ls-try-ans">' + escapeHtml(item.a) +
+      '</div><div class="ls-try-why">' + escapeHtml(item.why) + '</div></div></div>';
+  }).join('');
+  // Reading uses the shared teaching styles. Day notes use the existing headNotes map.
+  return '<article class="cyber-teaching"><div class="ls-obj"><div class="ls-obj-lab">What you will be able to do</div>' +
+    '<div class="ls-obj-text">' + escapeHtml(lesson.objective) + '</div></div>' +
+    '<button type="button" class="btn secondary btn-sm" data-cyber-notes>My day notes ↓</button>' +
+    renderSections(lesson.sections) +
+    '<section class="cyber-checks" aria-label="Check your understanding"><h3 class="ls-h">Try before revealing the answers</h3>' +
+    '<p class="ls-p">Answer in your own words, then compare your reasoning. These are learning checks, not a timed test.</p>' + checks + '</section></article>' +
+    '<section id="cyberDayNotes" class="cyber-day-notes" aria-label="Day notes">' +
+    renderSections([{t:"h",v:"Day Notes",noteKey:context+"|day-notes"},{t:"p",v:lesson.reflection}],context) + '</section>';
+}
 function renderCybersecurityRoadmap(){
   const body = document.getElementById("cybersecurityBody");
   document.getElementById("backBtn").style.display = "none";
@@ -22,7 +41,7 @@ function renderCybersecurityRoadmap(){
     content = '<button type="button" class="back-link" data-cyber-all>← All weeks</button>' +
       '<div class="week-header"><div class="wh-eyebrow">Week ' + week.week + ' · Cybersecurity</div>' +
       '<h2>' + escapeHtml(week.title) + '</h2></div>' +
-      '<div class="section-label">Daily roadmap</div><div class="day-list">' +
+      '<div class="section-label">' + (week.week===1 ? 'Daily lessons' : 'Daily roadmap') + '</div><div class="day-list">' +
       week.days.map(function(day){
         return '<div class="day-row"><button type="button" class="day-open" data-cyber-day="' + day.day + '">' +
           '<div class="dr-title">Day ' + day.day + '</div><div class="dr-meta">' +
@@ -32,11 +51,13 @@ function renderCybersecurityRoadmap(){
     const day = week.days.find(function(item){ return item.day===cyberPage.day; }) || week.days[0];
     cyberPage.day = day.day;
     const position = (week.week-1)*7 + day.day-1;
+    const lesson = CYBERSECURITY_TEACH[week.week+"."+day.day];
     content = '<button type="button" class="back-link" data-cyber-week="' + week.week + '">← Week ' + week.week + '</button>' +
       '<div class="week-header"><div class="wh-eyebrow">Week ' + week.week + ' · Day ' + day.day + ' of 7</div>' +
       '<h2>Day ' + day.day + '</h2><p class="wh-goal">' + escapeHtml(day.focus) + '</p></div>' +
-      '<section class="cyber-day-topics"><h3>आज यी विषय पढ्नुहोस्</h3><ul class="ex-list">' +
+      '<section class="cyber-day-topics"><h3>What to study today</h3><ul class="ex-list">' +
       day.topics.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') + '</ul></section>' +
+      (lesson ? cyberLessonHtml(lesson,"cyber:"+week.week+"."+day.day) : '') +
       (day.python.length ? '<section class="cyber-python"><h3>Where Python helps</h3><ul class="ex-list">' +
         day.python.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') + '</ul></section>' : '') +
       '<div class="cyber-day-navigation"><button type="button" class="btn secondary" data-cyber-step="-1"' +
@@ -47,8 +68,23 @@ function renderCybersecurityRoadmap(){
   body.innerHTML = content +
     '<div class="cyber-footer"><div class="cyber-references">References: ' +
     '<a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener noreferrer">NIST</a> · ' +
-    '<a href="https://owasp.org/projects/top-ten" target="_blank" rel="noopener noreferrer">OWASP</a></div>' +
+    '<a href="https://owasp.org/projects/top-ten" target="_blank" rel="noopener noreferrer">OWASP</a>' +
+    (cyberPage.mode==="day" && week.week===1 ? ' · <a href="https://consumer.ftc.gov/articles/how-recognize-avoid-phishing-scams" target="_blank" rel="noopener noreferrer">FTC: phishing</a> · <a href="https://www.ncsc.gov.uk/collection/top-tips-for-staying-secure-online" target="_blank" rel="noopener noreferrer">NCSC: online security</a>' : '') + '</div>' +
     '<button type="button" class="btn secondary btn-sm" id="cyberOldQuizzes">Previous quizzes</button></div>';
+  wireRevealButtons(body);
+  wireHeadNotes(body);
+  const notes = body.querySelector("#cyberDayNotes");
+  if(notes){
+    const box=notes.querySelector(".hn-box"),button=notes.querySelector("[data-hn]"),textarea=notes.querySelector("textarea");
+    box.hidden=false;
+    button.classList.add("open");
+    textarea.setAttribute("aria-label","Notes for Cybersecurity Week "+week.week+" Day "+cyberPage.day);
+    textarea.placeholder="Write your understanding, examples and questions. Do not record passwords or tokens here.";
+    body.querySelector("[data-cyber-notes]").onclick=function(){
+      box.hidden=false;button.classList.add("open");
+      notes.scrollIntoView({block:"center"});textarea.focus({preventScroll:true});
+    };
+  }
   function update(){ renderCybersecurityRoadmap(); body.scrollIntoView({block:"start"}); }
   body.querySelectorAll("[data-cyber-all]").forEach(function(button){
     button.onclick = function(){ cyberPage.mode="overview"; update(); };

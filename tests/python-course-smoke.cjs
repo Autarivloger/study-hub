@@ -44,6 +44,35 @@ async function main(){
     assert(await evalJs('!document.querySelector("#cybersecurityBody").hidden && document.querySelector("#legacyQuizArea").hidden'),'Roadmap return failed');
   }
 
+  if(await evalJs('typeof CYBERSECURITY_TEACH!=="undefined"')){
+    await evalJs('switchView("quiz")');
+    for(let day=1;day<=7;day++){
+      await evalJs('cyberPage={mode:"day",week:1,day:'+day+'};renderCybersecurityRoadmap()');
+      assert(await evalJs('document.querySelectorAll(".cyber-teaching>.ls-h").length>=4 && document.querySelectorAll(".cyber-check").length===CYBERSECURITY_TEACH["1.'+day+'"].checks.length'),'Week1 teaching incomplete '+day);
+      assert(await evalJs('!/[\\u0900-\\u097f]/.test(document.querySelector("#cybersecurityBody").textContent)'),'Week1 lesson not English '+day);
+      assert(await evalJs('!document.querySelector("#cyberDayNotes .hn-box").hidden && document.querySelector("#cyberDayNotes textarea").getAttribute("aria-label").endsWith("Day '+day+'")'),'Day notes not visible/labeled '+day);
+      await evalJs('document.querySelector("[data-reveal]").click()');
+      assert(await evalJs('!document.querySelector(".cyber-check .ls-try-a").hidden && document.querySelector(".cyber-check .ls-try-why").textContent.length>30'),'Answer/reasoning reveal failed '+day);
+      await evalJs('document.querySelector("[data-reveal]").click()');
+      assert(await evalJs('document.querySelector(".cyber-check .ls-try-a").hidden'),'Answer hide failed '+day);
+      await evalJs('(()=>{const ta=document.querySelector("#cyberDayNotes textarea");ta.value="Cyber day '+day+' note <script>literal text</script>";ta.dispatchEvent(new Event("input",{bubbles:true}));})()');await sleep(600);
+      assert(await evalJs('DB.headNotes["cyber:1.'+day+'|day-notes"].startsWith("Cyber day '+day+' note")'),'Note saving failed '+day);
+      await evalJs('document.querySelector("#cyberDayNotes [data-hn]").click()');
+      assert(await evalJs('document.querySelector("#cyberDayNotes .hn-box").hidden'),'Note hide failed');
+      await evalJs('document.querySelector("[data-cyber-notes]").click()');
+      assert(await evalJs('!document.querySelector("#cyberDayNotes .hn-box").hidden && document.activeElement===document.querySelector("#cyberDayNotes textarea")'),'Jump/show note failed');
+    }
+    await evalJs('cyberPage={mode:"day",week:1,day:1};renderCybersecurityRoadmap();document.querySelector("[data-hn-all=close]").click()');
+    assert(await evalJs('document.querySelector("#cyberDayNotes .hn-box").hidden'),'Hide all notes failed');
+    await evalJs('document.querySelector("[data-hn-all=open]").click()');
+    assert(await evalJs('!document.querySelector("#cyberDayNotes .hn-box").hidden && document.querySelector("#cyberDayNotes textarea").value.includes("<script>literal text</script>")'),'Show/restored escaped notes failed');
+    await evalJs('(()=>{const ta=document.querySelector("#cyberDayNotes textarea");ta.value="";ta.dispatchEvent(new Event("input",{bubbles:true}));})()');await sleep(600);
+    assert(await evalJs('!("cyber:1.1|day-notes" in DB.headNotes) && DB.headNotes["cyber:1.2|day-notes"]'),'Delete note affected other day');
+    await send('Page.reload',{ignoreCache:true});for(let i=0;i<50;i++){if(await evalJs('Boolean(window.__studyHubBooted)'))break;await sleep(100);}
+    await evalJs('switchView("quiz");cyberPage={mode:"day",week:1,day:2};renderCybersecurityRoadmap()');
+    assert(await evalJs('document.querySelector("#cyberDayNotes textarea").value.startsWith("Cyber day 2 note") && DB.headNotes["cyber:1.7|day-notes"]'),'Cyber notes did not survive reload');
+  }
+
   // Real mouse input: plain reading text supports drag selection; reveal
   // labels act as controls, not selectable reading text.
   await evalJs('jpPage={mode:"lesson",week:1,lesson:"1.1"};switchView("japanese");renderJapanese();');
@@ -147,8 +176,12 @@ async function main(){
   if(await evalJs('typeof CYBERSECURITY_ROADMAP!=="undefined"')){
     await evalJs('(()=>{switchView("quiz");for(let n=0;n<2;n++){document.querySelector("#themeBtn").click();for(const w of CYBERSECURITY_ROADMAP){cyberPage={mode:"week",week:w.week,day:1};renderCybersecurityRoadmap();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Cyber week mobile overflow");for(const d of w.days){cyberPage={mode:"day",week:w.week,day:d.day};renderCybersecurityRoadmap();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Cyber day mobile overflow");}}}document.querySelector("#cyberOldQuizzes").click();document.querySelector("#quizList [data-id=cyber-legacy]").click();document.querySelector("#cyberBack").click();if(document.querySelector("#backBtn").style.display!=="none")throw Error("Stale mobile back button");cyberPage={mode:"week",week:1,day:1};renderCybersecurityRoadmap();})()');
     assert(await evalJs('DB.quizzes.some(q=>q.id==="cyber-legacy" && q.lastScore===67)'),'Old quizzes failed refresh');
+    await evalJs('cyberPage={mode:"day",week:1,day:1};renderCybersecurityRoadmap();window.scrollTo(0,0)');
     const cyberShot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
     fs.writeFileSync(path.join(os.tmpdir(),'studyhub-cybersecurity-mobile.png'),Buffer.from(cyberShot.data,'base64'));
+    await evalJs('document.querySelector("[data-cyber-notes]").click()');
+    const cyberNotesShot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+    fs.writeFileSync(path.join(os.tmpdir(),'studyhub-cybersecurity-notes-mobile.png'),Buffer.from(cyberNotesShot.data,'base64'));
   }
   if(await evalJs('Boolean(DAY_TEACH["22.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("22."+d).length;p++){courseView={mode:"day",week:22,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week22 mobile overflow "+d+"."+p);}}})()');
   if(await evalJs('Boolean(DAY_TEACH["23.0"])'))await evalJs('(()=>{switchView("course");for(let theme=0;theme<2;theme++){document.querySelector("#themeBtn").click();for(let d=0;d<6;d++)for(let p=0;p<dayParts("23."+d).length;p++){courseView={mode:"day",week:23,dayIdx:d,part:p};renderCourseDay();if(document.documentElement.scrollWidth>window.innerWidth+1)throw Error("Week23 mobile overflow "+d+"."+p);}}})()');

@@ -3,7 +3,7 @@
     "week": 1,
     "title": "Cybersecurity from scratch",
     "topics": [
-      "Cybersecurity भनेको के हो र यसको काम के हो",
+      "What cybersecurity is and what it protects",
       "Computer, operating system, applications, files and data",
       "Devices, accounts and information as assets",
       "Confidentiality, integrity and availability",
@@ -22,7 +22,7 @@
         "day": 1,
         "focus": "What cybersecurity is",
         "topics": [
-          "Cybersecurity भनेको के हो र यसको काम के हो",
+          "What cybersecurity is and what it protects",
           "Computer, operating system, applications, files and data"
         ],
         "python": []

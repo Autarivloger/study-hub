@@ -16,7 +16,7 @@ async function main(){
  await evaluate('document.querySelector("#sidebar [data-view=lessons]").click()');
  assert(await evaluate('document.querySelector("#brandTitle").textContent==="Yoga & Meditation" && document.querySelectorAll(".yoga-card").length===7'),'Yoga tab/home failed');
  assert(await evaluate('(()=>{for(const item of YOGA_COURSE.sessions)for(const duration of [20,30])if(yogaStages(item,duration).reduce((n,s)=>n+s.minutes,0)!==duration)return false;return true;})()'),'Suggested times do not add up');
- await evaluate('DB.course.done["1.0"]="2025-01-01";DB.japanese.done["1.1"]="2025-01-01";DB.headNotes.legacy="Old note";save();');
+ await evaluate('DB.course.done["1.0"]="2025-01-01";DB.japanese.done["1.1"]="2025-01-01";DB.headNotes.legacy="Old note";DB.headNotes["cyber:1.3|day-notes"]="Risk is contextual";save();');
  for(let day=1;day<=7;day++){
   await evaluate('yogaPage={mode:"session",id:"yoga:intermediate:1.'+day+'",duration:20};renderLessons()');
   assert(await evaluate('document.querySelectorAll(".yoga-stages>li").length===8 && document.querySelectorAll(".yoga-guide").length>=4'),'Session '+day+' missing guidance');
@@ -44,12 +44,15 @@ async function main(){
  // Exercise the existing backup download and file import UI with isolated test data.
  await evaluate('window.__yogaBlob=null;window.__oldURL=URL.createObjectURL;URL.createObjectURL=function(blob){window.__yogaBlob=blob;return window.__oldURL(blob);};document.querySelector("#exportBtn").click()');
  const backup=await evaluate('window.__yogaBlob.text()');assert(JSON.parse(backup).lessonsDone['yoga:intermediate:1.1'],'Export lost Yoga progress');
- await evaluate('delete DB.lessonsDone["yoga:intermediate:1.1"];delete DB.headNotes["yoga:intermediate:1.1|reflection"];save();');
+ assert(JSON.parse(backup).headNotes['cyber:1.3|day-notes']==='Risk is contextual','Export lost cybersecurity notes');
+ await evaluate('delete DB.lessonsDone["yoga:intermediate:1.1"];delete DB.headNotes["yoga:intermediate:1.1|reflection"];delete DB.headNotes["cyber:1.3|day-notes"];save();');
  await evaluate('(()=>{const file=new File(['+JSON.stringify(backup)+'],"yoga-backup.json",{type:"application/json"});const dt=new DataTransfer();dt.items.add(file);const input=document.querySelector("#importFile");input.files=dt.files;input.dispatchEvent(new Event("change",{bubbles:true}));})()');
  for(let i=0;i<40;i++){if(await evaluate('Boolean(document.querySelector("#impMerge"))'))break;await sleep(100);}await evaluate('document.querySelector("#impMerge").click()');
  assert(await evaluate('lessonDone("yoga:intermediate:1.1") && DB.headNotes["yoga:intermediate:1.1|reflection"] && DB.course.done["1.0"] && DB.japanese.done["1.1"] && DB.headNotes.legacy==="Old note"'),'Merge import lost Yoga or legacy data');
+ assert(await evaluate('DB.headNotes["cyber:1.3|day-notes"]==="Risk is contextual"'),'Merge import lost cybersecurity notes');
  await evaluate('confirmMerge('+JSON.stringify(JSON.parse(backup))+');document.querySelector("#impReplace").click()');assert(await evaluate('lessonDone("yoga:intermediate:1.1") && DB.lessonQuizScores["yoga:quiz:1.7"]===100'),'Replace import lost Yoga data');
  assert(await evaluate('migrateCompletedToReviews()===false'),'Unknown Yoga keys trigger endless Python review migration');
+ assert(await evaluate('DB.headNotes["cyber:1.3|day-notes"]==="Risk is contextual"'),'Replace import lost cybersecurity notes');
  for(const width of [375,768,1280]){
   await send('Emulation.setDeviceMetricsOverride',{width,height:812,deviceScaleFactor:1,mobile:width<600});
   for(let theme=0;theme<2;theme++){
