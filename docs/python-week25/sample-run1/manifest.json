@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "source": "own-practice-catalogue",
+  "complete": true,
+  "captured_at": "2026-10-12T12:00:00Z",
+  "pages": [
+    "page1.html",
+    "page2.html"
+  ]
+}
