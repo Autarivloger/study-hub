@@ -37512,6 +37512,2958 @@ const DAY_TEACH = {
     }
   ]
 },
+"27.0": {
+  "parts": [
+    {
+      "title": "1. Lists and arrays solve different problems",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Lists and arrays solve different problems"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Create a numerical array and distinguish list repetition from element-wise arithmetic."
+        },
+        {
+          "t": "new",
+          "v": "NumPy; import numpy as np",
+          "note": "NumPy is an installed numerical-computing library. np is the conventional alias, not a Python keyword."
+        },
+        {
+          "t": "new",
+          "v": "dtype=np.int64",
+          "note": "dtype selects the array's stored numerical type. np.int64 is a signed 64-bit integer type; these small whole-number examples use it explicitly for predictable storage. Day2 explains range, overflow and floating alternatives."
+        },
+        {
+          "t": "sh",
+          "v": "python -m pip install numpy",
+          "note": "One-time setup in your practice Python environment. The site and authored examples remain offline afterward; use NumPy2.x for these verified examples."
+        },
+        {
+          "t": "new",
+          "v": "ndarray; np.array; homogeneous dtype",
+          "note": "An ndarray stores an N-dimensional array with a common dtype. np.array constructs one from supplied data; a Python list remains a general-purpose container."
+        },
+        {
+          "t": "new",
+          "v": "tolist",
+          "note": "tolist converts array data to nested ordinary Python lists/scalars. We use it to make lesson output easy to read; conversion is not needed for numerical computation."
+        },
+        {
+          "t": "p",
+          "v": "Week 26 automated jobs; Week 27 starts numerical work. Python lists are excellent for general collections, but multiplying a list by 2 repeats it. Multiplying a numerical array by 2 applies arithmetic to each element. That change in meaning is the first thing to understand, not just memorize. Use Python 3.11+ and NumPy 2.x in a practice environment; installation initially needs internet, while this course and its supplied examples work offline afterward. Arrays are not always a better replacement for lists. Choose them for structured numerical data and operations that benefit from array semantics."
+        },
+        {
+          "t": "syn",
+          "v": "import numpy as np\nvalues = np.array([10, 20, 30], dtype=np.int64)\nresult = values * 2",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nvalues = [10, 20, 30]\narray = np.array(values, dtype=np.int64)\nprint(\"List:\", values * 2)\nprint(\"Array:\", (array * 2).tolist())\nprint(\"Original:\", array.tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "List: [10, 20, 30, 10, 20, 30]\nArray: [20, 40, 60]\nOriginal: [10, 20, 30]"
+        },
+        {
+          "t": "p",
+          "v": "List दोहोरियो, array का प्रत्येक संख्या double भए। array * 2 ले नयाँ result बनायो; original array बदलिएको छैन। np Python keyword होइन, import को छोटो नाम हो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "[10, 20, 30] * 2  # assume numeric doubling",
+          "right": "np.array([10, 20, 30], dtype=np.int64) * 2",
+          "why": "List multiplication repeats the sequence; numerical ndarray multiplication is element-wise."
+        },
+        {
+          "t": "ex",
+          "v": "Convert [5,10,15] to an array and add 3 to every entry.",
+          "practiceId": "27.0.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([5, 10, 15], dtype=np.int64)\nprint((values + 3).tolist())\n",
+          "out": "[8, 13, 18]",
+          "why": "Build check: Choose the right container. A numerical array changes arithmetic semantics; aliasing and mutation still matter."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Show that two array references differ from a newly computed result.",
+          "practiceId": "27.0.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\na = np.array([1, 2], dtype=np.int64)\nsame = a\nresult = a + 1\nprint(same is a, result is a)\nprint(a.tolist(), result.tolist())\n",
+          "out": "True False\n[1, 2] [2, 3]",
+          "why": "Challenge check: Choose the right container. A numerical array changes arithmetic semantics; aliasing and mutation still matter."
+        },
+        {
+          "t": "try",
+          "q": "What does [1,2] * 2 do?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Repeats the list",
+          "why": "List multiplication repeats the sequence."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.0.0",
+            "quiz": [
+              {
+                "q": "What does [1,2] * 2 do?",
+                "options": [
+                  "Repeats the list",
+                  "Doubles each number",
+                  "Changes its dtype"
+                ],
+                "correct": 0,
+                "why": "List multiplication repeats the sequence."
+              },
+              {
+                "q": "Is np a Python keyword?",
+                "options": [
+                  "Only after pip install",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "It is an import alias chosen by convention."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Choose the right container. A numerical array changes arithmetic semantics; aliasing and mutation still matter."
+        }
+      ]
+    },
+    {
+      "title": "2. Shape, dimensions, size and axes",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Shape, dimensions, size and axes"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Read a numerical table's shape before indexing or reducing it."
+        },
+        {
+          "t": "new",
+          "v": "shape; ndim; size",
+          "note": "shape is a tuple of axis lengths, ndim is the number of axes and size is the total number of elements. len(array) describes its first axis, not its total size."
+        },
+        {
+          "t": "new",
+          "v": "Axis and semantic meaning",
+          "note": "An axis is a dimension in the array. For our score tables axis 0 indexes students and axis 1 indexes assignments; NumPy itself does not know those names."
+        },
+        {
+          "t": "new",
+          "v": "Rectangular numeric data",
+          "note": "A normal two-dimensional numeric array needs consistent row lengths. Ragged nested lists do not become a sensible rectangular score table automatically."
+        },
+        {
+          "t": "p",
+          "v": "A 3-by-2 score table means three students and two assignments only because we define those meanings. Read shape=(3,2) from left to right: axis 0 length 3, axis 1 length 2. It contains six numbers and has two dimensions. A shape of (6,) means one axis, not six rows and one column. (6,1) is a different two-dimensional arrangement. Check shape at boundaries, especially when reading a single CSV row or column. Do not infer semantics from element count alone."
+        },
+        {
+          "t": "syn",
+          "v": "scores.shape -> (students, assignments)\nscores.ndim -> number of axes\nscores.size -> total entries",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nscores = np.array([[60, 70], [80, 90], [40, 50]], dtype=np.int64)\nprint(\"Shape:\", scores.shape)\nprint(\"Dimensions:\", scores.ndim)\nprint(\"Elements:\", scores.size)\nprint(\"len:\", len(scores))\n"
+        },
+        {
+          "t": "out",
+          "v": "Shape: (3, 2)\nDimensions: 2\nElements: 6\nlen: 3"
+        },
+        {
+          "t": "p",
+          "v": "तीन students × दुई assignments = छ elements। len(scores) चाहिँ first axis को length 3 हो। Axis लाई student/assignment भन्ने अर्थ हामीले दिएका हौँ; NumPy ले नाम आफैँ थाहा पाउँदैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "len(scores)  # assume total cell count",
+          "right": "scores.size  # total elements; read shape for each axis length",
+          "why": "len returns the first dimension for a non-scalar array."
+        },
+        {
+          "t": "ex",
+          "v": "Inspect the difference between shape (3,) and shape (3,1).",
+          "practiceId": "27.0.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nflat = np.array([1, 2, 3], dtype=np.int64)\ncolumn = np.array([[1], [2], [3]], dtype=np.int64)\nprint(flat.shape, flat.ndim)\nprint(column.shape, column.ndim)\n",
+          "out": "(3,) 1\n(3, 1) 2",
+          "why": "Build check: Write down axis meaning and inspect shape/ndim/size. One-dimensional and two-dimensional shapes are not interchangeable."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Reject ragged numeric rows instead of constructing a misleading table.",
+          "practiceId": "27.0.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\ntry:\n    np.array([[1, 2], [3]], dtype=np.float64)\nexcept ValueError:\n    print(\"Reject ragged rows\")\n",
+          "out": "Reject ragged rows",
+          "why": "Challenge check: Write down axis meaning and inspect shape/ndim/size. One-dimensional and two-dimensional shapes are not interchangeable."
+        },
+        {
+          "t": "try",
+          "q": "What is size for shape (3,2)?",
+          "code": "# Predict and explain before revealing.",
+          "a": "6",
+          "why": "Total elements are the product of the axis lengths."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.0.1",
+            "quiz": [
+              {
+                "q": "What is size for shape (3,2)?",
+                "options": [
+                  "2",
+                  "6",
+                  "3"
+                ],
+                "correct": 1,
+                "why": "Total elements are the product of the axis lengths."
+              },
+              {
+                "q": "Does NumPy know axis 0 represents students?",
+                "options": [
+                  "Yes",
+                  "Only for floats",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Meaning comes from your data contract."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Write down axis meaning and inspect shape/ndim/size. One-dimensional and two-dimensional shapes are not interchangeable."
+        }
+      ]
+    },
+    {
+      "title": "3. Vectorization: express the operation on a whole array",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Vectorization: express the operation on a whole array"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Replace a simple Python loop with an equivalent numerical array operation."
+        },
+        {
+          "t": "new",
+          "v": "Vectorization",
+          "note": "Express a bulk operation through NumPy array functions/operators so their compiled implementations process the data. It does not mean computation performs no loops internally."
+        },
+        {
+          "t": "new",
+          "v": "Element-wise comparison",
+          "note": "A comparison such as scores >= 60 returns a Boolean array with the same compatible shape, not one overall truth value."
+        },
+        {
+          "t": "new",
+          "v": "np.array_equal",
+          "note": "array_equal compares entire arrays for exact element/shape equality. Approximate floating-point comparisons use a different policy later."
+        },
+        {
+          "t": "p",
+          "v": "Start by writing the rule for one value: adjusted = score + 5. The array expression scores + 5 applies that rule throughout. To validate a rewrite, compare its result with the original loop on a small known input before measuring performance. Vectorization improves clarity when the rule naturally applies to arrays. It can also allocate temporary arrays, so understand memory and dtype. np.vectorize is not the compiled-speed transformation implied by its name; do not use it as a shortcut for understanding array operations."
+        },
+        {
+          "t": "syn",
+          "v": "adjusted = scores + 5\npasses = adjusted >= 60\n# Validate a numerical rewrite against known results",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nvalues = [40, 55, 80]\nloop_result = [value + 5 for value in values]\narray = np.array(values, dtype=np.int64)\nadjusted = array + 5\nprint(adjusted.tolist())\nprint((adjusted >= 60).tolist())\nprint(\"Same result:\", np.array_equal(adjusted, loop_result))\n"
+        },
+        {
+          "t": "out",
+          "v": "[45, 60, 85]\n[False, True, True]\nSame result: True"
+        },
+        {
+          "t": "p",
+          "v": "प्रत्येक value मा +5 लागू भयो। >=60 को result Boolean array हो। Small input मा loop र array result मिलेपछि मात्र numerical rewrite सही छ भन्ने आधार मिल्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "np.vectorize(my_python_function)  # assume compiled numerical speed",
+          "right": "Use actual array operations where their semantics fit",
+          "why": "np.vectorize generally provides convenience around Python calls rather than the performance of a compiled ufunc."
+        },
+        {
+          "t": "ex",
+          "v": "Calculate price times quantity element-wise for three records.",
+          "practiceId": "27.0.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nprices = np.array([10, 20, 30], dtype=np.int64)\nquantities = np.array([2, 1, 3], dtype=np.int64)\nprint((prices * quantities).tolist())\n",
+          "out": "[20, 20, 90]",
+          "why": "Build check: Express the rule clearly and verify equivalence. Vectorized array computation still performs work and can allocate memory; its speed is not a universal guarantee."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify a square-and-add operation against known expected values.",
+          "practiceId": "27.0.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([1, 2, 3], dtype=np.int64)\nresult = values ** 2 + 1\nprint(result.tolist())\nprint(np.array_equal(result, [2, 5, 10]))\n",
+          "out": "[2, 5, 10]\nTrue",
+          "why": "Challenge check: Express the rule clearly and verify equivalence. Vectorized array computation still performs work and can allocate memory; its speed is not a universal guarantee."
+        },
+        {
+          "t": "try",
+          "q": "Does vectorization mean no loops run inside NumPy?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Compiled implementations still iterate over data."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.0.2",
+            "quiz": [
+              {
+                "q": "Does vectorization mean no loops run inside NumPy?",
+                "options": [
+                  "Yes",
+                  "Only for comparisons",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Compiled implementations still iterate over data."
+              },
+              {
+                "q": "What does scores >= 60 return?",
+                "options": [
+                  "A Boolean array",
+                  "Always one bool",
+                  "An SMTP message"
+                ],
+                "correct": 0,
+                "why": "The comparison applies element-wise."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Express the rule clearly and verify equivalence. Vectorized array computation still performs work and can allocate memory; its speed is not a universal guarantee."
+        }
+      ]
+    },
+    {
+      "title": "4. Measure fairly: timing and numeric buffer memory",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Measure fairly: timing and numeric buffer memory"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Benchmark equivalent work without promising a machine-independent speed ratio."
+        },
+        {
+          "t": "new",
+          "v": "timeit; setup versus measured work",
+          "note": "timeit measures repeated execution. Keep data preparation consistently outside or inside both measurements and compare equivalent operations."
+        },
+        {
+          "t": "new",
+          "v": "arange; astype; shares_memory",
+          "note": "This memory experiment uses arange for integer positions, astype to convert to an explicitly wider dtype, and shares_memory to check overlapping array data. Day2 teaches creation/conversion fully; Day3 expands views/copies."
+        },
+        {
+          "t": "new",
+          "v": "itemsize; nbytes",
+          "note": "itemsize is bytes per array element; nbytes is the numeric element-buffer size. It excludes some object overhead and is not a complete process-memory measurement."
+        },
+        {
+          "t": "new",
+          "v": "Benchmark limits",
+          "note": "Hardware, dtype, input size, allocations and library version affect timing. A tiny scalar task can favour plain Python; do not publish invented speed ratios."
+        },
+        {
+          "t": "p",
+          "v": "The curriculum asks you to compare a million values. The example creates equivalent input for a list comprehension and a NumPy operation, checks correctness, then times each three times. Timing values are deliberately not frozen into expected output; they vary by computer. In your own practice inspect list_seconds/array_seconds and repeat the experiment. The example's array uses int64, eight bytes per element, so its element buffer is eight million bytes. That is not the total memory used by Python and the list together. Do not include conversion in one benchmark while excluding setup from the other unless conversion is part of the real workload being compared."
+        },
+        {
+          "t": "syn",
+          "v": "prepare equivalent data\nassert equal results\nlist_seconds = timeit.timeit(list_work, number=3)\narray_seconds = timeit.timeit(array_work, number=3)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nimport timeit\nvalues = list(range(1_000_000))\narray = np.array(values, dtype=np.int64)\nassert np.array_equal([value * 2 for value in values], array * 2)\nlist_seconds = timeit.timeit(lambda: [value * 2 for value in values], number=3)\narray_seconds = timeit.timeit(lambda: array * 2, number=3)\nprint(\"Values:\", array.size)\nprint(\"Buffer bytes:\", array.nbytes)\nprint(\"Measured both:\", list_seconds >= 0 and array_seconds >= 0)\n"
+        },
+        {
+          "t": "out",
+          "v": "Values: 1000000\nBuffer bytes: 8000000\nMeasured both: True"
+        },
+        {
+          "t": "p",
+          "v": "दुवैमा समान doubling काम छ। Timing मापन भयो तर exact seconds output मा fixed छैन। Practice गर्दा variables हेरेर आफ्नै measurement लेख। nbytes numeric buffer मात्र हो, total process memory होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Claim NumPy is always exactly 100 times faster",
+          "right": "Measure equivalent representative workloads and report environment/variability",
+          "why": "Performance depends on workload and environment; no universal ratio follows from the library name."
+        },
+        {
+          "t": "ex",
+          "v": "Inspect how int32 versus int64 changes buffer bytes for four values.",
+          "practiceId": "27.0.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nsmall = np.array([1, 2, 3, 4], dtype=np.int32)\nwide = small.astype(np.int64)\nprint(small.itemsize, small.nbytes)\nprint(wide.itemsize, wide.nbytes)\n",
+          "out": "4 16\n8 32",
+          "why": "Build check: Verify correctness before speed. Keep timing setup fair, inspect memory scope honestly and report measurements rather than fixed performance promises."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Check that creating a new calculation result needs a separate array buffer.",
+          "practiceId": "27.0.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.arange(5, dtype=np.int64)\nresult = values * 2\nprint(\"Shared data:\", np.shares_memory(values, result))\nprint(result.nbytes)\n",
+          "out": "Shared data: False\n40",
+          "why": "Challenge check: Verify correctness before speed. Keep timing setup fair, inspect memory scope honestly and report measurements rather than fixed performance promises."
+        },
+        {
+          "t": "try",
+          "q": "Does nbytes include the whole Python process?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It describes the array's element buffer."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.0.3",
+            "quiz": [
+              {
+                "q": "Does nbytes include the whole Python process?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only on Windows"
+                ],
+                "correct": 0,
+                "why": "It describes the array's element buffer."
+              },
+              {
+                "q": "Should a published speed ratio be assumed universal?",
+                "options": [
+                  "Only for a million entries",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Measurements depend on environment/workload."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Verify correctness before speed. Keep timing setup fair, inspect memory scope honestly and report measurements rather than fixed performance promises."
+        }
+      ]
+    }
+  ]
+},
+"27.1": {
+  "parts": [
+    {
+      "title": "1. Create arrays deliberately: zeros, ones, full and empty",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Create arrays deliberately: zeros, ones, full and empty"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose a construction method that expresses the intended initial values."
+        },
+        {
+          "t": "new",
+          "v": "zeros; ones; full",
+          "note": "These construct arrays with specified shape and filled values. Specify dtype when its range/precision matters."
+        },
+        {
+          "t": "new",
+          "v": "empty",
+          "note": "empty allocates an array without initializing its elements to a chosen value. Read it only after assigning every element; it is not a zero-filled array."
+        },
+        {
+          "t": "new",
+          "v": "astype",
+          "note": "astype converts values into a requested dtype and normally returns a new array. Conversion may truncate/overflow; conversion is not domain validation."
+        },
+        {
+          "t": "p",
+          "v": "Use zeros for an initialized count table, ones for known unit values and full for another constant. Passing shape=(2,3) creates two rows and three columns; passing 3 creates one axis of length three. empty is useful only when you will fill the entire buffer before using it. Uninitialized values are not deterministic data or valid examples. For score calculations float64 is often a practical default. An integer dtype is appropriate for exact bounded counts, not automatic conversion of arbitrary decimal scores."
+        },
+        {
+          "t": "syn",
+          "v": "np.zeros((2,3), dtype=np.int64)\nnp.full((2,2), 7, dtype=np.int64)\nraw = np.empty(3); raw[:] = known_values",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nprint(np.zeros((2, 3), dtype=np.int64).tolist())\nprint(np.ones(3, dtype=np.float64).tolist())\nprint(np.full((2, 2), 7, dtype=np.int64).tolist())\nraw = np.empty(3, dtype=np.float64)\nraw[:] = [1.0, 2.0, 3.0]\nprint(raw.tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "[[0, 0, 0], [0, 0, 0]]\n[1.0, 1.0, 1.0]\n[[7, 7], [7, 7]]\n[1.0, 2.0, 3.0]"
+        },
+        {
+          "t": "p",
+          "v": "empty को values पढ्नुअघि सबै elements assign गरिएका छन्। zeros/ones/full को shape र dtype स्पष्ट छन्। Uninitialized memory लाई sample data मानेर पढ्नु हुँदैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "np.empty(3)  # expect zeros",
+          "right": "np.zeros(3)  # use empty only if every element is filled first",
+          "why": "empty does not promise any specific initial value."
+        },
+        {
+          "t": "ex",
+          "v": "Create a 2×2 float table filled with 2.5.",
+          "practiceId": "27.1.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.full((2, 2), 2.5, dtype=np.float64)\nprint(values.tolist(), values.shape)\n",
+          "out": "[[2.5, 2.5], [2.5, 2.5]] (2, 2)",
+          "why": "Build check: Specify shape/initial values/dtype. Never read empty before filling it; treat numeric conversion and validation as separate decisions."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Convert an integer array to float without changing the original dtype.",
+          "practiceId": "27.1.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\noriginal = np.array([1, 2], dtype=np.int64)\nconverted = original.astype(np.float64)\nprint(original.dtype, converted.dtype)\nprint(converted.tolist())\n",
+          "out": "int64 float64\n[1.0, 2.0]",
+          "why": "Challenge check: Specify shape/initial values/dtype. Never read empty before filling it; treat numeric conversion and validation as separate decisions."
+        },
+        {
+          "t": "try",
+          "q": "Does empty guarantee zeros?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It does not initialize the buffer to a chosen value."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.1.0",
+            "quiz": [
+              {
+                "q": "Does empty guarantee zeros?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only for floats"
+                ],
+                "correct": 0,
+                "why": "It does not initialize the buffer to a chosen value."
+              },
+              {
+                "q": "Which constructor expresses one repeated value?",
+                "options": [
+                  "std",
+                  "full",
+                  "argmax"
+                ],
+                "correct": 1,
+                "why": "full fills the specified shape with a chosen value."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Specify shape/initial values/dtype. Never read empty before filling it; treat numeric conversion and validation as separate decisions."
+        }
+      ]
+    },
+    {
+      "title": "2. Ranges: arange versus linspace",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Ranges: arange versus linspace"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose a step-based sequence or a sample-count-based interval."
+        },
+        {
+          "t": "new",
+          "v": "arange",
+          "note": "arange produces values using a start/stop/step contract with stop normally excluded. Floating-point steps can accumulate representation problems."
+        },
+        {
+          "t": "new",
+          "v": "linspace; endpoint",
+          "note": "linspace chooses a number of evenly spaced samples; by default it includes both interval endpoints. endpoint=False changes that contract."
+        },
+        {
+          "t": "new",
+          "v": "Floating-point representation",
+          "note": "Many decimal fractions are approximate in binary. Do not count exact decimal steps by equality when a sample-count contract would express your intent better."
+        },
+        {
+          "t": "p",
+          "v": "For integer positions, arange is natural: start at 2, stop before 10, step by 2. For five samples from 0 through 1 inclusive, linspace expresses the count and endpoints directly. The two functions answer different questions. Do not translate 'five evenly spaced values' into an invented float step and hope its last value behaves exactly. Use shapes and tolerant comparisons for numerical results where appropriate; keep exact integer indexes as integers."
+        },
+        {
+          "t": "syn",
+          "v": "np.arange(start, stop, step)\nnp.linspace(start, stop, num=count, endpoint=True)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nprint(np.arange(2, 10, 2, dtype=np.int64).tolist())\nprint(np.linspace(0, 1, num=5).tolist())\nprint(np.linspace(0, 1, num=4, endpoint=False).tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "[2, 4, 6, 8]\n[0.0, 0.25, 0.5, 0.75, 1.0]\n[0.0, 0.25, 0.5, 0.75]"
+        },
+        {
+          "t": "p",
+          "v": "arange मा 10 समावेश छैन। linspace को default endpoint=True हुँदा 0 र1 दुवै छन्। Count चाहिएको हो कि step चाहिएको हो भन्ने पहिले छुट्याऊ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Use a float arange step to guarantee exactly five samples",
+          "right": "Use linspace(..., num=5) for a fixed sample count",
+          "why": "Floating-step construction is not a robust fixed-count/endpoints contract."
+        },
+        {
+          "t": "ex",
+          "v": "Generate integer positions 0 through 4 and three samples from 10 to 20.",
+          "practiceId": "27.1.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nprint(np.arange(5, dtype=np.int64).tolist())\nprint(np.linspace(10, 20, num=3).tolist())\n",
+          "out": "[0, 1, 2, 3, 4]\n[10.0, 15.0, 20.0]",
+          "why": "Build check: arange expresses steps and an excluded stop; linspace expresses count and endpoint policy. Choose from the intended sequence."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify endpoint=False leaves the final endpoint outside the returned samples.",
+          "practiceId": "27.1.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.linspace(0, 8, num=4, endpoint=False)\nprint(values.tolist(), values.size)\n",
+          "out": "[0.0, 2.0, 4.0, 6.0] 4",
+          "why": "Challenge check: arange expresses steps and an excluded stop; linspace expresses count and endpoint policy. Choose from the intended sequence."
+        },
+        {
+          "t": "try",
+          "q": "Does arange(2,10,2) normally include 10?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "The stop is excluded."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.1.1",
+            "quiz": [
+              {
+                "q": "Does arange(2,10,2) normally include 10?",
+                "options": [
+                  "Only for int64",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "The stop is excluded."
+              },
+              {
+                "q": "Which is clearer for five samples including 0 and 1?",
+                "options": [
+                  "A guessed float step",
+                  "empty(5)",
+                  "linspace(0,1,num=5)"
+                ],
+                "correct": 2,
+                "why": "linspace directly specifies sample count and endpoints."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "arange expresses steps and an excluded stop; linspace expresses count and endpoint policy. Choose from the intended sequence."
+        }
+      ]
+    },
+    {
+      "title": "3. Reproducible randomness with a local Generator",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Reproducible randomness with a local Generator"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Generate classroom samples without depending on hidden global random state."
+        },
+        {
+          "t": "new",
+          "v": "default_rng; Generator",
+          "note": "default_rng creates a local random Generator. A seed allows controlled experiments without mutating an unrelated global generator."
+        },
+        {
+          "t": "new",
+          "v": "Parenthesized & and .all()",
+          "note": "& combines Boolean comparisons element-wise; .all() reduces a Boolean array to one all-True decision. Parenthesize each comparison. Day3 teaches masks/axis reductions in detail."
+        },
+        {
+          "t": "new",
+          "v": "integers; high excluded; size",
+          "note": "integers(low,high,size) samples integers with high excluded by default. size specifies the returned shape."
+        },
+        {
+          "t": "new",
+          "v": "Reproducibility limits",
+          "note": "A seed controls a particular generator/algorithm/version and call sequence; do not promise identical output from every future NumPy release or call order."
+        },
+        {
+          "t": "p",
+          "v": "Random examples should not change expected output on every run. Create a local generator and show reproducibility by constructing another one with the same seed and same calls. This is simulation data, not a secure token generator. The course does not use random student records as real evidence. integers(0,10) can return 0 through9. A size of (2,3) creates a 2×3 sample. Repeated calls advance the generator state. Store seed, algorithm/version and call procedure when an experiment needs reproducibility."
+        },
+        {
+          "t": "syn",
+          "v": "rng = np.random.default_rng(seed)\nvalues = rng.integers(low, high, size=(rows,columns))",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\na = np.random.default_rng(7).integers(0, 10, size=(2, 3))\nb = np.random.default_rng(7).integers(0, 10, size=(2, 3))\nprint(\"Same procedure:\", np.array_equal(a, b))\nprint(\"Shape:\", a.shape)\nprint(\"Bounds:\", bool(((a >= 0) & (a < 10)).all()))\n"
+        },
+        {
+          "t": "out",
+          "v": "Same procedure: True\nShape: (2, 3)\nBounds: True"
+        },
+        {
+          "t": "p",
+          "v": "दुई generator मा same seed/calls भएकाले यस environment मा result मिल्यो। Shape(2,3) र0–9 bounds जाँचिए। Exact randomnumbersलाई सबै futureversionsकोguarantee मानेका छैनौँ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Seed once and assume every later call returns the same sample",
+          "right": "Use a local Generator and record the call sequence/environment",
+          "why": "Each call advances its state; reproducibility needs more than one seed number."
+        },
+        {
+          "t": "ex",
+          "v": "Generate five integers in [1,7) and verify the upper endpoint is excluded.",
+          "practiceId": "27.1.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.random.default_rng(9).integers(1, 7, size=5)\nprint(values.shape, bool(((values >= 1) & (values < 7)).all()))\n",
+          "out": "(5,) True",
+          "why": "Build check: Use local seeded generators for controlled examples, verify shape/range and record procedure. Numerical RNG is not a security token source."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Show that same seed but different requested shapes describes a different experiment.",
+          "practiceId": "27.1.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\na = np.random.default_rng(2).integers(0, 10, size=3)\nb = np.random.default_rng(2).integers(0, 10, size=(1, 3))\nprint(a.shape, b.shape)\nprint(\"Shape-aware equality:\", np.array_equal(a, b))\n",
+          "out": "(3,) (1, 3)\nShape-aware equality: False",
+          "why": "Challenge check: Use local seeded generators for controlled examples, verify shape/range and record procedure. Numerical RNG is not a security token source."
+        },
+        {
+          "t": "try",
+          "q": "Is integers' high endpoint included by default?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "The default interval excludes high."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.1.2",
+            "quiz": [
+              {
+                "q": "Is integers' high endpoint included by default?",
+                "options": [
+                  "Yes",
+                  "Only for seeded calls",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "The default interval excludes high."
+              },
+              {
+                "q": "Does a seed guarantee every future NumPy version and call sequence matches?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only for arrays"
+                ],
+                "correct": 0,
+                "why": "Algorithm/version/procedure also matter."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Use local seeded generators for controlled examples, verify shape/range and record procedure. Numerical RNG is not a security token source."
+        }
+      ]
+    },
+    {
+      "title": "4. Dtype, fixed-width overflow and lossy casts",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Dtype, fixed-width overflow and lossy casts"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose numeric range/precision intentionally and validate before conversion."
+        },
+        {
+          "t": "new",
+          "v": "int8/int64; float32/float64",
+          "note": "These are fixed-width numerical types. Integers have bounded ranges; floats have finite precision. Python's ordinary integers do not share the same fixed-width limit."
+        },
+        {
+          "t": "new",
+          "v": "iinfo; finfo",
+          "note": "iinfo reports integer type bounds; finfo describes floating-point limits. Use them to reason about acceptable values."
+        },
+        {
+          "t": "new",
+          "v": "Casting and truncation",
+          "note": "Casting float data to integer truncates fractional values. Narrowing integer casts can overflow; dtype conversion is not validation."
+        },
+        {
+          "t": "p",
+          "v": "A smaller dtype saves buffer memory but changes what values can be represented. int8 holds -128 through127; adding two arrays containing120 does not magically become unbounded Python arithmetic. Choose a wider type before arithmetic if its expected range requires it. For decimal score inputs, keep a floating dtype instead of silently truncating them. Different versions can change scalar-promotion rules, so the example uses two explicitly int8 arrays rather than relying on a Python scalar being promoted. Floating precision is separate: converting float32 values to float64 later cannot recover information already rounded away."
+        },
+        {
+          "t": "syn",
+          "v": "bounds = np.iinfo(np.int8)\nwide = narrow.astype(np.int64)\n# Validate range/integrality before lossy conversion",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nnarrow = np.array([120], dtype=np.int8)\nprint(\"int8 bounds:\", np.iinfo(np.int8).min, np.iinfo(np.int8).max)\nprint(\"Narrow sum:\", (narrow + narrow).tolist())\nwide = narrow.astype(np.int64)\nprint(\"Wide sum:\", (wide + wide).tolist())\nprint(np.array([1.9, -1.9]).astype(np.int64).tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "int8 bounds: -128 127\nNarrow sum: [-16]\nWide sum: [240]\n[1, -1]"
+        },
+        {
+          "t": "p",
+          "v": "int8 sum wrap भएर -16 आयो; पहिलेint64माconvert गर्दा240ठीकआयो। Float-to-int castले1.9लाई1बनायो, nearestroundहोइन। dtype छनोट range/precisionकोनिर्णयहो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Cast decimals to int to validate them",
+          "right": "Check the accepted numeric domain/integrality first; cast only under an explicit policy",
+          "why": "A cast can destroy invalid fractions or wrap a narrow integer instead of rejecting the input."
+        },
+        {
+          "t": "ex",
+          "v": "Validate values fit int8 before choosing that type.",
+          "practiceId": "27.1.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([100, 200], dtype=np.int64)\nbounds = np.iinfo(np.int8)\nprint(((values >= bounds.min) & (values <= bounds.max)).tolist())\n",
+          "out": "[True, False]",
+          "why": "Build check: Dtype is part of correctness, not just speed. Validate bounds/precision and widen before overflow-prone work; casts are not validation."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Compare the buffer sizes of two float precisions without claiming identical numerical accuracy.",
+          "practiceId": "27.1.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\na = np.ones(4, dtype=np.float32)\nb = np.ones(4, dtype=np.float64)\nprint(a.nbytes, b.nbytes)\nprint(np.finfo(np.float32).eps > np.finfo(np.float64).eps)\n",
+          "out": "16 32\nTrue",
+          "why": "Challenge check: Dtype is part of correctness, not just speed. Validate bounds/precision and widen before overflow-prone work; casts are not validation."
+        },
+        {
+          "t": "try",
+          "q": "Does casting 1.9 to an integer validate that it was originally integral?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "The fractional information is discarded."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.1.3",
+            "quiz": [
+              {
+                "q": "Does casting 1.9 to an integer validate that it was originally integral?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only with int64"
+                ],
+                "correct": 0,
+                "why": "The fractional information is discarded."
+              },
+              {
+                "q": "Can a fixed-width array overflow?",
+                "options": [
+                  "Only Python lists",
+                  "Yes",
+                  "No"
+                ],
+                "correct": 1,
+                "why": "Fixed-width types have limited ranges."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Dtype is part of correctness, not just speed. Validate bounds/precision and widen before overflow-prone work; casts are not validation."
+        }
+      ]
+    }
+  ]
+},
+"27.2": {
+  "parts": [
+    {
+      "title": "1. Indexing: scalar, row, column and slice",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Indexing: scalar, row, column and slice"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Select the intended axis and predict the result shape."
+        },
+        {
+          "t": "new",
+          "v": "array[row,column]",
+          "note": "Comma-separated indexes choose positions on different axes. indexes start at zero; negative indexes count from an axis's end."
+        },
+        {
+          "t": "new",
+          "v": "Slice stop excluded; dimension dropping",
+          "note": "A scalar index normally removes its axis from the result. A slice such as 1:2 retains that axis with length one."
+        },
+        {
+          "t": "new",
+          "v": "ellipsis",
+          "note": "The ... index represents any needed full-axis slices. For this week's 2-D table, values[...,0] selects its first column."
+        },
+        {
+          "t": "p",
+          "v": "For shape (3,2), scores[1,0] is one number; scores[1] is a row of shape(2,), and scores[:,0] is a column represented as shape(3,). If you need a 2-D column for broadcasting, scores[:,0:1] has shape(3,1). The selected values can be similar while their shapes differ. Never guess from how an array prints: inspect shape. The first index chooses axis0 and the second axis1 in this example. Later higher-dimensional arrays retain the same axis-based idea."
+        },
+        {
+          "t": "syn",
+          "v": "value = scores[row,column]\nrow = scores[row,:]\ncolumn = scores[:,column]\ncolumn_2d = scores[:,column:column+1]",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nscores = np.array([[10, 20], [30, 40], [50, 60]], dtype=np.int64)\nprint(\"Scalar:\", int(scores[1, 0]))\nprint(\"Row:\", scores[1].tolist(), scores[1].shape)\nprint(\"Column:\", scores[:, 0].tolist(), scores[:, 0].shape)\nprint(\"2-D column:\", scores[:, 0:1].tolist(), scores[:, 0:1].shape)\n"
+        },
+        {
+          "t": "out",
+          "v": "Scalar: 30\nRow: [30, 40] (2,)\nColumn: [10, 30, 50] (3,)\n2-D column: [[10], [30], [50]] (3, 1)"
+        },
+        {
+          "t": "p",
+          "v": "Scalar indexलेaxis हटायो; sliceलेlength-oneaxisजोगायो। यहीफरकbroadcastingमामहत्त्वपूर्णहुन्छ। Columnकोshape(3,)र(3,1)एउटैहोइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "scores[:,0]  # assume shape (3,1)",
+          "right": "scores[:,0:1]  # retain a length-one column axis",
+          "why": "A scalar column index drops that axis, while a slice retains it."
+        },
+        {
+          "t": "ex",
+          "v": "Read the last row and last column using negative indexes.",
+          "practiceId": "27.2.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\na = np.array([[1, 2], [3, 4]], dtype=np.int64)\nprint(a[-1].tolist())\nprint(a[:, -1].tolist())\n",
+          "out": "[3, 4]\n[2, 4]",
+          "why": "Build check: Predict the selected values and shape together. Scalar indexes drop axes; slices can preserve them."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Select the first column with an ellipsis and verify its shape.",
+          "practiceId": "27.2.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\na = np.array([[1, 2], [3, 4]], dtype=np.int64)\nprint(a[..., 0].tolist(), a[..., 0].shape)\n",
+          "out": "[1, 3] (2,)",
+          "why": "Challenge check: Predict the selected values and shape together. Scalar indexes drop axes; slices can preserve them."
+        },
+        {
+          "t": "try",
+          "q": "What is the shape of a[:,0] for a shape (3,2)?",
+          "code": "# Predict and explain before revealing.",
+          "a": "(3,)",
+          "why": "The scalar column index drops axis1."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.2.0",
+            "quiz": [
+              {
+                "q": "What is the shape of a[:,0] for a shape (3,2)?",
+                "options": [
+                  "(3,)",
+                  "(3,1)",
+                  "(2,3)"
+                ],
+                "correct": 0,
+                "why": "The scalar column index drops axis1."
+              },
+              {
+                "q": "Which keeps a 2-D first-column result?",
+                "options": [
+                  "a[0,0]",
+                  "a[:,0:1]",
+                  "a[:,0]"
+                ],
+                "correct": 1,
+                "why": "A slice keeps the length-one axis."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Predict the selected values and shape together. Scalar indexes drop axes; slices can preserve them."
+        }
+      ]
+    },
+    {
+      "title": "2. Basic slices are views; copy explicitly for independence",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Basic slices are views; copy explicitly for independence"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Understand when editing a selected array can change its source."
+        },
+        {
+          "t": "new",
+          "v": "View; shared data buffer",
+          "note": "A view has its own array metadata but references existing data. Basic slices usually produce views; modifying them can modify the source."
+        },
+        {
+          "t": "new",
+          "v": "copy; shares_memory",
+          "note": "copy makes independent element storage. shares_memory tests whether arrays overlap in memory; identity is not the same as data independence."
+        },
+        {
+          "t": "new",
+          "v": "Aliasing policy",
+          "note": "Document whether a function returns a view or an independent result. A new Python ndarray object may still share its underlying bytes."
+        },
+        {
+          "t": "p",
+          "v": "Python list slicing makes a new list container. NumPy basic slicing usually makes a view instead. If selected = values[1:3], setting selected[0]=99 changes values[1]. The objects are not identical, yet their data overlaps. Use .copy() when a practice edit must not alter the original dataset. Avoid memorizing 'new variable means copy': assignment, views and copies have different ownership meanings. Advanced indexing in a later part normally returns copied selection data."
+        },
+        {
+          "t": "syn",
+          "v": "view = original[1:3]\nindependent = original[1:3].copy()\nnp.shares_memory(original, view)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\noriginal = np.array([10, 20, 30, 40], dtype=np.int64)\nview = original[1:3]\nindependent = original[1:3].copy()\nview[0] = 99\nindependent[1] = 77\nprint(\"Original:\", original.tolist())\nprint(\"Copy:\", independent.tolist())\nprint(\"Shared:\", np.shares_memory(original, view), np.shares_memory(original, independent))\n"
+        },
+        {
+          "t": "out",
+          "v": "Original: [10, 99, 30, 40]\nCopy: [20, 77]\nShared: True False"
+        },
+        {
+          "t": "p",
+          "v": "Viewकोeditoriginalमापुग्यो; copyकोeditपुगेन। Pythonobjectअलगभएपनिunderlyingdata साझा हुनसक्छ। Originalजोगाउनस्पष्टcopyगर।"
+        },
+        {
+          "t": "mis",
+          "wrong": "selected = values[1:3]; assume independent",
+          "right": "selected = values[1:3].copy() when independent edits are needed",
+          "why": "Basic slicing normally shares storage."
+        },
+        {
+          "t": "ex",
+          "v": "Edit an independent row copy without changing the table.",
+          "practiceId": "27.2.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\na = np.array([[1, 2], [3, 4]], dtype=np.int64)\nrow = a[0].copy()\nrow[0] = 50\nprint(a.tolist(), row.tolist())\n",
+          "out": "[[1, 2], [3, 4]] [50, 2]",
+          "why": "Build check: Know your ownership contract. Basic slices can share data; copy for independent mutations and do not equate identity with storage."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Demonstrate that distinct ndarray identity does not imply distinct storage.",
+          "practiceId": "27.2.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\na = np.arange(4, dtype=np.int64)\nb = a[:]\nprint(b is a, np.shares_memory(a, b))\n",
+          "out": "False True",
+          "why": "Challenge check: Know your ownership contract. Basic slices can share data; copy for independent mutations and do not equate identity with storage."
+        },
+        {
+          "t": "try",
+          "q": "Can editing a basic slice change its original?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Yes",
+          "why": "The slice normally references the same element buffer."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.2.1",
+            "quiz": [
+              {
+                "q": "Can editing a basic slice change its original?",
+                "options": [
+                  "Only for lists",
+                  "Yes",
+                  "No"
+                ],
+                "correct": 1,
+                "why": "The slice normally references the same element buffer."
+              },
+              {
+                "q": "Does b is not a prove b has independent bytes?",
+                "options": [
+                  "Yes",
+                  "Only with int64",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Distinct array objects can share storage."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Know your ownership contract. Basic slices can share data; copy for independent mutations and do not equate identity with storage."
+        }
+      ]
+    },
+    {
+      "title": "3. Boolean masks, row filtering and deliberate assignment",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Boolean masks, row filtering and deliberate assignment"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Build element-wise conditions and choose whether to select values or whole rows."
+        },
+        {
+          "t": "new",
+          "v": "Boolean mask; & | ~",
+          "note": "A Boolean array can select corresponding elements/rows. Use parenthesized comparisons with &, | and ~ for element-wise Boolean combinations, not Python and/or."
+        },
+        {
+          "t": "new",
+          "v": "any/all with axis",
+          "note": "any tests whether at least one Boolean is True; all requires every one. With axis=1 on a 2-D table they reduce each row to one decision."
+        },
+        {
+          "t": "new",
+          "v": "Selection copy versus direct assignment",
+          "note": "a[mask] returns a copied selection for reading. a[mask]=value deliberately changes matching positions in the original array."
+        },
+        {
+          "t": "p",
+          "v": "An element mask has the same shape as its score table and selecting with it produces a flat collection of matching values. For whole-row filtering, reduce a condition across assignments: (scores>=60).all(axis=1) says which students passed every assignment. Python 'and' tries to decide one overall truth of an array and is not the right operator here. Parentheses are required around each comparison when using &. State whether you intend a returned selection or a mutation. Both use similar brackets but have different effects."
+        },
+        {
+          "t": "syn",
+          "v": "mask = (values >= low) & (values <= high)\nselected = values[mask]\nrow_mask = (scores >= 60).all(axis=1)\nrows = scores[row_mask]",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nscores = np.array([[60, 70], [40, 90], [80, 85]], dtype=np.int64)\nmask = (scores >= 60) & (scores <= 80)\nprint(\"Matching cells:\", scores[mask].tolist())\nrow_mask = (scores >= 60).all(axis=1)\nprint(\"Row decisions:\", row_mask.tolist())\nprint(\"Passing rows:\", scores[row_mask].tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Matching cells: [60, 70, 80]\nRow decisions: [True, False, True]\nPassing rows: [[60, 70], [80, 85]]"
+        },
+        {
+          "t": "p",
+          "v": "Cellmaskबाटmatchingcells आए। all(axis=1)लेहरेकstudentकाassignmentsमाथिconditioncombineगरेरrowdecisionबनायो। Whole rows चाहिएको हो भनेcellselectionसँगनझुक्किऊ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "(scores >= 60) and (scores <= 80)",
+          "right": "(scores >= 60) & (scores <= 80)",
+          "why": "Python and requires scalar truth; & combines Boolean arrays element-wise."
+        },
+        {
+          "t": "ex",
+          "v": "Replace negative entries with zero using direct mask assignment.",
+          "practiceId": "27.2.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([-2, 4, -1, 7], dtype=np.int64)\nvalues[values < 0] = 0\nprint(values.tolist())\n",
+          "out": "[0, 4, 0, 7]",
+          "why": "Build check: Separate cell masks from row masks. Use element-wise Boolean operators and distinguish reading a copied selection from assigning into the source."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Edit a Boolean-selected copy and prove its source is unchanged.",
+          "practiceId": "27.2.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([10, 20, 30], dtype=np.int64)\nselected = values[values >= 20]\nselected[:] = 0\nprint(values.tolist(), selected.tolist())\nprint(np.shares_memory(values, selected))\n",
+          "out": "[10, 20, 30] [0, 0]\nFalse",
+          "why": "Challenge check: Separate cell masks from row masks. Use element-wise Boolean operators and distinguish reading a copied selection from assigning into the source."
+        },
+        {
+          "t": "try",
+          "q": "Which combines two array comparisons element-wise?",
+          "code": "# Predict and explain before revealing.",
+          "a": "& with each comparison parenthesized",
+          "why": "Boolean array logic uses element-wise operators."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.2.2",
+            "quiz": [
+              {
+                "q": "Which combines two array comparisons element-wise?",
+                "options": [
+                  "Python and",
+                  "A string join",
+                  "& with each comparison parenthesized"
+                ],
+                "correct": 2,
+                "why": "Boolean array logic uses element-wise operators."
+              },
+              {
+                "q": "What does all(axis=1) do here?",
+                "options": [
+                  "One decision per row",
+                  "One decision per column",
+                  "Always sorts rows"
+                ],
+                "correct": 0,
+                "why": "It reduces the assignment axis for each student."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Separate cell masks from row masks. Use element-wise Boolean operators and distinguish reading a copied selection from assigning into the source."
+        }
+      ]
+    },
+    {
+      "title": "4. Advanced indexing: selected pairs versus a rectangle",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Advanced indexing: selected pairs versus a rectangle"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Use integer index arrays intentionally and understand their copy behaviour."
+        },
+        {
+          "t": "new",
+          "v": "Advanced integer indexing",
+          "note": "An integer index list/array selects particular positions. It normally returns a copy; assigning directly through indexes still changes the source."
+        },
+        {
+          "t": "new",
+          "v": "Paired indexes",
+          "note": "a[[0,2],[0,1]] selects the coordinate pairs (0,0) and (2,1), not every combination of those rows/columns."
+        },
+        {
+          "t": "new",
+          "v": "np.ix_",
+          "note": "ix_ constructs an index combination for the Cartesian rectangle of selected rows and columns. The result can differ from paired advanced indexing."
+        },
+        {
+          "t": "p",
+          "v": "Want rows0 and2? Use a[[0,2]]. Want cells(0,0) and(2,1)? Supply paired row/column lists. Want the full subtable using rows0/2 and columns0/1? Use np.ix_ to combine them. The number of arrays and their shapes controls advanced-indexing semantics. Start with explicit small coordinates instead of guessing from a complicated expression. As with Boolean selection, editing a separately returned advanced selection does not normally edit the original; direct indexed assignment does."
+        },
+        {
+          "t": "syn",
+          "v": "pairs = a[[0,2],[0,1]]\nrectangle = a[np.ix_([0,2],[0,1])]",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\na = np.array([[10, 11], [20, 21], [30, 31]], dtype=np.int64)\npairs = a[[0, 2], [0, 1]]\nrectangle = a[np.ix_([0, 2], [0, 1])]\nprint(\"Pairs:\", pairs.tolist(), pairs.shape)\nprint(\"Rectangle:\", rectangle.tolist(), rectangle.shape)\n"
+        },
+        {
+          "t": "out",
+          "v": "Pairs: [10, 31] (2,)\nRectangle: [[10, 11], [30, 31]] (2, 2)"
+        },
+        {
+          "t": "p",
+          "v": "Pairsमा2cells छन्, rectangleमा2×2cells छन्। एउटै row/columnnumbers भएपनि indexingruleअलगछ। Coordinates कागजमा लेखेर कुनcellsछानियोtraceगर।"
+        },
+        {
+          "t": "mis",
+          "wrong": "a[[0,2],[0,1]]  # assume a 2x2 table",
+          "right": "a[np.ix_([0,2],[0,1])]  # all requested combinations",
+          "why": "Paired lists select coordinate pairs; ix_ constructs the rectangular combination."
+        },
+        {
+          "t": "ex",
+          "v": "Select rows in reverse chosen order and verify they are copied.",
+          "practiceId": "27.2.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\na = np.array([[1, 2], [3, 4], [5, 6]], dtype=np.int64)\nchosen = a[[2, 0]]\nprint(chosen.tolist())\nprint(np.shares_memory(a, chosen))\n",
+          "out": "[[5, 6], [1, 2]]\nFalse",
+          "why": "Build check: Know whether indexes specify pairs or combinations. Advanced reading selections are copies; direct indexed assignment intentionally mutates the source."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Assign directly to two specified cells and inspect the source.",
+          "practiceId": "27.2.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\na = np.array([[1, 2], [3, 4]], dtype=np.int64)\na[[0, 1], [1, 0]] = 99\nprint(a.tolist())\n",
+          "out": "[[1, 99], [99, 4]]",
+          "why": "Challenge check: Know whether indexes specify pairs or combinations. Advanced reading selections are copies; direct indexed assignment intentionally mutates the source."
+        },
+        {
+          "t": "try",
+          "q": "Does a[[0,2],[0,1]] return all four combinations?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It selects paired coordinates."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.2.3",
+            "quiz": [
+              {
+                "q": "Does a[[0,2],[0,1]] return all four combinations?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only on Windows"
+                ],
+                "correct": 0,
+                "why": "It selects paired coordinates."
+              },
+              {
+                "q": "Which helper makes the selected rectangular combination?",
+                "options": [
+                  "np.empty",
+                  "np.ix_",
+                  "np.std"
+                ],
+                "correct": 1,
+                "why": "ix_ builds broadcastable coordinate combinations."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Know whether indexes specify pairs or combinations. Advanced reading selections are copies; direct indexed assignment intentionally mutates the source."
+        }
+      ]
+    }
+  ]
+},
+"27.3": {
+  "parts": [
+    {
+      "title": "1. Element-wise operations, ufuncs and matrix multiplication",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Element-wise operations, ufuncs and matrix multiplication"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish per-cell arithmetic from row/column multiplication."
+        },
+        {
+          "t": "new",
+          "v": "Ufunc; sqrt; absolute",
+          "note": "A universal function performs an operation over compatible array inputs through compiled array logic. sqrt and absolute are common examples; each has a mathematical domain."
+        },
+        {
+          "t": "new",
+          "v": "* versus @",
+          "note": "* multiplies compatible elements; @ performs matrix multiplication with its own shape rules. A two-dimensional ndarray is not automatically a special matrix type."
+        },
+        {
+          "t": "new",
+          "v": "isclose; allclose",
+          "note": "These compare floating-point values using tolerances. Select tolerances appropriate to your scale rather than assuming binary decimals are always exact."
+        },
+        {
+          "t": "p",
+          "v": "For two 2×2 arrays, * multiplies cells at corresponding positions. @ combines rows from the left operand with columns from the right. These can give entirely different numbers; choose from the mathematical job, not from which symbol happens to run. sqrt is defined for nonnegative real inputs in this lesson; do not silently accept negative scores then hide its warning. Floating arithmetic may need approximate checks. Exact identity, equal shape and close numeric values are different comparisons."
+        },
+        {
+          "t": "syn",
+          "v": "cell_products = a * b\nmatrix_product = a @ b\nroots = np.sqrt(nonnegative_values)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\na = np.array([[1, 2], [3, 4]], dtype=np.int64)\nb = np.array([[2, 0], [1, 2]], dtype=np.int64)\nprint(\"Element-wise:\", (a * b).tolist())\nprint(\"Matrix:\", (a @ b).tolist())\nprint(\"Roots:\", np.sqrt([0.0, 4.0, 9.0]).tolist())\nprint(\"Decimal close:\", bool(np.isclose(0.1 + 0.2, 0.3)))\n"
+        },
+        {
+          "t": "out",
+          "v": "Element-wise: [[2, 0], [3, 8]]\nMatrix: [[4, 4], [10, 8]]\nRoots: [0.0, 2.0, 3.0]\nDecimal close: True"
+        },
+        {
+          "t": "p",
+          "v": "*कोresultकोहरेकcellअलगmultiplyभयो। @माrow/columnproductsकोsumछ। sqrtकोdomainपहिलेvalidateगर; decimalresultका लागि उचितtoleranceलेcompareगर।"
+        },
+        {
+          "t": "mis",
+          "wrong": "a * b  # assume matrix multiplication",
+          "right": "a @ b when the intended operation is matrix multiplication",
+          "why": "ndarray * is element-wise, while @ has matrix-product semantics."
+        },
+        {
+          "t": "ex",
+          "v": "Apply absolute value and squares element-wise.",
+          "practiceId": "27.3.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([-3, -2, 4], dtype=np.int64)\nprint(np.absolute(values).tolist())\nprint((values ** 2).tolist())\n",
+          "out": "[3, 2, 4]\n[9, 4, 16]",
+          "why": "Build check: Pick mathematical semantics deliberately. Ufuncs have domains; * and @ are different, and numeric comparisons need an explicit tolerance policy."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Reject negative real square-root inputs before computation.",
+          "practiceId": "27.3.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([4.0, -1.0])\nprint(\"Real sqrt inputs valid:\", bool((values >= 0).all()))\n",
+          "out": "Real sqrt inputs valid: False",
+          "why": "Challenge check: Pick mathematical semantics deliberately. Ufuncs have domains; * and @ are different, and numeric comparisons need an explicit tolerance policy."
+        },
+        {
+          "t": "try",
+          "q": "What does ndarray * do?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Element-wise multiplication",
+          "why": "It applies multiplication to compatible element positions."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.3.0",
+            "quiz": [
+              {
+                "q": "What does ndarray * do?",
+                "options": [
+                  "Element-wise multiplication",
+                  "Always matrix multiplication",
+                  "Repeats rows like a list"
+                ],
+                "correct": 0,
+                "why": "It applies multiplication to compatible element positions."
+              },
+              {
+                "q": "Which operator performs matrix multiplication?",
+                "options": [
+                  "and",
+                  "@",
+                  "*"
+                ],
+                "correct": 1,
+                "why": "@ uses matrix-product shape rules."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Pick mathematical semantics deliberately. Ufuncs have domains; * and @ are different, and numeric comparisons need an explicit tolerance policy."
+        }
+      ]
+    },
+    {
+      "title": "2. Broadcasting: align shapes from the right",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Broadcasting: align shapes from the right"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Predict compatible shapes and apply column or row adjustments correctly."
+        },
+        {
+          "t": "new",
+          "v": "Broadcast compatibility",
+          "note": "Compare dimensions from the right. Each aligned pair must be equal or one of them must be1. Missing leading dimensions behave as1."
+        },
+        {
+          "t": "new",
+          "v": "np.newaxis",
+          "note": "newaxis inserts a length-one axis through indexing. An adjustment of shape(3,) becomes a column shape(3,1) with values[:,np.newaxis]."
+        },
+        {
+          "t": "new",
+          "v": "Broadcasted computation versus duplication",
+          "note": "Broadcasting generally avoids explicitly materializing repeated input data, but the output and later operations can still require large allocations."
+        },
+        {
+          "t": "p",
+          "v": "A score table of shape(3,2) can add a per-assignment vector of shape(2,): the trailing dimension2 matches. It cannot add a shape(3,) per-student vector directly because trailing dimensions2 and3 conflict. Insert a column axis to make that vector shape(3,1). The classroom rule is about shape, not meaning: a shape-compatible adjustment can still be semantically wrong if the axes were labelled incorrectly. Trace each requested output row before relying on a broadcasting expression."
+        },
+        {
+          "t": "syn",
+          "v": "column_adjustment: scores + shape(assignments,)\nrow_adjustment: scores + row_values[:,np.newaxis]\ncompare trailing axes: equal or1",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nscores = np.array([[10, 20], [30, 40], [50, 60]], dtype=np.int64)\nby_assignment = np.array([1, 2], dtype=np.int64)\nby_student = np.array([1, 2, 3], dtype=np.int64)\nprint((scores + by_assignment).tolist())\nprint((scores + by_student[:, np.newaxis]).tolist())\nprint(\"Student adjustment shape:\", by_student[:, np.newaxis].shape)\n"
+        },
+        {
+          "t": "out",
+          "v": "[[11, 22], [31, 42], [51, 62]]\n[[11, 21], [32, 42], [53, 63]]\nStudent adjustment shape: (3, 1)"
+        },
+        {
+          "t": "p",
+          "v": "Assignmentvector(2,)हरेकrowमालाग्यो। Studentvectorलाई(3,1)बनाएपछिहरेकstudentकोadjustmentआफ्नाcolumnsमालाग्यो। Rightबाटshapecompareगर, valueकोनामबाटguessनगर।"
+        },
+        {
+          "t": "mis",
+          "wrong": "scores + student_adjustment  # shape (3,) versus table(3,2)",
+          "right": "scores + student_adjustment[:,np.newaxis]",
+          "why": "Trailing lengths2 and3 conflict; a length-one column axis expresses per-row broadcasting."
+        },
+        {
+          "t": "ex",
+          "v": "Reject incompatible shape(2,3) and shape(2,) using a real operation.",
+          "practiceId": "27.3.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\na = np.zeros((2, 3))\ntry:\n    a + np.ones(2)\nexcept ValueError:\n    print(\"Incompatible trailing dimensions\")\n",
+          "out": "Incompatible trailing dimensions",
+          "why": "Build check: Align trailing dimensions and verify axis meaning. Insert length-one axes deliberately; shape compatibility does not guarantee semantic correctness."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Compute an outer sum from a column of two values and a row of three.",
+          "practiceId": "27.3.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\ncolumn = np.array([10, 20])[:, np.newaxis]\nrow = np.array([1, 2, 3])\nresult = column + row\nprint(result.tolist(), result.shape)\n",
+          "out": "[[11, 12, 13], [21, 22, 23]] (2, 3)",
+          "why": "Challenge check: Align trailing dimensions and verify axis meaning. Insert length-one axes deliberately; shape compatibility does not guarantee semantic correctness."
+        },
+        {
+          "t": "try",
+          "q": "How are broadcasting dimensions compared?",
+          "code": "# Predict and explain before revealing.",
+          "a": "From the right",
+          "why": "Trailing dimensions must be equal or length1."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.3.1",
+            "quiz": [
+              {
+                "q": "How are broadcasting dimensions compared?",
+                "options": [
+                  "Only by total size",
+                  "From the right",
+                  "By variable name"
+                ],
+                "correct": 1,
+                "why": "Trailing dimensions must be equal or length1."
+              },
+              {
+                "q": "What shape does a length3 vector gain with [:,newaxis]?",
+                "options": [
+                  "(1,3)",
+                  "(3,3)",
+                  "(3,1)"
+                ],
+                "correct": 2,
+                "why": "A new trailing length-one axis makes it a column."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Align trailing dimensions and verify axis meaning. Insert length-one axes deliberately; shape compatibility does not guarantee semantic correctness."
+        }
+      ]
+    },
+    {
+      "title": "3. Column normalization and constant-column division",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Column normalization and constant-column division"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Normalize each column independently and define what happens to a constant column."
+        },
+        {
+          "t": "new",
+          "v": "min/max axis=0; keepdims",
+          "note": "Reducing axis0 leaves one value per column. keepdims=True retains the reduced axis as length1 so shape and broadcasting remain explicit."
+        },
+        {
+          "t": "new",
+          "v": "np.isfinite",
+          "note": "isfinite produces a Boolean array marking values that are neither NaN nor infinity. .all() combines those checks into one decision; Day5 explains missing/nonfinite policies fully."
+        },
+        {
+          "t": "new",
+          "v": "np.divide out/where",
+          "note": "A ufunc can write into an initialized output only where a condition is true. Initialize out because excluded locations are otherwise not filled by the operation."
+        },
+        {
+          "t": "new",
+          "v": "np.where evaluation",
+          "note": "np.where chooses between already-evaluated expressions. It does not prevent a division expression from being evaluated at zero denominators."
+        },
+        {
+          "t": "p",
+          "v": "Min-max normalization computes (value-column_min)/(column_max-column_min). A constant column has range0, so the formula alone is undefined. Here the explicit policy is to return zero for a constant column. Initialize a float output of zeros, then divide only where the column range is nonzero. Do not write np.where(range!=0, difference/range,0) expecting the invalid division never to happen; the division is computed before where selects. For real data validate nonfinite values and document whether zero is the desired constant-column representation."
+        },
+        {
+          "t": "syn",
+          "v": "low = values.min(axis=0, keepdims=True)\nspan = values.max(axis=0,keepdims=True)-low\nresult = np.zeros(values.shape, dtype=np.float64)\nnp.divide(values-low,span,out=result,where=span!=0)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nvalues = np.array([[10, 5], [20, 5], [30, 5]], dtype=np.float64)\nlow = values.min(axis=0, keepdims=True)\nspan = values.max(axis=0, keepdims=True) - low\nresult = np.zeros(values.shape, dtype=np.float64)\nnp.divide(values - low, span, out=result, where=span != 0)\nprint(\"Minimum shape:\", low.shape)\nprint(\"Ranges:\", span.tolist())\nprint(\"Normalized:\", result.tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Minimum shape: (1, 2)\nRanges: [[20.0, 0.0]]\nNormalized: [[0.0, 0.0], [0.5, 0.0], [1.0, 0.0]]"
+        },
+        {
+          "t": "p",
+          "v": "पहिलोcolumn0–1 भयो। दोस्रोcolumnconstantभएकालेयसpolicyअनुसार0रह्यो। out पहिलेzerosलेinitializedछ। Excludeddivisionलाईwhereलेछान्छ; np.whereकोbranchexpressionपहिलेcomputeहुनेफरकबुझ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "np.where(span != 0, (values-low)/span, 0)",
+          "right": "Initialize out; np.divide(values-low,span,out=out,where=span!=0)",
+          "why": "np.where does not lazily skip evaluating its division expression."
+        },
+        {
+          "t": "ex",
+          "v": "Normalize a single column [2,4,6] to [0,0.5,1].",
+          "practiceId": "27.3.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([[2.0], [4.0], [6.0]])\nlow = values.min(axis=0, keepdims=True)\nspan = values.max(axis=0, keepdims=True) - low\nout = np.zeros(values.shape)\nnp.divide(values-low, span, out=out, where=span != 0)\nprint(out.tolist())\n",
+          "out": "[[0.0], [0.5], [1.0]]",
+          "why": "Build check: Normalize with an explicit constant-column policy. Retain shapes, initialize masked outputs and distinguish np.divide's where from np.where's eager inputs."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Use an all-constant table and verify a finite zero result under this contract.",
+          "practiceId": "27.3.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.full((2, 3), 7.0)\nspan = values.max(axis=0, keepdims=True)-values.min(axis=0, keepdims=True)\nout = np.zeros(values.shape)\nnp.divide(values-values.min(axis=0,keepdims=True), span, out=out, where=span!=0)\nprint(out.tolist(), bool(np.isfinite(out).all()))\n",
+          "out": "[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]] True",
+          "why": "Challenge check: Normalize with an explicit constant-column policy. Retain shapes, initialize masked outputs and distinguish np.divide's where from np.where's eager inputs."
+        },
+        {
+          "t": "try",
+          "q": "Does np.where prevent evaluation of a division branch?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Its input expressions are evaluated first."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.3.2",
+            "quiz": [
+              {
+                "q": "Does np.where prevent evaluation of a division branch?",
+                "options": [
+                  "Yes",
+                  "Only for float64",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Its input expressions are evaluated first."
+              },
+              {
+                "q": "Why initialize out before masked division?",
+                "options": [
+                  "Excluded cells must have defined values",
+                  "To change the source",
+                  "To send mail"
+                ],
+                "correct": 0,
+                "why": "where=False locations are not assigned by that division."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Normalize with an explicit constant-column policy. Retain shapes, initialize masked outputs and distinguish np.divide's where from np.where's eager inputs."
+        }
+      ]
+    },
+    {
+      "title": "4. Z-scores and a zero-spread policy",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Z-scores and a zero-spread policy"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Standardize a numeric sequence while distinguishing a descriptive flag from a judgment."
+        },
+        {
+          "t": "new",
+          "v": "mean; standard deviation; z-score",
+          "note": "Mean describes the average; standard deviation describes spread. A z-score is (value-mean)/std for a chosen population/sample convention."
+        },
+        {
+          "t": "new",
+          "v": "ddof=0",
+          "note": "NumPy std uses denominator N by default (ddof=0). Other purposes can require a different denominator; Day5 expands this distinction."
+        },
+        {
+          "t": "new",
+          "v": "Zero spread; descriptive outlier flag",
+          "note": "All-identical values have std0. This lesson returns z=0 by explicit policy; a threshold flag is a prompt to inspect data, not proof a person/data point is wrong."
+        },
+        {
+          "t": "p",
+          "v": "For [10,10,10,10,0], the low value is far below this small group's mean. Compute its distance in standard-deviation units and optionally flag abs(z)>=2. This is a descriptive classroom rule, not a universal grading decision or automatic reason to remove an observation. Initialize zeros and divide only when std is positive, so an identical-value sample does not generate an invalid result. Document ddof, the group being compared and the threshold. A different group/denominator can change the interpretation."
+        },
+        {
+          "t": "syn",
+          "v": "center = values.mean()\nspread = values.std(ddof=0)\nz = zeros_like_float(values)\nnp.divide(values-center,spread,out=z,where=spread>0)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nvalues = np.array([10, 10, 10, 10, 0], dtype=np.float64)\nz = np.zeros(values.shape)\nnp.divide(values-values.mean(), values.std(ddof=0), out=z, where=values.std(ddof=0)>0)\nprint(\"Mean/std:\", float(values.mean()), float(values.std(ddof=0)))\nprint(\"Z:\", z.tolist())\nprint(\"Inspect flags:\", (np.absolute(z) >= 2).tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Mean/std: 8.0 4.0\nZ: [0.5, 0.5, 0.5, 0.5, -2.0]\nInspect flags: [False, False, False, False, True]"
+        },
+        {
+          "t": "p",
+          "v": "Mean8रstd4बाटz[0.5,...,-2]आयो। abs(z)>=2लेinspectflagदियो, studentगलतभन्नेjudgmentहोइन। Group, threshold रddof स्पष्टलेख।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Remove every record flagged by a z-score rule",
+          "right": "Inspect flagged records and explain the rule before any data decision",
+          "why": "A descriptive threshold is not proof of an invalid observation."
+        },
+        {
+          "t": "ex",
+          "v": "Handle an identical-value sequence under the zero-z policy.",
+          "practiceId": "27.3.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([5.0, 5.0, 5.0])\nout = np.zeros(values.shape)\nnp.divide(values-values.mean(), values.std(ddof=0), out=out, where=values.std(ddof=0)>0)\nprint(out.tolist())\n",
+          "out": "[0.0, 0.0, 0.0]",
+          "why": "Build check: State your group, spread convention, threshold and zero-spread policy. Z-scores describe relative distance; flags require interpretation."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Distinguish signs of z-scores for below-mean and above-mean values.",
+          "practiceId": "27.3.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([0.0, 10.0])\nz = (values-values.mean())/values.std(ddof=0)\nprint(z.tolist())\n",
+          "out": "[-1.0, 1.0]",
+          "why": "Challenge check: State your group, spread convention, threshold and zero-spread policy. Z-scores describe relative distance; flags require interpretation."
+        },
+        {
+          "t": "try",
+          "q": "What is NumPy std's default ddof?",
+          "code": "# Predict and explain before revealing.",
+          "a": "0",
+          "why": "Default standard deviation uses denominator N."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.3.3",
+            "quiz": [
+              {
+                "q": "What is NumPy std's default ddof?",
+                "options": [
+                  "0",
+                  "1",
+                  "Always the column count"
+                ],
+                "correct": 0,
+                "why": "Default standard deviation uses denominator N."
+              },
+              {
+                "q": "Does an outlier flag prove a record must be deleted?",
+                "options": [
+                  "Only for grades",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "It is an inspection signal under a stated rule."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "State your group, spread convention, threshold and zero-spread policy. Z-scores describe relative distance; flags require interpretation."
+        }
+      ]
+    }
+  ]
+},
+"27.4": {
+  "parts": [
+    {
+      "title": "1. Reductions: which axis disappears?",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Reductions: which axis disappears?"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Compute per-assignment and per-student statistics without reversing the axes."
+        },
+        {
+          "t": "new",
+          "v": "sum/mean/min/max with axis",
+          "note": "A reduction combines entries along the specified axis and removes it by default. axis=0 on a student-by-assignment table leaves one result per assignment."
+        },
+        {
+          "t": "new",
+          "v": "keepdims",
+          "note": "keepdims retains reduced dimensions with length1. A per-row mean then has shape(students,1), useful for subtracting row means."
+        },
+        {
+          "t": "new",
+          "v": "Global reduction",
+          "note": "Without an axis, a reduction generally combines all elements. This global statistic is different from a row/column report."
+        },
+        {
+          "t": "p",
+          "v": "Draw a 3×2 table and label rows students, columns assignments. axis=0 collapses the student dimension, so its result has two assignment values. axis=1 collapses assignments, leaving three student values. Think 'which dimension is being reduced?' rather than 'axis0 means a row result'. No-axis mean answers a different question: all cells pooled together. Use keepdims when you need the result to broadcast back against the original orientation."
+        },
+        {
+          "t": "syn",
+          "v": "per_assignment = scores.mean(axis=0)\nper_student = scores.mean(axis=1)\nrow_centres = scores.mean(axis=1, keepdims=True)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nscores = np.array([[10, 20], [30, 40], [50, 60]], dtype=np.float64)\nprint(\"Assignment means:\", scores.mean(axis=0).tolist())\nprint(\"Student means:\", scores.mean(axis=1).tolist())\nprint(\"Global mean:\", float(scores.mean()))\nrow_centres = scores.mean(axis=1, keepdims=True)\nprint(\"Centres shape:\", row_centres.shape)\nprint(\"Centred rows:\", (scores-row_centres).tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Assignment means: [30.0, 40.0]\nStudent means: [15.0, 35.0, 55.0]\nGlobal mean: 35.0\nCentres shape: (3, 1)\nCentred rows: [[-5.0, 5.0], [-5.0, 5.0], [-5.0, 5.0]]"
+        },
+        {
+          "t": "p",
+          "v": "axis0लेstudentsaxisघटाएरदुईassignmentmeansछोड्यो। axis1लेassignmentsघटाएरतीनstudentmeansछोड्यो। keepdimsको(3,1)result मूलtableमा सहीbroadcastहुन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "axis=0  # assume one result per row",
+          "right": "Track the removed axis: axis0 reduction leaves the column/assignment axis",
+          "why": "Axis identifies the dimension being combined, not the label of output records."
+        },
+        {
+          "t": "ex",
+          "v": "Compute row sums and column maxima for a 2×3 table.",
+          "practiceId": "27.4.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.int64)\nprint(values.sum(axis=1).tolist())\nprint(values.max(axis=0).tolist())\n",
+          "out": "[6, 15]\n[4, 5, 6]",
+          "why": "Build check: Name the reduced axis and the surviving semantic dimension. Global, row and column statistics answer different questions."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Compare output shapes with and without keepdims for axis0.",
+          "practiceId": "27.4.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.ones((3, 2))\nprint(values.mean(axis=0).shape)\nprint(values.mean(axis=0, keepdims=True).shape)\n",
+          "out": "(2,)\n(1, 2)",
+          "why": "Challenge check: Name the reduced axis and the surviving semantic dimension. Global, row and column statistics answer different questions."
+        },
+        {
+          "t": "try",
+          "q": "For shape(3,2), what shape results from mean(axis=0)?",
+          "code": "# Predict and explain before revealing.",
+          "a": "(2,)",
+          "why": "The length3 student axis is reduced."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.4.0",
+            "quiz": [
+              {
+                "q": "For shape(3,2), what shape results from mean(axis=0)?",
+                "options": [
+                  "(2,)",
+                  "(3,)",
+                  "(3,2)"
+                ],
+                "correct": 0,
+                "why": "The length3 student axis is reduced."
+              },
+              {
+                "q": "What does keepdims preserve?",
+                "options": [
+                  "File passwords",
+                  "Reduced axes as length1",
+                  "Every original value"
+                ],
+                "correct": 1,
+                "why": "The result retains dimensional alignment for broadcasting."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Name the reduced axis and the surviving semantic dimension. Global, row and column statistics answer different questions."
+        }
+      ]
+    },
+    {
+      "title": "2. Argmin/argmax, ties and spread conventions",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Argmin/argmax, ties and spread conventions"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish extreme values from their positions and choose a standard-deviation convention."
+        },
+        {
+          "t": "new",
+          "v": "argmin; argmax; first tie",
+          "note": "These return positions of extreme values, not the values themselves. With an axis, positions refer to that axis; the first tied occurrence is selected."
+        },
+        {
+          "t": "new",
+          "v": "Flat argmax; unravel_index",
+          "note": "Without axis, argmax returns an index in the flattened order. unravel_index converts it into coordinates for a known shape."
+        },
+        {
+          "t": "new",
+          "v": "std ddof; denominator N-ddof",
+          "note": "ddof=0 computes population-style spread for the observed values; ddof=1 uses a sample-style denominator. Choose based on the question and require enough observations."
+        },
+        {
+          "t": "p",
+          "v": "A largest score and a student's index are not interchangeable. For each assignment, argmax(axis=0) reports a row position; use that position with the column to retrieve the value. Ties are not all winners: argmax returns one first position under its ordering. If you need every tie, build an equality mask. For [2,4], population std is1 while sample std is about1.414. Neither should be chosen only because it appears in a familiar formula. The project later reports descriptive population statistics for its complete input rather than making sampling claims."
+        },
+        {
+          "t": "syn",
+          "v": "positions = scores.argmax(axis=0)\nvalues = scores.max(axis=0)\ncoordinates = np.unravel_index(scores.argmax(), scores.shape)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nscores = np.array([[80, 90], [80, 70], [60, 95]], dtype=np.float64)\nprint(\"Best row indexes:\", scores.argmax(axis=0).tolist())\nprint(\"Best values:\", scores.max(axis=0).tolist())\nrow, column = np.unravel_index(scores.argmax(), scores.shape)\nprint(\"Global best coordinates:\", int(row), int(column))\nvalues = np.array([2.0, 4.0])\nprint(\"Std ddof0/1:\", round(float(values.std(ddof=0)), 3), round(float(values.std(ddof=1)), 3))\n"
+        },
+        {
+          "t": "out",
+          "v": "Best row indexes: [0, 2]\nBest values: [80.0, 95.0]\nGlobal best coordinates: 2 1\nStd ddof0/1: 1.0 1.414"
+        },
+        {
+          "t": "p",
+          "v": "पहिलोassignment80माtieछ;argmaxलेfirstrowindex0दियो। Value80रindex0अलगचिजहुन्। ddofबदल्दाspreadबदलिन्छ, त्यसैलेpolicyस्पष्टगर।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Treat argmax as the maximum value",
+          "right": "Use max for values and argmax for their positions",
+          "why": "One describes magnitude, the other location."
+        },
+        {
+          "t": "ex",
+          "v": "Find every tie for the largest value using a Boolean mask.",
+          "practiceId": "27.4.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([9, 7, 9], dtype=np.int64)\nprint((values == values.max()).tolist())\nprint(int(values.argmax()))\n",
+          "out": "[True, False, True]\n0",
+          "why": "Build check: Separate values, indexes and all-tie masks. State the spread denominator and check observation counts before sample-style statistics."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Check sample spread's observation-count requirement before requesting ddof1.",
+          "practiceId": "27.4.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([5.0])\nprint(\"Can compute ddof1 with N>1:\", values.size > 1)\nprint(\"Population spread:\", float(values.std(ddof=0)))\n",
+          "out": "Can compute ddof1 with N>1: False\nPopulation spread: 0.0",
+          "why": "Challenge check: Separate values, indexes and all-tie masks. State the spread denominator and check observation counts before sample-style statistics."
+        },
+        {
+          "t": "try",
+          "q": "Does argmax return the maximum score itself?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It returns the position."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.4.1",
+            "quiz": [
+              {
+                "q": "Does argmax return the maximum score itself?",
+                "options": [
+                  "Only for a tie",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "It returns the position."
+              },
+              {
+                "q": "For a tied maximum, what does argmax normally select?",
+                "options": [
+                  "Every tied position",
+                  "A random one",
+                  "The first occurrence"
+                ],
+                "correct": 2,
+                "why": "Use an equality mask for all ties."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Separate values, indexes and all-tie masks. State the spread denominator and check observation counts before sample-style statistics."
+        }
+      ]
+    },
+    {
+      "title": "3. Missing and nonfinite values need a policy",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Missing and nonfinite values need a policy"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Reject or explicitly handle NaN/inf rather than silently calling every result valid."
+        },
+        {
+          "t": "new",
+          "v": "NaN; inf; isfinite; isnan",
+          "note": "NaN represents an invalid/missing numeric result under many workflows; infinity is nonfinite too. isfinite excludes both; isnan identifies NaN specifically."
+        },
+        {
+          "t": "new",
+          "v": "np.flatnonzero",
+          "note": "flatnonzero returns positions where a flattened Boolean/numeric input is nonzero. For the1-D invalid-score mask it returns zero-based invalid indexes, not the invalid score values themselves."
+        },
+        {
+          "t": "new",
+          "v": "NaN equality",
+          "note": "NaN is not equal to itself. Use isnan, not value == np.nan, to detect it."
+        },
+        {
+          "t": "new",
+          "v": "nanmean and missing-value policy",
+          "note": "nanmean ignores NaN but not arbitrary bad data; all-NaN slices need handling and can warn. Rejecting, imputing and excluding missing values answer different questions."
+        },
+        {
+          "t": "p",
+          "v": "A table with one missing assignment does not automatically mean score0. Ignoring NaN changes which assignments contribute to a mean. For this week's final grade project, require every score to be finite and in0–100; missing input is an error to fix, not a guessed score. For another task you may deliberately compute an observed-only mean, but report the count and reject all-missing groups. Infinity is not fixed by nanmean. Check the accepted domain before aggregation and preserve diagnostics."
+        },
+        {
+          "t": "syn",
+          "v": "if not np.isfinite(scores).all(): reject\nmissing = np.isnan(scores)\n# Optional observed-only statistics require counts and a stated policy",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nvalues = np.array([10.0, np.nan, np.inf])\nprint(\"Finite:\", np.isfinite(values).tolist())\nprint(\"NaN:\", np.isnan(values).tolist())\nprint(\"NaN == NaN:\", bool(np.nan == np.nan))\nobserved = np.array([10.0, np.nan, 20.0])\nprint(\"Observed-only mean:\", float(np.nanmean(observed)))\nprint(\"Observed count:\", int(np.isfinite(observed).sum()))\n"
+        },
+        {
+          "t": "out",
+          "v": "Finite: [True, False, False]\nNaN: [False, True, False]\nNaN == NaN: False\nObserved-only mean: 15.0\nObserved count: 2"
+        },
+        {
+          "t": "p",
+          "v": "NaNmissingहुनसक्छ, तर0भन्नेअर्थहोइन। nanmeanको15दुईobservedvaluesकोmeanहो। Inffiniteहोइन, नतnanmeanलेसबैinvalidvalueठीकबनाउँछ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "values == np.nan",
+          "right": "np.isnan(values)",
+          "why": "NaN is not equal to itself; equality is not its detection rule."
+        },
+        {
+          "t": "ex",
+          "v": "Validate finite 0–100 scores and report invalid positions.",
+          "practiceId": "27.4.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nscores = np.array([50.0, np.nan, 120.0, -1.0])\nvalid = np.isfinite(scores) & (scores >= 0) & (scores <= 100)\nprint(valid.tolist())\nprint(\"Invalid indexes:\", np.flatnonzero(~valid).tolist())\n",
+          "out": "[True, False, False, False]\nInvalid indexes: [1, 2, 3]",
+          "why": "Build check: Missing, zero and infinity are different. Choose and document a policy, report observed counts and validate numeric domains before reductions."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Avoid calculating an observed mean for an all-missing group.",
+          "practiceId": "27.4.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.array([np.nan, np.nan])\ncount = int(np.isfinite(values).sum())\nprint(\"Observed:\", count)\nprint(\"Action:\", \"reject all-missing group\" if count == 0 else \"apply documented policy\")\n",
+          "out": "Observed: 0\nAction: reject all-missing group",
+          "why": "Challenge check: Missing, zero and infinity are different. Choose and document a policy, report observed counts and validate numeric domains before reductions."
+        },
+        {
+          "t": "try",
+          "q": "Is a missing score automatically zero?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Zero is a real value, while missing needs an explicit policy."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.4.2",
+            "quiz": [
+              {
+                "q": "Is a missing score automatically zero?",
+                "options": [
+                  "Yes",
+                  "Only in a CSV",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Zero is a real value, while missing needs an explicit policy."
+              },
+              {
+                "q": "Does isfinite reject both NaN and infinity?",
+                "options": [
+                  "Yes",
+                  "No",
+                  "Only int8"
+                ],
+                "correct": 0,
+                "why": "It identifies finite values under numerical rules."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Missing, zero and infinity are different. Choose and document a policy, report observed counts and validate numeric domains before reductions."
+        }
+      ]
+    },
+    {
+      "title": "4. Weighted scores and transparent threshold reports",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Weighted scores and transparent threshold reports"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Compute one weighted result per student using validated column weights."
+        },
+        {
+          "t": "new",
+          "v": "Weights and axis alignment",
+          "note": "A shape(assignments,) weight vector aligns with table columns. Multiplying then summing axis1 gives one weighted score per student."
+        },
+        {
+          "t": "new",
+          "v": "Weight contract",
+          "note": "Weights should be finite, nonnegative, match the assignment count and sum to1 under an explicit tolerance. An arbitrary vector should not silently become an accepted grading rule."
+        },
+        {
+          "t": "new",
+          "v": "Pass mask; count_nonzero",
+          "note": "A comparison makes a Boolean pass mask. count_nonzero counts True values; it does not automatically justify the chosen pass threshold."
+        },
+        {
+          "t": "p",
+          "v": "A score table can describe assignments with different importance. For weights[0.25,0.75], the second assignment contributes three times as much as the first. Validate the weight vector and keep raw scores so an adjusted report can be traced back. A passing threshold is a policy you state, not something NumPy discovers. Our classroom example uses60 and reports a count only. Do not mix weights for rows with weights for assignments because two lengths happen to match. Axis names matter even when broadcasting succeeds."
+        },
+        {
+          "t": "syn",
+          "v": "require valid weights with shape(assignments,)\nweighted = (scores * weights).sum(axis=1)\npass_count = np.count_nonzero(weighted >= threshold)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nscores = np.array([[40, 80], [80, 40], [90, 90]], dtype=np.float64)\nweights = np.array([0.25, 0.75], dtype=np.float64)\nif weights.shape != (scores.shape[1],) or not np.isfinite(weights).all() or (weights < 0).any() or not np.isclose(weights.sum(), 1.0):\n    raise ValueError(\"Invalid weights\")\nweighted = (scores * weights).sum(axis=1)\nprint(\"Weighted:\", weighted.tolist())\nprint(\"Pass flags:\", (weighted >= 60).tolist())\nprint(\"Pass count:\", int(np.count_nonzero(weighted >= 60)))\n"
+        },
+        {
+          "t": "out",
+          "v": "Weighted: [70.0, 50.0, 90.0]\nPass flags: [True, False, True]\nPass count: 2"
+        },
+        {
+          "t": "p",
+          "v": "पहिलोstudent70, दोस्रो50भयो; assignmentsकोimportanceफरकभएकोलेsimplemeanसँगफरकछ। Weightsरthreshold policyकोभागहुन्; NumPyलेgradepolicyनिर्णयगर्दैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Apply unvalidated weights because the multiplication works",
+          "right": "Validate length, nonnegative finite values and sum policy",
+          "why": "Shape compatibility alone does not make a weighting scheme meaningful."
+        },
+        {
+          "t": "ex",
+          "v": "Use equal two-assignment weights and compare with an ordinary row mean.",
+          "practiceId": "27.4.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nscores = np.array([[40.0, 80.0], [60.0, 90.0]])\nweights = np.array([0.5, 0.5])\nprint((scores*weights).sum(axis=1).tolist())\nprint(np.allclose((scores*weights).sum(axis=1), scores.mean(axis=1)))\n",
+          "out": "[60.0, 75.0]\nTrue",
+          "why": "Build check: Align weights with named axes, validate their domain and report threshold decisions transparently. Raw data and policy should remain inspectable."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Reject a negative weight even if the sum happens to be1.",
+          "practiceId": "27.4.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nweights = np.array([-0.5, 1.5])\nprint(\"Sum:\", float(weights.sum()))\nprint(\"Nonnegative policy:\", bool((weights >= 0).all()))\n",
+          "out": "Sum: 1.0\nNonnegative policy: False",
+          "why": "Challenge check: Align weights with named axes, validate their domain and report threshold decisions transparently. Raw data and policy should remain inspectable."
+        },
+        {
+          "t": "try",
+          "q": "Which axis is reduced for a weighted result per student?",
+          "code": "# Predict and explain before revealing.",
+          "a": "axis1",
+          "why": "Weights apply to assignment columns; assignments are combined."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.4.3",
+            "quiz": [
+              {
+                "q": "Which axis is reduced for a weighted result per student?",
+                "options": [
+                  "axis1",
+                  "axis0",
+                  "The file extension"
+                ],
+                "correct": 0,
+                "why": "Weights apply to assignment columns; assignments are combined."
+              },
+              {
+                "q": "Is sum1 alone enough to validate weights?",
+                "options": [
+                  "Only for float64",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Negative, nonfinite or wrong-length values still violate the contract."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Align weights with named axes, validate their domain and report threshold decisions transparently. Raw data and policy should remain inspectable."
+        }
+      ]
+    }
+  ]
+},
+"27.5": {
+  "parts": [
+    {
+      "title": "1. Reshape, transpose and diagonal extraction",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Reshape, transpose and diagonal extraction"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Rearrange a known number of elements without changing their meaning accidentally."
+        },
+        {
+          "t": "new",
+          "v": "reshape; inferred -1",
+          "note": "reshape changes the arrangement while preserving element count. One dimension may be -1 to infer its length; incompatible counts fail."
+        },
+        {
+          "t": "new",
+          "v": "transpose; .T",
+          "note": "For a 2-D table .T swaps axes. A 1-D vector's .T remains 1-D; it does not create a column axis."
+        },
+        {
+          "t": "new",
+          "v": "np.diag; ravel",
+          "note": "diag extracts a 2-D diagonal (or constructs a diagonal from1-D input). ravel returns a flattened array, using a view when possible."
+        },
+        {
+          "t": "p",
+          "v": "An array of six entries can become shape(2,3) or(3,2). It cannot become(4,2) because that requires eight entries. Reshaping a score table is not automatically a valid way to change students/assignments: element count can match while semantic labels become wrong. A transpose deliberately swaps the meanings of its two axes. Use it only with a new explicit orientation. reshape/ravel may share storage depending on layout; do not assume independence. The example also fulfils the curriculum's5×5 diagonal exercise."
+        },
+        {
+          "t": "syn",
+          "v": "arr.reshape(rows,columns)\narr.reshape(-1,columns)\narr.T\nnp.diag(square_table)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nflat = np.arange(6, dtype=np.int64)\ntable = flat.reshape(2, 3)\nprint(table.tolist(), table.shape)\nprint(table.T.tolist(), table.T.shape)\nprint(\"Vector transpose shape:\", flat.T.shape)\nsquare = np.arange(25, dtype=np.int64).reshape(5, 5)\nprint(\"Diagonal:\", np.diag(square).tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "[[0, 1, 2], [3, 4, 5]] (2, 3)\n[[0, 3], [1, 4], [2, 5]] (3, 2)\nVector transpose shape: (6,)\nDiagonal: [0, 6, 12, 18, 24]"
+        },
+        {
+          "t": "p",
+          "v": "reshapeकोcountसमानछ; transposeलेaxisस्वापगर्‍यो। 1-D.Tकोshapeअझै(6,)छ, columnबनेन। 5×5diagonalindexes[0,0],[1,1]...बाटआए।"
+        },
+        {
+          "t": "mis",
+          "wrong": "vector.T  # assume shape(n,1)",
+          "right": "vector[:,np.newaxis] to create a column",
+          "why": "A one-dimensional transpose does not insert an axis."
+        },
+        {
+          "t": "ex",
+          "v": "Infer the row count for12 elements and3 columns.",
+          "practiceId": "27.5.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\nvalues = np.arange(12, dtype=np.int64).reshape(-1, 3)\nprint(values.shape)\n",
+          "out": "(4, 3)",
+          "why": "Build check: Shape changes preserve counts, not necessarily meanings. Track orientation and storage ownership; 1-D transpose is not column creation."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify an incompatible reshape fails instead of creating missing elements.",
+          "practiceId": "27.5.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\ntry:\n    np.arange(6).reshape(4, 2)\nexcept ValueError:\n    print(\"Element count mismatch\")\n",
+          "out": "Element count mismatch",
+          "why": "Challenge check: Shape changes preserve counts, not necessarily meanings. Track orientation and storage ownership; 1-D transpose is not column creation."
+        },
+        {
+          "t": "try",
+          "q": "Can six elements reshape to(4,2)?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "The requested element count is8."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.5.0",
+            "quiz": [
+              {
+                "q": "Can six elements reshape to(4,2)?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only with int64"
+                ],
+                "correct": 0,
+                "why": "The requested element count is8."
+              },
+              {
+                "q": "Does a 1-D vector .T become a 2-D column?",
+                "options": [
+                  "Only when nonempty",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Transpose does not add a missing axis."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Shape changes preserve counts, not necessarily meanings. Track orientation and storage ownership; 1-D transpose is not column creation."
+        }
+      ]
+    },
+    {
+      "title": "2. Concatenate, stack, split and flatten",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Concatenate, stack, split and flatten"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish combining along an existing axis from creating a new axis."
+        },
+        {
+          "t": "new",
+          "v": "concatenate; stack",
+          "note": "concatenate joins along an existing axis; other dimensions must match. stack adds a new axis and requires matching input shapes."
+        },
+        {
+          "t": "new",
+          "v": "split; array_split",
+          "note": "split requires equal division when given a section count; array_split allows unequal chunks. Explicit boundary indexes describe another split contract."
+        },
+        {
+          "t": "new",
+          "v": "flatten versus ravel",
+          "note": "flatten always copies; ravel uses a view when possible. Layout matters, especially for a transposed array, so verify sharing when mutation ownership matters."
+        },
+        {
+          "t": "p",
+          "v": "Joining two row vectors end to end gives one longer vector. Stacking them on axis0 gives a two-row table instead. Two student-by-assignment batches concatenate on axis0 when they share assignment columns. Adding a new batch axis with stack is a different structure. For unequal chunks use array_split intentionally, not split and hope it drops a remainder. Flattening is useful for certain operations but can erase student/assignment orientation; keep the original shape in the data contract."
+        },
+        {
+          "t": "syn",
+          "v": "np.concatenate((a,b), axis=0)  # existing axis\nnp.stack((a,b), axis=0)        # new axis\nnp.array_split(values,3)\nvalues.flatten()  # independent copy",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\na, b = np.array([1, 2]), np.array([3, 4])\njoined, stacked = np.concatenate((a, b)), np.stack((a, b))\nprint(\"Joined:\", joined.tolist(), joined.shape)\nprint(\"Stacked:\", stacked.tolist(), stacked.shape)\nchunks = np.array_split(np.arange(5), 3)\nprint(\"Chunks:\", [chunk.tolist() for chunk in chunks])\ntable = np.arange(6).reshape(2, 3)\nprint(\"Share ravel/flatten:\", np.shares_memory(table, table.ravel()), np.shares_memory(table, table.flatten()))\n"
+        },
+        {
+          "t": "out",
+          "v": "Joined: [1, 2, 3, 4] (4,)\nStacked: [[1, 2], [3, 4]] (2, 2)\nChunks: [[0, 1], [2, 3], [4]]\nShare ravel/flatten: True False"
+        },
+        {
+          "t": "p",
+          "v": "Joinedकोshape(4,)छ, stackedको(2,2)छ। array_splitलेunequalchunksदियो। योcontiguoustableमाravelsharesdataछ, flattencopyछ; सबैlayoutमारavelsharesहुन्छभन्नेguaranteeहोइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "stack and concatenate always return the same shape",
+          "right": "Decide whether you are extending an axis or introducing one",
+          "why": "The operations represent different arrangements."
+        },
+        {
+          "t": "ex",
+          "v": "Join two one-row score batches along the student axis.",
+          "practiceId": "27.5.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\na = np.array([[60, 70]])\nb = np.array([[80, 90]])\nresult = np.concatenate((a, b), axis=0)\nprint(result.tolist(), result.shape)\n",
+          "out": "[[60, 70], [80, 90]] (2, 2)",
+          "why": "Build check: Join existing axes with concatenate, add axes with stack and choose split contracts explicitly. Flattening/storage choices should preserve intended ownership and labels."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify split rejects dividing five entries into three equal chunks.",
+          "practiceId": "27.5.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import numpy as np\ntry:\n    np.split(np.arange(5), 3)\nexcept ValueError:\n    print(\"Not equally divisible; choose array_split intentionally\")\n",
+          "out": "Not equally divisible; choose array_split intentionally",
+          "why": "Challenge check: Join existing axes with concatenate, add axes with stack and choose split contracts explicitly. Flattening/storage choices should preserve intended ownership and labels."
+        },
+        {
+          "t": "try",
+          "q": "Which operation adds a new axis?",
+          "code": "# Predict and explain before revealing.",
+          "a": "stack",
+          "why": "stack groups matching arrays under a new dimension."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.5.1",
+            "quiz": [
+              {
+                "q": "Which operation adds a new axis?",
+                "options": [
+                  "argmin",
+                  "stack",
+                  "concatenate"
+                ],
+                "correct": 1,
+                "why": "stack groups matching arrays under a new dimension."
+              },
+              {
+                "q": "Does flatten normally share the source buffer?",
+                "options": [
+                  "Yes",
+                  "Only for int64",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "flatten always makes a copy."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Join existing axes with concatenate, add axes with stack and choose split contracts explicitly. Flattening/storage choices should preserve intended ownership and labels."
+        }
+      ]
+    },
+    {
+      "title": "3. Complete project: a vectorized grade-analysis tool",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Complete project: a vectorized grade-analysis tool"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Load a validated score matrix and generate transparent raw/curved statistics without Python numeric loops."
+        },
+        {
+          "t": "new",
+          "v": "np.loadtxt; ndmin=2",
+          "note": "loadtxt reads a simple numeric text format. ndmin=2 retains a matrix for a single row or column. This project does not accept arbitrary CSV quoting/header/label conventions."
+        },
+        {
+          "t": "new",
+          "v": "np.asarray; dtype.kind",
+          "note": "asarray obtains array-like input as an array. dtype.kind helps reject Boolean/object/text domains before casting; a numeric cast is not accepted as validation."
+        },
+        {
+          "t": "new",
+          "v": "np.clip; raw versus curved",
+          "note": "clip bounds values to a chosen interval. The project's adjustment is a stated classroom policy; raw statistics and outlier flags stay based on the original scores."
+        },
+        {
+          "t": "new",
+          "v": "np.flatnonzero; JSON conversion",
+          "note": "flatnonzero returns matching flattened indexes for the1-D student flag vector. tolist/float turn numerical results into JSON-compatible Python values without writing numerical loops."
+        },
+        {
+          "t": "p",
+          "v": "Read the project in layers: validate_scores defines a nonempty finite0–100 matrix, analyse performs vectorized reductions/broadcasting, load_scores accepts a narrow numeric CSV contract, and main saves a report. There are no Python for/while/comprehension loops in the project: numeric work uses NumPy. Standard-library CLI/file/JSON operations still do their own work internally. Rows represent student input order and columns assignments; the input has no student names or header. indexes in the report are zero-based positions, not stable student identities. The default curve adds5 points to each cell and clips to0–100. This is an exercise policy, not a recommendation for actual grading. Flags use raw student means, population spread(ddof0) and an explicit threshold; flagged rows should be inspected rather than deleted. The input is preserved. Validation completes before a separate JSON report is atomically replaced, and malformed input leaves any prior report untouched."
+        },
+        {
+          "t": "syn",
+          "v": "plain numeric CSV -> validated(student,assignment) matrix\nraw reductions + explicit curve + zero-safe normalization/z\nconvert numerical results -> JSON -> atomic separate report",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import argparse\nimport io\nimport json\nfrom pathlib import Path\nimport sys\nimport numpy as np\n\ndef validate_scores(scores):\n    values = np.asarray(scores)\n    if values.ndim != 2 or not 1 <= values.shape[0] <= 10_000 or not 1 <= values.shape[1] <= 200:\n        raise ValueError(\"Need a nonempty student-by-assignment table within practice limits\")\n    if values.dtype.kind not in \"iuf\":\n        raise ValueError(\"Need real numeric scores, not booleans/objects/text\")\n    values = values.astype(np.float64, copy=True)\n    if not np.isfinite(values).all() or ((values < 0) | (values > 100)).any():\n        raise ValueError(\"Every score must be finite and in 0..100\")\n    return values\n\ndef analyse(scores, curve=5.0, threshold=2.0, pass_score=60.0):\n    values = validate_scores(scores)\n    if not np.isfinite(curve) or not -100 <= curve <= 100:\n        raise ValueError(\"Curve must be finite and in -100..100\")\n    if not np.isfinite(threshold) or threshold <= 0:\n        raise ValueError(\"Z threshold must be finite and positive\")\n    if not np.isfinite(pass_score) or not 0 <= pass_score <= 100:\n        raise ValueError(\"Pass score must be finite and in 0..100\")\n    student_means = values.mean(axis=1)\n    assignment_means = values.mean(axis=0)\n    spread = student_means.std(ddof=0)\n    z = np.zeros(student_means.shape, dtype=np.float64)\n    np.divide(student_means-student_means.mean(), spread, out=z, where=spread>0)\n    flags = np.absolute(z) >= threshold\n    curved = np.clip(values + curve, 0, 100)\n    low = values.min(axis=0, keepdims=True)\n    ranges = values.max(axis=0, keepdims=True)-low\n    normalized = np.zeros(values.shape, dtype=np.float64)\n    np.divide(values-low, ranges, out=normalized, where=ranges!=0)\n    return {\n        \"schema\": 1,\n        \"orientation\": \"rows=students; columns=assignments; indexes are zero-based\",\n        \"shape\": list(values.shape),\n        \"policy\": {\"curve_points\": float(curve), \"clip_range\": [0, 100],\n                   \"pass_score\": float(pass_score), \"z_threshold\": float(threshold),\n                   \"std_ddof\": 0, \"constant_column_normalized_value\": 0.0,\n                   \"zero_spread_z_value\": 0.0, \"missing_scores\": \"reject\",\n                   \"outlier_basis\": \"raw student means; inspect only\"},\n        \"student_means\": student_means.tolist(),\n        \"student_min\": values.min(axis=1).tolist(),\n        \"student_max\": values.max(axis=1).tolist(),\n        \"student_std\": values.std(axis=1, ddof=0).tolist(),\n        \"assignment_means\": assignment_means.tolist(),\n        \"assignment_min\": values.min(axis=0).tolist(),\n        \"assignment_max\": values.max(axis=0).tolist(),\n        \"assignment_std\": values.std(axis=0, ddof=0).tolist(),\n        \"class_mean\": float(values.mean()),\n        \"student_z\": z.tolist(),\n        \"inspect_student_indexes\": np.flatnonzero(flags).tolist(),\n        \"raw_pass_flags\": (student_means >= pass_score).tolist(),\n        \"curved_scores\": curved.tolist(),\n        \"curved_student_means\": curved.mean(axis=1).tolist(),\n        \"normalized_columns\": normalized.tolist(),\n    }\n\ndef load_scores(path):\n    with path.open(\"rb\") as stream:\n        raw = stream.read(2_000_001)\n    if len(raw) > 2_000_000:\n        raise ValueError(\"Practice input exceeds 2 MB\")\n    text = raw.decode(\"utf-8-sig\")\n    if not text.strip():\n        raise ValueError(\"Empty score file\")\n    # Contract: plain rectangular numeric CSV; no headers, quotes, labels or comments.\n    values = np.loadtxt(io.StringIO(text), delimiter=\",\", comments=None,\n                        dtype=np.float64, ndmin=2)\n    return validate_scores(values)\n\ndef save_report(path, report):\n    encoded = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False)\n    temporary = path.with_name(path.name + \".tmp\")\n    owned = False\n    try:\n        with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n            owned = True\n            stream.write(encoded)\n        temporary.replace(path)\n        owned = False\n    finally:\n        if owned:\n            temporary.unlink(missing_ok=True)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Vectorized grade analysis of plain numeric CSV\", allow_abbrev=False)\n    parser.add_argument(\"input\", type=Path)\n    parser.add_argument(\"output\", type=Path)\n    parser.add_argument(\"--curve\", type=float, default=5.0)\n    parser.add_argument(\"--z-threshold\", type=float, default=2.0)\n    parser.add_argument(\"--pass-score\", type=float, default=60.0)\n    args = parser.parse_args(argv)\n    try:\n        if args.input.resolve() == args.output.resolve() or args.output.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a separate .json output path\")\n        scores = load_scores(args.input)\n        report = analyse(scores, args.curve, args.z_threshold, args.pass_score)\n        report[\"input_name\"] = args.input.name\n        save_report(args.output, report)\n    except (OSError, UnicodeError, ValueError, TypeError, ArithmeticError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    print(\"Students:\", report[\"shape\"][0], \"Assignments:\", report[\"shape\"][1])\n    print(\"Raw class mean:\", round(report[\"class_mean\"], 2))\n    print(\"Inspect indexes:\", report[\"inspect_student_indexes\"])\n    print(\"Report saved\")\n    return 0\n\nimport tempfile\ndef sample_scores(root):\n    path = root / \"scores.csv\"\n    path.write_text(\"80,90,100\\n60,70,80\\n40,50,60\\n\", encoding=\"utf-8\")\n    return path\n\nwith tempfile.TemporaryDirectory() as name:\n    root = Path(name)\n    source = sample_scores(root)\n    output = root / \"report.json\"\n    assert main([str(source), str(output)]) == 0\n    report = json.loads(output.read_text(encoding=\"utf-8\"))\n    print(\"Student means:\", report[\"student_means\"])\n    print(\"Assignment means:\", report[\"assignment_means\"])\n    print(\"Curved means:\", report[\"curved_student_means\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "Students: 3 Assignments: 3\nRaw class mean: 70.0\nInspect indexes: []\nReport saved\nStudent means: [90.0, 70.0, 50.0]\nAssignment means: [60.0, 70.0, 80.0]\nCurved means: [93.33333333333333, 75.0, 55.0]"
+        },
+        {
+          "t": "p",
+          "v": "Sampleमाrawstudentmeans90,70,50छन्। Assignmentmeans60,70,80छन्। 100मा5थप्दाclip100 भएकालेपहिलोcurvedmean95भन्दाकमछ। Reportकोindexstudentidentityहोइन; rawdataरpolicyदुवैजोगाऊ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Cast unknown data then assume valid scores",
+          "right": "Validate numeric kind, shape, finite values and domain before computing",
+          "why": "A conversion can hide invalid text, Boolean data or wrong matrix orientation."
+        },
+        {
+          "t": "ex",
+          "v": "Use a constant score matrix and verify zero-safe normalization/z plus upper-bound clipping.",
+          "practiceId": "27.5.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport io\nimport json\nfrom pathlib import Path\nimport sys\nimport numpy as np\n\ndef validate_scores(scores):\n    values = np.asarray(scores)\n    if values.ndim != 2 or not 1 <= values.shape[0] <= 10_000 or not 1 <= values.shape[1] <= 200:\n        raise ValueError(\"Need a nonempty student-by-assignment table within practice limits\")\n    if values.dtype.kind not in \"iuf\":\n        raise ValueError(\"Need real numeric scores, not booleans/objects/text\")\n    values = values.astype(np.float64, copy=True)\n    if not np.isfinite(values).all() or ((values < 0) | (values > 100)).any():\n        raise ValueError(\"Every score must be finite and in 0..100\")\n    return values\n\ndef analyse(scores, curve=5.0, threshold=2.0, pass_score=60.0):\n    values = validate_scores(scores)\n    if not np.isfinite(curve) or not -100 <= curve <= 100:\n        raise ValueError(\"Curve must be finite and in -100..100\")\n    if not np.isfinite(threshold) or threshold <= 0:\n        raise ValueError(\"Z threshold must be finite and positive\")\n    if not np.isfinite(pass_score) or not 0 <= pass_score <= 100:\n        raise ValueError(\"Pass score must be finite and in 0..100\")\n    student_means = values.mean(axis=1)\n    assignment_means = values.mean(axis=0)\n    spread = student_means.std(ddof=0)\n    z = np.zeros(student_means.shape, dtype=np.float64)\n    np.divide(student_means-student_means.mean(), spread, out=z, where=spread>0)\n    flags = np.absolute(z) >= threshold\n    curved = np.clip(values + curve, 0, 100)\n    low = values.min(axis=0, keepdims=True)\n    ranges = values.max(axis=0, keepdims=True)-low\n    normalized = np.zeros(values.shape, dtype=np.float64)\n    np.divide(values-low, ranges, out=normalized, where=ranges!=0)\n    return {\n        \"schema\": 1,\n        \"orientation\": \"rows=students; columns=assignments; indexes are zero-based\",\n        \"shape\": list(values.shape),\n        \"policy\": {\"curve_points\": float(curve), \"clip_range\": [0, 100],\n                   \"pass_score\": float(pass_score), \"z_threshold\": float(threshold),\n                   \"std_ddof\": 0, \"constant_column_normalized_value\": 0.0,\n                   \"zero_spread_z_value\": 0.0, \"missing_scores\": \"reject\",\n                   \"outlier_basis\": \"raw student means; inspect only\"},\n        \"student_means\": student_means.tolist(),\n        \"student_min\": values.min(axis=1).tolist(),\n        \"student_max\": values.max(axis=1).tolist(),\n        \"student_std\": values.std(axis=1, ddof=0).tolist(),\n        \"assignment_means\": assignment_means.tolist(),\n        \"assignment_min\": values.min(axis=0).tolist(),\n        \"assignment_max\": values.max(axis=0).tolist(),\n        \"assignment_std\": values.std(axis=0, ddof=0).tolist(),\n        \"class_mean\": float(values.mean()),\n        \"student_z\": z.tolist(),\n        \"inspect_student_indexes\": np.flatnonzero(flags).tolist(),\n        \"raw_pass_flags\": (student_means >= pass_score).tolist(),\n        \"curved_scores\": curved.tolist(),\n        \"curved_student_means\": curved.mean(axis=1).tolist(),\n        \"normalized_columns\": normalized.tolist(),\n    }\n\ndef load_scores(path):\n    with path.open(\"rb\") as stream:\n        raw = stream.read(2_000_001)\n    if len(raw) > 2_000_000:\n        raise ValueError(\"Practice input exceeds 2 MB\")\n    text = raw.decode(\"utf-8-sig\")\n    if not text.strip():\n        raise ValueError(\"Empty score file\")\n    # Contract: plain rectangular numeric CSV; no headers, quotes, labels or comments.\n    values = np.loadtxt(io.StringIO(text), delimiter=\",\", comments=None,\n                        dtype=np.float64, ndmin=2)\n    return validate_scores(values)\n\ndef save_report(path, report):\n    encoded = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False)\n    temporary = path.with_name(path.name + \".tmp\")\n    owned = False\n    try:\n        with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n            owned = True\n            stream.write(encoded)\n        temporary.replace(path)\n        owned = False\n    finally:\n        if owned:\n            temporary.unlink(missing_ok=True)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Vectorized grade analysis of plain numeric CSV\", allow_abbrev=False)\n    parser.add_argument(\"input\", type=Path)\n    parser.add_argument(\"output\", type=Path)\n    parser.add_argument(\"--curve\", type=float, default=5.0)\n    parser.add_argument(\"--z-threshold\", type=float, default=2.0)\n    parser.add_argument(\"--pass-score\", type=float, default=60.0)\n    args = parser.parse_args(argv)\n    try:\n        if args.input.resolve() == args.output.resolve() or args.output.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a separate .json output path\")\n        scores = load_scores(args.input)\n        report = analyse(scores, args.curve, args.z_threshold, args.pass_score)\n        report[\"input_name\"] = args.input.name\n        save_report(args.output, report)\n    except (OSError, UnicodeError, ValueError, TypeError, ArithmeticError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    print(\"Students:\", report[\"shape\"][0], \"Assignments:\", report[\"shape\"][1])\n    print(\"Raw class mean:\", round(report[\"class_mean\"], 2))\n    print(\"Inspect indexes:\", report[\"inspect_student_indexes\"])\n    print(\"Report saved\")\n    return 0\n\nscores = np.full((3, 2), 98.0)\nreport = analyse(scores, curve=5)\nprint(report[\"student_z\"])\nprint(report[\"normalized_columns\"])\nprint(report[\"curved_scores\"])\n",
+          "out": "[0.0, 0.0, 0.0]\n[[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]\n[[100.0, 100.0], [100.0, 100.0], [100.0, 100.0]]",
+          "why": "Build check: Vectorize after validating orientation/domain. Keep raw observations, explicit numerical policies and source order; save a new report only after every check succeeds."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Use four high means and one low mean; verify the descriptive flag refers to its zero-based student index.",
+          "practiceId": "27.5.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport io\nimport json\nfrom pathlib import Path\nimport sys\nimport numpy as np\n\ndef validate_scores(scores):\n    values = np.asarray(scores)\n    if values.ndim != 2 or not 1 <= values.shape[0] <= 10_000 or not 1 <= values.shape[1] <= 200:\n        raise ValueError(\"Need a nonempty student-by-assignment table within practice limits\")\n    if values.dtype.kind not in \"iuf\":\n        raise ValueError(\"Need real numeric scores, not booleans/objects/text\")\n    values = values.astype(np.float64, copy=True)\n    if not np.isfinite(values).all() or ((values < 0) | (values > 100)).any():\n        raise ValueError(\"Every score must be finite and in 0..100\")\n    return values\n\ndef analyse(scores, curve=5.0, threshold=2.0, pass_score=60.0):\n    values = validate_scores(scores)\n    if not np.isfinite(curve) or not -100 <= curve <= 100:\n        raise ValueError(\"Curve must be finite and in -100..100\")\n    if not np.isfinite(threshold) or threshold <= 0:\n        raise ValueError(\"Z threshold must be finite and positive\")\n    if not np.isfinite(pass_score) or not 0 <= pass_score <= 100:\n        raise ValueError(\"Pass score must be finite and in 0..100\")\n    student_means = values.mean(axis=1)\n    assignment_means = values.mean(axis=0)\n    spread = student_means.std(ddof=0)\n    z = np.zeros(student_means.shape, dtype=np.float64)\n    np.divide(student_means-student_means.mean(), spread, out=z, where=spread>0)\n    flags = np.absolute(z) >= threshold\n    curved = np.clip(values + curve, 0, 100)\n    low = values.min(axis=0, keepdims=True)\n    ranges = values.max(axis=0, keepdims=True)-low\n    normalized = np.zeros(values.shape, dtype=np.float64)\n    np.divide(values-low, ranges, out=normalized, where=ranges!=0)\n    return {\n        \"schema\": 1,\n        \"orientation\": \"rows=students; columns=assignments; indexes are zero-based\",\n        \"shape\": list(values.shape),\n        \"policy\": {\"curve_points\": float(curve), \"clip_range\": [0, 100],\n                   \"pass_score\": float(pass_score), \"z_threshold\": float(threshold),\n                   \"std_ddof\": 0, \"constant_column_normalized_value\": 0.0,\n                   \"zero_spread_z_value\": 0.0, \"missing_scores\": \"reject\",\n                   \"outlier_basis\": \"raw student means; inspect only\"},\n        \"student_means\": student_means.tolist(),\n        \"student_min\": values.min(axis=1).tolist(),\n        \"student_max\": values.max(axis=1).tolist(),\n        \"student_std\": values.std(axis=1, ddof=0).tolist(),\n        \"assignment_means\": assignment_means.tolist(),\n        \"assignment_min\": values.min(axis=0).tolist(),\n        \"assignment_max\": values.max(axis=0).tolist(),\n        \"assignment_std\": values.std(axis=0, ddof=0).tolist(),\n        \"class_mean\": float(values.mean()),\n        \"student_z\": z.tolist(),\n        \"inspect_student_indexes\": np.flatnonzero(flags).tolist(),\n        \"raw_pass_flags\": (student_means >= pass_score).tolist(),\n        \"curved_scores\": curved.tolist(),\n        \"curved_student_means\": curved.mean(axis=1).tolist(),\n        \"normalized_columns\": normalized.tolist(),\n    }\n\ndef load_scores(path):\n    with path.open(\"rb\") as stream:\n        raw = stream.read(2_000_001)\n    if len(raw) > 2_000_000:\n        raise ValueError(\"Practice input exceeds 2 MB\")\n    text = raw.decode(\"utf-8-sig\")\n    if not text.strip():\n        raise ValueError(\"Empty score file\")\n    # Contract: plain rectangular numeric CSV; no headers, quotes, labels or comments.\n    values = np.loadtxt(io.StringIO(text), delimiter=\",\", comments=None,\n                        dtype=np.float64, ndmin=2)\n    return validate_scores(values)\n\ndef save_report(path, report):\n    encoded = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False)\n    temporary = path.with_name(path.name + \".tmp\")\n    owned = False\n    try:\n        with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n            owned = True\n            stream.write(encoded)\n        temporary.replace(path)\n        owned = False\n    finally:\n        if owned:\n            temporary.unlink(missing_ok=True)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Vectorized grade analysis of plain numeric CSV\", allow_abbrev=False)\n    parser.add_argument(\"input\", type=Path)\n    parser.add_argument(\"output\", type=Path)\n    parser.add_argument(\"--curve\", type=float, default=5.0)\n    parser.add_argument(\"--z-threshold\", type=float, default=2.0)\n    parser.add_argument(\"--pass-score\", type=float, default=60.0)\n    args = parser.parse_args(argv)\n    try:\n        if args.input.resolve() == args.output.resolve() or args.output.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a separate .json output path\")\n        scores = load_scores(args.input)\n        report = analyse(scores, args.curve, args.z_threshold, args.pass_score)\n        report[\"input_name\"] = args.input.name\n        save_report(args.output, report)\n    except (OSError, UnicodeError, ValueError, TypeError, ArithmeticError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    print(\"Students:\", report[\"shape\"][0], \"Assignments:\", report[\"shape\"][1])\n    print(\"Raw class mean:\", round(report[\"class_mean\"], 2))\n    print(\"Inspect indexes:\", report[\"inspect_student_indexes\"])\n    print(\"Report saved\")\n    return 0\n\nscores = np.array([[90, 90], [90, 90], [90, 90], [90, 90], [0, 0]], dtype=np.float64)\nreport = analyse(scores, threshold=2)\nprint(report[\"student_z\"])\nprint(report[\"inspect_student_indexes\"])\n",
+          "out": "[0.5, 0.5, 0.5, 0.5, -2.0]\n[4]",
+          "why": "Challenge check: Vectorize after validating orientation/domain. Keep raw observations, explicit numerical policies and source order; save a new report only after every check succeeds."
+        },
+        {
+          "t": "try",
+          "q": "Why does loadtxt use ndmin=2?",
+          "code": "# Predict and explain before revealing.",
+          "a": "To retain a matrix for one row/column",
+          "why": "A singleton input still needs the student-by-assignment orientation."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.5.2",
+            "quiz": [
+              {
+                "q": "Why does loadtxt use ndmin=2?",
+                "options": [
+                  "To create two students automatically",
+                  "To replace missing scores",
+                  "To retain a matrix for one row/column"
+                ],
+                "correct": 2,
+                "why": "A singleton input still needs the student-by-assignment orientation."
+              },
+              {
+                "q": "Are inspect indexes stable student identities?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only when numeric"
+                ],
+                "correct": 0,
+                "why": "They are positions in the supplied input order."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Vectorize after validating orientation/domain. Keep raw observations, explicit numerical policies and source order; save a new report only after every check succeeds."
+        },
+        {
+          "t": "sh",
+          "v": "python grade_analysis.py scores.csv report.json\npython grade_analysis.py scores.csv curved-report.json --curve 5 --z-threshold 2 --pass-score 60\npython grade_analysis.py --help",
+          "note": "Use the supplied plain numeric scores.csv and complete project. Choose a separate JSON output; keep the source file unchanged."
+        }
+      ]
+    },
+    {
+      "title": "4. Whole-week retrieval and numerical failure tests",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Whole-week retrieval and numerical failure tests"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Verify shapes, ownership, axes, finite results and preserved input/report state."
+        },
+        {
+          "t": "new",
+          "v": "Numerical invariant",
+          "note": "An invariant is a property expected to hold: input unchanged, known output shapes, finite values, and explicit bounds/policies. Test these alongside worked numeric results."
+        },
+        {
+          "t": "new",
+          "v": "assert_allclose versus exact assertions",
+          "note": "NumPy's testing.assert_allclose checks numerical arrays under selected tolerances. Use exact shape/dtype/identity checks separately; approximate equality alone may allow unintended broadcasting."
+        },
+        {
+          "t": "new",
+          "v": "Rejection tests",
+          "note": "Tests for NaN, infinity, out-of-range values, empty/ragged input and corrupt output paths exercise different boundaries. They should preserve the prior valid report."
+        },
+        {
+          "t": "p",
+          "v": "Do not stop at 'it printed an array'. Explain which axis was reduced and prove the intended shapes. The same numbers in a vector and a column can lead to different broadcasting, and a correct-looking result can still have mutated its source through a view. Test constant-column and identical-student groups explicitly: they expose zero denominators that random examples might miss. The accompanying project tests check malformed CSV, out-of-range/nonfinite data, one row/column, output preservation and the absence of Python numerical loops. For a floating result, choose tolerances for the scale and also assert its shape. Finish the week by explaining a broadcasting example and writing a validated analysis function without copying."
+        },
+        {
+          "t": "syn",
+          "v": "assert actual.shape == expected.shape\nnp.testing.assert_allclose(actual,expected,rtol=...,atol=...)\nassert input unchanged; assert finite policies\nassert malformed input fails before report replacement",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import argparse\nimport io\nimport json\nfrom pathlib import Path\nimport sys\nimport numpy as np\n\ndef validate_scores(scores):\n    values = np.asarray(scores)\n    if values.ndim != 2 or not 1 <= values.shape[0] <= 10_000 or not 1 <= values.shape[1] <= 200:\n        raise ValueError(\"Need a nonempty student-by-assignment table within practice limits\")\n    if values.dtype.kind not in \"iuf\":\n        raise ValueError(\"Need real numeric scores, not booleans/objects/text\")\n    values = values.astype(np.float64, copy=True)\n    if not np.isfinite(values).all() or ((values < 0) | (values > 100)).any():\n        raise ValueError(\"Every score must be finite and in 0..100\")\n    return values\n\ndef analyse(scores, curve=5.0, threshold=2.0, pass_score=60.0):\n    values = validate_scores(scores)\n    if not np.isfinite(curve) or not -100 <= curve <= 100:\n        raise ValueError(\"Curve must be finite and in -100..100\")\n    if not np.isfinite(threshold) or threshold <= 0:\n        raise ValueError(\"Z threshold must be finite and positive\")\n    if not np.isfinite(pass_score) or not 0 <= pass_score <= 100:\n        raise ValueError(\"Pass score must be finite and in 0..100\")\n    student_means = values.mean(axis=1)\n    assignment_means = values.mean(axis=0)\n    spread = student_means.std(ddof=0)\n    z = np.zeros(student_means.shape, dtype=np.float64)\n    np.divide(student_means-student_means.mean(), spread, out=z, where=spread>0)\n    flags = np.absolute(z) >= threshold\n    curved = np.clip(values + curve, 0, 100)\n    low = values.min(axis=0, keepdims=True)\n    ranges = values.max(axis=0, keepdims=True)-low\n    normalized = np.zeros(values.shape, dtype=np.float64)\n    np.divide(values-low, ranges, out=normalized, where=ranges!=0)\n    return {\n        \"schema\": 1,\n        \"orientation\": \"rows=students; columns=assignments; indexes are zero-based\",\n        \"shape\": list(values.shape),\n        \"policy\": {\"curve_points\": float(curve), \"clip_range\": [0, 100],\n                   \"pass_score\": float(pass_score), \"z_threshold\": float(threshold),\n                   \"std_ddof\": 0, \"constant_column_normalized_value\": 0.0,\n                   \"zero_spread_z_value\": 0.0, \"missing_scores\": \"reject\",\n                   \"outlier_basis\": \"raw student means; inspect only\"},\n        \"student_means\": student_means.tolist(),\n        \"student_min\": values.min(axis=1).tolist(),\n        \"student_max\": values.max(axis=1).tolist(),\n        \"student_std\": values.std(axis=1, ddof=0).tolist(),\n        \"assignment_means\": assignment_means.tolist(),\n        \"assignment_min\": values.min(axis=0).tolist(),\n        \"assignment_max\": values.max(axis=0).tolist(),\n        \"assignment_std\": values.std(axis=0, ddof=0).tolist(),\n        \"class_mean\": float(values.mean()),\n        \"student_z\": z.tolist(),\n        \"inspect_student_indexes\": np.flatnonzero(flags).tolist(),\n        \"raw_pass_flags\": (student_means >= pass_score).tolist(),\n        \"curved_scores\": curved.tolist(),\n        \"curved_student_means\": curved.mean(axis=1).tolist(),\n        \"normalized_columns\": normalized.tolist(),\n    }\n\ndef load_scores(path):\n    with path.open(\"rb\") as stream:\n        raw = stream.read(2_000_001)\n    if len(raw) > 2_000_000:\n        raise ValueError(\"Practice input exceeds 2 MB\")\n    text = raw.decode(\"utf-8-sig\")\n    if not text.strip():\n        raise ValueError(\"Empty score file\")\n    # Contract: plain rectangular numeric CSV; no headers, quotes, labels or comments.\n    values = np.loadtxt(io.StringIO(text), delimiter=\",\", comments=None,\n                        dtype=np.float64, ndmin=2)\n    return validate_scores(values)\n\ndef save_report(path, report):\n    encoded = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False)\n    temporary = path.with_name(path.name + \".tmp\")\n    owned = False\n    try:\n        with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n            owned = True\n            stream.write(encoded)\n        temporary.replace(path)\n        owned = False\n    finally:\n        if owned:\n            temporary.unlink(missing_ok=True)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Vectorized grade analysis of plain numeric CSV\", allow_abbrev=False)\n    parser.add_argument(\"input\", type=Path)\n    parser.add_argument(\"output\", type=Path)\n    parser.add_argument(\"--curve\", type=float, default=5.0)\n    parser.add_argument(\"--z-threshold\", type=float, default=2.0)\n    parser.add_argument(\"--pass-score\", type=float, default=60.0)\n    args = parser.parse_args(argv)\n    try:\n        if args.input.resolve() == args.output.resolve() or args.output.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a separate .json output path\")\n        scores = load_scores(args.input)\n        report = analyse(scores, args.curve, args.z_threshold, args.pass_score)\n        report[\"input_name\"] = args.input.name\n        save_report(args.output, report)\n    except (OSError, UnicodeError, ValueError, TypeError, ArithmeticError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    print(\"Students:\", report[\"shape\"][0], \"Assignments:\", report[\"shape\"][1])\n    print(\"Raw class mean:\", round(report[\"class_mean\"], 2))\n    print(\"Inspect indexes:\", report[\"inspect_student_indexes\"])\n    print(\"Report saved\")\n    return 0\n\nscores = np.array([[10.0, 20.0], [30.0, 40.0]])\nbefore = scores.copy()\nreport = analyse(scores)\nactual = np.array(report[\"student_means\"])\nexpected = np.array([15.0, 35.0])\nassert actual.shape == expected.shape\nnp.testing.assert_allclose(actual, expected, rtol=1e-12, atol=1e-12)\nprint(\"Means verified\")\nprint(\"Input unchanged:\", np.array_equal(scores, before))\n"
+        },
+        {
+          "t": "out",
+          "v": "Means verified\nInput unchanged: True"
+        },
+        {
+          "t": "p",
+          "v": "Valuesका साथshapeपनिcheckedछ। Originalscorescopyसँगमेलखायो, mutateभएकोछैन। Approximateassertionमा unintendedbroadcastingलुक्नसक्नेभएकालेshapeछुट्टैजाँच।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Approximate numeric equality alone proves every semantic dimension is correct",
+          "right": "Assert expected shape/axis meaning separately from tolerance-based value checks",
+          "why": "A value comparison can broadcast arrays and does not encode student/assignment labels."
+        },
+        {
+          "t": "ex",
+          "v": "Reject NaN, infinity and score101 using the same validation contract.",
+          "practiceId": "27.5.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport io\nimport json\nfrom pathlib import Path\nimport sys\nimport numpy as np\n\ndef validate_scores(scores):\n    values = np.asarray(scores)\n    if values.ndim != 2 or not 1 <= values.shape[0] <= 10_000 or not 1 <= values.shape[1] <= 200:\n        raise ValueError(\"Need a nonempty student-by-assignment table within practice limits\")\n    if values.dtype.kind not in \"iuf\":\n        raise ValueError(\"Need real numeric scores, not booleans/objects/text\")\n    values = values.astype(np.float64, copy=True)\n    if not np.isfinite(values).all() or ((values < 0) | (values > 100)).any():\n        raise ValueError(\"Every score must be finite and in 0..100\")\n    return values\n\ndef analyse(scores, curve=5.0, threshold=2.0, pass_score=60.0):\n    values = validate_scores(scores)\n    if not np.isfinite(curve) or not -100 <= curve <= 100:\n        raise ValueError(\"Curve must be finite and in -100..100\")\n    if not np.isfinite(threshold) or threshold <= 0:\n        raise ValueError(\"Z threshold must be finite and positive\")\n    if not np.isfinite(pass_score) or not 0 <= pass_score <= 100:\n        raise ValueError(\"Pass score must be finite and in 0..100\")\n    student_means = values.mean(axis=1)\n    assignment_means = values.mean(axis=0)\n    spread = student_means.std(ddof=0)\n    z = np.zeros(student_means.shape, dtype=np.float64)\n    np.divide(student_means-student_means.mean(), spread, out=z, where=spread>0)\n    flags = np.absolute(z) >= threshold\n    curved = np.clip(values + curve, 0, 100)\n    low = values.min(axis=0, keepdims=True)\n    ranges = values.max(axis=0, keepdims=True)-low\n    normalized = np.zeros(values.shape, dtype=np.float64)\n    np.divide(values-low, ranges, out=normalized, where=ranges!=0)\n    return {\n        \"schema\": 1,\n        \"orientation\": \"rows=students; columns=assignments; indexes are zero-based\",\n        \"shape\": list(values.shape),\n        \"policy\": {\"curve_points\": float(curve), \"clip_range\": [0, 100],\n                   \"pass_score\": float(pass_score), \"z_threshold\": float(threshold),\n                   \"std_ddof\": 0, \"constant_column_normalized_value\": 0.0,\n                   \"zero_spread_z_value\": 0.0, \"missing_scores\": \"reject\",\n                   \"outlier_basis\": \"raw student means; inspect only\"},\n        \"student_means\": student_means.tolist(),\n        \"student_min\": values.min(axis=1).tolist(),\n        \"student_max\": values.max(axis=1).tolist(),\n        \"student_std\": values.std(axis=1, ddof=0).tolist(),\n        \"assignment_means\": assignment_means.tolist(),\n        \"assignment_min\": values.min(axis=0).tolist(),\n        \"assignment_max\": values.max(axis=0).tolist(),\n        \"assignment_std\": values.std(axis=0, ddof=0).tolist(),\n        \"class_mean\": float(values.mean()),\n        \"student_z\": z.tolist(),\n        \"inspect_student_indexes\": np.flatnonzero(flags).tolist(),\n        \"raw_pass_flags\": (student_means >= pass_score).tolist(),\n        \"curved_scores\": curved.tolist(),\n        \"curved_student_means\": curved.mean(axis=1).tolist(),\n        \"normalized_columns\": normalized.tolist(),\n    }\n\ndef load_scores(path):\n    with path.open(\"rb\") as stream:\n        raw = stream.read(2_000_001)\n    if len(raw) > 2_000_000:\n        raise ValueError(\"Practice input exceeds 2 MB\")\n    text = raw.decode(\"utf-8-sig\")\n    if not text.strip():\n        raise ValueError(\"Empty score file\")\n    # Contract: plain rectangular numeric CSV; no headers, quotes, labels or comments.\n    values = np.loadtxt(io.StringIO(text), delimiter=\",\", comments=None,\n                        dtype=np.float64, ndmin=2)\n    return validate_scores(values)\n\ndef save_report(path, report):\n    encoded = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False)\n    temporary = path.with_name(path.name + \".tmp\")\n    owned = False\n    try:\n        with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n            owned = True\n            stream.write(encoded)\n        temporary.replace(path)\n        owned = False\n    finally:\n        if owned:\n            temporary.unlink(missing_ok=True)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Vectorized grade analysis of plain numeric CSV\", allow_abbrev=False)\n    parser.add_argument(\"input\", type=Path)\n    parser.add_argument(\"output\", type=Path)\n    parser.add_argument(\"--curve\", type=float, default=5.0)\n    parser.add_argument(\"--z-threshold\", type=float, default=2.0)\n    parser.add_argument(\"--pass-score\", type=float, default=60.0)\n    args = parser.parse_args(argv)\n    try:\n        if args.input.resolve() == args.output.resolve() or args.output.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a separate .json output path\")\n        scores = load_scores(args.input)\n        report = analyse(scores, args.curve, args.z_threshold, args.pass_score)\n        report[\"input_name\"] = args.input.name\n        save_report(args.output, report)\n    except (OSError, UnicodeError, ValueError, TypeError, ArithmeticError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    print(\"Students:\", report[\"shape\"][0], \"Assignments:\", report[\"shape\"][1])\n    print(\"Raw class mean:\", round(report[\"class_mean\"], 2))\n    print(\"Inspect indexes:\", report[\"inspect_student_indexes\"])\n    print(\"Report saved\")\n    return 0\n\nfor scores in [np.array([[np.nan]]), np.array([[np.inf]]), np.array([[101.0]])]:\n    try:\n        validate_scores(scores)\n    except ValueError:\n        print(\"Rejected invalid scores\")\n",
+          "out": "Rejected invalid scores\nRejected invalid scores\nRejected invalid scores",
+          "why": "Build check: Week27 mastery: read shapes/axes, control ownership/dtype, predict broadcasting, validate numerical domains, handle zero/missing cases and verify a complete vectorized report."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify a one-student, one-assignment table keeps the2-D shape and zero-spread policies.",
+          "practiceId": "27.5.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport io\nimport json\nfrom pathlib import Path\nimport sys\nimport numpy as np\n\ndef validate_scores(scores):\n    values = np.asarray(scores)\n    if values.ndim != 2 or not 1 <= values.shape[0] <= 10_000 or not 1 <= values.shape[1] <= 200:\n        raise ValueError(\"Need a nonempty student-by-assignment table within practice limits\")\n    if values.dtype.kind not in \"iuf\":\n        raise ValueError(\"Need real numeric scores, not booleans/objects/text\")\n    values = values.astype(np.float64, copy=True)\n    if not np.isfinite(values).all() or ((values < 0) | (values > 100)).any():\n        raise ValueError(\"Every score must be finite and in 0..100\")\n    return values\n\ndef analyse(scores, curve=5.0, threshold=2.0, pass_score=60.0):\n    values = validate_scores(scores)\n    if not np.isfinite(curve) or not -100 <= curve <= 100:\n        raise ValueError(\"Curve must be finite and in -100..100\")\n    if not np.isfinite(threshold) or threshold <= 0:\n        raise ValueError(\"Z threshold must be finite and positive\")\n    if not np.isfinite(pass_score) or not 0 <= pass_score <= 100:\n        raise ValueError(\"Pass score must be finite and in 0..100\")\n    student_means = values.mean(axis=1)\n    assignment_means = values.mean(axis=0)\n    spread = student_means.std(ddof=0)\n    z = np.zeros(student_means.shape, dtype=np.float64)\n    np.divide(student_means-student_means.mean(), spread, out=z, where=spread>0)\n    flags = np.absolute(z) >= threshold\n    curved = np.clip(values + curve, 0, 100)\n    low = values.min(axis=0, keepdims=True)\n    ranges = values.max(axis=0, keepdims=True)-low\n    normalized = np.zeros(values.shape, dtype=np.float64)\n    np.divide(values-low, ranges, out=normalized, where=ranges!=0)\n    return {\n        \"schema\": 1,\n        \"orientation\": \"rows=students; columns=assignments; indexes are zero-based\",\n        \"shape\": list(values.shape),\n        \"policy\": {\"curve_points\": float(curve), \"clip_range\": [0, 100],\n                   \"pass_score\": float(pass_score), \"z_threshold\": float(threshold),\n                   \"std_ddof\": 0, \"constant_column_normalized_value\": 0.0,\n                   \"zero_spread_z_value\": 0.0, \"missing_scores\": \"reject\",\n                   \"outlier_basis\": \"raw student means; inspect only\"},\n        \"student_means\": student_means.tolist(),\n        \"student_min\": values.min(axis=1).tolist(),\n        \"student_max\": values.max(axis=1).tolist(),\n        \"student_std\": values.std(axis=1, ddof=0).tolist(),\n        \"assignment_means\": assignment_means.tolist(),\n        \"assignment_min\": values.min(axis=0).tolist(),\n        \"assignment_max\": values.max(axis=0).tolist(),\n        \"assignment_std\": values.std(axis=0, ddof=0).tolist(),\n        \"class_mean\": float(values.mean()),\n        \"student_z\": z.tolist(),\n        \"inspect_student_indexes\": np.flatnonzero(flags).tolist(),\n        \"raw_pass_flags\": (student_means >= pass_score).tolist(),\n        \"curved_scores\": curved.tolist(),\n        \"curved_student_means\": curved.mean(axis=1).tolist(),\n        \"normalized_columns\": normalized.tolist(),\n    }\n\ndef load_scores(path):\n    with path.open(\"rb\") as stream:\n        raw = stream.read(2_000_001)\n    if len(raw) > 2_000_000:\n        raise ValueError(\"Practice input exceeds 2 MB\")\n    text = raw.decode(\"utf-8-sig\")\n    if not text.strip():\n        raise ValueError(\"Empty score file\")\n    # Contract: plain rectangular numeric CSV; no headers, quotes, labels or comments.\n    values = np.loadtxt(io.StringIO(text), delimiter=\",\", comments=None,\n                        dtype=np.float64, ndmin=2)\n    return validate_scores(values)\n\ndef save_report(path, report):\n    encoded = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False)\n    temporary = path.with_name(path.name + \".tmp\")\n    owned = False\n    try:\n        with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n            owned = True\n            stream.write(encoded)\n        temporary.replace(path)\n        owned = False\n    finally:\n        if owned:\n            temporary.unlink(missing_ok=True)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Vectorized grade analysis of plain numeric CSV\", allow_abbrev=False)\n    parser.add_argument(\"input\", type=Path)\n    parser.add_argument(\"output\", type=Path)\n    parser.add_argument(\"--curve\", type=float, default=5.0)\n    parser.add_argument(\"--z-threshold\", type=float, default=2.0)\n    parser.add_argument(\"--pass-score\", type=float, default=60.0)\n    args = parser.parse_args(argv)\n    try:\n        if args.input.resolve() == args.output.resolve() or args.output.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a separate .json output path\")\n        scores = load_scores(args.input)\n        report = analyse(scores, args.curve, args.z_threshold, args.pass_score)\n        report[\"input_name\"] = args.input.name\n        save_report(args.output, report)\n    except (OSError, UnicodeError, ValueError, TypeError, ArithmeticError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    print(\"Students:\", report[\"shape\"][0], \"Assignments:\", report[\"shape\"][1])\n    print(\"Raw class mean:\", round(report[\"class_mean\"], 2))\n    print(\"Inspect indexes:\", report[\"inspect_student_indexes\"])\n    print(\"Report saved\")\n    return 0\n\nreport = analyse(np.array([[75.0]]))\nprint(report[\"shape\"], report[\"student_means\"])\nprint(report[\"student_z\"], report[\"normalized_columns\"])\n",
+          "out": "[1, 1] [75.0]\n[0.0] [[0.0]]",
+          "why": "Challenge check: Week27 mastery: read shapes/axes, control ownership/dtype, predict broadcasting, validate numerical domains, handle zero/missing cases and verify a complete vectorized report."
+        },
+        {
+          "t": "try",
+          "q": "Does list *2 double its numbers?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No; it repeats the list",
+          "why": "List and ndarray arithmetic differ."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:27.5.3",
+            "quiz": [
+              {
+                "q": "Does list *2 double its numbers?",
+                "options": [
+                  "No; it repeats the list",
+                  "Yes",
+                  "Only for int64"
+                ],
+                "correct": 0,
+                "why": "List and ndarray arithmetic differ."
+              },
+              {
+                "q": "What is size for shape(2,3)?",
+                "options": [
+                  "3",
+                  "6",
+                  "2"
+                ],
+                "correct": 1,
+                "why": "Size is the product of axis lengths."
+              },
+              {
+                "q": "Does empty guarantee zeros?",
+                "options": [
+                  "Yes",
+                  "Only float64",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Fill its buffer before reading."
+              },
+              {
+                "q": "Does arange normally include stop?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only with seed"
+                ],
+                "correct": 0,
+                "why": "Stop is excluded under its usual contract."
+              },
+              {
+                "q": "Can a basic-slice edit mutate its source?",
+                "options": [
+                  "Only lists",
+                  "Yes",
+                  "No"
+                ],
+                "correct": 1,
+                "why": "Basic slices normally share storage."
+              },
+              {
+                "q": "Which combines Boolean array comparisons?",
+                "options": [
+                  "Python and",
+                  "A CSV delimiter",
+                  "& with parentheses"
+                ],
+                "correct": 2,
+                "why": "Use element-wise logic."
+              },
+              {
+                "q": "What does ndarray * mean?",
+                "options": [
+                  "Element-wise multiplication",
+                  "Always matrix multiplication",
+                  "Transpose"
+                ],
+                "correct": 0,
+                "why": "Matrix multiplication uses @."
+              },
+              {
+                "q": "How are broadcasting axes aligned?",
+                "options": [
+                  "Only total size",
+                  "From the right",
+                  "By variable title"
+                ],
+                "correct": 1,
+                "why": "Aligned lengths must match or be1."
+              },
+              {
+                "q": "For students×assignments, what does mean(axis0) leave?",
+                "options": [
+                  "One per student",
+                  "A ZIP",
+                  "One value per assignment"
+                ],
+                "correct": 2,
+                "why": "Axis0 students are reduced."
+              },
+              {
+                "q": "Does argmax return the maximum value?",
+                "options": [
+                  "No; its index",
+                  "Yes",
+                  "Only tied scores"
+                ],
+                "correct": 0,
+                "why": "Positions and values differ."
+              },
+              {
+                "q": "Does a one-dimensional transpose add an axis?",
+                "options": [
+                  "Only under100",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Use newaxis for a column."
+              },
+              {
+                "q": "Must a z-score flag be deleted automatically?",
+                "options": [
+                  "Yes",
+                  "Only for grades",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "It is a descriptive inspection signal under stated policy."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Week27 mastery: read shapes/axes, control ownership/dtype, predict broadcasting, validate numerical domains, handle zero/missing cases and verify a complete vectorized report."
+        },
+        {
+          "t": "p",
+          "v": "Primary references: https://numpy.org/doc/stable/user/absolute_beginners.html · https://numpy.org/doc/stable/user/basics.broadcasting.html · https://numpy.org/doc/stable/user/basics.copies.html · https://numpy.org/doc/stable/user/basics.types.html · https://numpy.org/doc/stable/reference/random/generator.html · https://numpy.org/doc/stable/reference/generated/numpy.std.html · https://numpy.org/doc/stable/reference/generated/numpy.divide.html · https://numpy.org/doc/stable/reference/generated/numpy.loadtxt.html. The original explanations, fixtures, complete examples/outputs, practice and solutions are included for offline study."
+        }
+      ]
+    }
+  ]
+},
 };
 
 const REST_DAY = ["Review & rest",
