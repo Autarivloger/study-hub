@@ -34575,6 +34575,2943 @@ const DAY_TEACH = {
     }
   ]
 },
+"26.0": {
+  "parts": [
+    {
+      "title": "1. Argparse: positional inputs, options and flags",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Argparse: positional inputs, options and flags"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Turn a hard-coded script into a predictable command-line interface."
+        },
+        {
+          "t": "new",
+          "v": "CLI; argv; Namespace",
+          "note": "A CLI accepts command-line tokens. argparse parses argv into a Namespace whose attributes hold validated option values."
+        },
+        {
+          "t": "new",
+          "v": "Positional argument versus option",
+          "note": "A positional argument is chosen by its position; --limit is a named option with a value. --dry-run is an on/off flag using action='store_true'."
+        },
+        {
+          "t": "new",
+          "v": "allow_abbrev=False",
+          "note": "Disable automatic long-option abbreviation in scripts used by schedulers so a future option cannot change how an abbreviated command is interpreted."
+        },
+        {
+          "t": "p",
+          "v": "Weeks 23–25 used small command-line programs. This week makes their interface deliberate. Start with a required input path, a numeric limit and a dry-run flag. Pass a list to parse_args in the example so it runs without your terminal arguments; a real main() normally parses the supplied argv or sys.argv. Parsing converts tokens, but your program still needs domain checks such as positive limits and readable files. A flag must use store_true: type=bool would treat the nonempty string 'false' as True. Keep the parser separate from the function that performs work."
+        },
+        {
+          "t": "syn",
+          "v": "parser.add_argument(\"input\")\nparser.add_argument(\"--limit\", type=int, default=10)\nparser.add_argument(\"--dry-run\", action=\"store_true\")\nargs = parser.parse_args(argv)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import argparse\nparser = argparse.ArgumentParser(prog=\"report\", allow_abbrev=False)\nparser.add_argument(\"input\")\nparser.add_argument(\"--limit\", type=int, default=10)\nparser.add_argument(\"--dry-run\", action=\"store_true\")\nargs = parser.parse_args([\"sales.csv\", \"--limit\", \"3\", \"--dry-run\"])\nprint(args.input, args.limit, args.dry_run)\nprint(type(args.limit).__name__)\n"
+        },
+        {
+          "t": "out",
+          "v": "sales.csv 3 True\nint"
+        },
+        {
+          "t": "p",
+          "v": "sales.csv positional input हो, --limit 3 named value र --dry-run flag। Example ले file पढेको छैन; arguments मात्र parse भएका हुन्। Input valid format मा आएपछि पनि file/domain validation छुट्टै चाहिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "parser.add_argument(\"--dry-run\", type=bool)",
+          "right": "parser.add_argument(\"--dry-run\", action=\"store_true\")",
+          "why": "bool('false') is True because the string is nonempty; flags should have explicit presence semantics."
+        },
+        {
+          "t": "ex",
+          "v": "Add --format with choices csv/json and verify the selected format.",
+          "practiceId": "26.0.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--format\", choices=[\"csv\", \"json\"], default=\"csv\")\nprint(parser.parse_args([\"--format\", \"json\"]).format)\n",
+          "out": "json",
+          "why": "Build check: Use clear positional inputs, explicit options and presence-based flags. Parsing is one boundary; validating the domain and performing work are separate."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify an absent store_true flag is False rather than an empty string.",
+          "practiceId": "26.0.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--dry-run\", action=\"store_true\")\nprint(parser.parse_args([]).dry_run)\nprint(bool(\"false\"))\n",
+          "out": "False\nTrue",
+          "why": "Challenge check: Use clear positional inputs, explicit options and presence-based flags. Parsing is one boundary; validating the domain and performing work are separate."
+        },
+        {
+          "t": "try",
+          "q": "Does type=bool parse the string false as False?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Nonempty strings are truthy; use proper flags."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.0.0",
+            "quiz": [
+              {
+                "q": "Does type=bool parse the string false as False?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only with a default"
+                ],
+                "correct": 0,
+                "why": "Nonempty strings are truthy; use proper flags."
+              },
+              {
+                "q": "Does parsing an input filename prove that file exists?",
+                "options": [
+                  "Only if it ends in csv",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "File existence/shape requires further validation."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Use clear positional inputs, explicit options and presence-based flags. Parsing is one boundary; validating the domain and performing work are separate."
+        }
+      ]
+    },
+    {
+      "title": "2. Validation, help and meaningful exit codes",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Validation, help and meaningful exit codes"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Reject invalid arguments before side effects and return a status schedulers can inspect."
+        },
+        {
+          "t": "new",
+          "v": "ArgumentTypeError; parser.error",
+          "note": "A custom converter can raise ArgumentTypeError for invalid CLI values. parser.error reports usage and normally exits with code 2."
+        },
+        {
+          "t": "new",
+          "v": "Exit status; sys.exit(main())",
+          "note": "Conventionally 0 indicates success, 1 an operational failure and 2 CLI misuse. A scheduler can inspect these without guessing from printed text."
+        },
+        {
+          "t": "new",
+          "v": "__main__ guard",
+          "note": "Only invoke the CLI when the file runs as a script. Importing its functions for tests should not automatically run the job."
+        },
+        {
+          "t": "p",
+          "v": "A useful help page describes required input, units and effects. Invalid syntax should fail before any output file, email or GUI action. The example catches SystemExit only in a test so the lesson can display its status; production should let CLI misuse terminate. Keep operational failures distinct: 'input file unavailable' is not the same as 'unknown option'. Write main(argv=None) to return a status, and end the actual script with sys.exit(main()). Printing FAILED while returning 0 can fool Task Scheduler into reporting success."
+        },
+        {
+          "t": "syn",
+          "v": "def positive(value): validate and return int\nparser.add_argument(\"--count\", type=positive)\nif __name__ == \"__main__\": sys.exit(main())",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import argparse, contextlib, io\ndef positive(text):\n    value = int(text)\n    if value < 1:\n        raise argparse.ArgumentTypeError(\"count must be positive\")\n    return value\nparser = argparse.ArgumentParser(prog=\"job\")\nparser.add_argument(\"--count\", type=positive, default=1)\nprint(\"Help includes count:\", \"--count\" in parser.format_help())\nwith contextlib.redirect_stderr(io.StringIO()):\n    try:\n        parser.parse_args([\"--count\", \"0\"])\n    except SystemExit as error:\n        print(\"CLI status:\", error.code)\n"
+        },
+        {
+          "t": "out",
+          "v": "Help includes count: True\nCLI status: 2"
+        },
+        {
+          "t": "p",
+          "v": "0 count reject हुँदा code 2 आउँछ। stderr capture test को लागि हो, failure लुकाउन होइन। Scheduler लाई failure थाहा दिन actual script को exit status सही चाहिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "print(\"FAILED\"); return 0",
+          "right": "print failure to stderr; return a nonzero status",
+          "why": "Schedulers and calling processes primarily observe the exit code, not the wording of stdout."
+        },
+        {
+          "t": "ex",
+          "v": "Write a main-like function that returns 0 on success and 1 on an operational failure.",
+          "practiceId": "26.0.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "def main(available):\n    if not available:\n        return 1\n    return 0\nprint(main(True), main(False))\n",
+          "out": "0 1",
+          "why": "Build check: Help should reveal the interface; validation should precede effects. Expose meaningful nonzero failures and keep imported modules inert."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify --help exits successfully without executing a job.",
+          "practiceId": "26.0.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse, contextlib, io\nparser = argparse.ArgumentParser(prog=\"job\")\nwith contextlib.redirect_stdout(io.StringIO()):\n    try:\n        parser.parse_args([\"--help\"])\n    except SystemExit as error:\n        print_to_show = error.code\nprint(\"Help status:\", print_to_show)\n",
+          "out": "Help status: 0",
+          "why": "Challenge check: Help should reveal the interface; validation should precede effects. Expose meaningful nonzero failures and keep imported modules inert."
+        },
+        {
+          "t": "try",
+          "q": "What is the normal argparse status for invalid CLI arguments?",
+          "code": "# Predict and explain before revealing.",
+          "a": "2",
+          "why": "Argparse reports usage and exits with code 2."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.0.1",
+            "quiz": [
+              {
+                "q": "What is the normal argparse status for invalid CLI arguments?",
+                "options": [
+                  "Always 100",
+                  "2",
+                  "0"
+                ],
+                "correct": 1,
+                "why": "Argparse reports usage and exits with code 2."
+              },
+              {
+                "q": "What should a failed scheduled operation return?",
+                "options": [
+                  "Always zero",
+                  "Only a success message",
+                  "A nonzero status"
+                ],
+                "correct": 2,
+                "why": "The caller needs a machine-readable failure signal."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Help should reveal the interface; validation should precede effects. Expose meaningful nonzero failures and keep imported modules inert."
+        }
+      ]
+    },
+    {
+      "title": "3. Subcommands: plan, run and verify",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Subcommands: plan, run and verify"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Use explicit command names to separate inspection, execution and verification."
+        },
+        {
+          "t": "new",
+          "v": "add_subparsers; required=True",
+          "note": "A subparser provides a CLI for a named operation. Requiring one prevents silently choosing a state-changing default."
+        },
+        {
+          "t": "new",
+          "v": "set_defaults handler",
+          "note": "Attach a callable to a parsed command; dispatch through that handler rather than a long chain of string comparisons."
+        },
+        {
+          "t": "new",
+          "v": "Pure planning",
+          "note": "A plan describes intended effects without performing them. Keeping planning functions free of writes makes both CLI use and tests clearer."
+        },
+        {
+          "t": "p",
+          "v": "A backup tool needs more than options: plan shows proposed files, run executes and verify checks a saved result. These are different user intentions, so name them explicitly. The fixture handlers below only return descriptive text; actual work is introduced later. set_defaults puts the chosen handler on Namespace. Each handler still receives validated inputs and must enforce its own effects. Subcommands reduce accidental execution only when the implementation respects that boundary. Do not make plan create folders or send a test email."
+        },
+        {
+          "t": "syn",
+          "v": "sub = parser.add_subparsers(dest=\"command\", required=True)\nplan = sub.add_parser(\"plan\")\nplan.set_defaults(handler=plan_job)\nargs.handler(args)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import argparse\ndef plan(args):\n    return \"PLAN \" + args.source\ndef verify(args):\n    return \"VERIFY \" + args.source\nparser = argparse.ArgumentParser()\ncommands = parser.add_subparsers(dest=\"command\", required=True)\nfor name, handler in [(\"plan\", plan), (\"verify\", verify)]:\n    command = commands.add_parser(name)\n    command.add_argument(\"source\")\n    command.set_defaults(handler=handler)\nargs = parser.parse_args([\"plan\", \"notes\"])\nprint(args.command, args.handler(args))\n"
+        },
+        {
+          "t": "out",
+          "v": "plan PLAN notes"
+        },
+        {
+          "t": "p",
+          "v": "plan र verify अलग operations हुन्। handler parsed Namespace मा जोडियो र त्यो function call भयो। Output text बनाउनु मात्रै plan demo हो; यसले backup copy गरेको छैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "No command supplied -> default to overwriting output",
+          "right": "Require an explicit command and keep plan free of effects",
+          "why": "A missing command should not guess a destructive or external action."
+        },
+        {
+          "t": "ex",
+          "v": "Select verify and route it to the correct handler.",
+          "practiceId": "26.0.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nparser = argparse.ArgumentParser()\ncommands = parser.add_subparsers(dest=\"command\", required=True)\nverify = commands.add_parser(\"verify\")\nverify.set_defaults(handler=lambda args: \"Verification requested\")\nargs = parser.parse_args([\"verify\"])\nprint(args.handler(args))\n",
+          "out": "Verification requested",
+          "why": "Build check: Name operations by intent. Require explicit subcommands, dispatch to small handlers and keep plans pure."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Demonstrate a pure plan leaves its input list unchanged.",
+          "practiceId": "26.0.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "files = [\"a.txt\", \"b.txt\"]\nbefore = list(files)\ndef plan(names):\n    return [{\"source\": name, \"action\": \"copy\"} for name in sorted(names)]\nprint(plan(files))\nprint(\"Input unchanged:\", files == before)\n",
+          "out": "[{'source': 'a.txt', 'action': 'copy'}, {'source': 'b.txt', 'action': 'copy'}]\nInput unchanged: True",
+          "why": "Challenge check: Name operations by intent. Require explicit subcommands, dispatch to small handlers and keep plans pure."
+        },
+        {
+          "t": "try",
+          "q": "Should the plan command perform copies?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "A plan describes intended work without applying it."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.0.2",
+            "quiz": [
+              {
+                "q": "Should the plan command perform copies?",
+                "options": [
+                  "Yes",
+                  "Only small files",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "A plan describes intended work without applying it."
+              },
+              {
+                "q": "What does set_defaults(handler=...) provide?",
+                "options": [
+                  "A callable for command dispatch",
+                  "A new Python interpreter",
+                  "An SMTP password"
+                ],
+                "correct": 0,
+                "why": "The handler becomes an attribute on the parsed Namespace."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Name operations by intent. Require explicit subcommands, dispatch to small handlers and keep plans pure."
+        }
+      ]
+    },
+    {
+      "title": "4. Click: decorators and CLI tests",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Click: decorators and CLI tests"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Compare a small Click interface with argparse and test it without a terminal."
+        },
+        {
+          "t": "new",
+          "v": "Click; @command; @option",
+          "note": "Click is a third-party CLI library. Decorators declare commands/options and pass parsed values into a function."
+        },
+        {
+          "t": "sh",
+          "v": "python -m pip install click",
+          "note": "Argparse requires no install. Click is optional for that part's runnable tests. Install once in a practice environment."
+        },
+        {
+          "t": "new",
+          "v": "IntRange; is_flag",
+          "note": "IntRange constrains numeric values; is_flag=True gives a presence-based Boolean option. Do not mix library syntax with argparse's action names."
+        },
+        {
+          "t": "new",
+          "v": "CliRunner; result.exit_code; output",
+          "note": "Click's test runner invokes a command with tokens and captures output/status. No terminal or external action is required."
+        },
+        {
+          "t": "p",
+          "v": "Argparse needs no package installation and is enough for many tools. Click can make composed commands and decorators convenient; choose one CLI layer per project. The business function should remain reusable independently of the command library. Test defaults, invalid values and help. This fixture invokes only an echoing command, so you can see argument handling without writes. Decorators were introduced in earlier Python lessons; here the new topic is Click's parameter declarations, not a mysterious new language syntax."
+        },
+        {
+          "t": "syn",
+          "v": "@click.command()\n@click.option(\"--count\", type=click.IntRange(1,5), default=1)\n@click.option(\"--dry-run\", is_flag=True)\ndef job(count, dry_run): ...",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import click\nfrom click.testing import CliRunner\n@click.command()\n@click.option(\"--count\", type=click.IntRange(1, 5), default=1)\n@click.option(\"--dry-run\", is_flag=True)\ndef job(count, dry_run):\n    click.echo(f\"count={count} dry={dry_run}\")\nresult = CliRunner().invoke(job, [\"--count\", \"2\", \"--dry-run\"])\nprint(result.output.strip())\nprint(\"Status:\", result.exit_code)\n"
+        },
+        {
+          "t": "out",
+          "v": "count=2 dry=True\nStatus: 0"
+        },
+        {
+          "t": "p",
+          "v": "CliRunner test ले shell command चलाएको होइन; Click command function invoke गरेको हो। count integer range भित्र छ र flag True छ। Business work अलग function मा राख्न सकिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "@click.option(\"--dry-run\", action=\"store_true\")",
+          "right": "@click.option(\"--dry-run\", is_flag=True)",
+          "why": "Click and argparse use different parameter APIs."
+        },
+        {
+          "t": "ex",
+          "v": "Reject a count above 5 and check the captured status.",
+          "practiceId": "26.0.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import click\nfrom click.testing import CliRunner\n@click.command()\n@click.option(\"--count\", type=click.IntRange(1, 5))\ndef job(count):\n    click.echo(count)\nresult = CliRunner().invoke(job, [\"--count\", \"8\"])\nprint(\"Status:\", result.exit_code)\nprint(\"Range mentioned:\", \"range\" in result.output.lower())\n",
+          "out": "Status: 2\nRange mentioned: True",
+          "why": "Build check: Choose a CLI library deliberately and keep work independent. Test successful parsing, rejection and help with captured output/status."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Test that --help succeeds and lists an option.",
+          "practiceId": "26.0.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import click\nfrom click.testing import CliRunner\n@click.command()\n@click.option(\"--dry-run\", is_flag=True)\ndef job(dry_run):\n    pass\nresult = CliRunner().invoke(job, [\"--help\"])\nprint(result.exit_code, \"--dry-run\" in result.output)\n",
+          "out": "0 True",
+          "why": "Challenge check: Choose a CLI library deliberately and keep work independent. Test successful parsing, rejection and help with captured output/status."
+        },
+        {
+          "t": "try",
+          "q": "Is Click part of Python's standard library?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It is installed separately."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.0.3",
+            "quiz": [
+              {
+                "q": "Is Click part of Python's standard library?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only on Windows"
+                ],
+                "correct": 0,
+                "why": "It is installed separately."
+              },
+              {
+                "q": "What does CliRunner capture?",
+                "options": [
+                  "A real mailbox",
+                  "Output and exit status",
+                  "Your browser passwords"
+                ],
+                "correct": 1,
+                "why": "It invokes the command in a test context."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Choose a CLI library deliberately and keep work independent. Test successful parsing, rejection and help with captured output/status."
+        }
+      ]
+    }
+  ]
+},
+"26.1": {
+  "parts": [
+    {
+      "title": "1. Scheduling: trigger, job and execution environment",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Scheduling: trigger, job and execution environment"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Explain why a scheduled job needs explicit paths, account, time zone and failure reporting."
+        },
+        {
+          "t": "new",
+          "v": "Trigger versus job",
+          "note": "The trigger decides when a run is due. The job performs one finite unit of work. Keep them separate so the job can also run manually."
+        },
+        {
+          "t": "new",
+          "v": "Working directory; absolute paths",
+          "note": "An unattended process may start in a different folder from your terminal. Use absolute input/output paths and an explicit interpreter from the intended environment."
+        },
+        {
+          "t": "new",
+          "v": "Missed run; overlap policy",
+          "note": "A sleeping/offline machine can miss a trigger. A long run can overlap the next trigger. Decide whether to catch up, skip or queue instead of assuming the scheduler handles it your way."
+        },
+        {
+          "t": "p",
+          "v": "A script that works in your terminal can fail overnight because its environment is different. Record the interpreter, script path, input/output paths, account permissions, time zone and logging destination. Avoid prompts in unattended jobs: no person is there to type a password or click OK. A job should run once and exit, while Task Scheduler/cron starts it at the requested time. In-process schedulers are another design and must stay running. The following fixture describes a job; it registers no task. Later scheduling instructions are for your own practice computer after a successful manual dry-run."
+        },
+        {
+          "t": "syn",
+          "v": "trigger configuration -> launch explicit interpreter/script/arguments\njob -> validate -> work once -> log outcome -> exit",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "from pathlib import Path\nconfig = {\"time\": \"08:00\", \"timezone\": \"Asia/Tokyo\",\n          \"overlap\": \"skip\", \"missed_run\": \"manual catch-up\"}\npaths = [Path(\"practice\") / \"input\", Path(\"practice\") / \"output\"]\nprint(config[\"time\"], config[\"timezone\"])\nprint(\"Policies:\", config[\"overlap\"], \"/\", config[\"missed_run\"])\nprint(\"Unattended prompts:\", False)\n"
+        },
+        {
+          "t": "out",
+          "v": "08:00 Asia/Tokyo\nPolicies: skip / manual catch-up\nUnattended prompts: False"
+        },
+        {
+          "t": "p",
+          "v": "Trigger 08:00 हो; actual file work छुट्टै job हो। Paths demo हुन्, scheduler register भएको छैन। Computer sleep हुँदा catch-up के गर्ने र overlap के गर्ने भनेर स्पष्ट निर्णय चाहिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Assume the scheduler starts in the folder used by your terminal",
+          "right": "Configure absolute paths and a known interpreter/environment",
+          "why": "Scheduled processes can have different working directories and environment variables."
+        },
+        {
+          "t": "ex",
+          "v": "Build a command argument list from an explicit interpreter and script path; do not run it yet.",
+          "practiceId": "26.1.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "from pathlib import Path\ninterpreter = Path(\"venv\") / \"Scripts\" / \"python.exe\"\nscript = Path(\"practice\") / \"backup.py\"\ncommand = [str(interpreter), str(script), \"--dry-run\"]\nprint(command[-1], len(command))\n",
+          "out": "--dry-run 3",
+          "why": "Build check: Schedule a finite, independently testable job. Specify paths, account, time zone, missed-run behaviour and overlap policy; do not rely on an interactive terminal."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Classify two triggers arriving while a run is still active under a skip-overlap policy.",
+          "practiceId": "26.1.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "running = True\nfor trigger in [\"08:00\", \"08:05\"]:\n    print(trigger, \"skip overlap\" if running else \"start\")\n",
+          "out": "08:00 skip overlap\n08:05 skip overlap",
+          "why": "Challenge check: Schedule a finite, independently testable job. Specify paths, account, time zone, missed-run behaviour and overlap policy; do not rely on an interactive terminal."
+        },
+        {
+          "t": "try",
+          "q": "Does a scheduler necessarily use your terminal's working folder?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Execution context must be configured explicitly."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.1.0",
+            "quiz": [
+              {
+                "q": "Does a scheduler necessarily use your terminal's working folder?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only for Python"
+                ],
+                "correct": 0,
+                "why": "Execution context must be configured explicitly."
+              },
+              {
+                "q": "Who decides what happens after a missed trigger?",
+                "options": [
+                  "CSV quoting",
+                  "Your scheduler/job policy",
+                  "A product title"
+                ],
+                "correct": 1,
+                "why": "Catch-up, skip and queue behaviour differ."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Schedule a finite, independently testable job. Specify paths, account, time zone, missed-run behaviour and overlap policy; do not rely on an interactive terminal."
+        }
+      ]
+    },
+    {
+      "title": "2. Windows Task Scheduler: configure an explicit action",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Windows Task Scheduler: configure an explicit action"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Translate a tested Python CLI into a daily Windows task without embedding a password."
+        },
+        {
+          "t": "new",
+          "v": "Task Scheduler action fields",
+          "note": "Program/script is the interpreter executable; Add arguments holds script/options; Start in is the working folder. Separate fields handle paths with spaces more clearly."
+        },
+        {
+          "t": "new",
+          "v": "Task history; Last Run Result",
+          "note": "Check the task's recorded start/end and result code, then inspect the job's log. A trigger occurring is not proof the work completed."
+        },
+        {
+          "t": "new",
+          "v": "Account/session conditions",
+          "note": "The chosen account needs file permissions. GUI tasks normally need the relevant interactive session; file-only jobs do not need a visible desktop."
+        },
+        {
+          "t": "p",
+          "v": "On your practice computer open Task Scheduler, create a named task, choose a Daily trigger and check the Windows local time zone. For this week's project select the Python executable from its environment, enter a quoted full script path plus full source/destination paths in Add arguments, and set Start in to the script folder. First use --dry-run. Run the task manually, inspect its log/result, then decide power/sleep and missed-run settings. Set 'Do not start a new instance' when using the project's single-run lock. Do not put account passwords in a BAT file, public HTML or command examples. Configure any required account authentication in the operating system's own task interface. The fixture below builds fields only; no Windows task is registered by the lesson."
+        },
+        {
+          "t": "syn",
+          "v": "Program/script: full path to python.exe\nAdd arguments: quoted script + quoted input/output + --dry-run\nStart in: script directory\nDaily trigger: chosen local time",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "action = {\n    \"program\": r\"C:\\Practice\\venv\\Scripts\\python.exe\",\n    \"arguments\": r'\"C:\\Practice\\backup_job.py\" \"C:\\Practice\\notes\" \"C:\\Practice\\backups\" --dry-run',\n    \"start_in\": r\"C:\\Practice\",\n}\nprint(\"Python executable:\", action[\"program\"].endswith(\"python.exe\"))\nprint(\"Dry-run first:\", \"--dry-run\" in action[\"arguments\"])\nprint(\"Password in action:\", \"password\" in action[\"arguments\"].lower())\n"
+        },
+        {
+          "t": "out",
+          "v": "Python executable: True\nDry-run first: True\nPassword in action: False"
+        },
+        {
+          "t": "p",
+          "v": "तीन fields छुट्टाछुट्टै भरिन्छन्। Dry-run ले पहिले plan देखाउँछ। Task चलेपछि Last Run Result र आफ्नै log दुबै हेर्नुपर्छ। यो configuration example मात्र हो, तिम्रो Windows मा task बनाइएको छैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Put Python, script and options all in Program/script",
+          "right": "Separate interpreter, arguments and Start in",
+          "why": "The executable field and argument parsing are different configuration steps."
+        },
+        {
+          "t": "ex",
+          "v": "Recognize status 0 as success and status 1 as an operational failure.",
+          "practiceId": "26.1.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "for result in [0, 1]:\n    print(result, \"success\" if result == 0 else \"inspect failure log\")\n",
+          "out": "0 success\n1 inspect failure log",
+          "why": "Build check: Use separate action fields and a tested CLI. Check result plus logs, choose conditions intentionally and keep account secrets out of source."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Compare a GUI job with a file-only backup when deciding whether an interactive desktop is needed.",
+          "practiceId": "26.1.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "jobs = [(\"copy local files\", False), (\"type in an editor\", True)]\nfor name, needs_desktop in jobs:\n    print(name, \"interactive desktop needed:\", needs_desktop)\n",
+          "out": "copy local files interactive desktop needed: False\ntype in an editor interactive desktop needed: True",
+          "why": "Challenge check: Use separate action fields and a tested CLI. Check result plus logs, choose conditions intentionally and keep account secrets out of source."
+        },
+        {
+          "t": "try",
+          "q": "Does a successful trigger prove the backup completed?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "The launched job can still fail; inspect status/logs."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.1.1",
+            "quiz": [
+              {
+                "q": "Does a successful trigger prove the backup completed?",
+                "options": [
+                  "Only daily triggers",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "The launched job can still fail; inspect status/logs."
+              },
+              {
+                "q": "Where should a task account password be configured if needed?",
+                "options": [
+                  "Public HTML",
+                  "A committed BAT file",
+                  "The operating system's task authentication interface"
+                ],
+                "correct": 2,
+                "why": "Do not embed secrets in source or example arguments."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Use separate action fields and a tested CLI. Check result plus logs, choose conditions intentionally and keep account secrets out of source."
+        }
+      ]
+    },
+    {
+      "title": "3. Cron: a time expression is not the whole job",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Cron: a time expression is not the whole job"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Read a basic daily cron expression and account for its limited environment."
+        },
+        {
+          "t": "new",
+          "v": "Cron five-field expression",
+          "note": "Classic cron uses minute, hour, day of month, month and day of week, followed by a command. Implementations vary; these examples use basic daily fields."
+        },
+        {
+          "t": "new",
+          "v": "PATH; stdout/stderr redirection",
+          "note": "Cron may have a limited PATH and environment. Use explicit executable paths, and send output/error to a known log rather than assuming a terminal."
+        },
+        {
+          "t": "new",
+          "v": "Time-zone implementation differences",
+          "note": "Cron generally uses its configured scheduling time zone; per-entry time-zone support differs. Verify the installed scheduler instead of assuming CRON_TZ is universal."
+        },
+        {
+          "t": "p",
+          "v": "On a Linux practice machine, 0 8 * * * means minute 0 at hour 8 every day under that cron's configured zone. Use crontab -e to edit your own schedule after manually testing the finite command. An example command could use /home/student/venv/bin/python with absolute script/source/destination paths and append both output streams to a log. Cron starts processes; it does not guarantee the machine was awake, the job succeeded or duplicate runs were prevented. The fixture parses fields for explanation; it does not install or execute a schedule. Windows users can focus on the preceding Task Scheduler part."
+        },
+        {
+          "t": "syn",
+          "v": "0 8 * * * /absolute/python /absolute/job.py ... >> /absolute/job.log 2>&1",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "fields = \"0 8 * * *\".split()\nlabels = [\"minute\", \"hour\", \"day-of-month\", \"month\", \"day-of-week\"]\nfor label, value in zip(labels, fields):\n    print(label + \":\", value)\n"
+        },
+        {
+          "t": "out",
+          "v": "minute: 0\nhour: 8\nday-of-month: *\nmonth: *\nday-of-week: *"
+        },
+        {
+          "t": "p",
+          "v": "पहिलो field minute हो, दोस्रो hour। 0 8 ले daily08:00 बताउँछ। Time zone, log path र interpreter अर्को configuration हो; expression मात्रै पूर्ण automation होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Assume python on PATH and use relative input filenames",
+          "right": "Use a known interpreter and absolute paths in the scheduled command",
+          "why": "A restricted environment can invoke a different interpreter or fail to locate files."
+        },
+        {
+          "t": "ex",
+          "v": "Read a 30 18 daily expression as 18:30.",
+          "practiceId": "26.1.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "minute, hour, *_ = \"30 18 * * *\".split()\nprint(f\"Daily {int(hour):02d}:{int(minute):02d}\")\n",
+          "out": "Daily 18:30",
+          "why": "Build check: Read cron fields in order, verify the scheduler's time zone/environment and capture failures. A time expression alone does not provide durability or overlap control."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Explain redirection of both output streams using a prepared command string without executing it.",
+          "practiceId": "26.1.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "command = \"/home/student/venv/bin/python /home/student/job.py --dry-run >> /home/student/job.log 2>&1\"\nprint(\"Append log:\", \">>\" in command)\nprint(\"Include stderr:\", \"2>&1\" in command)\n",
+          "out": "Append log: True\nInclude stderr: True",
+          "why": "Challenge check: Read cron fields in order, verify the scheduler's time zone/environment and capture failures. A time expression alone does not provide durability or overlap control."
+        },
+        {
+          "t": "try",
+          "q": "What is the first field in the basic five-field cron syntax?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Minute",
+          "why": "The order starts minute, hour, day-of-month, month, day-of-week."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.1.2",
+            "quiz": [
+              {
+                "q": "What is the first field in the basic five-field cron syntax?",
+                "options": [
+                  "Year",
+                  "Interpreter name",
+                  "Minute"
+                ],
+                "correct": 2,
+                "why": "The order starts minute, hour, day-of-month, month, day-of-week."
+              },
+              {
+                "q": "Is per-entry time-zone support identical in every cron?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only for Python"
+                ],
+                "correct": 0,
+                "why": "Check the installed implementation."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Read cron fields in order, verify the scheduler's time zone/environment and capture failures. A time expression alone does not provide durability or overlap control."
+        }
+      ]
+    },
+    {
+      "title": "4. An in-process scheduler must stay alive",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. An in-process scheduler must stay alive"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Use schedule for simple recurring functions and understand its persistence limits."
+        },
+        {
+          "t": "new",
+          "v": "schedule.Scheduler; every; do",
+          "note": "The third-party schedule library registers functions in a Python process. A Scheduler instance keeps this example's jobs separate from other test state."
+        },
+        {
+          "t": "sh",
+          "v": "python -m pip install schedule",
+          "note": "Install once. Forced run_all examples do not wait for a real trigger or register an OS task."
+        },
+        {
+          "t": "new",
+          "v": "run_pending; run_all; cancel_job",
+          "note": "run_pending runs due jobs while the process polls; run_all forces registered jobs for testing. cancel_job removes a registration."
+        },
+        {
+          "t": "new",
+          "v": "No built-in durable job store",
+          "note": "The library does not persist registrations across process restarts or automatically replay every missed interval. Long jobs block its default sequential execution."
+        },
+        {
+          "t": "p",
+          "v": "An in-process scheduler is useful for a small script you deliberately keep running. Register the job once, then a real loop calls run_pending and sleeps briefly. Our runnable example uses run_all to demonstrate the function immediately; it does not pretend that a minute passed. Closing Python stops this scheduler. Use an operating-system scheduler when you want to start a finite job even after the previous Python process exited. Do not schedule a blocking GUI task inside a tight loop and expect accurate execution of every other job. Handle exceptions and missed-run behaviour explicitly."
+        },
+        {
+          "t": "syn",
+          "v": "scheduler.every(1).minutes.do(job)\n# Real polling loop: run_pending(); sleep briefly\n# Test only: scheduler.run_all(delay_seconds=0)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import schedule\nevents = []\nscheduler = schedule.Scheduler()\njob = scheduler.every(1).minutes.do(lambda: events.append(\"run\"))\nprint(\"Registered:\", len(scheduler.jobs))\nscheduler.run_all(delay_seconds=0)\nprint(events)\nscheduler.cancel_job(job)\nprint(\"Remaining:\", len(scheduler.jobs))\n"
+        },
+        {
+          "t": "out",
+          "v": "Registered: 1\n['run']\nRemaining: 0"
+        },
+        {
+          "t": "p",
+          "v": "run_all test भएकाले तुरुन्तै run आयो, scheduled minute कुरेको छैन। Process बन्द भयो भने registrations हराउँछन्। Task Scheduler जस्तो external trigger र यो processभित्रको scheduler फरक हुन्।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Register a schedule and exit, expecting it to run tomorrow",
+          "right": "Keep the process polling or use an external scheduler to launch a finite job",
+          "why": "In-process registrations do not run after the process has stopped."
+        },
+        {
+          "t": "ex",
+          "v": "Register two jobs and force both once in a test.",
+          "practiceId": "26.1.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import schedule\nevents = []\nscheduler = schedule.Scheduler()\nscheduler.every(1).minutes.do(lambda: events.append(\"A\"))\nscheduler.every(2).minutes.do(lambda: events.append(\"B\"))\nscheduler.run_all(delay_seconds=0)\nprint(events)\n",
+          "out": "['A', 'B']",
+          "why": "Build check: In-process scheduling needs a live polling process. Separate forced test execution from real time, and understand missed runs, blocking jobs and nonpersistent registrations."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Cancel all classroom registrations and verify none remain.",
+          "practiceId": "26.1.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import schedule\nscheduler = schedule.Scheduler()\nscheduler.every(1).hours.do(lambda: None)\nscheduler.clear()\nprint(len(scheduler.jobs))\n",
+          "out": "0",
+          "why": "Challenge check: In-process scheduling needs a live polling process. Separate forced test execution from real time, and understand missed runs, blocking jobs and nonpersistent registrations."
+        },
+        {
+          "t": "try",
+          "q": "Will schedule run jobs after the Python process exits?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Its registrations live in the process."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.1.3",
+            "quiz": [
+              {
+                "q": "Will schedule run jobs after the Python process exits?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only daily jobs"
+                ],
+                "correct": 0,
+                "why": "Its registrations live in the process."
+              },
+              {
+                "q": "What does run_all do in this lesson?",
+                "options": [
+                  "Installs cron entries",
+                  "Forces jobs immediately for testing",
+                  "Waits one day"
+                ],
+                "correct": 1,
+                "why": "It is a test shortcut, not proof that a trigger elapsed."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "In-process scheduling needs a live polling process. Separate forced test execution from real time, and understand missed runs, blocking jobs and nonpersistent registrations."
+        }
+      ]
+    }
+  ]
+},
+"26.2": {
+  "parts": [
+    {
+      "title": "1. Compose an email before sending anything",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Compose an email before sending anything"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Build and inspect a structured message offline."
+        },
+        {
+          "t": "new",
+          "v": "EmailMessage; headers; set_content",
+          "note": "EmailMessage builds a standards-aware message. Headers describe sender/recipient/subject; set_content sets the body. Creating or serializing a message does not deliver it."
+        },
+        {
+          "t": "new",
+          "v": "SMTP envelope versus visible headers",
+          "note": "The SMTP envelope tells a server where to deliver; visible From/To headers are message content. Do not assume headers alone prove sender identity or successful delivery."
+        },
+        {
+          "t": "new",
+          "v": "Reserved example addresses",
+          "note": "example.org addresses here are fictional fixtures. Replace them only in your private practice configuration when you deliberately choose to send."
+        },
+        {
+          "t": "p",
+          "v": "Automations should first prepare a useful, small report: what ran, which records/files were processed, whether it succeeded and where to inspect details. Use the email library rather than hand-building header lines. A body can contain Unicode; the library handles message encoding. A preview is a message, not a delivery. Do not log the entire message when it contains sensitive information. Every runnable email example in this course either inspects local message data or mocks the transport; studying the lesson sends no email."
+        },
+        {
+          "t": "syn",
+          "v": "message = EmailMessage()\nmessage[\"Subject\"] = \"Practice report\"\nmessage.set_content(body)\n# Compose/inspect first; transport is separate",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "from email.message import EmailMessage\nmessage = EmailMessage()\nmessage[\"From\"] = \"student@example.org\"\nmessage[\"To\"] = \"student@example.org\"\nmessage[\"Subject\"] = \"Practice report\"\nmessage.set_content(\"Completed: 3 tasks\\nFailures: 0\\n\")\n\nprint(message[\"Subject\"])\nprint(message[\"To\"])\nprint(message.get_content().strip())\n"
+        },
+        {
+          "t": "out",
+          "v": "Practice report\nstudent@example.org\nCompleted: 3 tasks\nFailures: 0"
+        },
+        {
+          "t": "p",
+          "v": "EmailMessage तयार भयो, mailbox मा गएको छैन। Subject/header र body छुट्टाछुट्टै छन्। Automation report मा result र inspect गर्ने स्थान स्पष्ट राख, secretdata नहाल।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Concatenate arbitrary input into raw email header lines",
+          "right": "Use EmailMessage header/body APIs and validate intended recipients",
+          "why": "Structured APIs and a recipient policy are clearer than manual protocol-string assembly."
+        },
+        {
+          "t": "ex",
+          "v": "Compose a Japanese/Nepali body and verify the text remains readable before delivery.",
+          "practiceId": "26.2.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "from email.message import EmailMessage\nmessage = EmailMessage()\nmessage[\"Subject\"] = \"Study report\"\nmessage.set_content(\"日本語 अभ्यास पूरा भयो।\")\nprint(message.get_content().strip())\n",
+          "out": "日本語 अभ्यास पूरा भयो।",
+          "why": "Build check: Compose, inspect and validate first. Message preparation, SMTP acceptance and final delivery are separate states."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Keep a preview operation separate from a send operation using an explicit flag.",
+          "practiceId": "26.2.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "send_enabled = False\nresult = {\"message_prepared\": True, \"sent\": send_enabled}\nprint(result)\n",
+          "out": "{'message_prepared': True, 'sent': False}",
+          "why": "Challenge check: Compose, inspect and validate first. Message preparation, SMTP acceptance and final delivery are separate states."
+        },
+        {
+          "t": "try",
+          "q": "Does EmailMessage.set_content send email?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It prepares message data; transport is separate."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.2.0",
+            "quiz": [
+              {
+                "q": "Does EmailMessage.set_content send email?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only if To exists"
+                ],
+                "correct": 0,
+                "why": "It prepares message data; transport is separate."
+              },
+              {
+                "q": "Do visible To headers alone prove delivery?",
+                "options": [
+                  "Only for ASCII",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Delivery uses a transport/envelope and can fail later."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Compose, inspect and validate first. Message preparation, SMTP acceptance and final delivery are separate states."
+        }
+      ]
+    },
+    {
+      "title": "2. Attach a generated report with an explicit MIME type",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Attach a generated report with an explicit MIME type"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Prepare an attachment without reading personal files or relying on a live mailbox."
+        },
+        {
+          "t": "new",
+          "v": "add_attachment; MIME maintype/subtype",
+          "note": "Attachment metadata describes the payload type. A CSV can use text/csv, a PDF application/pdf; attach known bytes with an intended filename."
+        },
+        {
+          "t": "new",
+          "v": "iter_attachments; get_payload(decode=True)",
+          "note": "Inspect attachment parts and decode payload bytes to verify the prepared content. This is message preparation, not proof of delivery."
+        },
+        {
+          "t": "new",
+          "v": "Attachment size and data minimization",
+          "note": "Choose the exact report file, enforce a size policy and avoid attaching directories, credentials or unrelated personal data."
+        },
+        {
+          "t": "p",
+          "v": "Week 24 generated reports; now attach one intentionally. The example uses an authored CSV byte string, so no private file is read. In your practice tool read a known report path, reject oversized payloads and include only the data you intend to share. The MIME type and filename help the recipient's client display it; they do not validate that the bytes form a correct report. Inspect the generated message and attachment bytes before choosing live delivery. Never upload a real private report into this public website source."
+        },
+        {
+          "t": "syn",
+          "v": "message.add_attachment(payload, maintype=\"text\", subtype=\"csv\", filename=\"report.csv\")",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "from email.message import EmailMessage\nmessage = EmailMessage()\nmessage[\"From\"] = \"student@example.org\"\nmessage[\"To\"] = \"student@example.org\"\nmessage[\"Subject\"] = \"Practice report\"\nmessage.set_content(\"Completed: 3 tasks\\nFailures: 0\\n\")\n\npayload = b\"task,status\\nreading,done\\n\"\nmessage.add_attachment(payload, maintype=\"text\", subtype=\"csv\", filename=\"report.csv\")\npart = next(message.iter_attachments())\nprint(part.get_filename(), part.get_content_type())\nprint(part.get_payload(decode=True).decode(\"utf-8\").strip())\n"
+        },
+        {
+          "t": "out",
+          "v": "report.csv text/csv\ntask,status\nreading,done"
+        },
+        {
+          "t": "p",
+          "v": "Authored CSV bytes attachment बने। File name र MIME metadata मिले पनि reportकोcontent ठीक छ कि separately जाँच्नुपर्छ। Message तयार भएको मात्र हो; SMTP send गरिएको छैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Attach every file in the working folder",
+          "right": "Attach only a validated chosen report under a size policy",
+          "why": "A broad file selection can include unintended data and does not identify the desired report."
+        },
+        {
+          "t": "ex",
+          "v": "Reject a payload exceeding a tiny classroom limit before adding it.",
+          "practiceId": "26.2.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "payload, limit = b\"123456\", 5\nprint(\"Attachment permitted:\", len(payload) <= limit)\n",
+          "out": "Attachment permitted: False",
+          "why": "Build check: Attach a chosen validated payload, specify its type/name and inspect byte content. Keep size and sharing decisions explicit."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify the exact attachment bytes round-trip unchanged.",
+          "practiceId": "26.2.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from email.message import EmailMessage\nmessage = EmailMessage()\nmessage[\"From\"] = \"student@example.org\"\nmessage[\"To\"] = \"student@example.org\"\nmessage[\"Subject\"] = \"Practice report\"\nmessage.set_content(\"Completed: 3 tasks\\nFailures: 0\\n\")\n\npayload = b\"task,status\\nreading,done\\n\"\nmessage.add_attachment(payload, maintype=\"text\", subtype=\"csv\", filename=\"report.csv\")\nprint(next(message.iter_attachments()).get_payload(decode=True) == payload)\n",
+          "out": "True",
+          "why": "Challenge check: Attach a chosen validated payload, specify its type/name and inspect byte content. Keep size and sharing decisions explicit."
+        },
+        {
+          "t": "try",
+          "q": "Does setting MIME type validate the report contents?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Metadata describes how to interpret bytes; it does not validate the report."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.2.1",
+            "quiz": [
+              {
+                "q": "Does setting MIME type validate the report contents?",
+                "options": [
+                  "Only for CSV",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Metadata describes how to interpret bytes; it does not validate the report."
+              },
+              {
+                "q": "What should an attachment operation read?",
+                "options": [
+                  "Every file nearby",
+                  "Stored passwords",
+                  "The intended validated report"
+                ],
+                "correct": 2,
+                "why": "Minimize and explicitly choose the data to share."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Attach a chosen validated payload, specify its type/name and inspect byte content. Keep size and sharing decisions explicit."
+        }
+      ]
+    },
+    {
+      "title": "3. SMTP with TLS, private configuration and mocked transport",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. SMTP with TLS, private configuration and mocked transport"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Understand the sending sequence and test it without using real credentials or delivery."
+        },
+        {
+          "t": "new",
+          "v": "smtplib.SMTP; STARTTLS; SSL context",
+          "note": "SMTP talks to a mail server. STARTTLS upgrades a supported connection to TLS using a verifying SSL context; some providers instead require SMTP_SSL from the start."
+        },
+        {
+          "t": "new",
+          "v": "login; send_message; refused recipients",
+          "note": "Authenticate under the provider's supported policy, then send a prepared message. send_message can return refused-recipient details; acceptance does not prove inbox delivery."
+        },
+        {
+          "t": "new",
+          "v": "Private environment/secret storage",
+          "note": "Read secrets from private runtime configuration rather than public HTML or source. Environment variables are not magical encryption; OS access and logs still matter."
+        },
+        {
+          "t": "p",
+          "v": "Use your provider's documented host, port and authentication method. Some providers require app credentials or OAuth rather than a normal account password; do not assume one universal setup. The shown sequence uses STARTTLS, checks for an encrypted connection before login and then sends. It does not disable certificate verification. Our test replaces SMTP with a mock and uses a visibly fictional credential; there is no real network connection or email. Production loads private configuration outside Git, checks refused recipients, reports failure and avoids logging secret values. Do not ask someone to paste a token into lesson code."
+        },
+        {
+          "t": "syn",
+          "v": "with SMTP(host, port, timeout=10) as client:\n    client.ehlo()\n    client.starttls(context=ssl.create_default_context())\n    client.ehlo()\n    client.login(private_user, private_secret)\n    refused = client.send_message(message)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "from email.message import EmailMessage\nmessage = EmailMessage()\nmessage[\"From\"] = \"student@example.org\"\nmessage[\"To\"] = \"student@example.org\"\nmessage[\"Subject\"] = \"Practice report\"\nmessage.set_content(\"Completed: 3 tasks\\nFailures: 0\\n\")\n\nimport smtplib, ssl\nfrom unittest.mock import patch\nwith patch(\"smtplib.SMTP\") as smtp:\n    client = smtp.return_value.__enter__.return_value\n    client.send_message.return_value = {}\n    with smtplib.SMTP(\"mail.example.org\", 587, timeout=10) as connection:\n        connection.ehlo()\n        connection.starttls(context=ssl.create_default_context())\n        connection.ehlo()\n        connection.login(\"fixture-user\", \"FICTIONAL-NOT-A-SECRET\")\n        refused = connection.send_message(message)\n    print(\"TLS requested:\", client.starttls.called)\n    print(\"Accepted by mock server:\", not refused)\n    print(\"Real delivery:\", False)\n"
+        },
+        {
+          "t": "out",
+          "v": "TLS requested: True\nAccepted by mock server: True\nReal delivery: False"
+        },
+        {
+          "t": "p",
+          "v": "SMTP patch भएकाले email पठाइएन। Mock server accepted भनेको real inbox delivery होइन। Actual credentials privateconfiguration बाट आउनुपर्छ, source/code मा राख्नु हुँदैन। Providerकोpolicy पहिला हेर्नुपर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Hard-code real account secrets and disable TLS verification",
+          "right": "Load private configuration and use the provider-supported encrypted authentication path",
+          "why": "Secrets belong outside published code; certificate verification protects the connection."
+        },
+        {
+          "t": "ex",
+          "v": "Mock a refused recipient and demonstrate that it is not a successful all-recipient send.",
+          "practiceId": "26.2.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "from email.message import EmailMessage\nmessage = EmailMessage()\nmessage[\"From\"] = \"student@example.org\"\nmessage[\"To\"] = \"student@example.org\"\nmessage[\"Subject\"] = \"Practice report\"\nmessage.set_content(\"Completed: 3 tasks\\nFailures: 0\\n\")\n\nimport smtplib\nfrom unittest.mock import patch\nwith patch(\"smtplib.SMTP\") as smtp:\n    client = smtp.return_value.__enter__.return_value\n    client.send_message.return_value = {\"student@example.org\": (550, b\"fixture rejection\")}\n    with smtplib.SMTP(\"mail.example.org\", 587, timeout=10) as connection:\n        refused = connection.send_message(message)\n    print(\"All recipients accepted:\", not refused)\n",
+          "out": "All recipients accepted: False",
+          "why": "Build check: Test with mocked transport first. Real sending requires provider-specific private configuration, verified TLS and recipient/error checks; server acceptance is not inbox proof."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Validate that missing private configuration blocks live sending; do not print secret values.",
+          "practiceId": "26.2.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "config = {\"host\": \"\", \"user\": \"\", \"secret\": \"\"}\nready = all(config[name] for name in [\"host\", \"user\", \"secret\"])\nprint(\"Live transport ready:\", ready)\nprint(\"Action:\", \"stop and configure privately\" if not ready else \"send deliberately\")\n",
+          "out": "Live transport ready: False\nAction: stop and configure privately",
+          "why": "Challenge check: Test with mocked transport first. Real sending requires provider-specific private configuration, verified TLS and recipient/error checks; server acceptance is not inbox proof."
+        },
+        {
+          "t": "try",
+          "q": "Does a successful mocked send prove real inbox delivery?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "A mock exercises program logic without a real transport."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.2.2",
+            "quiz": [
+              {
+                "q": "Does a successful mocked send prove real inbox delivery?",
+                "options": [
+                  "Yes",
+                  "Only for one recipient",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "A mock exercises program logic without a real transport."
+              },
+              {
+                "q": "Where should real SMTP secrets live?",
+                "options": [
+                  "Private runtime configuration outside Git",
+                  "Public HTML",
+                  "A committed JS string"
+                ],
+                "correct": 0,
+                "why": "Published source cannot hide a usable secret."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Test with mocked transport first. Real sending requires provider-specific private configuration, verified TLS and recipient/error checks; server acceptance is not inbox proof."
+        }
+      ]
+    },
+    {
+      "title": "4. Notifications and durable failure reports",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Notifications and durable failure reports"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Separate the work result from notification delivery and preserve a local report."
+        },
+        {
+          "t": "new",
+          "v": "Notifier adapter",
+          "note": "Pass a callable that receives a title/body. Tests record calls; a deliberate desktop or push adapter can later use a platform-specific library."
+        },
+        {
+          "t": "new",
+          "v": "Outbox",
+          "note": "A local queue/report records pending notifications. Delivery can fail independently of the work, so preserve evidence and avoid pretending the notification succeeded."
+        },
+        {
+          "t": "new",
+          "v": "Delivery semantics",
+          "note": "Retrying a notification can produce duplicates after ambiguous acknowledgement. Exactly-once delivery needs additional design; a local recorded event is not that guarantee."
+        },
+        {
+          "t": "p",
+          "v": "A popup may disappear while you are away, and a remote push service may be unavailable. Keep a persistent local outcome record even when notifications are enabled. The fixture notifier appends to a list; it does not display a system popup. A desktop implementation could call a platform library's notification function, but verify OS/session support first. A backup succeeding while email delivery fails is two outcomes, not a failed backup that should be copied again. Make the report useful: operation, result, counts and an inspection path. Exclude secrets. Track pending/sent/failed states honestly and avoid unbounded retry spam."
+        },
+        {
+          "t": "syn",
+          "v": "work_result -> persist outcome\nnotify adapter -> separate delivery result\non delivery failure: retain local pending report",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "events = []\ndef notify(title, body):\n    events.append({\"title\": title, \"body\": body})\nresult = {\"status\": \"success\", \"files\": 3}\nnotify(\"Backup completed\", f\"Files: {result['files']}. Inspect local log.\")\nprint(events[0])\n"
+        },
+        {
+          "t": "out",
+          "v": "{'title': 'Backup completed', 'body': 'Files: 3. Inspect local log.'}"
+        },
+        {
+          "t": "p",
+          "v": "List मा notification event capture भयो, popup/push गएको छैन। Work result र delivery result अलग राख। Alert fail भए backup फेरिcopy गर्नुपर्ने अर्थ हुँदैन; local report बचाउनुपर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Notification failed -> rerun all successful work immediately",
+          "right": "Keep the completed work result and retry only its pending notification deliberately",
+          "why": "Coupling delivery retry to the work can duplicate effects."
+        },
+        {
+          "t": "ex",
+          "v": "Preserve an outbox event when the injected notifier fails.",
+          "practiceId": "26.2.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "pending = [{\"id\": \"run-1\", \"status\": \"pending\"}]\ndef notify(event):\n    raise OSError(\"fixture unavailable\")\ntry:\n    notify(pending[0])\nexcept OSError:\n    pending[0][\"status\"] = \"pending\"\nprint(pending)\n",
+          "out": "[{'id': 'run-1', 'status': 'pending'}]",
+          "why": "Build check: Persist outcomes and separate work from delivery. A simulated notifier is a test adapter; actual OS/push/email delivery requires explicit configuration."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Create a short failure summary that references a local log without including credentials.",
+          "practiceId": "26.2.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "event = {\"operation\": \"backup\", \"status\": \"failed\", \"log\": \"job.log\"}\nprint(f\"{event['operation']}: {event['status']}; inspect {event['log']}\")\n",
+          "out": "backup: failed; inspect job.log",
+          "why": "Challenge check: Persist outcomes and separate work from delivery. A simulated notifier is a test adapter; actual OS/push/email delivery requires explicit configuration."
+        },
+        {
+          "t": "try",
+          "q": "If notification delivery fails after a successful copy, must the copy run again?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Delivery and completed work have separate retry boundaries."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.2.3",
+            "quiz": [
+              {
+                "q": "If notification delivery fails after a successful copy, must the copy run again?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only for email"
+                ],
+                "correct": 0,
+                "why": "Delivery and completed work have separate retry boundaries."
+              },
+              {
+                "q": "Does an outbox alone guarantee exactly-once delivery?",
+                "options": [
+                  "Only for a file",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Ambiguous acknowledgement and retry can still create duplicates."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Persist outcomes and separate work from delivery. A simulated notifier is a test adapter; actual OS/push/email delivery requires explicit configuration."
+        }
+      ]
+    }
+  ]
+},
+"26.3": {
+  "parts": [
+    {
+      "title": "1. GUI automation: coordinates, focus and fail-safe",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. GUI automation: coordinates, focus and fail-safe"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Plan a small owned-window interaction and stop safely when context is wrong."
+        },
+        {
+          "t": "new",
+          "v": "PyAutoGUI; moveTo; write; hotkey",
+          "note": "The third-party library operates the real mouse/keyboard. Coordinates refer to a screen, write types supported key characters and hotkey presses a key combination."
+        },
+        {
+          "t": "sh",
+          "v": "python -m pip install pyautogui pillow",
+          "note": "For a deliberate real scratch-window exercise only. Runnable website examples use FakeDesktop; Pillow image examples create authored images instead of screenshots."
+        },
+        {
+          "t": "new",
+          "v": "FAILSAFE; PAUSE",
+          "note": "PyAutoGUI's fail-safe can raise FailSafeException when the pointer is in a supported screen corner. PAUSE adds a pause after calls; it is not proof a window is ready."
+        },
+        {
+          "t": "new",
+          "v": "Test double",
+          "note": "FakeDesktop below records intended calls and simulates a stop. It is not PyAutoGUI or a real desktop; examples do not move your mouse."
+        },
+        {
+          "t": "p",
+          "v": "Prefer a file API or browser locator over clicking coordinates when possible. GUI automation depends on the correct window, focus, resolution and visible state. For personal practice, use an empty scratch editor, verify its focus manually and choose known safe coordinates. Never aim at an account/payment/delete interface. Keep FAILSAFE enabled and test how to stop before any longer run. A sleeping/locked session is not a working interactive desktop. The runnable lesson uses a fake adapter so every call is inspectable. A deliberate real exercise imports pyautogui and passes it to the same small workflow after checking the window."
+        },
+        {
+          "t": "syn",
+          "v": "pyautogui.FAILSAFE = True\npyautogui.PAUSE = 0.2\n# Confirm scratch window focus before moveTo/write/hotkey",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "class StopAutomation(Exception):\n    pass\n\nclass FakeDesktop:\n    \"\"\"Test double only: no actual mouse, keyboard or personal screenshot.\"\"\"\n    def __init__(self):\n        self.FAILSAFE = True\n        self.PAUSE = 0.1\n        self.corner = False\n        self.calls = []\n    def check(self):\n        if self.FAILSAFE and self.corner:\n            raise StopAutomation(\"Fixture fail-safe\")\n    def moveTo(self, x, y, duration=0):\n        self.check()\n        self.calls.append((\"move\", x, y))\n    def write(self, text, interval=0):\n        self.check()\n        self.calls.append((\"write\", text))\n    def hotkey(self, *keys):\n        self.check()\n        self.calls.append((\"hotkey\",) + keys)\n\ndesktop = FakeDesktop()\ndesktop.moveTo(100, 100, duration=0.2)\ndesktop.write(\"Python practice\", interval=0.05)\nprint(desktop.calls)\nprint(\"Real desktop used:\", False)\n"
+        },
+        {
+          "t": "out",
+          "v": "[('move', 100, 100), ('write', 'Python practice')]\nReal desktop used: False"
+        },
+        {
+          "t": "p",
+          "v": "Coordinates fake desktop का हुन्। Real pyautogui मा mouse/keyboard चल्छ, त्यसैले scratchwindow focus verify गरेर मात्र प्रयोग गर। PAUSE केवलdelayहो, सहीwindow खुल्योभन्नेproof होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Disable FAILSAFE so the loop never stops",
+          "right": "Keep FAILSAFE enabled and bound the interaction count",
+          "why": "A stop mechanism matters when a GUI action targets the wrong window."
+        },
+        {
+          "t": "ex",
+          "v": "Set the fixture pointer at a corner and prove writing stops.",
+          "practiceId": "26.3.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "class StopAutomation(Exception):\n    pass\n\nclass FakeDesktop:\n    \"\"\"Test double only: no actual mouse, keyboard or personal screenshot.\"\"\"\n    def __init__(self):\n        self.FAILSAFE = True\n        self.PAUSE = 0.1\n        self.corner = False\n        self.calls = []\n    def check(self):\n        if self.FAILSAFE and self.corner:\n            raise StopAutomation(\"Fixture fail-safe\")\n    def moveTo(self, x, y, duration=0):\n        self.check()\n        self.calls.append((\"move\", x, y))\n    def write(self, text, interval=0):\n        self.check()\n        self.calls.append((\"write\", text))\n    def hotkey(self, *keys):\n        self.check()\n        self.calls.append((\"hotkey\",) + keys)\n\ndesktop = FakeDesktop()\ndesktop.corner = True\ntry:\n    desktop.write(\"Should not type\")\nexcept StopAutomation:\n    print(\"Stopped\")\nprint(desktop.calls)\n",
+          "out": "Stopped\n[]",
+          "why": "Build check: GUI automation needs verified context and a tested stop. Fake adapters verify intentions; they cannot prove a real window's focus or layout."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Record Ctrl+A only in the simulated scratch editor and inspect the combination.",
+          "practiceId": "26.3.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "class StopAutomation(Exception):\n    pass\n\nclass FakeDesktop:\n    \"\"\"Test double only: no actual mouse, keyboard or personal screenshot.\"\"\"\n    def __init__(self):\n        self.FAILSAFE = True\n        self.PAUSE = 0.1\n        self.corner = False\n        self.calls = []\n    def check(self):\n        if self.FAILSAFE and self.corner:\n            raise StopAutomation(\"Fixture fail-safe\")\n    def moveTo(self, x, y, duration=0):\n        self.check()\n        self.calls.append((\"move\", x, y))\n    def write(self, text, interval=0):\n        self.check()\n        self.calls.append((\"write\", text))\n    def hotkey(self, *keys):\n        self.check()\n        self.calls.append((\"hotkey\",) + keys)\n\ndesktop = FakeDesktop()\ndesktop.hotkey(\"ctrl\", \"a\")\nprint(desktop.calls)\n",
+          "out": "[('hotkey', 'ctrl', 'a')]",
+          "why": "Challenge check: GUI automation needs verified context and a tested stop. Fake adapters verify intentions; they cannot prove a real window's focus or layout."
+        },
+        {
+          "t": "try",
+          "q": "Does FakeDesktop move the real mouse?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It is a test double that records calls."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.3.0",
+            "quiz": [
+              {
+                "q": "Does FakeDesktop move the real mouse?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only on Windows"
+                ],
+                "correct": 0,
+                "why": "It is a test double that records calls."
+              },
+              {
+                "q": "Does PAUSE prove the correct window is ready?",
+                "options": [
+                  "Only after a second",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Time elapsed is not a readiness condition."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "GUI automation needs verified context and a tested stop. Fake adapters verify intentions; they cannot prove a real window's focus or layout."
+        }
+      ]
+    },
+    {
+      "title": "2. Screenshots and regions without exposing personal screens",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Screenshots and regions without exposing personal screens"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Understand region coordinates and verify an authored screenshot fixture."
+        },
+        {
+          "t": "new",
+          "v": "screenshot(region=(left,top,width,height))",
+          "note": "PyAutoGUI can capture a defined screen region. Limit captures to the intended scratch window; screenshots may contain private information."
+        },
+        {
+          "t": "new",
+          "v": "Pillow Image; size; crop",
+          "note": "Pillow manipulates images. This example creates an image from scratch and crops it; it captures no real screen."
+        },
+        {
+          "t": "new",
+          "v": "Coordinate spaces",
+          "note": "Screen coordinates, window-relative coordinates and image pixel coordinates are different. A crop box uses left/top/right/bottom rather than region width/height."
+        },
+        {
+          "t": "p",
+          "v": "A screenshot is an observation to verify context, not proof that a later click remains safe. Windows can move and focus can change. Use the smallest relevant region, inspect it locally, and keep private captures out of public Git. The example creates a 200×100 authored image and crops a 50×30 area. This teaches coordinate arithmetic without reading your screen. PyAutoGUI's screenshot region expects width/height, while Pillow crop expects endpoint coordinates. Mixing them can crop the wrong place."
+        },
+        {
+          "t": "syn",
+          "v": "screen region: (left, top, width, height)\nPillow crop: (left, top, left+width, top+height)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "from PIL import Image\nimage = Image.new(\"RGB\", (200, 100), color=\"white\")\nleft, top, width, height = 10, 20, 50, 30\ncrop = image.crop((left, top, left + width, top + height))\nprint(image.size, crop.size)\nprint(crop.getpixel((0, 0)))\n"
+        },
+        {
+          "t": "out",
+          "v": "(200, 100) (50, 30)\n(255, 255, 255)"
+        },
+        {
+          "t": "p",
+          "v": "Image authoredfixture हो, computer screenshot होइन। crop मा right=left+width चाहिन्छ। Personal capture लाईpublic repo मा नराख; अभ्यासकासानाscratchregion मात्र हेर्नुपर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "image.crop((left, top, width, height))",
+          "right": "image.crop((left, top, left + width, top + height))",
+          "why": "Crop's last two values are endpoints, not dimensions."
+        },
+        {
+          "t": "ex",
+          "v": "Calculate a 40×20 crop beginning at x=5,y=6.",
+          "practiceId": "26.3.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "from PIL import Image\nimage = Image.new(\"RGB\", (100, 100))\nprint(image.crop((5, 6, 5 + 40, 6 + 20)).size)\n",
+          "out": "(40, 20)",
+          "why": "Build check: Use an explicit region, correct coordinate space and bounds. Authored images test image logic; a real screenshot requires separate private context verification."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Validate a region is inside an authored image before using it.",
+          "practiceId": "26.3.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "size = (200, 100)\nfor left, top, width, height in [(10, 20, 50, 30), (190, 90, 30, 20)]:\n    valid = 0 <= left and 0 <= top and width > 0 and height > 0 and left + width <= size[0] and top + height <= size[1]\n    print(valid)\n",
+          "out": "True\nFalse",
+          "why": "Challenge check: Use an explicit region, correct coordinate space and bounds. Authored images test image logic; a real screenshot requires separate private context verification."
+        },
+        {
+          "t": "try",
+          "q": "What are Pillow crop's last two values?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Right and bottom endpoints",
+          "why": "They define the box's ending coordinates."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.3.1",
+            "quiz": [
+              {
+                "q": "What are Pillow crop's last two values?",
+                "options": [
+                  "Screen password",
+                  "Right and bottom endpoints",
+                  "Width and height"
+                ],
+                "correct": 1,
+                "why": "They define the box's ending coordinates."
+              },
+              {
+                "q": "Does this Pillow fixture capture your desktop?",
+                "options": [
+                  "Yes",
+                  "Only in dark mode",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Image.new constructs an authored image."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Use an explicit region, correct coordinate space and bounds. Authored images test image logic; a real screenshot requires separate private context verification."
+        }
+      ]
+    },
+    {
+      "title": "3. Image matching: missing or ambiguous is a stop",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Image matching: missing or ambiguous is a stop"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Handle image-location failure and require a unique intended target."
+        },
+        {
+          "t": "new",
+          "v": "locateOnScreen; ImageNotFoundException",
+          "note": "PyAutoGUI can locate a template image on screen. Current documented APIs can raise ImageNotFoundException when no image is found; confirm the installed version's behaviour."
+        },
+        {
+          "t": "new",
+          "v": "confidence and OpenCV",
+          "note": "Confidence-based matching requires an optional OpenCV dependency. A match score is not a guarantee of semantic correctness."
+        },
+        {
+          "t": "new",
+          "v": "Ambiguous target",
+          "note": "Repeated icons can match in several places. Restrict the search region and require a unique verified target before clicking; matching an image does not authorize the action."
+        },
+        {
+          "t": "p",
+          "v": "Template matching is sensitive to scale, theme and layout. Save a small scratch-window template under the same visual conditions you test. Handle missing results explicitly; do not replace a failed match with a default coordinate and click anyway. The fixture uses candidate rectangles and selects only one within an intended region. It does not run real screen matching. For a real scratch test, catch pyautogui.ImageNotFoundException, inspect any returned box, and stop on uncertainty. Consider the intended control label/state as well as the picture."
+        },
+        {
+          "t": "syn",
+          "v": "try: box = pyautogui.locateOnScreen(template, region=known_region)\nexcept ImageNotFoundException: stop\nverify unique intended target before action",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "def unique_target(matches):\n    if len(matches) != 1:\n        raise ValueError(\"Need exactly one verified target\")\n    x, y, width, height = matches[0]\n    return x + width // 2, y + height // 2\nprint(unique_target([(10, 20, 40, 30)]))\nfor candidates in [[], [(0, 0, 10, 10), (50, 50, 10, 10)]]:\n    try:\n        unique_target(candidates)\n    except ValueError as error:\n        print(error)\n"
+        },
+        {
+          "t": "out",
+          "v": "(30, 35)\nNeed exactly one verified target\nNeed exactly one verified target"
+        },
+        {
+          "t": "p",
+          "v": "एक target भए center calculate भयो। Zero वा दुईtargets हुँदा stop भयो, randomclick गरेन। Actual imagematching test यहाँ छैन; real scratchwindow मा version/theme/region जाँच्नुपर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "No match -> click (0,0) and continue",
+          "right": "Stop and inspect when a match is missing or ambiguous",
+          "why": "A fallback coordinate can trigger an unrelated control."
+        },
+        {
+          "t": "ex",
+          "v": "Filter a candidate rectangle to the known scratch region.",
+          "practiceId": "26.3.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "candidates = [(10, 20, 20, 10), (300, 200, 20, 10)]\nallowed = [box for box in candidates if 0 <= box[0] and 0 <= box[1] and box[0] + box[2] <= 100 and box[1] + box[3] <= 100]\nprint(allowed)\n",
+          "out": "[(10, 20, 20, 10)]",
+          "why": "Build check: Missing/ambiguous matches should stop. Verify the region, visual conditions and intended control; a confidence score is not an action guarantee."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Inspect that theme changes are a reason to revalidate templates, not a reason to ignore errors.",
+          "practiceId": "26.3.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "template_theme, current_theme = \"light\", \"dark\"\nprint(\"Revalidate template:\", template_theme != current_theme)\n",
+          "out": "Revalidate template: True",
+          "why": "Challenge check: Missing/ambiguous matches should stop. Verify the region, visual conditions and intended control; a confidence score is not an action guarantee."
+        },
+        {
+          "t": "try",
+          "q": "What should zero image matches lead to?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Stop and inspect",
+          "why": "The intended target was not verified."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.3.2",
+            "quiz": [
+              {
+                "q": "What should zero image matches lead to?",
+                "options": [
+                  "A fallback click",
+                  "Unlimited clicking",
+                  "Stop and inspect"
+                ],
+                "correct": 2,
+                "why": "The intended target was not verified."
+              },
+              {
+                "q": "Does confidence prove the matched control's meaning?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only with OpenCV"
+                ],
+                "correct": 0,
+                "why": "Visual similarity and semantic intent are different."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Missing/ambiguous matches should stop. Verify the region, visual conditions and intended control; a confidence score is not an action guarantee."
+        }
+      ]
+    },
+    {
+      "title": "4. A bounded scratch-editor workflow and verification",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. A bounded scratch-editor workflow and verification"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Compose GUI steps with a context check, stop path and result verification."
+        },
+        {
+          "t": "new",
+          "v": "Precondition; postcondition",
+          "note": "A precondition states what must be true before acting; a postcondition verifies the intended result afterward. They make a GUI script more than a blind sequence."
+        },
+        {
+          "t": "new",
+          "v": "Supported text versus Unicode typing",
+          "note": "PyAutoGUI's write is key-based and is not a universal Unicode input method. For arbitrary Unicode prefer an application/file API or a carefully controlled platform-specific paste workflow."
+        },
+        {
+          "t": "new",
+          "v": "Bounded workflow",
+          "note": "Use a small finite number of steps and stop on failed context/verification. Avoid a loop that keeps typing into an unknown window."
+        },
+        {
+          "t": "p",
+          "v": "The workflow below types one ASCII practice line only after the injected context says the scratch editor is active. It verifies the expected text via a supplied read function. In a real GUI exercise, read-back must use actual application state or a reliable local observation; returning the expected string without observing is not proof. Our fake adapter provides controlled state for testing the logic. It proves the branch decisions, not actual OS focus. For Japanese text, avoid assuming write can type every character; generating a UTF-8 file can be a better automation than manipulating a keyboard."
+        },
+        {
+          "t": "syn",
+          "v": "verify scratch context -> perform finite steps -> read actual result -> compare\non fail-safe or mismatch: stop and report",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "class StopAutomation(Exception):\n    pass\n\nclass FakeDesktop:\n    \"\"\"Test double only: no actual mouse, keyboard or personal screenshot.\"\"\"\n    def __init__(self):\n        self.FAILSAFE = True\n        self.PAUSE = 0.1\n        self.corner = False\n        self.calls = []\n    def check(self):\n        if self.FAILSAFE and self.corner:\n            raise StopAutomation(\"Fixture fail-safe\")\n    def moveTo(self, x, y, duration=0):\n        self.check()\n        self.calls.append((\"move\", x, y))\n    def write(self, text, interval=0):\n        self.check()\n        self.calls.append((\"write\", text))\n    def hotkey(self, *keys):\n        self.check()\n        self.calls.append((\"hotkey\",) + keys)\n\ndef scratch_job(desktop, context_ok, read_text):\n    if not context_ok():\n        raise ValueError(\"Wrong window\")\n    desktop.write(\"Python practice\")\n    if read_text() != \"Python practice\":\n        raise ValueError(\"Verification failed\")\n    return \"verified in fixture\"\ndesktop = FakeDesktop()\nprint(scratch_job(desktop, lambda: True, lambda: \"Python practice\"))\nprint(desktop.calls)\n"
+        },
+        {
+          "t": "out",
+          "v": "verified in fixture\n[('write', 'Python practice')]"
+        },
+        {
+          "t": "p",
+          "v": "Context र result दुवै fakeobserver हुन्। Logicकोsuccess verified भयो, actualcomputerfocus verifiedभएको होइन। Realexercise गर्दा actualread-back चाहिन्छ। Japaneseकोलागि UTF8file API सजिलो र भरपर्दो हुनसक्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Assume typing finished correctly because write returned",
+          "right": "Read actual result and compare a postcondition",
+          "why": "Focus/layout problems can send keys elsewhere without the call knowing."
+        },
+        {
+          "t": "ex",
+          "v": "Reject wrong-window context before any fake keystroke.",
+          "practiceId": "26.3.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "class StopAutomation(Exception):\n    pass\n\nclass FakeDesktop:\n    \"\"\"Test double only: no actual mouse, keyboard or personal screenshot.\"\"\"\n    def __init__(self):\n        self.FAILSAFE = True\n        self.PAUSE = 0.1\n        self.corner = False\n        self.calls = []\n    def check(self):\n        if self.FAILSAFE and self.corner:\n            raise StopAutomation(\"Fixture fail-safe\")\n    def moveTo(self, x, y, duration=0):\n        self.check()\n        self.calls.append((\"move\", x, y))\n    def write(self, text, interval=0):\n        self.check()\n        self.calls.append((\"write\", text))\n    def hotkey(self, *keys):\n        self.check()\n        self.calls.append((\"hotkey\",) + keys)\n\ndesktop = FakeDesktop()\ncontext_ok = False\nif not context_ok:\n    print(\"Stop: wrong window\")\nelse:\n    desktop.write(\"Practice\")\nprint(desktop.calls)\n",
+          "out": "Stop: wrong window\n[]",
+          "why": "Build check: Prefer APIs for data work. GUI practice requires verified context, finite actions, working stop behaviour and a genuine observed postcondition."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Generate a Japanese UTF-8 text file in a temporary folder instead of assuming keyboard support.",
+          "practiceId": "26.3.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from pathlib import Path\nimport tempfile\nwith tempfile.TemporaryDirectory() as name:\n    path = Path(name) / \"practice.txt\"\n    path.write_text(\"日本語の練習\", encoding=\"utf-8\")\n    print(path.read_text(encoding=\"utf-8\"))\n",
+          "out": "日本語の練習",
+          "why": "Challenge check: Prefer APIs for data work. GUI practice requires verified context, finite actions, working stop behaviour and a genuine observed postcondition."
+        },
+        {
+          "t": "try",
+          "q": "Does a fake read-back prove real OS focus?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It verifies the program's test logic, not the actual desktop."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.3.3",
+            "quiz": [
+              {
+                "q": "Does a fake read-back prove real OS focus?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only with ASCII"
+                ],
+                "correct": 0,
+                "why": "It verifies the program's test logic, not the actual desktop."
+              },
+              {
+                "q": "Is write a universal Japanese Unicode input method?",
+                "options": [
+                  "Only with PAUSE",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "It is key-based; choose an appropriate text/file/application interface."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Prefer APIs for data work. GUI practice requires verified context, finite actions, working stop behaviour and a genuine observed postcondition."
+        }
+      ]
+    }
+  ]
+},
+"26.4": {
+  "parts": [
+    {
+      "title": "1. Subprocess: an argument list, not a shell string",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Subprocess: an argument list, not a shell string"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Run a small child process with explicit arguments and inspect its output."
+        },
+        {
+          "t": "new",
+          "v": "subprocess.run; CompletedProcess",
+          "note": "run starts a child process, waits for it and returns its returncode/stdout/stderr when captured."
+        },
+        {
+          "t": "new",
+          "v": "shell=False; argument list",
+          "note": "With shell=False and an argument list, the shell does not interpret separators or quoting. This prevents shell interpretation, but you must still validate the chosen program's own options/inputs."
+        },
+        {
+          "t": "new",
+          "v": "sys.executable; capture_output; text",
+          "note": "sys.executable selects the current interpreter. capture_output captures both streams; text=True plus encoding defines text decoding."
+        },
+        {
+          "t": "p",
+          "v": "Use a library when it already solves your task; subprocess is appropriate for an explicit external program. Do not build a shell command by joining untrusted strings. Pass each argument as a separate list item and keep shell=False. The example launches the same Python interpreter and prints one literal argument. Spaces and & belong to that argument rather than a shell instruction. This still does not make arbitrary executables or arbitrary Python code safe: our '-c' body is fixed authored test code, never user-provided text."
+        },
+        {
+          "t": "syn",
+          "v": "result = subprocess.run([sys.executable, \"-c\", fixed_code, literal_argument], capture_output=True, text=True, encoding=\"utf-8\", check=True, timeout=5)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import subprocess, sys\nresult = subprocess.run([sys.executable, \"-c\", \"import sys; print(sys.argv[1])\", \"book & notes\"],\n                        capture_output=True, text=True, encoding=\"utf-8\", check=True, timeout=5)\nprint(result.stdout.strip())\nprint(\"Status:\", result.returncode)\n"
+        },
+        {
+          "t": "out",
+          "v": "book & notes\nStatus: 0"
+        },
+        {
+          "t": "p",
+          "v": "book & notes एउटा literalargument हो; &shellseparator भएन। Fixed Pythonbody मात्रै run हुन्छ। Argumentlist ले shellinterpretation रोक्छ, तर chosenprogramकोallowedoptions/input validation अझैचाहिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "subprocess.run(\"tool \" + user_input, shell=True)",
+          "right": "Pass a validated executable and separate argument list with shell=False",
+          "why": "Shell strings can reinterpret input as commands; lists preserve token boundaries."
+        },
+        {
+          "t": "ex",
+          "v": "Pass a filename containing spaces as one literal child argument.",
+          "practiceId": "26.4.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import subprocess, sys\nresult = subprocess.run([sys.executable, \"-c\", \"import sys; print(len(sys.argv)-1); print(sys.argv[1])\", \"my report.csv\"],\n                        capture_output=True, text=True, check=True, timeout=5)\nprint(result.stdout.strip())\n",
+          "out": "1\nmy report.csv",
+          "why": "Build check: Use a known executable and argument list, explicit encoding, timeout and result checks. shell=False removes shell parsing, not every possible program-level risk."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify stdout and stderr are captured separately.",
+          "practiceId": "26.4.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import subprocess, sys\nresult = subprocess.run([sys.executable, \"-c\", \"import sys; print('result'); print('diagnostic', file=sys.stderr)\"],\n                        capture_output=True, text=True, check=True, timeout=5)\nprint(\"OUT:\", result.stdout.strip())\nprint(\"ERR:\", result.stderr.strip())\n",
+          "out": "OUT: result\nERR: diagnostic",
+          "why": "Challenge check: Use a known executable and argument list, explicit encoding, timeout and result checks. shell=False removes shell parsing, not every possible program-level risk."
+        },
+        {
+          "t": "try",
+          "q": "Does shell=False validate the target program's business options?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "You still control which executable and inputs are allowed."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.4.0",
+            "quiz": [
+              {
+                "q": "Does shell=False validate the target program's business options?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only for Python"
+                ],
+                "correct": 0,
+                "why": "You still control which executable and inputs are allowed."
+              },
+              {
+                "q": "What does sys.executable choose?",
+                "options": [
+                  "An email server",
+                  "The current Python interpreter",
+                  "A random shell"
+                ],
+                "correct": 1,
+                "why": "It keeps the child in the intended interpreter environment."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Use a known executable and argument list, explicit encoding, timeout and result checks. shell=False removes shell parsing, not every possible program-level risk."
+        }
+      ]
+    },
+    {
+      "title": "2. Nonzero exits and timeout recovery",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Nonzero exits and timeout recovery"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Handle process failure distinctly and avoid interpreting partial output as success."
+        },
+        {
+          "t": "new",
+          "v": "check=True; CalledProcessError",
+          "note": "check=True raises when the child returns nonzero. The exception carries status and captured streams."
+        },
+        {
+          "t": "new",
+          "v": "TimeoutExpired",
+          "note": "A subprocess timeout raises when the wait limit is exceeded. run handles its child cleanup, but an entire tree of grandchildren may need platform-specific management."
+        },
+        {
+          "t": "new",
+          "v": "Retry boundary",
+          "note": "A child failure does not prove it had no side effects. Retrying a copy/send/payment-like operation blindly can duplicate partial work."
+        },
+        {
+          "t": "p",
+          "v": "A child can print useful-looking output and then fail. Inspect its exit code; do not accept stdout alone as proof. Set a finite timeout to avoid unattended jobs waiting forever. The timeout covers run's wait behaviour; process creation and complex process trees have platform limitations. The fixture runs only small authored Python children, including a sleeping child in the challenge. No external system utility or personal process is touched. After a failure preserve evidence, inspect the work's postconditions and only retry a deliberately idempotent operation."
+        },
+        {
+          "t": "syn",
+          "v": "try: subprocess.run(..., check=True, timeout=5)\nexcept CalledProcessError: inspect status/streams\nexcept TimeoutExpired: mark incomplete and inspect effects",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import subprocess, sys\ntry:\n    subprocess.run([sys.executable, \"-c\", \"import sys; print('partial'); sys.exit(3)\"],\n                   capture_output=True, text=True, check=True, timeout=5)\nexcept subprocess.CalledProcessError as error:\n    print(\"Status:\", error.returncode)\n    print(\"Partial output:\", error.stdout.strip())\n"
+        },
+        {
+          "t": "out",
+          "v": "Status: 3\nPartial output: partial"
+        },
+        {
+          "t": "p",
+          "v": "partial output आयो तरstatus3भएकोलेsuccessहोइन। Call failed भएपछि outputसँगैexitstatus बुझ। Retryपहिले partialsideeffects भएकिनभए हेर्नुपर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "stdout exists -> success",
+          "right": "Check returncode or use check=True, then verify the intended result",
+          "why": "A process can emit output before failing."
+        },
+        {
+          "t": "ex",
+          "v": "Use check=False deliberately and branch on returncode.",
+          "practiceId": "26.4.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import subprocess, sys\nresult = subprocess.run([sys.executable, \"-c\", \"import sys; sys.exit(2)\"],\n                        capture_output=True, text=True, timeout=5)\nprint(\"Success:\", result.returncode == 0)\n",
+          "out": "Success: False",
+          "why": "Build check: Status and timeout are first-class outcomes. Failure can follow partial effects; preserve evidence and verify state before any retry."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Timeout a private fixture child that sleeps; report failure without using its partial data.",
+          "practiceId": "26.4.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import subprocess, sys\ntry:\n    subprocess.run([sys.executable, \"-c\", \"import time; time.sleep(2)\"],\n                   capture_output=True, timeout=0.1)\nexcept subprocess.TimeoutExpired:\n    print(\"Timed out: do not claim completed work\")\n",
+          "out": "Timed out: do not claim completed work",
+          "why": "Challenge check: Status and timeout are first-class outcomes. Failure can follow partial effects; preserve evidence and verify state before any retry."
+        },
+        {
+          "t": "try",
+          "q": "Can a failed child have printed stdout?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Yes",
+          "why": "Output may be produced before the nonzero exit."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.4.1",
+            "quiz": [
+              {
+                "q": "Can a failed child have printed stdout?",
+                "options": [
+                  "Only with shell=True",
+                  "Yes",
+                  "No"
+                ],
+                "correct": 1,
+                "why": "Output may be produced before the nonzero exit."
+              },
+              {
+                "q": "Does a failed process prove no side effects occurred?",
+                "options": [
+                  "Yes",
+                  "Only for copies",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Partial work may already have happened."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Status and timeout are first-class outcomes. Failure can follow partial effects; preserve evidence and verify state before any retry."
+        }
+      ]
+    },
+    {
+      "title": "3. Explicit working directory and environment",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Explicit working directory and environment"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Make a subprocess reproducible under a scheduler rather than a personal terminal."
+        },
+        {
+          "t": "new",
+          "v": "cwd; env",
+          "note": "cwd chooses the child working folder. env provides its environment; passing one variable alone replaces the rest rather than automatically merging."
+        },
+        {
+          "t": "new",
+          "v": "Environment inheritance",
+          "note": "Start from a deliberate environment policy. Copying os.environ preserves inherited values; sanitize or reduce it for a tool if appropriate. Never print the whole environment to diagnose secrets."
+        },
+        {
+          "t": "new",
+          "v": "encoding and locale",
+          "note": "Captured output needs a known encoding. For a Python fixture use PYTHONIOENCODING=utf-8 and decode explicitly; other tools have their own output conventions."
+        },
+        {
+          "t": "p",
+          "v": "The scheduler's current folder and locale may differ from your terminal. The following example creates an input file in a temporary folder, then starts a child with that explicit cwd. The child sees input.txt there and a fixture-specific environment option. It does not access your private account settings. Use distinct names for application variables, and never repurpose HOME or system configuration variables for task data. A full environment dump can expose credentials. Log only known harmless configuration such as a mode name or a count."
+        },
+        {
+          "t": "syn",
+          "v": "env = {**os.environ, \"JOB_MODE\": \"practice\", \"PYTHONIOENCODING\": \"utf-8\"}\nsubprocess.run(command, cwd=practice_dir, env=env, encoding=\"utf-8\", ...)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import os, subprocess, sys, tempfile\nfrom pathlib import Path\nwith tempfile.TemporaryDirectory() as name:\n    folder = Path(name)\n    (folder / \"input.txt\").write_text(\"日本語\", encoding=\"utf-8\")\n    code = \"import os; from pathlib import Path; print(os.environ['JOB_MODE']); print(Path('input.txt').read_text(encoding='utf-8'))\"\n    env = {**os.environ, \"JOB_MODE\": \"practice\", \"PYTHONIOENCODING\": \"utf-8\"}\n    result = subprocess.run([sys.executable, \"-c\", code], cwd=folder, env=env,\n                            capture_output=True, text=True, encoding=\"utf-8\", check=True, timeout=5)\n    print(result.stdout.strip())\n"
+        },
+        {
+          "t": "out",
+          "v": "practice\n日本語"
+        },
+        {
+          "t": "p",
+          "v": "cwd temporaryfolder भएकाले input.txt त्यहीबाटपढिन्छ। UTF8text ठीकdecodeभयो। EnvironmentकोJOB_MODEमात्रprintगरिएकोछ, सम्पूर्णenvironment वाsecret होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "env={\"JOB_MODE\": \"practice\"}  # assume all other values remain",
+          "right": "Choose whether to inherit/merge an environment or provide a complete controlled one",
+          "why": "Supplying env replaces the child's environment mapping."
+        },
+        {
+          "t": "ex",
+          "v": "Show that an explicit cwd controls a child relative-file lookup.",
+          "practiceId": "26.4.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import subprocess, sys, tempfile\nfrom pathlib import Path\nwith tempfile.TemporaryDirectory() as name:\n    (Path(name) / \"marker.txt\").write_text(\"owned fixture\", encoding=\"utf-8\")\n    result = subprocess.run([sys.executable, \"-c\", \"from pathlib import Path; print(Path('marker.txt').is_file())\"],\n                            cwd=name, capture_output=True, text=True, check=True, timeout=5)\n    print(result.stdout.strip())\n",
+          "out": "True",
+          "why": "Build check: Define cwd, interpreter and encoding. Treat environment inheritance as a policy and keep private values out of logs."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Prepare a narrow harmless environment and list only its keys, not private inherited values.",
+          "practiceId": "26.4.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "values = {\"JOB_MODE\": \"practice\", \"PYTHONIOENCODING\": \"utf-8\"}\nprint(sorted(values))\n",
+          "out": "['JOB_MODE', 'PYTHONIOENCODING']",
+          "why": "Challenge check: Define cwd, interpreter and encoding. Treat environment inheritance as a policy and keep private values out of logs."
+        },
+        {
+          "t": "try",
+          "q": "Does env automatically merge with the parent when you pass a mapping?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "The passed mapping supplies the child's environment."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.4.2",
+            "quiz": [
+              {
+                "q": "Does env automatically merge with the parent when you pass a mapping?",
+                "options": [
+                  "Yes",
+                  "Only on Windows",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "The passed mapping supplies the child's environment."
+              },
+              {
+                "q": "Should debugging print every environment variable?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only overnight"
+                ],
+                "correct": 0,
+                "why": "Environment values can include credentials."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Define cwd, interpreter and encoding. Treat environment inheritance as a policy and keep private values out of logs."
+        }
+      ]
+    },
+    {
+      "title": "4. Verify a backup's content, not just command success",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Verify a backup's content, not just command success"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Compare source and destination bytes and distinguish copying from a recoverable backup."
+        },
+        {
+          "t": "new",
+          "v": "shutil.copy2; SHA-256 digest",
+          "note": "copy2 copies a file and attempts metadata preservation. SHA-256 gives a content digest for comparison; it does not encrypt the backup."
+        },
+        {
+          "t": "new",
+          "v": "Restore test",
+          "note": "A backup is useful only if it can be read and restored to an intended separate location. Do not test restoration by overwriting the original."
+        },
+        {
+          "t": "new",
+          "v": "Live-source consistency",
+          "note": "Files can change while a backup runs. A consistent snapshot or change detection is needed; a digest taken only before a copy is not proof of the final copied content."
+        },
+        {
+          "t": "p",
+          "v": "If Python can copy a file directly, do not invent a shell command just for the sake of subprocess. For a system utility, use the previous parts' status/timeouts and still verify the destination. The example copies one authored file to a new practice path and compares digests. It then deliberately changes the copy to show corruption detection. Backups also need metadata/scope/retention/restore policies; this part only proves one file's bytes. Never claim encryption because the filename contains a hash. Keep backups in a separate intended location and preserve the source during restore tests."
+        },
+        {
+          "t": "syn",
+          "v": "copy selected file to a new destination\ncompare actual source/destination content digests\nrestore to a separate scratch folder and inspect",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import hashlib\nfrom pathlib import Path\nimport shutil\nimport tempfile\n\ndef digest(path):\n    value = hashlib.sha256()\n    with path.open(\"rb\") as stream:\n        for chunk in iter(lambda: stream.read(65536), b\"\"):\n            value.update(chunk)\n    return value.hexdigest()\n\nwith tempfile.TemporaryDirectory() as name:\n    folder = Path(name)\n    source, target = folder / \"source.txt\", folder / \"copy.txt\"\n    source.write_text(\"Owned study notes\", encoding=\"utf-8\")\n    shutil.copy2(source, target)\n    print(\"Verified:\", digest(source) == digest(target))\n    target.write_text(\"Changed copy\", encoding=\"utf-8\")\n    print(\"Verified after change:\", digest(source) == digest(target))\n"
+        },
+        {
+          "t": "out",
+          "v": "Verified: True\nVerified after change: False"
+        },
+        {
+          "t": "p",
+          "v": "पहिलाdigestमेलखायो। Copyबदलेपछिफरकभयो। Copycommandsuccessभएपनि actualcontentजाँचचाहिन्छ। Restoretest sourceमाथिओभरwriteनगर; अर्कोscratchpathप्रयोगगर।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Command exit 0 -> backup is proven recoverable",
+          "right": "Verify bytes and perform a separate restore/read test",
+          "why": "A successful command is not a full recovery test."
+        },
+        {
+          "t": "ex",
+          "v": "Copy Japanese UTF-8 bytes and verify both content and digest.",
+          "practiceId": "26.4.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import hashlib\nfrom pathlib import Path\nimport shutil\nimport tempfile\n\ndef digest(path):\n    value = hashlib.sha256()\n    with path.open(\"rb\") as stream:\n        for chunk in iter(lambda: stream.read(65536), b\"\"):\n            value.update(chunk)\n    return value.hexdigest()\n\nwith tempfile.TemporaryDirectory() as name:\n    folder = Path(name)\n    source, target = folder / \"a.txt\", folder / \"b.txt\"\n    source.write_text(\"日本語のノート\", encoding=\"utf-8\")\n    shutil.copy2(source, target)\n    print(target.read_text(encoding=\"utf-8\"))\n    print(digest(source) == digest(target))\n",
+          "out": "日本語のノート\nTrue",
+          "why": "Build check: Verify actual bytes and practice recovery separately. Hashes detect content differences but do not encrypt data or make a live multi-file source consistent."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Use a separate restore path and confirm the original file remains unchanged.",
+          "practiceId": "26.4.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import hashlib\nfrom pathlib import Path\nimport shutil\nimport tempfile\n\ndef digest(path):\n    value = hashlib.sha256()\n    with path.open(\"rb\") as stream:\n        for chunk in iter(lambda: stream.read(65536), b\"\"):\n            value.update(chunk)\n    return value.hexdigest()\n\nwith tempfile.TemporaryDirectory() as name:\n    folder = Path(name)\n    source, backup, restored = [folder / n for n in [\"source.txt\", \"backup.txt\", \"restored.txt\"]]\n    source.write_bytes(b\"practice\")\n    shutil.copy2(source, backup)\n    shutil.copy2(backup, restored)\n    print(source.read_bytes() == restored.read_bytes())\n    print(source.read_bytes())\n",
+          "out": "True\nb'practice'",
+          "why": "Challenge check: Verify actual bytes and practice recovery separately. Hashes detect content differences but do not encrypt data or make a live multi-file source consistent."
+        },
+        {
+          "t": "try",
+          "q": "Does SHA-256 encrypt a copied file?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It is a digest, not encryption."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.4.3",
+            "quiz": [
+              {
+                "q": "Does SHA-256 encrypt a copied file?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only in a ZIP"
+                ],
+                "correct": 0,
+                "why": "It is a digest, not encryption."
+              },
+              {
+                "q": "Where should a restore test write?",
+                "options": [
+                  "A credential file",
+                  "A separate scratch location",
+                  "Over the only original"
+                ],
+                "correct": 1,
+                "why": "Preserve the original while testing recovery."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Verify actual bytes and practice recovery separately. Hashes detect content differences but do not encrypt data or make a live multi-file source consistent."
+        }
+      ]
+    }
+  ]
+},
+"26.5": {
+  "parts": [
+    {
+      "title": "1. Idempotency, dry-run and truthful logging",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Idempotency, dry-run and truthful logging"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Repeat work safely and make its effects inspectable before execution."
+        },
+        {
+          "t": "new",
+          "v": "Idempotency",
+          "note": "Repeating the same valid operation leaves the intended state equivalent instead of duplicating effects. This must be designed; a retry flag alone does not provide it."
+        },
+        {
+          "t": "new",
+          "v": "Dry-run boundary",
+          "note": "A dry-run can read and validate inputs, but it should not copy, delete, send or mutate job output/log state. Print the proposed plan instead."
+        },
+        {
+          "t": "new",
+          "v": "logging.Logger; StreamHandler; levels",
+          "note": "Python logging records structured severity and context. Use INFO for progress and ERROR for failure; never log secrets or claim completed work before verification."
+        },
+        {
+          "t": "p",
+          "v": "Suppose the scheduler starts the same backup twice. A content-addressed archive name plus verification can let the second run reuse the same valid artifact. Sending an email twice is not idempotent merely because the body matches; delivery is a different effect. For a dry-run compute the plan but return before output directory creation, lock files, persistent logs or alerts. Real runs should report planned, started, verified, completed/failed states honestly. This fixture logs to memory so you can inspect exact messages without changing your files."
+        },
+        {
+          "t": "syn",
+          "v": "plan = validate_and_plan()\nif dry_run: print(plan); return 0\nperform -> verify -> record completed\non failure: record failure and return nonzero",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import io, logging\nstream = io.StringIO()\nlogger = logging.Logger(\"practice\", level=logging.INFO)\nhandler = logging.StreamHandler(stream)\nhandler.setFormatter(logging.Formatter(\"%(levelname)s %(message)s\"))\nlogger.addHandler(handler)\nlogger.info(\"planned files=%s\", 3)\nlogger.error(\"failed: inspect local outcome report\")\nprint(stream.getvalue().strip())\n"
+        },
+        {
+          "t": "out",
+          "v": "INFO planned files=3\nERROR failed: inspect local outcome report"
+        },
+        {
+          "t": "p",
+          "v": "INFOplanहो, completedभएकोclaimहोइन। ERRORfailureअलगछ। Stream memoryमा भएकालेpersistentlogfileलेखिएकोछैन। Dryrunलेoutputfolder/create/log/alertकोsideeffectनगर्नुपर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Dry-run still sends a test notification and creates output files",
+          "right": "Dry-run returns after validation/printed plan, before all effects",
+          "why": "A preview should not perform the very external/file effects it is previewing."
+        },
+        {
+          "t": "ex",
+          "v": "Demonstrate idempotent set insertion versus non-idempotent list appending.",
+          "practiceId": "26.5.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "targets, events = set(), []\nfor _ in range(2):\n    targets.add(\"archive-A\")\n    events.append(\"email-A\")\nprint(len(targets), len(events))\n",
+          "out": "1 2",
+          "why": "Build check: Design repeatability per effect. Dry-run is a real side-effect boundary, and logs must distinguish plans from verified completion."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify a dry-run creates no output folder in a temporary practice directory.",
+          "practiceId": "26.5.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from pathlib import Path\nimport tempfile\nwith tempfile.TemporaryDirectory() as name:\n    output = Path(name) / \"output\"\n    dry_run = True\n    if not dry_run:\n        output.mkdir()\n    print(\"Output exists:\", output.exists())\n",
+          "out": "Output exists: False",
+          "why": "Challenge check: Design repeatability per effect. Dry-run is a real side-effect boundary, and logs must distinguish plans from verified completion."
+        },
+        {
+          "t": "try",
+          "q": "Is sending the same email twice automatically idempotent?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Recipients can receive duplicate messages."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.5.0",
+            "quiz": [
+              {
+                "q": "Is sending the same email twice automatically idempotent?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only scheduled email"
+                ],
+                "correct": 0,
+                "why": "Recipients can receive duplicate messages."
+              },
+              {
+                "q": "Should dry-run create a persistent output log?",
+                "options": [
+                  "Only with a flag",
+                  "No in this course's contract",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "The preview contract avoids output-state mutations."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Design repeatability per effect. Dry-run is a real side-effect boundary, and logs must distinguish plans from verified completion."
+        }
+      ]
+    },
+    {
+      "title": "2. Prevent overlap with an owned lock and an explicit policy",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Prevent overlap with an owned lock and an explicit policy"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Reject a second concurrent run and clean up only the lock you acquired."
+        },
+        {
+          "t": "new",
+          "v": "Exclusive create mode x",
+          "note": "Opening a file with mode x fails if it already exists. This supports a small cooperative lock among instances using the same local path."
+        },
+        {
+          "t": "new",
+          "v": "Lock ownership; finally",
+          "note": "Only the process that successfully acquired the lock should remove it in finally. A second process must not delete another run's lock."
+        },
+        {
+          "t": "new",
+          "v": "Stale lock",
+          "note": "A crash can leave a lock file behind. Inspect whether the job is still active before manual recovery; blindly deleting it can allow overlap. This simple local protocol is not a distributed lock."
+        },
+        {
+          "t": "p",
+          "v": "Configure the scheduler not to start another instance, but also protect the finite job against accidental manual overlap. The fixture acquires a local lock with exclusive creation. A second acquisition fails and leaves the first intact. For this beginner project stale locks cause a visible stop; recover manually only after confirming no active run. Avoid 'check exists, then write' because two processes can both pass the check. More advanced operating-system locks and distributed coordination belong to later study."
+        },
+        {
+          "t": "syn",
+          "v": "try: open(lock_path, \"x\")\nexcept FileExistsError: report overlap; stop\ntry: work\nfinally: remove only your acquired lock",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "from pathlib import Path\nimport tempfile\nwith tempfile.TemporaryDirectory() as name:\n    lock = Path(name) / \"job.lock\"\n    with lock.open(\"x\", encoding=\"utf-8\") as stream:\n        stream.write(\"fixture owner\")\n    try:\n        with lock.open(\"x\"):\n            pass\n    except FileExistsError:\n        print(\"Second run blocked\")\n    print(\"Owner's lock intact:\", lock.read_text(encoding=\"utf-8\") == \"fixture owner\")\n    lock.unlink()\n    print(\"Released:\", not lock.exists())\n"
+        },
+        {
+          "t": "out",
+          "v": "Second run blocked\nOwner's lock intact: True\nReleased: True"
+        },
+        {
+          "t": "p",
+          "v": "Secondrunलेपहिलोlockहटाएकोछैन। आफ्नोownedlockमात्रfinallyमाreleaseगर। Crashकोstale lockभएरोकिन्छ; activejobछकिनैजाँचेरmanualrecoveryगर।"
+        },
+        {
+          "t": "mis",
+          "wrong": "If lock exists: delete it and start anyway",
+          "right": "Stop on an existing lock and inspect ownership/activity",
+          "why": "Deleting an active lock defeats overlap prevention."
+        },
+        {
+          "t": "ex",
+          "v": "Verify finally releases an owned practice lock after a simulated operation failure.",
+          "practiceId": "26.5.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "from pathlib import Path\nimport tempfile\nwith tempfile.TemporaryDirectory() as name:\n    lock = Path(name) / \"job.lock\"\n    lock.write_text(\"owned fixture\", encoding=\"utf-8\")\n    try:\n        raise ValueError(\"fixture failure\")\n    except ValueError:\n        print(\"Operation failed\")\n    finally:\n        lock.unlink()\n    print(lock.exists())\n",
+          "out": "Operation failed\nFalse",
+          "why": "Build check: Block overlap atomically, keep ownership explicit and release only owned locks. Treat stale locks as a visible recovery problem, not permission to overlap."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Demonstrate an unowned existing lock remains when a new run is refused.",
+          "practiceId": "26.5.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from pathlib import Path\nimport tempfile\nwith tempfile.TemporaryDirectory() as name:\n    lock = Path(name) / \"job.lock\"\n    lock.write_text(\"other owner\", encoding=\"utf-8\")\n    acquired = False\n    try:\n        lock.open(\"x\").close()\n        acquired = True\n    except FileExistsError:\n        pass\n    finally:\n        if acquired:\n            lock.unlink()\n    print(lock.read_text(encoding=\"utf-8\"))\n",
+          "out": "other owner",
+          "why": "Challenge check: Block overlap atomically, keep ownership explicit and release only owned locks. Treat stale locks as a visible recovery problem, not permission to overlap."
+        },
+        {
+          "t": "try",
+          "q": "Should a refused second run delete the first run's lock?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It does not own that lock."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.5.1",
+            "quiz": [
+              {
+                "q": "Should a refused second run delete the first run's lock?",
+                "options": [
+                  "Only if small",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "It does not own that lock."
+              },
+              {
+                "q": "Is this local file protocol a distributed lock guarantee?",
+                "options": [
+                  "Yes",
+                  "Only with JSON",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "It is a small cooperative local design with documented limits."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Block overlap atomically, keep ownership explicit and release only owned locks. Treat stale locks as a visible recovery problem, not permission to overlap."
+        }
+      ]
+    },
+    {
+      "title": "3. Milestone: a verified repeatable backup job",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Milestone: a verified repeatable backup job"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Combine a CLI, pure planning, a lock, verified archive, local logs and an outcome report."
+        },
+        {
+          "t": "new",
+          "v": "Content-addressed backup",
+          "note": "The archive name is derived from the validated relative paths/sizes/content hashes. A repeated identical plan reuses only an archive whose contents verify."
+        },
+        {
+          "t": "new",
+          "v": "zipfile; manifest; writestr",
+          "note": "zipfile creates/reads archives. A manifest states expected file paths, byte counts and hashes; writestr stores known bytes rather than invoking a shell."
+        },
+        {
+          "t": "new",
+          "v": "Staging ownership; atomic publish",
+          "note": "Build a new archive to an exclusively owned temporary file, verify it, then publish. Never delete an unrelated stale temporary file or another process's lock."
+        },
+        {
+          "t": "new",
+          "v": "Practice contract and consistency limit",
+          "note": "This project selects at most 200 ordinary files, 1 MB each/10 MB total. It detects many source changes, but it is not an operating-system atomic filesystem snapshot or a production backup suite."
+        },
+        {
+          "t": "p",
+          "v": "Read the complete project by layers: read_small bounds input, plan_backup validates scope and computes a manifest, verify_archive reads every archive payload, and main controls effects. Default mode and --dry-run only print a plan. --apply explicitly creates the destination, acquires the lock and creates/reuses a verified ZIP. Source files are never deleted or replaced. The destination must be separate and non-nested. A symlink, empty source or oversized scope fails visibly. The local outcome.json is an alert report, not an email/push delivery. job.log records operation status/count; schedule this finite CLI using Day 2 after a manual test. The re-plan catches additions/removals/content changes during archive creation, but a live folder can still change between observations; use a quiet practice source or a proper filesystem snapshot for stronger consistency. Archives are unencrypted and byte-oriented: permissions, ACLs, empty folders, retention and automatic restoration are outside this small project's contract."
+        },
+        {
+          "t": "syn",
+          "v": "validate + pure plan -> optional preview\nexclusive lock -> create/reuse -> verify\nrecord local outcome -> return status -> release owned resources",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import argparse\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport zipfile\n\nMAX_FILE = 1_000_000\nMAX_TOTAL = 10_000_000\nMAX_FILES = 200\n\ndef read_small(path):\n    if path.is_symlink() or not path.is_file():\n        raise ValueError(\"Source must contain ordinary files, not symlinks\")\n    with path.open(\"rb\") as stream:\n        data = stream.read(MAX_FILE + 1)\n    if len(data) > MAX_FILE:\n        raise ValueError(\"Practice file size limit exceeded\")\n    return data\n\ndef plan_backup(source, destination):\n    if source.is_symlink():\n        raise ValueError(\"Choose a real practice source directory\")\n    source, destination = source.resolve(), destination.resolve()\n    if not source.is_dir():\n        raise ValueError(\"Source directory missing\")\n    if source == destination or source in destination.parents or destination in source.parents:\n        raise ValueError(\"Use separate non-nested source and destination folders\")\n    records, total = [], 0\n    for path in sorted(source.rglob(\"*\")):\n        if path.is_symlink():\n            raise ValueError(\"Symlinks are outside this practice contract\")\n        if not path.is_file():\n            continue\n        data = read_small(path)\n        total += len(data)\n        relative = path.relative_to(source).as_posix()\n        records.append({\"path\": relative, \"size\": len(data),\n                        \"sha256\": hashlib.sha256(data).hexdigest()})\n        if len(records) > MAX_FILES or total > MAX_TOTAL:\n            raise ValueError(\"Practice backup scope limit exceeded\")\n    if not records:\n        raise ValueError(\"No files selected\")\n    manifest = {\"schema\": 1, \"records\": records}\n    encoded = json.dumps(manifest, sort_keys=True, ensure_ascii=False).encode(\"utf-8\")\n    identity = hashlib.sha256(encoded).hexdigest()\n    return source, destination, manifest, identity\n\ndef verify_archive(path, expected):\n    with zipfile.ZipFile(path) as archive:\n        expected_names = {\"manifest.json\"} | {\"files/\" + row[\"path\"] for row in expected[\"records\"]}\n        names = archive.namelist()\n        if len(names) != len(set(names)) or set(names) != expected_names:\n            raise ValueError(\"Archive entry set differs\")\n        info = archive.getinfo(\"manifest.json\")\n        if info.file_size > MAX_FILE:\n            raise ValueError(\"Invalid manifest size\")\n        manifest = json.loads(archive.read(\"manifest.json\").decode(\"utf-8\"))\n        if manifest != expected:\n            raise ValueError(\"Archive manifest differs\")\n        for row in expected[\"records\"]:\n            info = archive.getinfo(\"files/\" + row[\"path\"])\n            if info.file_size != row[\"size\"] or info.file_size > MAX_FILE:\n                raise ValueError(\"Archive size differs\")\n            data = archive.read(info)\n            if hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                raise ValueError(\"Archive hash differs\")\n    return True\n\ndef write_outcome(destination, status, count):\n    # Local alert/report only: no email, push or desktop transport.\n    with (destination / \"job.log\").open(\"a\", encoding=\"utf-8\") as stream:\n        stream.write(f\"{status} files={count}\\n\")\n    report = destination / \"outcome.json\"\n    temporary = destination / \"outcome.tmp\"\n    with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n        json.dump({\"status\": status, \"files\": count,\n                   \"notification\": \"local report only\"}, stream)\n    temporary.replace(report)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Verified small-file practice backup; default preview.\", allow_abbrev=False)\n    parser.add_argument(\"source\", type=Path)\n    parser.add_argument(\"destination\", type=Path)\n    mode = parser.add_mutually_exclusive_group()\n    mode.add_argument(\"--dry-run\", action=\"store_true\")\n    mode.add_argument(\"--apply\", action=\"store_true\")\n    args = parser.parse_args(argv)\n    try:\n        source, destination, manifest, identity = plan_backup(args.source, args.destination)\n    except (OSError, ValueError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    count = len(manifest[\"records\"])\n    if not args.apply:\n        print(\"PLAN files:\", count)\n        print(\"Writes:\", False)\n        return 0\n    acquired, staging_owned = False, False\n    lock = destination / \"job.lock\"\n    staging = destination / (\"backup-\" + identity + \".tmp\")\n    target = destination / (\"backup-\" + identity + \".zip\")\n    owner = str(os.getpid())\n    try:\n        destination.mkdir(parents=True, exist_ok=True)\n        with lock.open(\"x\", encoding=\"utf-8\") as stream:\n            acquired = True\n            stream.write(owner)\n        if target.exists():\n            verify_archive(target, manifest)\n            status = \"reused\"\n        else:\n            # The archive is built to an exclusively owned staging file.\n            with staging.open(\"xb\") as handle:\n                staging_owned = True\n                with zipfile.ZipFile(handle, \"w\", compression=zipfile.ZIP_DEFLATED) as archive:\n                    archive.writestr(\"manifest.json\", json.dumps(manifest, ensure_ascii=False))\n                    for row in manifest[\"records\"]:\n                        data = read_small(source / row[\"path\"])\n                        if len(data) != row[\"size\"] or hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                            raise ValueError(\"Source changed after planning\")\n                        archive.writestr(\"files/\" + row[\"path\"], data)\n            # Re-plan to detect additions/removals/content changes during creation.\n            _, _, after, _ = plan_backup(source, destination)\n            if after != manifest:\n                raise ValueError(\"Source changed during backup\")\n            verify_archive(staging, manifest)\n            staging.replace(target)\n            staging_owned = False\n            status = \"created\"\n        write_outcome(destination, status, count)\n        print(\"BACKUP:\", status, \"files:\", count)\n        return 0\n    except (OSError, ValueError, zipfile.BadZipFile, RuntimeError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        if acquired:\n            try:\n                write_outcome(destination, \"failed\", count)\n            except (OSError, ValueError):\n                print(\"Also failed to save outcome; inspect stderr/job.log\", file=sys.stderr)\n        return 1\n    finally:\n        if staging_owned:\n            staging.unlink(missing_ok=True)\n        if acquired and lock.exists() and lock.read_text(encoding=\"utf-8\") == owner:\n            lock.unlink()\n\nimport tempfile\ndef practice_source(root):\n    source = root / \"notes\"\n    source.mkdir()\n    (source / \"a.txt\").write_text(\"Python practice\", encoding=\"utf-8\")\n    (source / \"b.txt\").write_text(\"日本語のノート\", encoding=\"utf-8\")\n    return source\n\nwith tempfile.TemporaryDirectory() as name:\n    root = Path(name)\n    source, destination = practice_source(root), root / \"backups\"\n    assert main([str(source), str(destination), \"--dry-run\"]) == 0\n    print(\"Output before apply:\", destination.exists())\n    assert main([str(source), str(destination), \"--apply\"]) == 0\n    assert main([str(source), str(destination), \"--apply\"]) == 0\n    print(\"ZIP count:\", len(list(destination.glob(\"*.zip\"))))\n    print(\"Outcome:\", json.loads((destination / \"outcome.json\").read_text())[\"status\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "PLAN files: 2\nWrites: False\nOutput before apply: False\nBACKUP: created files: 2\nBACKUP: reused files: 2\nZIP count: 1\nOutcome: reused"
+        },
+        {
+          "t": "p",
+          "v": "Dryrunकोबेलadestinationबनएन। पहिलोapplyलेverifiedZIPबनायो, दोस्रोलेsamevalidZIPreuseगर्‍यो। Hash encryptionहोइन। Localoutcome notification transportहोइन। Realfolderlivechangingभएatomic snapshotजस्तोग्यारेन्टीछैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Archive exists -> silently claim verified success",
+          "right": "Read and verify existing archive against the current manifest before reuse",
+          "why": "An existing path may contain a corrupt or unrelated archive."
+        },
+        {
+          "t": "ex",
+          "v": "Read archived file bytes and verify the digest against the manifest without extracting over the source.",
+          "practiceId": "26.5.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport zipfile\n\nMAX_FILE = 1_000_000\nMAX_TOTAL = 10_000_000\nMAX_FILES = 200\n\ndef read_small(path):\n    if path.is_symlink() or not path.is_file():\n        raise ValueError(\"Source must contain ordinary files, not symlinks\")\n    with path.open(\"rb\") as stream:\n        data = stream.read(MAX_FILE + 1)\n    if len(data) > MAX_FILE:\n        raise ValueError(\"Practice file size limit exceeded\")\n    return data\n\ndef plan_backup(source, destination):\n    if source.is_symlink():\n        raise ValueError(\"Choose a real practice source directory\")\n    source, destination = source.resolve(), destination.resolve()\n    if not source.is_dir():\n        raise ValueError(\"Source directory missing\")\n    if source == destination or source in destination.parents or destination in source.parents:\n        raise ValueError(\"Use separate non-nested source and destination folders\")\n    records, total = [], 0\n    for path in sorted(source.rglob(\"*\")):\n        if path.is_symlink():\n            raise ValueError(\"Symlinks are outside this practice contract\")\n        if not path.is_file():\n            continue\n        data = read_small(path)\n        total += len(data)\n        relative = path.relative_to(source).as_posix()\n        records.append({\"path\": relative, \"size\": len(data),\n                        \"sha256\": hashlib.sha256(data).hexdigest()})\n        if len(records) > MAX_FILES or total > MAX_TOTAL:\n            raise ValueError(\"Practice backup scope limit exceeded\")\n    if not records:\n        raise ValueError(\"No files selected\")\n    manifest = {\"schema\": 1, \"records\": records}\n    encoded = json.dumps(manifest, sort_keys=True, ensure_ascii=False).encode(\"utf-8\")\n    identity = hashlib.sha256(encoded).hexdigest()\n    return source, destination, manifest, identity\n\ndef verify_archive(path, expected):\n    with zipfile.ZipFile(path) as archive:\n        expected_names = {\"manifest.json\"} | {\"files/\" + row[\"path\"] for row in expected[\"records\"]}\n        names = archive.namelist()\n        if len(names) != len(set(names)) or set(names) != expected_names:\n            raise ValueError(\"Archive entry set differs\")\n        info = archive.getinfo(\"manifest.json\")\n        if info.file_size > MAX_FILE:\n            raise ValueError(\"Invalid manifest size\")\n        manifest = json.loads(archive.read(\"manifest.json\").decode(\"utf-8\"))\n        if manifest != expected:\n            raise ValueError(\"Archive manifest differs\")\n        for row in expected[\"records\"]:\n            info = archive.getinfo(\"files/\" + row[\"path\"])\n            if info.file_size != row[\"size\"] or info.file_size > MAX_FILE:\n                raise ValueError(\"Archive size differs\")\n            data = archive.read(info)\n            if hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                raise ValueError(\"Archive hash differs\")\n    return True\n\ndef write_outcome(destination, status, count):\n    # Local alert/report only: no email, push or desktop transport.\n    with (destination / \"job.log\").open(\"a\", encoding=\"utf-8\") as stream:\n        stream.write(f\"{status} files={count}\\n\")\n    report = destination / \"outcome.json\"\n    temporary = destination / \"outcome.tmp\"\n    with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n        json.dump({\"status\": status, \"files\": count,\n                   \"notification\": \"local report only\"}, stream)\n    temporary.replace(report)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Verified small-file practice backup; default preview.\", allow_abbrev=False)\n    parser.add_argument(\"source\", type=Path)\n    parser.add_argument(\"destination\", type=Path)\n    mode = parser.add_mutually_exclusive_group()\n    mode.add_argument(\"--dry-run\", action=\"store_true\")\n    mode.add_argument(\"--apply\", action=\"store_true\")\n    args = parser.parse_args(argv)\n    try:\n        source, destination, manifest, identity = plan_backup(args.source, args.destination)\n    except (OSError, ValueError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    count = len(manifest[\"records\"])\n    if not args.apply:\n        print(\"PLAN files:\", count)\n        print(\"Writes:\", False)\n        return 0\n    acquired, staging_owned = False, False\n    lock = destination / \"job.lock\"\n    staging = destination / (\"backup-\" + identity + \".tmp\")\n    target = destination / (\"backup-\" + identity + \".zip\")\n    owner = str(os.getpid())\n    try:\n        destination.mkdir(parents=True, exist_ok=True)\n        with lock.open(\"x\", encoding=\"utf-8\") as stream:\n            acquired = True\n            stream.write(owner)\n        if target.exists():\n            verify_archive(target, manifest)\n            status = \"reused\"\n        else:\n            # The archive is built to an exclusively owned staging file.\n            with staging.open(\"xb\") as handle:\n                staging_owned = True\n                with zipfile.ZipFile(handle, \"w\", compression=zipfile.ZIP_DEFLATED) as archive:\n                    archive.writestr(\"manifest.json\", json.dumps(manifest, ensure_ascii=False))\n                    for row in manifest[\"records\"]:\n                        data = read_small(source / row[\"path\"])\n                        if len(data) != row[\"size\"] or hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                            raise ValueError(\"Source changed after planning\")\n                        archive.writestr(\"files/\" + row[\"path\"], data)\n            # Re-plan to detect additions/removals/content changes during creation.\n            _, _, after, _ = plan_backup(source, destination)\n            if after != manifest:\n                raise ValueError(\"Source changed during backup\")\n            verify_archive(staging, manifest)\n            staging.replace(target)\n            staging_owned = False\n            status = \"created\"\n        write_outcome(destination, status, count)\n        print(\"BACKUP:\", status, \"files:\", count)\n        return 0\n    except (OSError, ValueError, zipfile.BadZipFile, RuntimeError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        if acquired:\n            try:\n                write_outcome(destination, \"failed\", count)\n            except (OSError, ValueError):\n                print(\"Also failed to save outcome; inspect stderr/job.log\", file=sys.stderr)\n        return 1\n    finally:\n        if staging_owned:\n            staging.unlink(missing_ok=True)\n        if acquired and lock.exists() and lock.read_text(encoding=\"utf-8\") == owner:\n            lock.unlink()\n\nimport tempfile\ndef practice_source(root):\n    source = root / \"notes\"\n    source.mkdir()\n    (source / \"a.txt\").write_text(\"Python practice\", encoding=\"utf-8\")\n    (source / \"b.txt\").write_text(\"日本語のノート\", encoding=\"utf-8\")\n    return source\n\nwith tempfile.TemporaryDirectory() as name:\n    root = Path(name)\n    source, destination = practice_source(root), root / \"backups\"\n    assert main([str(source), str(destination), \"--apply\"]) == 0\n    _, _, manifest, _ = plan_backup(source, destination)\n    target = next(destination.glob(\"*.zip\"))\n    print(\"Archive verified:\", verify_archive(target, manifest))\n    with zipfile.ZipFile(target) as archive:\n        print(archive.read(\"files/b.txt\").decode(\"utf-8\"))\n",
+          "out": "BACKUP: created files: 2\nArchive verified: True\n日本語のノート",
+          "why": "Build check: A trustworthy automation combines explicit effects, verified repeatability and honest outcomes. Understand the project's narrow contract before extending scheduling, delivery or backup scope."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Change an owned source file and verify the new content produces another verified archive without deleting the old one.",
+          "practiceId": "26.5.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport zipfile\n\nMAX_FILE = 1_000_000\nMAX_TOTAL = 10_000_000\nMAX_FILES = 200\n\ndef read_small(path):\n    if path.is_symlink() or not path.is_file():\n        raise ValueError(\"Source must contain ordinary files, not symlinks\")\n    with path.open(\"rb\") as stream:\n        data = stream.read(MAX_FILE + 1)\n    if len(data) > MAX_FILE:\n        raise ValueError(\"Practice file size limit exceeded\")\n    return data\n\ndef plan_backup(source, destination):\n    if source.is_symlink():\n        raise ValueError(\"Choose a real practice source directory\")\n    source, destination = source.resolve(), destination.resolve()\n    if not source.is_dir():\n        raise ValueError(\"Source directory missing\")\n    if source == destination or source in destination.parents or destination in source.parents:\n        raise ValueError(\"Use separate non-nested source and destination folders\")\n    records, total = [], 0\n    for path in sorted(source.rglob(\"*\")):\n        if path.is_symlink():\n            raise ValueError(\"Symlinks are outside this practice contract\")\n        if not path.is_file():\n            continue\n        data = read_small(path)\n        total += len(data)\n        relative = path.relative_to(source).as_posix()\n        records.append({\"path\": relative, \"size\": len(data),\n                        \"sha256\": hashlib.sha256(data).hexdigest()})\n        if len(records) > MAX_FILES or total > MAX_TOTAL:\n            raise ValueError(\"Practice backup scope limit exceeded\")\n    if not records:\n        raise ValueError(\"No files selected\")\n    manifest = {\"schema\": 1, \"records\": records}\n    encoded = json.dumps(manifest, sort_keys=True, ensure_ascii=False).encode(\"utf-8\")\n    identity = hashlib.sha256(encoded).hexdigest()\n    return source, destination, manifest, identity\n\ndef verify_archive(path, expected):\n    with zipfile.ZipFile(path) as archive:\n        expected_names = {\"manifest.json\"} | {\"files/\" + row[\"path\"] for row in expected[\"records\"]}\n        names = archive.namelist()\n        if len(names) != len(set(names)) or set(names) != expected_names:\n            raise ValueError(\"Archive entry set differs\")\n        info = archive.getinfo(\"manifest.json\")\n        if info.file_size > MAX_FILE:\n            raise ValueError(\"Invalid manifest size\")\n        manifest = json.loads(archive.read(\"manifest.json\").decode(\"utf-8\"))\n        if manifest != expected:\n            raise ValueError(\"Archive manifest differs\")\n        for row in expected[\"records\"]:\n            info = archive.getinfo(\"files/\" + row[\"path\"])\n            if info.file_size != row[\"size\"] or info.file_size > MAX_FILE:\n                raise ValueError(\"Archive size differs\")\n            data = archive.read(info)\n            if hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                raise ValueError(\"Archive hash differs\")\n    return True\n\ndef write_outcome(destination, status, count):\n    # Local alert/report only: no email, push or desktop transport.\n    with (destination / \"job.log\").open(\"a\", encoding=\"utf-8\") as stream:\n        stream.write(f\"{status} files={count}\\n\")\n    report = destination / \"outcome.json\"\n    temporary = destination / \"outcome.tmp\"\n    with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n        json.dump({\"status\": status, \"files\": count,\n                   \"notification\": \"local report only\"}, stream)\n    temporary.replace(report)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Verified small-file practice backup; default preview.\", allow_abbrev=False)\n    parser.add_argument(\"source\", type=Path)\n    parser.add_argument(\"destination\", type=Path)\n    mode = parser.add_mutually_exclusive_group()\n    mode.add_argument(\"--dry-run\", action=\"store_true\")\n    mode.add_argument(\"--apply\", action=\"store_true\")\n    args = parser.parse_args(argv)\n    try:\n        source, destination, manifest, identity = plan_backup(args.source, args.destination)\n    except (OSError, ValueError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    count = len(manifest[\"records\"])\n    if not args.apply:\n        print(\"PLAN files:\", count)\n        print(\"Writes:\", False)\n        return 0\n    acquired, staging_owned = False, False\n    lock = destination / \"job.lock\"\n    staging = destination / (\"backup-\" + identity + \".tmp\")\n    target = destination / (\"backup-\" + identity + \".zip\")\n    owner = str(os.getpid())\n    try:\n        destination.mkdir(parents=True, exist_ok=True)\n        with lock.open(\"x\", encoding=\"utf-8\") as stream:\n            acquired = True\n            stream.write(owner)\n        if target.exists():\n            verify_archive(target, manifest)\n            status = \"reused\"\n        else:\n            # The archive is built to an exclusively owned staging file.\n            with staging.open(\"xb\") as handle:\n                staging_owned = True\n                with zipfile.ZipFile(handle, \"w\", compression=zipfile.ZIP_DEFLATED) as archive:\n                    archive.writestr(\"manifest.json\", json.dumps(manifest, ensure_ascii=False))\n                    for row in manifest[\"records\"]:\n                        data = read_small(source / row[\"path\"])\n                        if len(data) != row[\"size\"] or hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                            raise ValueError(\"Source changed after planning\")\n                        archive.writestr(\"files/\" + row[\"path\"], data)\n            # Re-plan to detect additions/removals/content changes during creation.\n            _, _, after, _ = plan_backup(source, destination)\n            if after != manifest:\n                raise ValueError(\"Source changed during backup\")\n            verify_archive(staging, manifest)\n            staging.replace(target)\n            staging_owned = False\n            status = \"created\"\n        write_outcome(destination, status, count)\n        print(\"BACKUP:\", status, \"files:\", count)\n        return 0\n    except (OSError, ValueError, zipfile.BadZipFile, RuntimeError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        if acquired:\n            try:\n                write_outcome(destination, \"failed\", count)\n            except (OSError, ValueError):\n                print(\"Also failed to save outcome; inspect stderr/job.log\", file=sys.stderr)\n        return 1\n    finally:\n        if staging_owned:\n            staging.unlink(missing_ok=True)\n        if acquired and lock.exists() and lock.read_text(encoding=\"utf-8\") == owner:\n            lock.unlink()\n\nimport tempfile\ndef practice_source(root):\n    source = root / \"notes\"\n    source.mkdir()\n    (source / \"a.txt\").write_text(\"Python practice\", encoding=\"utf-8\")\n    (source / \"b.txt\").write_text(\"日本語のノート\", encoding=\"utf-8\")\n    return source\n\nwith tempfile.TemporaryDirectory() as name:\n    root = Path(name)\n    source, destination = practice_source(root), root / \"backups\"\n    assert main([str(source), str(destination), \"--apply\"]) == 0\n    (source / \"a.txt\").write_text(\"Updated practice\", encoding=\"utf-8\")\n    assert main([str(source), str(destination), \"--apply\"]) == 0\n    print(\"ZIP count:\", len(list(destination.glob(\"*.zip\"))))\n",
+          "out": "BACKUP: created files: 2\nBACKUP: created files: 2\nZIP count: 2",
+          "why": "Challenge check: A trustworthy automation combines explicit effects, verified repeatability and honest outcomes. Understand the project's narrow contract before extending scheduling, delivery or backup scope."
+        },
+        {
+          "t": "try",
+          "q": "What is the default project mode?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Preview with no writes",
+          "why": "Only explicit --apply performs output effects."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.5.2",
+            "quiz": [
+              {
+                "q": "What is the default project mode?",
+                "options": [
+                  "Delete source files",
+                  "Send an email",
+                  "Preview with no writes"
+                ],
+                "correct": 2,
+                "why": "Only explicit --apply performs output effects."
+              },
+              {
+                "q": "Is the archive automatically encrypted?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only with a hash name"
+                ],
+                "correct": 0,
+                "why": "Hashes support integrity/identity, not encryption."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "A trustworthy automation combines explicit effects, verified repeatability and honest outcomes. Understand the project's narrow contract before extending scheduling, delivery or backup scope."
+        },
+        {
+          "t": "sh",
+          "v": "python backup_job.py \"practice-notes\" \"practice-backups\" --dry-run\npython backup_job.py \"practice-notes\" \"practice-backups\" --apply\npython backup_job.py --help",
+          "note": "Copy the standalone project and sample practice-notes folder into a practice directory. --apply creates only the separate backup destination; source files remain intact."
+        }
+      ]
+    },
+    {
+      "title": "4. Whole-week review: failed work must stay visible",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Whole-week review: failed work must stay visible"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Prove dry-run, reuse, corruption detection, overlap refusal and source preservation."
+        },
+        {
+          "t": "new",
+          "v": "Failure matrix",
+          "note": "Use separate tests for invalid CLI, missing input, nested paths, overlap, changed source and corrupt output. They exercise different contracts."
+        },
+        {
+          "t": "new",
+          "v": "Outcome versus notification status",
+          "note": "An artifact may be created even if saving its log/outcome later fails. Return failure honestly, retain the verified artifact, and let a repeat verify/reuse it."
+        },
+        {
+          "t": "new",
+          "v": "Recovery policy",
+          "note": "Inspect errors and stale locks/staging files before manual recovery. Do not delete unrelated output just to make the next run green."
+        },
+        {
+          "t": "p",
+          "v": "Review by explaining every effect before running it. Why does a dry-run return before destination creation? Why must the second process not delete the lock? Why can subprocess output exist even when the status is nonzero? Why is mocked SMTP acceptance not proof of real delivery? The exercise below verifies source bytes remain identical after a backup. The accompanying project test file also checks corrupt archives, overlap and output-preservation failures. For a restore exercise read an archive payload into a separate scratch folder and compare its hash; never overwrite the only original. Do not mark the week mastered until you can run the CLI manually, inspect status/log/outcome, explain its limitations and configure a daily dry-run task on your own practice system."
+        },
+        {
+          "t": "syn",
+          "v": "test happy path + no-write preview + repeat + corruption + overlap\nassert source bytes unchanged\nassert nonzero failure and truthful local evidence",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import argparse\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport zipfile\n\nMAX_FILE = 1_000_000\nMAX_TOTAL = 10_000_000\nMAX_FILES = 200\n\ndef read_small(path):\n    if path.is_symlink() or not path.is_file():\n        raise ValueError(\"Source must contain ordinary files, not symlinks\")\n    with path.open(\"rb\") as stream:\n        data = stream.read(MAX_FILE + 1)\n    if len(data) > MAX_FILE:\n        raise ValueError(\"Practice file size limit exceeded\")\n    return data\n\ndef plan_backup(source, destination):\n    if source.is_symlink():\n        raise ValueError(\"Choose a real practice source directory\")\n    source, destination = source.resolve(), destination.resolve()\n    if not source.is_dir():\n        raise ValueError(\"Source directory missing\")\n    if source == destination or source in destination.parents or destination in source.parents:\n        raise ValueError(\"Use separate non-nested source and destination folders\")\n    records, total = [], 0\n    for path in sorted(source.rglob(\"*\")):\n        if path.is_symlink():\n            raise ValueError(\"Symlinks are outside this practice contract\")\n        if not path.is_file():\n            continue\n        data = read_small(path)\n        total += len(data)\n        relative = path.relative_to(source).as_posix()\n        records.append({\"path\": relative, \"size\": len(data),\n                        \"sha256\": hashlib.sha256(data).hexdigest()})\n        if len(records) > MAX_FILES or total > MAX_TOTAL:\n            raise ValueError(\"Practice backup scope limit exceeded\")\n    if not records:\n        raise ValueError(\"No files selected\")\n    manifest = {\"schema\": 1, \"records\": records}\n    encoded = json.dumps(manifest, sort_keys=True, ensure_ascii=False).encode(\"utf-8\")\n    identity = hashlib.sha256(encoded).hexdigest()\n    return source, destination, manifest, identity\n\ndef verify_archive(path, expected):\n    with zipfile.ZipFile(path) as archive:\n        expected_names = {\"manifest.json\"} | {\"files/\" + row[\"path\"] for row in expected[\"records\"]}\n        names = archive.namelist()\n        if len(names) != len(set(names)) or set(names) != expected_names:\n            raise ValueError(\"Archive entry set differs\")\n        info = archive.getinfo(\"manifest.json\")\n        if info.file_size > MAX_FILE:\n            raise ValueError(\"Invalid manifest size\")\n        manifest = json.loads(archive.read(\"manifest.json\").decode(\"utf-8\"))\n        if manifest != expected:\n            raise ValueError(\"Archive manifest differs\")\n        for row in expected[\"records\"]:\n            info = archive.getinfo(\"files/\" + row[\"path\"])\n            if info.file_size != row[\"size\"] or info.file_size > MAX_FILE:\n                raise ValueError(\"Archive size differs\")\n            data = archive.read(info)\n            if hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                raise ValueError(\"Archive hash differs\")\n    return True\n\ndef write_outcome(destination, status, count):\n    # Local alert/report only: no email, push or desktop transport.\n    with (destination / \"job.log\").open(\"a\", encoding=\"utf-8\") as stream:\n        stream.write(f\"{status} files={count}\\n\")\n    report = destination / \"outcome.json\"\n    temporary = destination / \"outcome.tmp\"\n    with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n        json.dump({\"status\": status, \"files\": count,\n                   \"notification\": \"local report only\"}, stream)\n    temporary.replace(report)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Verified small-file practice backup; default preview.\", allow_abbrev=False)\n    parser.add_argument(\"source\", type=Path)\n    parser.add_argument(\"destination\", type=Path)\n    mode = parser.add_mutually_exclusive_group()\n    mode.add_argument(\"--dry-run\", action=\"store_true\")\n    mode.add_argument(\"--apply\", action=\"store_true\")\n    args = parser.parse_args(argv)\n    try:\n        source, destination, manifest, identity = plan_backup(args.source, args.destination)\n    except (OSError, ValueError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    count = len(manifest[\"records\"])\n    if not args.apply:\n        print(\"PLAN files:\", count)\n        print(\"Writes:\", False)\n        return 0\n    acquired, staging_owned = False, False\n    lock = destination / \"job.lock\"\n    staging = destination / (\"backup-\" + identity + \".tmp\")\n    target = destination / (\"backup-\" + identity + \".zip\")\n    owner = str(os.getpid())\n    try:\n        destination.mkdir(parents=True, exist_ok=True)\n        with lock.open(\"x\", encoding=\"utf-8\") as stream:\n            acquired = True\n            stream.write(owner)\n        if target.exists():\n            verify_archive(target, manifest)\n            status = \"reused\"\n        else:\n            # The archive is built to an exclusively owned staging file.\n            with staging.open(\"xb\") as handle:\n                staging_owned = True\n                with zipfile.ZipFile(handle, \"w\", compression=zipfile.ZIP_DEFLATED) as archive:\n                    archive.writestr(\"manifest.json\", json.dumps(manifest, ensure_ascii=False))\n                    for row in manifest[\"records\"]:\n                        data = read_small(source / row[\"path\"])\n                        if len(data) != row[\"size\"] or hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                            raise ValueError(\"Source changed after planning\")\n                        archive.writestr(\"files/\" + row[\"path\"], data)\n            # Re-plan to detect additions/removals/content changes during creation.\n            _, _, after, _ = plan_backup(source, destination)\n            if after != manifest:\n                raise ValueError(\"Source changed during backup\")\n            verify_archive(staging, manifest)\n            staging.replace(target)\n            staging_owned = False\n            status = \"created\"\n        write_outcome(destination, status, count)\n        print(\"BACKUP:\", status, \"files:\", count)\n        return 0\n    except (OSError, ValueError, zipfile.BadZipFile, RuntimeError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        if acquired:\n            try:\n                write_outcome(destination, \"failed\", count)\n            except (OSError, ValueError):\n                print(\"Also failed to save outcome; inspect stderr/job.log\", file=sys.stderr)\n        return 1\n    finally:\n        if staging_owned:\n            staging.unlink(missing_ok=True)\n        if acquired and lock.exists() and lock.read_text(encoding=\"utf-8\") == owner:\n            lock.unlink()\n\nimport tempfile\ndef practice_source(root):\n    source = root / \"notes\"\n    source.mkdir()\n    (source / \"a.txt\").write_text(\"Python practice\", encoding=\"utf-8\")\n    (source / \"b.txt\").write_text(\"日本語のノート\", encoding=\"utf-8\")\n    return source\n\nwith tempfile.TemporaryDirectory() as name:\n    root = Path(name)\n    source, destination = practice_source(root), root / \"backups\"\n    before = {p.name: p.read_bytes() for p in source.iterdir()}\n    assert main([str(source), str(destination), \"--apply\"]) == 0\n    after = {p.name: p.read_bytes() for p in source.iterdir()}\n    print(\"Source unchanged:\", before == after)\n    print(\"Lock released:\", not (destination / \"job.lock\").exists())\n"
+        },
+        {
+          "t": "out",
+          "v": "BACKUP: created files: 2\nSource unchanged: True\nLock released: True"
+        },
+        {
+          "t": "p",
+          "v": "Backupपछिsourcebytesसुरक्षित छन्। Ownedlockreleaseभयो। Successमात्रनहेरीfailurecasesपनिverifyगर। अर्कोstep आफ्नोpracticecomputerमादaily dryrun scheduleगर्नेहो; योwebsiteलेतिम्रोOSमातास्कregisterगरेकोछैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Test only a happy-path printout",
+          "right": "Test distinct failures and verify original/input/output state",
+          "why": "A successful print does not prove dry-run, overlap or recovery contracts."
+        },
+        {
+          "t": "ex",
+          "v": "Verify a nested destination is rejected before it is created.",
+          "practiceId": "26.5.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport zipfile\n\nMAX_FILE = 1_000_000\nMAX_TOTAL = 10_000_000\nMAX_FILES = 200\n\ndef read_small(path):\n    if path.is_symlink() or not path.is_file():\n        raise ValueError(\"Source must contain ordinary files, not symlinks\")\n    with path.open(\"rb\") as stream:\n        data = stream.read(MAX_FILE + 1)\n    if len(data) > MAX_FILE:\n        raise ValueError(\"Practice file size limit exceeded\")\n    return data\n\ndef plan_backup(source, destination):\n    if source.is_symlink():\n        raise ValueError(\"Choose a real practice source directory\")\n    source, destination = source.resolve(), destination.resolve()\n    if not source.is_dir():\n        raise ValueError(\"Source directory missing\")\n    if source == destination or source in destination.parents or destination in source.parents:\n        raise ValueError(\"Use separate non-nested source and destination folders\")\n    records, total = [], 0\n    for path in sorted(source.rglob(\"*\")):\n        if path.is_symlink():\n            raise ValueError(\"Symlinks are outside this practice contract\")\n        if not path.is_file():\n            continue\n        data = read_small(path)\n        total += len(data)\n        relative = path.relative_to(source).as_posix()\n        records.append({\"path\": relative, \"size\": len(data),\n                        \"sha256\": hashlib.sha256(data).hexdigest()})\n        if len(records) > MAX_FILES or total > MAX_TOTAL:\n            raise ValueError(\"Practice backup scope limit exceeded\")\n    if not records:\n        raise ValueError(\"No files selected\")\n    manifest = {\"schema\": 1, \"records\": records}\n    encoded = json.dumps(manifest, sort_keys=True, ensure_ascii=False).encode(\"utf-8\")\n    identity = hashlib.sha256(encoded).hexdigest()\n    return source, destination, manifest, identity\n\ndef verify_archive(path, expected):\n    with zipfile.ZipFile(path) as archive:\n        expected_names = {\"manifest.json\"} | {\"files/\" + row[\"path\"] for row in expected[\"records\"]}\n        names = archive.namelist()\n        if len(names) != len(set(names)) or set(names) != expected_names:\n            raise ValueError(\"Archive entry set differs\")\n        info = archive.getinfo(\"manifest.json\")\n        if info.file_size > MAX_FILE:\n            raise ValueError(\"Invalid manifest size\")\n        manifest = json.loads(archive.read(\"manifest.json\").decode(\"utf-8\"))\n        if manifest != expected:\n            raise ValueError(\"Archive manifest differs\")\n        for row in expected[\"records\"]:\n            info = archive.getinfo(\"files/\" + row[\"path\"])\n            if info.file_size != row[\"size\"] or info.file_size > MAX_FILE:\n                raise ValueError(\"Archive size differs\")\n            data = archive.read(info)\n            if hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                raise ValueError(\"Archive hash differs\")\n    return True\n\ndef write_outcome(destination, status, count):\n    # Local alert/report only: no email, push or desktop transport.\n    with (destination / \"job.log\").open(\"a\", encoding=\"utf-8\") as stream:\n        stream.write(f\"{status} files={count}\\n\")\n    report = destination / \"outcome.json\"\n    temporary = destination / \"outcome.tmp\"\n    with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n        json.dump({\"status\": status, \"files\": count,\n                   \"notification\": \"local report only\"}, stream)\n    temporary.replace(report)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Verified small-file practice backup; default preview.\", allow_abbrev=False)\n    parser.add_argument(\"source\", type=Path)\n    parser.add_argument(\"destination\", type=Path)\n    mode = parser.add_mutually_exclusive_group()\n    mode.add_argument(\"--dry-run\", action=\"store_true\")\n    mode.add_argument(\"--apply\", action=\"store_true\")\n    args = parser.parse_args(argv)\n    try:\n        source, destination, manifest, identity = plan_backup(args.source, args.destination)\n    except (OSError, ValueError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    count = len(manifest[\"records\"])\n    if not args.apply:\n        print(\"PLAN files:\", count)\n        print(\"Writes:\", False)\n        return 0\n    acquired, staging_owned = False, False\n    lock = destination / \"job.lock\"\n    staging = destination / (\"backup-\" + identity + \".tmp\")\n    target = destination / (\"backup-\" + identity + \".zip\")\n    owner = str(os.getpid())\n    try:\n        destination.mkdir(parents=True, exist_ok=True)\n        with lock.open(\"x\", encoding=\"utf-8\") as stream:\n            acquired = True\n            stream.write(owner)\n        if target.exists():\n            verify_archive(target, manifest)\n            status = \"reused\"\n        else:\n            # The archive is built to an exclusively owned staging file.\n            with staging.open(\"xb\") as handle:\n                staging_owned = True\n                with zipfile.ZipFile(handle, \"w\", compression=zipfile.ZIP_DEFLATED) as archive:\n                    archive.writestr(\"manifest.json\", json.dumps(manifest, ensure_ascii=False))\n                    for row in manifest[\"records\"]:\n                        data = read_small(source / row[\"path\"])\n                        if len(data) != row[\"size\"] or hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                            raise ValueError(\"Source changed after planning\")\n                        archive.writestr(\"files/\" + row[\"path\"], data)\n            # Re-plan to detect additions/removals/content changes during creation.\n            _, _, after, _ = plan_backup(source, destination)\n            if after != manifest:\n                raise ValueError(\"Source changed during backup\")\n            verify_archive(staging, manifest)\n            staging.replace(target)\n            staging_owned = False\n            status = \"created\"\n        write_outcome(destination, status, count)\n        print(\"BACKUP:\", status, \"files:\", count)\n        return 0\n    except (OSError, ValueError, zipfile.BadZipFile, RuntimeError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        if acquired:\n            try:\n                write_outcome(destination, \"failed\", count)\n            except (OSError, ValueError):\n                print(\"Also failed to save outcome; inspect stderr/job.log\", file=sys.stderr)\n        return 1\n    finally:\n        if staging_owned:\n            staging.unlink(missing_ok=True)\n        if acquired and lock.exists() and lock.read_text(encoding=\"utf-8\") == owner:\n            lock.unlink()\n\nimport tempfile\ndef practice_source(root):\n    source = root / \"notes\"\n    source.mkdir()\n    (source / \"a.txt\").write_text(\"Python practice\", encoding=\"utf-8\")\n    (source / \"b.txt\").write_text(\"日本語のノート\", encoding=\"utf-8\")\n    return source\n\nimport contextlib, io\nwith tempfile.TemporaryDirectory() as name:\n    root = Path(name)\n    source = practice_source(root)\n    destination = source / \"backups\"\n    with contextlib.redirect_stderr(io.StringIO()):\n        status = main([str(source), str(destination), \"--apply\"])\n    print(\"Status:\", status, \"Nested output exists:\", destination.exists())\n",
+          "out": "Status: 1 Nested output exists: False",
+          "why": "Build check: Week 26 mastery: clear CLIs, explicit scheduled environments, private transport configuration, cautious GUI context, checked child processes and verified repeatable jobs with truthful failure outcomes."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Keep another run's lock intact when an apply request is refused.",
+          "practiceId": "26.5.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport zipfile\n\nMAX_FILE = 1_000_000\nMAX_TOTAL = 10_000_000\nMAX_FILES = 200\n\ndef read_small(path):\n    if path.is_symlink() or not path.is_file():\n        raise ValueError(\"Source must contain ordinary files, not symlinks\")\n    with path.open(\"rb\") as stream:\n        data = stream.read(MAX_FILE + 1)\n    if len(data) > MAX_FILE:\n        raise ValueError(\"Practice file size limit exceeded\")\n    return data\n\ndef plan_backup(source, destination):\n    if source.is_symlink():\n        raise ValueError(\"Choose a real practice source directory\")\n    source, destination = source.resolve(), destination.resolve()\n    if not source.is_dir():\n        raise ValueError(\"Source directory missing\")\n    if source == destination or source in destination.parents or destination in source.parents:\n        raise ValueError(\"Use separate non-nested source and destination folders\")\n    records, total = [], 0\n    for path in sorted(source.rglob(\"*\")):\n        if path.is_symlink():\n            raise ValueError(\"Symlinks are outside this practice contract\")\n        if not path.is_file():\n            continue\n        data = read_small(path)\n        total += len(data)\n        relative = path.relative_to(source).as_posix()\n        records.append({\"path\": relative, \"size\": len(data),\n                        \"sha256\": hashlib.sha256(data).hexdigest()})\n        if len(records) > MAX_FILES or total > MAX_TOTAL:\n            raise ValueError(\"Practice backup scope limit exceeded\")\n    if not records:\n        raise ValueError(\"No files selected\")\n    manifest = {\"schema\": 1, \"records\": records}\n    encoded = json.dumps(manifest, sort_keys=True, ensure_ascii=False).encode(\"utf-8\")\n    identity = hashlib.sha256(encoded).hexdigest()\n    return source, destination, manifest, identity\n\ndef verify_archive(path, expected):\n    with zipfile.ZipFile(path) as archive:\n        expected_names = {\"manifest.json\"} | {\"files/\" + row[\"path\"] for row in expected[\"records\"]}\n        names = archive.namelist()\n        if len(names) != len(set(names)) or set(names) != expected_names:\n            raise ValueError(\"Archive entry set differs\")\n        info = archive.getinfo(\"manifest.json\")\n        if info.file_size > MAX_FILE:\n            raise ValueError(\"Invalid manifest size\")\n        manifest = json.loads(archive.read(\"manifest.json\").decode(\"utf-8\"))\n        if manifest != expected:\n            raise ValueError(\"Archive manifest differs\")\n        for row in expected[\"records\"]:\n            info = archive.getinfo(\"files/\" + row[\"path\"])\n            if info.file_size != row[\"size\"] or info.file_size > MAX_FILE:\n                raise ValueError(\"Archive size differs\")\n            data = archive.read(info)\n            if hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                raise ValueError(\"Archive hash differs\")\n    return True\n\ndef write_outcome(destination, status, count):\n    # Local alert/report only: no email, push or desktop transport.\n    with (destination / \"job.log\").open(\"a\", encoding=\"utf-8\") as stream:\n        stream.write(f\"{status} files={count}\\n\")\n    report = destination / \"outcome.json\"\n    temporary = destination / \"outcome.tmp\"\n    with temporary.open(\"x\", encoding=\"utf-8\") as stream:\n        json.dump({\"status\": status, \"files\": count,\n                   \"notification\": \"local report only\"}, stream)\n    temporary.replace(report)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Verified small-file practice backup; default preview.\", allow_abbrev=False)\n    parser.add_argument(\"source\", type=Path)\n    parser.add_argument(\"destination\", type=Path)\n    mode = parser.add_mutually_exclusive_group()\n    mode.add_argument(\"--dry-run\", action=\"store_true\")\n    mode.add_argument(\"--apply\", action=\"store_true\")\n    args = parser.parse_args(argv)\n    try:\n        source, destination, manifest, identity = plan_backup(args.source, args.destination)\n    except (OSError, ValueError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        return 1\n    count = len(manifest[\"records\"])\n    if not args.apply:\n        print(\"PLAN files:\", count)\n        print(\"Writes:\", False)\n        return 0\n    acquired, staging_owned = False, False\n    lock = destination / \"job.lock\"\n    staging = destination / (\"backup-\" + identity + \".tmp\")\n    target = destination / (\"backup-\" + identity + \".zip\")\n    owner = str(os.getpid())\n    try:\n        destination.mkdir(parents=True, exist_ok=True)\n        with lock.open(\"x\", encoding=\"utf-8\") as stream:\n            acquired = True\n            stream.write(owner)\n        if target.exists():\n            verify_archive(target, manifest)\n            status = \"reused\"\n        else:\n            # The archive is built to an exclusively owned staging file.\n            with staging.open(\"xb\") as handle:\n                staging_owned = True\n                with zipfile.ZipFile(handle, \"w\", compression=zipfile.ZIP_DEFLATED) as archive:\n                    archive.writestr(\"manifest.json\", json.dumps(manifest, ensure_ascii=False))\n                    for row in manifest[\"records\"]:\n                        data = read_small(source / row[\"path\"])\n                        if len(data) != row[\"size\"] or hashlib.sha256(data).hexdigest() != row[\"sha256\"]:\n                            raise ValueError(\"Source changed after planning\")\n                        archive.writestr(\"files/\" + row[\"path\"], data)\n            # Re-plan to detect additions/removals/content changes during creation.\n            _, _, after, _ = plan_backup(source, destination)\n            if after != manifest:\n                raise ValueError(\"Source changed during backup\")\n            verify_archive(staging, manifest)\n            staging.replace(target)\n            staging_owned = False\n            status = \"created\"\n        write_outcome(destination, status, count)\n        print(\"BACKUP:\", status, \"files:\", count)\n        return 0\n    except (OSError, ValueError, zipfile.BadZipFile, RuntimeError) as error:\n        print(\"FAILED:\", error, file=sys.stderr)\n        if acquired:\n            try:\n                write_outcome(destination, \"failed\", count)\n            except (OSError, ValueError):\n                print(\"Also failed to save outcome; inspect stderr/job.log\", file=sys.stderr)\n        return 1\n    finally:\n        if staging_owned:\n            staging.unlink(missing_ok=True)\n        if acquired and lock.exists() and lock.read_text(encoding=\"utf-8\") == owner:\n            lock.unlink()\n\nimport tempfile\ndef practice_source(root):\n    source = root / \"notes\"\n    source.mkdir()\n    (source / \"a.txt\").write_text(\"Python practice\", encoding=\"utf-8\")\n    (source / \"b.txt\").write_text(\"日本語のノート\", encoding=\"utf-8\")\n    return source\n\nimport contextlib, io\nwith tempfile.TemporaryDirectory() as name:\n    root = Path(name)\n    source, destination = practice_source(root), root / \"backups\"\n    destination.mkdir()\n    lock = destination / \"job.lock\"\n    lock.write_text(\"other-owner\", encoding=\"utf-8\")\n    with contextlib.redirect_stderr(io.StringIO()):\n        status = main([str(source), str(destination), \"--apply\"])\n    print(\"Status:\", status)\n    print(\"Other lock:\", lock.read_text(encoding=\"utf-8\"))\n",
+          "out": "Status: 1\nOther lock: other-owner",
+          "why": "Challenge check: Week 26 mastery: clear CLIs, explicit scheduled environments, private transport configuration, cautious GUI context, checked child processes and verified repeatable jobs with truthful failure outcomes."
+        },
+        {
+          "t": "try",
+          "q": "What should argparse flags use for presence-based True?",
+          "code": "# Predict and explain before revealing.",
+          "a": "store_true",
+          "why": "Nonempty string conversion does not parse false reliably."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:26.5.3",
+            "quiz": [
+              {
+                "q": "What should argparse flags use for presence-based True?",
+                "options": [
+                  "store_true",
+                  "type=bool",
+                  "A string password"
+                ],
+                "correct": 0,
+                "why": "Nonempty string conversion does not parse false reliably."
+              },
+              {
+                "q": "What indicates a failed finite job?",
+                "options": [
+                  "Only a smiley",
+                  "A nonzero exit status",
+                  "Always zero"
+                ],
+                "correct": 1,
+                "why": "Schedulers need machine-readable failure."
+              },
+              {
+                "q": "Does schedule keep running after Python exits?",
+                "options": [
+                  "Yes",
+                  "Only hourly jobs",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "It is an in-process scheduler."
+              },
+              {
+                "q": "Does a Task Scheduler trigger prove work completion?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only daily jobs"
+                ],
+                "correct": 0,
+                "why": "Inspect the job's status and outcome."
+              },
+              {
+                "q": "Does composing EmailMessage deliver it?",
+                "options": [
+                  "Only with a subject",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Composition and transport are separate."
+              },
+              {
+                "q": "Does SMTP server acceptance guarantee inbox delivery?",
+                "options": [
+                  "Yes",
+                  "Only under TLS",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Further delivery/bounce/filtering outcomes are possible."
+              },
+              {
+                "q": "Should a failed image match trigger a fallback click?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only at zero"
+                ],
+                "correct": 0,
+                "why": "An unverified target is a stop."
+              },
+              {
+                "q": "Does shell=False remove every program-level risk?",
+                "options": [
+                  "Only for arguments",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "The executable's own options/input still need validation."
+              },
+              {
+                "q": "Can a failed child process have partial side effects?",
+                "options": [
+                  "No",
+                  "Only on Linux",
+                  "Yes"
+                ],
+                "correct": 2,
+                "why": "Failure does not imply no work occurred."
+              },
+              {
+                "q": "Should dry-run mutate persistent output state?",
+                "options": [
+                  "No under this contract",
+                  "Always",
+                  "Only output logs"
+                ],
+                "correct": 0,
+                "why": "A pure preview returns before effects."
+              },
+              {
+                "q": "Should a blocked second run remove the owner's lock?",
+                "options": [
+                  "Only when small",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Lock ownership is explicit."
+              },
+              {
+                "q": "Does the backup hash encrypt its contents?",
+                "options": [
+                  "Yes",
+                  "Only in ZIP",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Integrity/identity and encryption are different."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Week 26 mastery: clear CLIs, explicit scheduled environments, private transport configuration, cautious GUI context, checked child processes and verified repeatable jobs with truthful failure outcomes."
+        },
+        {
+          "t": "p",
+          "v": "Primary references: https://docs.python.org/3/library/argparse.html · https://click.palletsprojects.com/en/stable/ · https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/schtasks-create · https://schedule.readthedocs.io/en/stable/ · https://docs.python.org/3/library/email.examples.html · https://docs.python.org/3/library/smtplib.html · https://pyautogui.readthedocs.io/en/latest/ · https://docs.python.org/3/library/subprocess.html · https://docs.python.org/3/library/logging.html. All authored explanations, fixtures, worked examples, outputs, questions and solutions are included for offline study."
+        }
+      ]
+    }
+  ]
+},
 };
 
 const REST_DAY = ["Review & rest",
