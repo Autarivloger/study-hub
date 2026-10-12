@@ -1,0 +1,8 @@
+id,name,region,score,updated
+ 001 , Asha   Rai ,nepal,80,2026-01-01
+001,Asha Rai,NP,90,2026-01-03
+002,Bina, Japan ,,2026-01-02
+003,Chandra,JP,70,2026-01-02
+004,Dipa,NP,150,2026-01-01
+005,Eka,Npeal,oops,bad
+003,Chandra,JP,75,2026-01-02

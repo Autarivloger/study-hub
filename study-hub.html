@@ -43376,6 +43376,2955 @@ const DAY_TEACH = {
     }
   ]
 },
+"29.0": {
+  "parts": [
+    {
+      "title": "1. Missing is a fact, not a value to guess",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Missing is a fact, not a value to guess"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish missing markers, empty text, zero and invalid data before choosing a strategy."
+        },
+        {
+          "t": "new",
+          "v": "Nullable Float64; pd.isna",
+          "note": "Capital-F Float64 is pandas' nullable floating dtype, suitable for decimal measurements with pd.NA. pd.isna(value) also checks one scalar such as a missing median; it is not equality with a missing marker."
+        },
+        {
+          "t": "new",
+          "v": "Missingness versus validity",
+          "note": "isna detects pandas missing markers. Empty/whitespace strings, impossible numbers and infinity are not necessarily missing; they require separate domain checks."
+        },
+        {
+          "t": "sh",
+          "v": "python -m pip install \"pandas>=3,<4\"",
+          "note": "Continue using the Week28 Python practice environment. Initial package installation needs internet; this course and all supplied local fixtures remain usable offline afterward. Verified with pandas3.0.6."
+        },
+        {
+          "t": "new",
+          "v": "eq; mask",
+          "note": "eq compares values element-wise (like ==). mask replaces values where a Boolean condition is True; here it deliberately turns declared blank fields into pd.NA while retaining raw text."
+        },
+        {
+          "t": "new",
+          "v": "NaN; NaT; pd.NA",
+          "note": "NaN commonly marks missing floating values, NaT marks missing dates, and pd.NA is used by nullable dtypes. Use isna/notna, not equality with a missing marker."
+        },
+        {
+          "t": "p",
+          "v": "Week28 showed how to inspect data without changing it. Week29 asks which changes are justified. First define what a field means: zero minutes is a real observation, an empty response may mean unknown, and a negative duration may be invalid. Do not merge all three meanings under 'dirty'. In this explicitly nullable text column, None is missing but empty text and spaces are still text. Only convert blank text to missing when your data contract says blanks represent no answer. Keep a copy of the source and record that interpretation. Missingness can depend on who answered or which system failed, so removing or filling it can change the population being summarized."
+        },
+        {
+          "t": "syn",
+          "v": "missing = series.isna()\nblank = series.str.strip().eq(\"\").fillna(False)\n# Define whether blanks mean missing before replacing them",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nlabels = pd.Series([\"yes\", \"\", \"   \", None, \"0\"], dtype=\"string\")\nprint(\"Missing:\", labels.isna().tolist())\nblank = labels.str.strip().eq(\"\").fillna(False)\nprint(\"Blank text:\", blank.tolist())\nnormalized = labels.mask(blank, pd.NA)\nprint(\"After declared blank policy:\", normalized.isna().tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Missing: [False, False, False, True, False]\nBlank text: [False, True, True, False, False]\nAfter declared blank policy: [False, True, True, True, False]"
+        },
+        {
+          "t": "p",
+          "v": "0 text पनि एउटा value हो। None मात्रै सुरुमा missing थियो। Blank लाई missing बनाउने policy लागू गरेपछि मात्र खाली text हरू missing भए।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Replace every falsy-looking value with zero",
+          "right": "Separate known zero, blank, missing and invalid cases",
+          "why": "Unknown and known zero carry different information."
+        },
+        {
+          "t": "ex",
+          "v": "For nullable scores [0,missing,80], print missing flags, observed count and observed mean.",
+          "practiceId": "29.0.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nscores = pd.Series([0, pd.NA, 80], dtype=\"Float64\")\nprint(scores.isna().tolist(), scores.count(), float(scores.mean()))\n",
+          "out": "[False, True, False] 2 40.0",
+          "why": "Build check: Define missingness using the field's meaning. Preserve raw data and explain every conversion."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Declare whitespace-only names missing while retaining literal NA as a legitimate text token.",
+          "practiceId": "29.0.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nnames = pd.Series([\" NA \", \"   \", None], dtype=\"string\")\nstripped = names.str.strip()\ncleaned = stripped.mask(stripped.eq(\"\").fillna(False), pd.NA)\nprint(cleaned.isna().tolist(), cleaned.loc[0])\n",
+          "out": "[False, True, True] NA",
+          "why": "Challenge check: Define missingness using the field's meaning. Preserve raw data and explain every conversion."
+        },
+        {
+          "t": "try",
+          "q": "Is numeric zero automatically missing?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Zero can be a valid observed value."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.0.0",
+            "quiz": [
+              {
+                "q": "Is numeric zero automatically missing?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only in pandas"
+                ],
+                "correct": 0,
+                "why": "Zero can be a valid observed value."
+              },
+              {
+                "q": "Does isna always detect whitespace-only text?",
+                "options": [
+                  "Only with string dtype",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Blank-text rules are a separate policy."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Define missingness using the field's meaning. Preserve raw data and explain every conversion."
+        }
+      ]
+    },
+    {
+      "title": "2. Dropping observations with a stated denominator",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Dropping observations with a stated denominator"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Use subset/how/thresh deliberately and compare retained rows with the original population."
+        },
+        {
+          "t": "new",
+          "v": "dropna; subset; how",
+          "note": "dropna removes rows by default. subset chooses fields that matter; how='any' removes rows missing any checked field and how='all' removes rows missing every checked field."
+        },
+        {
+          "t": "new",
+          "v": "thresh; axis",
+          "note": "thresh requires at least that many nonmissing checked values; do not combine it with how. axis=1 drops columns instead of rows."
+        },
+        {
+          "t": "new",
+          "v": "Retention report",
+          "note": "Report original and retained counts plus the exact rule. A smaller cleaner-looking table may have excluded a meaningful group."
+        },
+        {
+          "t": "p",
+          "v": "Dropping rows is a policy, not a universal repair. If a report requires a known score, dropna(subset=['score']) makes that requirement explicit. Dropping on every column could unnecessarily exclude someone just because an optional comment is absent. how='all' and thresh answer different questions: remove entirely missing observations, or require enough known fields. Keep the discarded IDs accessible in the raw data and report the retention denominator. Never present the surviving mean as though it describes the original full population. A missing value is not proof that a person or event should be erased."
+        },
+        {
+          "t": "syn",
+          "v": "known_scores = df.dropna(subset=[\"score\"])\nnonempty = df.dropna(subset=[\"score\",\"minutes\"], how=\"all\")\nenough = df.dropna(subset=[\"score\",\"minutes\"], thresh=1)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"A\", \"B\", \"C\"], \"score\": [80, None, 90], \"comment\": [None, \"ok\", \"ok\"]})\nrequired = df.dropna(subset=[\"score\"])\nevery_column = df.dropna()\nprint(\"Original:\", len(df))\nprint(\"Score required:\", required[\"id\"].tolist())\nprint(\"Every column required:\", every_column[\"id\"].tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Original: 3\nScore required: ['A', 'C']\nEvery column required: ['C']"
+        },
+        {
+          "t": "p",
+          "v": "Optional comment नभएको A लाई score report बाट हटाउन आवश्यक थिएन। subset ले कुन field चाहिएको हो स्पष्ट बनायो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "df.dropna() for every report without checking optional fields",
+          "right": "Specify required columns and report exclusions",
+          "why": "A global rule can discard valid observations for irrelevant missing fields."
+        },
+        {
+          "t": "ex",
+          "v": "Retain rows with at least one of score/minutes known, then print original and retained IDs.",
+          "practiceId": "29.0.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"A\", \"B\", \"C\"], \"score\": [80, None, None], \"minutes\": [None, 30, None]})\nretained = df.dropna(subset=[\"score\", \"minutes\"], thresh=1)\nprint(df[\"id\"].tolist(), retained[\"id\"].tolist())\n",
+          "out": "['A', 'B', 'C'] ['A', 'B']",
+          "why": "Build check: Drop by a declared requirement and report retention; preserve the raw population for later review."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Drop only rows missing both checked measurements using how='all'.",
+          "practiceId": "29.0.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"a\": [1, None, None], \"b\": [None, 2, None]}, index=[\"A\", \"B\", \"C\"])\nprint(df.dropna(how=\"all\").index.tolist())\nprint(\"Raw rows:\", len(df))\n",
+          "out": "['A', 'B']\nRaw rows: 3",
+          "why": "Challenge check: Drop by a declared requirement and report retention; preserve the raw population for later review."
+        },
+        {
+          "t": "try",
+          "q": "Which limits dropping to score missingness?",
+          "code": "# Predict and explain before revealing.",
+          "a": "subset=['score']",
+          "why": "subset defines the checked fields."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.0.1",
+            "quiz": [
+              {
+                "q": "Which limits dropping to score missingness?",
+                "options": [
+                  "sort_index",
+                  "subset=['score']",
+                  "axis=1 alone"
+                ],
+                "correct": 1,
+                "why": "subset defines the checked fields."
+              },
+              {
+                "q": "What does thresh=1 require?",
+                "options": [
+                  "Exactly one missing value",
+                  "All columns missing",
+                  "At least one known checked value"
+                ],
+                "correct": 2,
+                "why": "thresh counts nonmissing values."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Drop by a declared requirement and report retention; preserve the raw population for later review."
+        }
+      ]
+    },
+    {
+      "title": "3. Filling with provenance, not pretending to observe",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Filling with provenance, not pretending to observe"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Compare constant and median filling while preserving an imputation flag."
+        },
+        {
+          "t": "new",
+          "v": "fillna; median",
+          "note": "fillna returns values with missing entries filled under your policy. median is the middle observed value; an even count averages the two middle values and may produce a fraction."
+        },
+        {
+          "t": "new",
+          "v": "Imputation flag",
+          "note": "A Boolean flag records which values were estimated rather than observed. Compute it before filling; otherwise provenance is lost."
+        },
+        {
+          "t": "new",
+          "v": "All-missing and leakage policy",
+          "note": "No observed values means no data-derived median. In predictive work, learn fills from training data only and reuse them for validation/test data; otherwise information can leak."
+        },
+        {
+          "t": "p",
+          "v": "A fill is an estimate or explicit default, not a recovered observation. Filling a missing score with zero claims a different result from median filling. Use a domain rule and keep a score_was_missing flag so downstream readers can distinguish known scores from estimates. Integer storage can reject a fractional median; use an appropriate nullable float dtype when fractional estimates are allowed. An all-missing column cannot supply its own median. Require another justified source or stop. The following comparison is a descriptive exercise, not an instruction to median-fill every future dataset."
+        },
+        {
+          "t": "syn",
+          "v": "was_missing = scores.isna()\nmedian = scores.median()\nif pd.isna(median): raise ValueError(\"No observed median\")\nfilled = scores.fillna(median)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nscores = pd.Series([40, pd.NA, 90], dtype=\"Float64\")\nflag = scores.isna()\nzero = scores.fillna(0)\nmedian = scores.fillna(scores.median())\nprint(\"Observed mean:\", float(scores.mean()))\nprint(\"Zero-fill mean:\", round(float(zero.mean()), 2))\nprint(\"Median-fill:\", median.tolist())\nprint(\"Estimated flags:\", flag.tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Observed mean: 65.0\nZero-fill mean: 43.33\nMedian-fill: [40.0, 65.0, 90.0]\nEstimated flags: [False, True, False]"
+        },
+        {
+          "t": "p",
+          "v": "Zero fill गर्दा mean बदलियो। Median fill पनि assumption हो। Flag राखेकाले कुन value अनुमान गरिएको हो छुट्याउन सकिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Fill first, then call isna to discover estimated values",
+          "right": "Save the missing mask before filling",
+          "why": "After filling, isna cannot tell which values were originally missing."
+        },
+        {
+          "t": "ex",
+          "v": "Fill [10,missing,21] with its observed median using Float64 and preserve the flag.",
+          "practiceId": "29.0.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nscores = pd.Series([10, pd.NA, 21], dtype=\"Float64\")\nflag = scores.isna()\nprint(scores.fillna(scores.median()).tolist(), flag.tolist())\n",
+          "out": "[10.0, 15.5, 21.0] [False, True, False]",
+          "why": "Build check: Treat fills as estimates, preserve flags, choose a compatible dtype and handle the no-observation case."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Reject data-derived median filling for an all-missing column.",
+          "practiceId": "29.0.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nscores = pd.Series([pd.NA, pd.NA], dtype=\"Float64\")\nif pd.isna(scores.median()):\n    print(\"Stop: no observed values for a median\")\n",
+          "out": "Stop: no observed values for a median",
+          "why": "Challenge check: Treat fills as estimates, preserve flags, choose a compatible dtype and handle the no-observation case."
+        },
+        {
+          "t": "try",
+          "q": "Is a filled value a known recovered observation?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Imputation supplies an assumption."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.0.2",
+            "quiz": [
+              {
+                "q": "Is a filled value a known recovered observation?",
+                "options": [
+                  "Always",
+                  "Only median fills",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Imputation supplies an assumption."
+              },
+              {
+                "q": "Can an all-missing column estimate its own median?",
+                "options": [
+                  "No",
+                  "Always zero",
+                  "Only with Int64"
+                ],
+                "correct": 0,
+                "why": "There are no observed values to order."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Treat fills as estimates, preserve flags, choose a compatible dtype and handle the no-observation case."
+        }
+      ]
+    },
+    {
+      "title": "4. Interpolation and three-strategy comparison",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Interpolation and three-strategy comparison"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Use interpolation only with a meaningful order and compare drop/fill/interpolate effects."
+        },
+        {
+          "t": "new",
+          "v": "interpolate; method; limit_area",
+          "note": "Default linear interpolation uses equally spaced positions, not arbitrary labels. limit_area='inside' fills gaps bounded by known values and leaves unbounded edges missing."
+        },
+        {
+          "t": "new",
+          "v": "ffill; bfill; limit",
+          "note": "ffill carries earlier observations forward, bfill carries later ones backward, and limit bounds runs of filled entries. These methods assume carrying a value is meaningful; bfill can leak future information."
+        },
+        {
+          "t": "new",
+          "v": "Time-aware interpolation preview",
+          "note": "method='time' uses elapsed time on a suitable DatetimeIndex. Day3 introduces explicit date parsing; Week30 expands time-indexed analysis."
+        },
+        {
+          "t": "p",
+          "v": "Interpolation estimates between known points. It makes sense for some ordered measurements, not for random student IDs or arbitrary category codes. Linear interpolation assumes equal position spacing unless you choose a different method. Use inside-only filling when you do not justify extrapolating beyond observed endpoints. Forward filling is another assumption: it treats the last known value as still applicable, possibly with a maximum gap. Compare strategies on one small fictional sequence and report how many values each uses. A smoother line or complete table is not proof that the missing truth was recovered."
+        },
+        {
+          "t": "syn",
+          "v": "s.interpolate(method=\"linear\", limit_area=\"inside\")\ns.ffill(limit=1)\n# Compare retained counts, estimated positions and remaining gaps",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ns = pd.Series([None, 10.0, None, 30.0, None])\nprint(\"Drop:\", s.dropna().tolist())\nprint(\"Median fill:\", s.fillna(s.median()).tolist())\ninterpolated = s.interpolate(limit_area=\"inside\")\nprint(\"Known/interpolated:\", interpolated.loc[interpolated.notna()].tolist())\nprint(\"Remaining gaps:\", interpolated.isna().tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Drop: [10.0, 30.0]\nMedian fill: [20.0, 10.0, 20.0, 30.0, 20.0]\nKnown/interpolated: [10.0, 20.0, 30.0]\nRemaining gaps: [True, False, False, False, True]"
+        },
+        {
+          "t": "p",
+          "v": "बीचको gap मात्रै estimate भयो। सुरु/अन्त्यमा observations ले नघेरेका gaps अझै missing छन्। क्रमको अर्थ नभएको data मा interpolation नगर्नु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Interpolate scores merely because student IDs are sorted",
+          "right": "Interpolate only when order/spacing and measurement meaning justify it",
+          "why": "Student identity order is not a continuous measurement axis."
+        },
+        {
+          "t": "ex",
+          "v": "Interpolate [0,missing,20] and compare estimated flags with the original observed flags.",
+          "practiceId": "29.0.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ns = pd.Series([0.0, None, 20.0])\nresult = s.interpolate(limit_area=\"inside\")\nprint(result.tolist())\nprint((s.isna() & result.notna()).tolist())\n",
+          "out": "[0.0, 10.0, 20.0]\n[False, True, False]",
+          "why": "Build check: Drop, fill and interpolate change assumptions and populations differently. Record the strategy and estimated positions."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Forward-fill at most one consecutive missing value, leaving later gaps missing.",
+          "practiceId": "29.0.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ns = pd.Series([5.0, None, None, 8.0])\nresult = s.ffill(limit=1)\nprint(result.isna().tolist())\nprint(result.loc[result.notna()].tolist())\n",
+          "out": "[False, False, True, False]\n[5.0, 5.0, 8.0]",
+          "why": "Challenge check: Drop, fill and interpolate change assumptions and populations differently. Record the strategy and estimated positions."
+        },
+        {
+          "t": "try",
+          "q": "What does inside-only interpolation avoid filling?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Unbounded edge gaps",
+          "why": "Both bounding observations must exist."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.0.3",
+            "quiz": [
+              {
+                "q": "What does inside-only interpolation avoid filling?",
+                "options": [
+                  "Unbounded edge gaps",
+                  "All internal gaps",
+                  "Known zeros"
+                ],
+                "correct": 0,
+                "why": "Both bounding observations must exist."
+              },
+              {
+                "q": "Does default linear interpolation understand arbitrary ID spacing?",
+                "options": [
+                  "Only numeric IDs",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "It treats positions as equally spaced."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Drop, fill and interpolate change assumptions and populations differently. Record the strategy and estimated positions."
+        }
+      ]
+    }
+  ]
+},
+"29.1": {
+  "parts": [
+    {
+      "title": "1. Exact duplicates versus repeated entities",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Exact duplicates versus repeated entities"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish duplicate full rows from repeated identity keys and choose keep semantics."
+        },
+        {
+          "t": "new",
+          "v": "duplicated(subset, keep)",
+          "note": "duplicated marks repeats under chosen fields. keep='first' keeps the first unmarked, keep='last' keeps the last, and keep=False marks every member of a repeated group."
+        },
+        {
+          "t": "new",
+          "v": "drop_duplicates",
+          "note": "drop_duplicates removes repeated rows under the chosen key policy; it does not decide which observation is business-correct. Row indexes are not used to identify duplicates."
+        },
+        {
+          "t": "p",
+          "v": "Two identical rows might be an accidental reimport, or two legitimate events that happen to look the same. You need an identity contract to decide. A repeated student ID is not necessarily an exact duplicate: it could be a later update. Check complete rows and entity keys separately. keep specifies which row survives in the current order; it does not automatically understand timestamps. Always retain the original dataset and report the removed record references. Use keep=False to inspect all members before choosing a rule, not simply to delete them all."
+        },
+        {
+          "t": "syn",
+          "v": "df.duplicated()\ndf.duplicated(subset=[\"id\"], keep=False)\ndf.drop_duplicates(subset=[\"id\"], keep=\"last\")",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"001\", \"001\", \"002\", \"001\"], \"score\": [80, 90, 70, 80]})\nprint(\"Exact after first:\", df.duplicated().tolist())\nprint(\"Repeated IDs all members:\", df.duplicated(subset=[\"id\"], keep=False).tolist())\nprint(\"Exact rows retained:\", len(df.drop_duplicates()))\n"
+        },
+        {
+          "t": "out",
+          "v": "Exact after first: [False, False, False, True]\nRepeated IDs all members: [True, True, False, True]\nExact rows retained: 3"
+        },
+        {
+          "t": "p",
+          "v": "001 का सबै rows एउटै होइनन्; score90 update हुन सक्छ। Exact duplicate check र ID duplicate check फरक प्रश्न हुन्।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Delete every repeated ID without examining updates",
+          "right": "Define identity and retention policy before drop_duplicates",
+          "why": "A repeated key can represent a valid update or a repeated event."
+        },
+        {
+          "t": "ex",
+          "v": "Keep the last occurrence by current input order for repeated IDs, explicitly stating that this is not timestamp order.",
+          "practiceId": "29.1.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"A\", \"B\", \"A\"], \"score\": [80, 70, 90]})\nprint(df.drop_duplicates(subset=[\"id\"], keep=\"last\").to_dict(orient=\"records\"))\n",
+          "out": "[{'id': 'B', 'score': 70}, {'id': 'A', 'score': 90}]",
+          "why": "Build check: A duplicate policy needs a key and a meaningful survival rule; indexes alone are not identity."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Show that differing row indexes do not prevent full-row duplicate detection.",
+          "practiceId": "29.1.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"001\", \"001\"], \"score\": [80, 80]}, index=[10, 99])\nprint(df.duplicated().tolist())\n",
+          "out": "[False, True]",
+          "why": "Challenge check: A duplicate policy needs a key and a meaningful survival rule; indexes alone are not identity."
+        },
+        {
+          "t": "try",
+          "q": "Does duplicated compare the row index by default?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It compares the selected data fields."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.1.0",
+            "quiz": [
+              {
+                "q": "Does duplicated compare the row index by default?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only for strings"
+                ],
+                "correct": 0,
+                "why": "It compares the selected data fields."
+              },
+              {
+                "q": "Does keep='last' automatically mean newest timestamp?",
+                "options": [
+                  "Only with IDs",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "It means last in the current row order."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "A duplicate policy needs a key and a meaningful survival rule; indexes alone are not identity."
+        }
+      ]
+    },
+    {
+      "title": "2. Keep the newest valid update deterministically",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Keep the newest valid update deterministically"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Sort parsed timestamps and a tie-break field before deduplicating entity keys."
+        },
+        {
+          "t": "new",
+          "v": "to_datetime format preview",
+          "note": "to_datetime converts text to dates/timestamps. An explicit format avoids guessing; errors='coerce' creates NaT for unparseable values, which must be audited. Day3 teaches this fully."
+        },
+        {
+          "t": "new",
+          "v": "Source-record tie-break",
+          "note": "A preserved source-record number defines input order explicitly. Here newer date wins; equal-date ties choose the later input record. That is a declared example policy, not a universal rule."
+        },
+        {
+          "t": "p",
+          "v": "To keep the latest update, first establish that the timestamp is valid and represents the same time convention. Then sort the chosen key by descending time. A stable or explicit secondary tie-break makes equal timestamps reproducible. In this daily-date fixture, the larger source-record number wins a same-day tie. Invalid dates must be separated before choosing a winner; otherwise a missing timestamp could accidentally retain or discard a record. The selected rows remain traceable to their input records. For real event histories you may need all updates rather than one latest snapshot."
+        },
+        {
+          "t": "syn",
+          "v": "valid = df.loc[df[\"updated\"].notna()]\nordered = valid.sort_values([\"id\",\"updated\",\"source\"], ascending=[True,False,False])\nlatest = ordered.drop_duplicates(\"id\", keep=\"first\")",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"001\", \"001\", \"002\", \"001\"], \"score\": [80, 90, 70, 95],\n                   \"updated\": [\"2026-01-01\", \"2026-01-03\", \"2026-01-02\", \"2026-01-03\"],\n                   \"source\": [1, 2, 3, 4]})\ndf[\"updated\"] = pd.to_datetime(df[\"updated\"], format=\"%Y-%m-%d\", errors=\"coerce\")\nvalid = df.loc[df[\"updated\"].notna()]\nlatest = valid.sort_values([\"id\", \"updated\", \"source\"], ascending=[True, False, False]).drop_duplicates(\"id\")\nprint(latest[[\"id\", \"score\", \"source\"]].to_dict(orient=\"records\"))\n"
+        },
+        {
+          "t": "out",
+          "v": "[{'id': '001', 'score': 95, 'source': 4}, {'id': '002', 'score': 70, 'source': 3}]"
+        },
+        {
+          "t": "p",
+          "v": "001 को newer date छानियो। उही date का दुई updates हुँदा source4 जित्यो, किनकि policy मा later input record भनिएको छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "drop_duplicates(\"id\", keep=\"last\") on unsorted file and call it latest",
+          "right": "Validate dates, sort chronologically and define ties before deduplicating",
+          "why": "File order and timestamp order may differ."
+        },
+        {
+          "t": "ex",
+          "v": "Given out-of-order updates, retain the newest valid record for each ID.",
+          "practiceId": "29.1.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"A\", \"A\", \"B\"], \"score\": [95, 80, 70],\n                   \"updated\": [\"2026-02-03\", \"2026-02-01\", \"2026-02-02\"]})\ndf[\"updated\"] = pd.to_datetime(df[\"updated\"], format=\"%Y-%m-%d\")\nlatest = df.sort_values([\"id\", \"updated\"], ascending=[True, False]).drop_duplicates(\"id\")\nprint(latest[[\"id\", \"score\"]].to_dict(orient=\"records\"))\n",
+          "out": "[{'id': 'A', 'score': 95}, {'id': 'B', 'score': 70}]",
+          "why": "Build check: Newest means newest valid time under a declared tie policy, not simply the final row of a file."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Identify an invalid timestamp before it can participate in newest-record selection.",
+          "practiceId": "29.1.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"A\", \"A\"], \"updated\": [\"bad\", \"2026-02-01\"]})\nparsed = pd.to_datetime(df[\"updated\"], format=\"%Y-%m-%d\", errors=\"coerce\")\nprint(\"Invalid records:\", (parsed.isna()).tolist())\nprint(\"Eligible IDs:\", df.loc[parsed.notna(), \"id\"].tolist())\n",
+          "out": "Invalid records: [True, False]\nEligible IDs: ['A']",
+          "why": "Challenge check: Newest means newest valid time under a declared tie policy, not simply the final row of a file."
+        },
+        {
+          "t": "try",
+          "q": "What must happen before chronological deduplication?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Parse and validate timestamps",
+          "why": "Sorting bad text does not establish valid chronological order."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.1.1",
+            "quiz": [
+              {
+                "q": "What must happen before chronological deduplication?",
+                "options": [
+                  "Fill invalid dates with today",
+                  "Parse and validate timestamps",
+                  "Delete the raw CSV"
+                ],
+                "correct": 1,
+                "why": "Sorting bad text does not establish valid chronological order."
+              },
+              {
+                "q": "How should equal-timestamp ties be resolved?",
+                "options": [
+                  "Always randomly",
+                  "By silently dropping all rows",
+                  "With an explicit rule"
+                ],
+                "correct": 2,
+                "why": "Reproducible choices need a stated tie-break."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Newest means newest valid time under a declared tie policy, not simply the final row of a file."
+        }
+      ]
+    },
+    {
+      "title": "3. Normalize categories without inventing recognition",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Normalize categories without inventing recognition"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Map known aliases to canonical categories and expose unknown values."
+        },
+        {
+          "t": "new",
+          "v": "casefold; strip",
+          "note": "strip removes surrounding whitespace. casefold supports caseless matching more fully than lower for some scripts; do not apply it to case-sensitive IDs/passwords."
+        },
+        {
+          "t": "new",
+          "v": "Alias map; unknown mask",
+          "note": "An alias dictionary translates known variants to canonical categories. A nonmissing cleaned token with no mapping is unknown, not automatically missing or a recognized default."
+        },
+        {
+          "t": "p",
+          "v": "Nepal, NP and a spaced lowercase spelling may refer to one category under your declared mapping. Clean formatting, then map only known aliases. A typo or an unexpected country is not proof that it means Nepal. Preserve the source token and put unknown values in a review list. Before collapsing categories, check whether the distinctions matter: case-sensitive product IDs and account names may not permit casefolding. A clean category column should have a known vocabulary and a separate unknown policy. Normalization can also expose duplicates that were hidden by spelling differences, so decide operation order deliberately."
+        },
+        {
+          "t": "syn",
+          "v": "tokens = series.str.strip().str.casefold()\ncanonical = tokens.map({\"np\":\"NP\",\"nepal\":\"NP\",\"jp\":\"JP\",\"japan\":\"JP\"})\nunknown = tokens.notna() & canonical.isna()",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nraw = pd.Series([\" NP \", \"Nepal\", \"JAPAN\", \"Npeal\", None], dtype=\"string\")\ntokens = raw.str.strip().str.casefold()\ncanonical = tokens.map({\"np\": \"NP\", \"nepal\": \"NP\", \"jp\": \"JP\", \"japan\": \"JP\"})\nunknown = tokens.notna() & canonical.isna()\nprint(\"Known:\", canonical.loc[canonical.notna()].tolist())\nprint(\"Unknown raw:\", raw.loc[unknown].tolist())\nprint(\"Original missing:\", raw.isna().tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Known: ['NP', 'NP', 'JP']\nUnknown raw: ['Npeal']\nOriginal missing: [False, False, False, False, True]"
+        },
+        {
+          "t": "p",
+          "v": "Npeal typo जस्तो देखिए पनि स्वतः Nepal बनाइएन। Known alias मात्रै map भयो। Unknown र original missing छुट्टै हुन्।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Fill every unmapped category with \"NP\"",
+          "right": "Flag unmapped nonmissing tokens for review",
+          "why": "Unknown text is not evidence of membership in the default category."
+        },
+        {
+          "t": "ex",
+          "v": "Normalize beginner aliases B/basic/beginner and expose an unknown advanced label.",
+          "practiceId": "29.1.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nraw = pd.Series([\" B \", \"basic\", \"BEGINNER\", \"advanced\"], dtype=\"string\")\ntoken = raw.str.strip().str.casefold()\nmapped = token.map({\"b\": \"Beginner\", \"basic\": \"Beginner\", \"beginner\": \"Beginner\"})\nprint(mapped.loc[mapped.notna()].tolist())\nprint(raw.loc[token.notna() & mapped.isna()].tolist())\n",
+          "out": "['Beginner', 'Beginner', 'Beginner']\n['advanced']",
+          "why": "Build check: Normalize only permitted differences, preserve IDs as text and review unknown categories explicitly."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Show why normalizing an ID is different from casting it to a number.",
+          "practiceId": "29.1.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nraw = pd.Series([\" 001 \", \"002\"], dtype=\"string\")\ncleaned = raw.str.strip()\nprint(cleaned.tolist())\nprint(raw.tolist())\n",
+          "out": "['001', '002']\n[' 001 ', '002']",
+          "why": "Challenge check: Normalize only permitted differences, preserve IDs as text and review unknown categories explicitly."
+        },
+        {
+          "t": "try",
+          "q": "Does dictionary mapping prove an unknown typo's intended category?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "The dictionary only recognizes supplied aliases."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.1.2",
+            "quiz": [
+              {
+                "q": "Does dictionary mapping prove an unknown typo's intended category?",
+                "options": [
+                  "Always",
+                  "Only with casefold",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "The dictionary only recognizes supplied aliases."
+              },
+              {
+                "q": "Should casefold be applied to every identity field?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only before deduplication"
+                ],
+                "correct": 0,
+                "why": "Some identities distinguish case."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Normalize only permitted differences, preserve IDs as text and review unknown categories explicitly."
+        }
+      ]
+    },
+    {
+      "title": "4. Audit changes and test repeatability",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Audit changes and test repeatability"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Record before/after values and distinguish deterministic cleaning from unsupported assumptions."
+        },
+        {
+          "t": "new",
+          "v": "Cell-change audit",
+          "note": "An audit records source-record identity, field, old value, new value and rule. Missing-to-missing should not be counted as a change; missing comparisons need explicit handling."
+        },
+        {
+          "t": "new",
+          "v": "Idempotence",
+          "note": "A cleaning transformation is idempotent when applying it again gives the same result. This is useful for formatting rules, but does not prove their business assumptions are correct."
+        },
+        {
+          "t": "new",
+          "v": "pipe",
+          "note": "pipe passes a DataFrame into a function, supporting an explicit sequence of stages. Each stage should return a result and keep mutation behavior understandable."
+        },
+        {
+          "t": "p",
+          "v": "A clean table without a report is difficult to trust. Count and identify replacements, removals, imputed cells and unrecognized values. Use stable source references rather than whichever index happens to remain after filtering. Normalize comparisons so two missing markers do not count as a new edit. Test repeatability: stripping already-stripped text should change nothing on the second run. This does not prove the rule was appropriate for that field; it only detects some implementation drift. pipe can make stages readable, but readability still depends on small functions with clear input/output contracts."
+        },
+        {
+          "t": "syn",
+          "v": "cleaned = raw.pipe(normalize_text)\nagain = cleaned.pipe(normalize_text)\nassert cleaned.equals(again)\n# Log changed fields with source references",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndef normalize(df):\n    out = df.copy()\n    out[\"name\"] = out[\"name\"].str.strip()\n    return out\nraw = pd.DataFrame({\"name\": pd.Series([\" Asha \", \"Bina\"], dtype=\"string\")})\nclean = raw.pipe(normalize)\nchanges = [{\"record\": i + 1, \"old\": raw.loc[i, \"name\"], \"new\": clean.loc[i, \"name\"]}\n           for i in raw.index if raw.loc[i, \"name\"] != clean.loc[i, \"name\"]]\nprint(changes)\nprint(\"Repeatable:\", clean.equals(clean.pipe(normalize)))\nprint(\"Raw:\", raw[\"name\"].tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "[{'record': 1, 'old': ' Asha ', 'new': 'Asha'}]\nRepeatable: True\nRaw: [' Asha ', 'Bina']"
+        },
+        {
+          "t": "p",
+          "v": "Record1 को नाम मात्रै बदलियो। फेरि normalize गर्दा उही result आयो। Raw नाम बचेकाले rule गलत भए फर्काएर अर्को निर्णय गर्न सकिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Claim a rule is correct solely because it is idempotent",
+          "right": "Check both repeatability and field-specific business meaning",
+          "why": "A consistently wrong mapping can also be idempotent."
+        },
+        {
+          "t": "ex",
+          "v": "Write a pure strip/casefold function and check repeatability on nullable category text.",
+          "practiceId": "29.1.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndef canonical_text(s):\n    return s.str.strip().str.casefold()\nraw = pd.Series([\" NP \", \"Japan\", pd.NA], dtype=\"string\")\ncleaned = canonical_text(raw)\nprint(cleaned.loc[cleaned.notna()].tolist())\nprint(cleaned.equals(canonical_text(cleaned)))\n",
+          "out": "['np', 'japan']\nTrue",
+          "why": "Build check: Log changes with source identities, keep functions explicit and test repeatability plus semantic correctness."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Count a missing-to-missing result as unchanged using a null-safe comparison.",
+          "practiceId": "29.1.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nbefore = pd.Series([\" A \", pd.NA], dtype=\"string\")\nafter = before.str.strip()\nsame = before.eq(after).fillna(False) | (before.isna() & after.isna())\nprint(\"Changed:\", (~same).tolist())\n",
+          "out": "Changed: [True, False]",
+          "why": "Challenge check: Log changes with source identities, keep functions explicit and test repeatability plus semantic correctness."
+        },
+        {
+          "t": "try",
+          "q": "What does idempotence mean?",
+          "code": "# Predict and explain before revealing.",
+          "a": "A second application gives the same result",
+          "why": "Repeat application should not keep changing the output."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.1.3",
+            "quiz": [
+              {
+                "q": "What does idempotence mean?",
+                "options": [
+                  "A second application gives the same result",
+                  "All values become zero",
+                  "Every rule is business-correct"
+                ],
+                "correct": 0,
+                "why": "Repeat application should not keep changing the output."
+              },
+              {
+                "q": "Should missing-to-missing count as an edit?",
+                "options": [
+                  "Only for dates",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "No new value was supplied."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Log changes with source identities, keep functions explicit and test repeatability plus semantic correctness."
+        }
+      ]
+    }
+  ]
+},
+"29.2": {
+  "parts": [
+    {
+      "title": "1. Numeric conversion with a failure mask",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Numeric conversion with a failure mask"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Convert declared quantities, preserve identifiers and audit failed/nonfinite values."
+        },
+        {
+          "t": "new",
+          "v": "to_numeric; errors='raise'/'coerce'",
+          "note": "raise stops on invalid text; coerce produces a missing conversion result. Detect nonmissing source tokens that became missing so errors do not disappear silently."
+        },
+        {
+          "t": "new",
+          "v": "mod(1); to_numpy(na_value=...)",
+          "note": "mod(1) gives the fractional remainder, so eq(0) checks whole-number values before integer casting. to_numpy requests an array representation and explicitly supplies np.nan for nullable missing values."
+        },
+        {
+          "t": "new",
+          "v": "np.isfinite; nullable Float64",
+          "note": "isfinite identifies finite numerical values separately from parsing success. Float64 supports nullable decimal quantities. Infinity may parse successfully but is not a valid finite score."
+        },
+        {
+          "t": "new",
+          "v": "astype is not a cleaning policy",
+          "note": "astype requests a dtype conversion; it does not decide how to interpret currency signs, commas, IDs or bad text. Specify text conventions and validate before narrowing types."
+        },
+        {
+          "t": "p",
+          "v": "Convert only fields declared numerical by the schema. An ID made of digits remains text. A score containing 'oops' should not become an ordinary missing response without an error record. Build a failure mask from known source values and missing conversion results. Check finiteness separately: 'inf' can parse even though it is not a finite observation. Only remove commas or symbols under a known locale/format rule; a decimal comma and a thousands comma have different meanings. Do not use errors='coerce' as permission to ignore failures. It is a mechanism for isolating them so the pipeline can reject or quarantine them deliberately."
+        },
+        {
+          "t": "syn",
+          "v": "numeric = pd.to_numeric(tokens, errors=\"coerce\").astype(\"Float64\")\nfailed = tokens.notna() & numeric.isna()\nfinite = np.isfinite(numeric.to_numpy(dtype=float, na_value=np.nan))",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nimport pandas as pd\nraw = pd.Series([\"80\", \"oops\", None, \"inf\"], dtype=\"string\")\nnumeric = pd.to_numeric(raw, errors=\"coerce\").astype(\"Float64\")\nfailed = raw.notna() & numeric.isna()\nfinite = np.isfinite(numeric.to_numpy(dtype=float, na_value=np.nan))\nprint(\"Failed text:\", raw.loc[failed].tolist())\nprint(\"Finite decisions:\", finite.tolist())\nprint(\"Originally missing:\", raw.isna().tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Failed text: ['oops']\nFinite decisions: [True, False, False, False]\nOriginally missing: [False, False, True, False]"
+        },
+        {
+          "t": "p",
+          "v": "oops parse भएन, inf parse भए पनि finite भएन। Source missing र conversion failure एउटै घटना होइनन्; छुट्टै report चाहिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Coerce bad text, fill it with zero and report no errors",
+          "right": "Audit failed conversions and validate finite/domain constraints",
+          "why": "A data error is not a genuine score of zero."
+        },
+        {
+          "t": "ex",
+          "v": "Convert quantities ['10','20','bad']; show only valid quantities and failed source tokens.",
+          "practiceId": "29.2.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nraw = pd.Series([\"10\", \"20\", \"bad\"], dtype=\"string\")\nvalues = pd.to_numeric(raw, errors=\"coerce\")\nprint(values.loc[values.notna()].tolist())\nprint(raw.loc[raw.notna() & values.isna()].tolist())\n",
+          "out": "[10, 20]\n['bad']",
+          "why": "Build check: Conversion success, finiteness and domain validity are separate checks; identifiers remain text."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Reject a fractional score before storing in nullable Int64; do not truncate it.",
+          "practiceId": "29.2.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nraw = pd.Series([\"10\", \"10.5\"], dtype=\"string\")\nnumbers = pd.to_numeric(raw, errors=\"raise\")\nwhole = numbers.mod(1).eq(0)\nprint(\"Whole-number decisions:\", whole.tolist())\nprint(numbers.loc[whole].astype(\"Int64\").tolist())\n",
+          "out": "Whole-number decisions: [True, False]\n[10]",
+          "why": "Challenge check: Conversion success, finiteness and domain validity are separate checks; identifiers remain text."
+        },
+        {
+          "t": "try",
+          "q": "Can infinity parse as a numeric value?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Yes",
+          "why": "Parsing does not ensure a finite domain."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.2.0",
+            "quiz": [
+              {
+                "q": "Can infinity parse as a numeric value?",
+                "options": [
+                  "Yes",
+                  "Never",
+                  "Only with IDs"
+                ],
+                "correct": 0,
+                "why": "Parsing does not ensure a finite domain."
+              },
+              {
+                "q": "What should follow errors='coerce'?",
+                "options": [
+                  "Delete the source",
+                  "Audit conversion failures",
+                  "Assume all values were valid"
+                ],
+                "correct": 1,
+                "why": "Compare known source tokens with missing converted results."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Conversion success, finiteness and domain validity are separate checks; identifiers remain text."
+        }
+      ]
+    },
+    {
+      "title": "2. Dates: format, failures and timezone meaning",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Dates: format, failures and timezone meaning"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Parse explicit date conventions and normalize actual offset timestamps to UTC."
+        },
+        {
+          "t": "new",
+          "v": "to_datetime; format; NaT",
+          "note": "format states the expected pattern; errors='coerce' maps unparseable dates to NaT. Audit failed nonmissing tokens and calendar validity."
+        },
+        {
+          "t": "new",
+          "v": "utc=True",
+          "note": "For timestamps with supplied timezone offsets, utc=True normalizes instants to UTC. For naive timestamps it assumes UTC; do not use that assumption unless the source contract says it is correct."
+        },
+        {
+          "t": "new",
+          "v": "dt.strftime; dt accessor",
+          "note": "The dt accessor provides datetime operations; strftime formats valid dates/timestamps. Day30 develops date components and time series in depth."
+        },
+        {
+          "t": "p",
+          "v": "01/02/2026 could mean January2 or February1. Guessing a convention can create a valid but wrong date. State the source format and test an impossible date like February30. Calendar dates, local wall-clock times and timezone-aware instants are different types of information. If offsets are included, UTC normalization lets you compare the same instant across regions. If a naive timestamp means local Tokyo time, setting utc=True directly would reinterpret it as UTC incorrectly; establish/localize the source timezone first. For this week's cleaning project, updated is a simple YYYY-MM-DD calendar date. It does not claim within-day ordering."
+        },
+        {
+          "t": "syn",
+          "v": "dates = pd.to_datetime(tokens, format=\"%Y-%m-%d\", errors=\"coerce\")\ninstants = pd.to_datetime(offset_tokens, utc=True)\ndates.dt.strftime(\"%Y-%m-%d\")",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nraw = pd.Series([\"2026-02-01\", \"2026-02-30\", None], dtype=\"string\")\ndates = pd.to_datetime(raw, format=\"%Y-%m-%d\", errors=\"coerce\")\nprint(\"Failed dates:\", raw.loc[raw.notna() & dates.isna()].tolist())\nprint(\"Valid:\", dates.loc[dates.notna()].dt.strftime(\"%Y-%m-%d\").tolist())\noffsets = pd.Series([\"2026-01-01T09:00:00+09:00\", \"2026-01-01T00:00:00+00:00\"])\nutc = pd.to_datetime(offsets, utc=True)\nprint(\"Same instant:\", utc.iloc[0] == utc.iloc[1])\n"
+        },
+        {
+          "t": "out",
+          "v": "Failed dates: ['2026-02-30']\nValid: ['2026-02-01']\nSame instant: True"
+        },
+        {
+          "t": "p",
+          "v": "February30 invalid भयो। Tokyo offset सहितको 09:00 र UTC00:00 एउटै instant हुन्। Naive time लाई timezone थाहा नपाई UTC नमान्नु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Let pandas guess ambiguous date conventions for every source",
+          "right": "Declare the date format and timezone contract explicitly",
+          "why": "A successful parse can still mean the wrong calendar date or instant."
+        },
+        {
+          "t": "ex",
+          "v": "Parse 01/02/2026 using day/month/year and print its unambiguous ISO date.",
+          "practiceId": "29.2.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndates = pd.to_datetime(pd.Series([\"01/02/2026\"]), format=\"%d/%m/%Y\")\nprint(dates.dt.strftime(\"%Y-%m-%d\").tolist())\n",
+          "out": "['2026-02-01']",
+          "why": "Build check: Dates need a format and time meaning. Preserve failures and never assume a naive time's timezone without evidence."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Separate originally missing dates from invalid nonmissing date text.",
+          "practiceId": "29.2.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nraw = pd.Series([None, \"not-a-date\", \"2026-01-01\"], dtype=\"string\")\ndates = pd.to_datetime(raw, format=\"%Y-%m-%d\", errors=\"coerce\")\nprint(\"Originally missing:\", raw.isna().tolist())\nprint(\"Failed known:\", (raw.notna() & dates.isna()).tolist())\n",
+          "out": "Originally missing: [True, False, False]\nFailed known: [False, True, False]",
+          "why": "Challenge check: Dates need a format and time meaning. Preserve failures and never assume a naive time's timezone without evidence."
+        },
+        {
+          "t": "try",
+          "q": "Can 01/02/2026 be ambiguous?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Yes",
+          "why": "Different conventions assign different dates."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.2.1",
+            "quiz": [
+              {
+                "q": "Can 01/02/2026 be ambiguous?",
+                "options": [
+                  "Only when missing",
+                  "Yes",
+                  "No"
+                ],
+                "correct": 1,
+                "why": "Different conventions assign different dates."
+              },
+              {
+                "q": "Does utc=True correctly infer every naive source timezone?",
+                "options": [
+                  "Always",
+                  "Only for Japanese text",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "It treats naive values as UTC rather than discovering a local timezone."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Dates need a format and time meaning. Preserve failures and never assume a naive time's timezone without evidence."
+        }
+      ]
+    },
+    {
+      "title": "3. Nullable integers and categorical vocabularies",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Nullable integers and categorical vocabularies"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose types after validation and expose unknown category values before casting."
+        },
+        {
+          "t": "new",
+          "v": "CategoricalDtype; ordered",
+          "note": "CategoricalDtype defines allowed categories and optional ordering. ordered=True uses the declared category order for comparisons/sorting, not alphabetical order."
+        },
+        {
+          "t": "new",
+          "v": "Unknown category conversion",
+          "note": "Casting a token outside a declared categorical vocabulary can turn it into missing. Detect unknown tokens first so this does not silently erase the source error."
+        },
+        {
+          "t": "new",
+          "v": "convert_dtypes preview",
+          "note": "convert_dtypes attempts convenient nullable type choices, but cannot establish business meaning. A declared ID/quantity/date schema remains necessary."
+        },
+        {
+          "t": "p",
+          "v": "Types should express the intended domain. Whole-number counts can use Int64 when missing is possible; decimal measurements require a float or another suitable representation. Categorical types express a fixed vocabulary such as beginner/intermediate/advanced, optionally with a meaningful order. Validate aliases and unknown values before casting. An unexpected category becoming missing during conversion is not the same as a person leaving the field blank. Automatic dtype helpers are useful after inspection, but they do not know that 001 is an identifier or that advanced should rank above intermediate. Store those decisions in the schema."
+        },
+        {
+          "t": "syn",
+          "v": "kind = pd.CategoricalDtype([\"beginner\",\"intermediate\",\"advanced\"], ordered=True)\nunknown = raw.notna() & ~raw.isin(kind.categories)\nvalid = raw.loc[~unknown].astype(kind)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nraw = pd.Series([\"advanced\", \"beginner\", \"expert\", None], dtype=\"string\")\nkind = pd.CategoricalDtype([\"beginner\", \"intermediate\", \"advanced\"], ordered=True)\nunknown = raw.notna() & ~raw.isin(kind.categories)\nprint(\"Unknown:\", raw.loc[unknown].tolist())\nvalid = raw.loc[~unknown].astype(kind)\nprint(\"Sorted known:\", valid.loc[valid.notna()].sort_values().tolist())\nprint(\"Originally missing:\", raw.isna().tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Unknown: ['expert']\nSorted known: ['beginner', 'advanced']\nOriginally missing: [False, False, False, True]"
+        },
+        {
+          "t": "p",
+          "v": "expert allowed category थिएन, cast गर्नुअघि छुट्टै देखायौँ। Beginner र advanced को order हाम्रो vocabulary ले तय गर्‍यो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Cast unknown labels to category, then call them ordinary missing responses",
+          "right": "Report unknown source labels before categorical conversion",
+          "why": "Casting may erase the distinction between invalid text and no response."
+        },
+        {
+          "t": "ex",
+          "v": "Define low/medium/high as ordered categories and sort high/low/medium accordingly.",
+          "practiceId": "29.2.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nkind = pd.CategoricalDtype([\"low\", \"medium\", \"high\"], ordered=True)\ns = pd.Series([\"high\", \"low\", \"medium\"], dtype=kind)\nprint(s.sort_values().tolist())\n",
+          "out": "['low', 'medium', 'high']",
+          "why": "Build check: Validate first, then choose types that encode your declared domain and missing policy."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Store missing whole counts without turning identifiers into numbers.",
+          "practiceId": "29.2.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": pd.Series([\"001\", \"002\"], dtype=\"string\"),\n                   \"count\": pd.Series([10, pd.NA], dtype=\"Int64\")})\nprint(df[\"id\"].tolist(), str(df[\"count\"].dtype), df[\"count\"].isna().tolist())\n",
+          "out": "['001', '002'] Int64 [False, True]",
+          "why": "Challenge check: Validate first, then choose types that encode your declared domain and missing policy."
+        },
+        {
+          "t": "try",
+          "q": "Does an ordered category use its declared order?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Yes",
+          "why": "The vocabulary order defines ranking."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.2.2",
+            "quiz": [
+              {
+                "q": "Does an ordered category use its declared order?",
+                "options": [
+                  "Always alphabetical",
+                  "Only numeric IDs",
+                  "Yes"
+                ],
+                "correct": 2,
+                "why": "The vocabulary order defines ranking."
+              },
+              {
+                "q": "Should unknown categories be detected before casting?",
+                "options": [
+                  "Yes",
+                  "Never",
+                  "Only with uppercase names"
+                ],
+                "correct": 0,
+                "why": "Casting can turn unknown tokens into missing."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Validate first, then choose types that encode your declared domain and missing policy."
+        }
+      ]
+    },
+    {
+      "title": "4. Staged schema validation",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Staged schema validation"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Validate required columns, conversion failures and ranges before declaring a dataset clean."
+        },
+        {
+          "t": "new",
+          "v": "Schema validation",
+          "note": "A schema describes required columns, identity rules, storage types, allowed categories, numerical bounds and date conventions."
+        },
+        {
+          "t": "new",
+          "v": "str.fullmatch preview",
+          "note": "fullmatch requires the entire string to satisfy a regex. [0-9]{3} means exactly three ASCII digits; Day4 expands searching/extraction and explains why contains is not whole-field validation."
+        },
+        {
+          "t": "new",
+          "v": "Quarantine",
+          "note": "Quarantine separates invalid records for review while preserving their source references and reasons. It does not invent a repair or delete the raw file."
+        },
+        {
+          "t": "new",
+          "v": "Validation order",
+          "note": "Normalize permitted text differences, convert types, audit failures, check domains, then apply identity/fill rules. Later stages must not hide earlier invalidity."
+        },
+        {
+          "t": "p",
+          "v": "Do not call a table clean solely because numeric columns no longer contain text. A parsed score of150 is outside the declared0..100 domain; a parsed date may still belong to the wrong time convention. Make each rule understandable and testable. Required names cannot be blank, IDs have an expected format, regions must be recognized, and scores must be finite and within bounds. Separate a genuine blank score from a failed score conversion. Only the former is eligible for a later fill policy. Keep bad records reviewable with reasons. If the source schema is missing or changes unexpectedly, stop rather than guessing which columns to use."
+        },
+        {
+          "t": "syn",
+          "v": "check required columns\nnormalize declared text differences\nparse values and audit failures\nvalidate finite/range/category/identity rules\nquarantine invalid rows before fills/deduplication",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nimport pandas as pd\nraw = pd.DataFrame({\"id\": [\"001\", \"002\", \"003\"], \"score\": [\"80\", \"150\", \"oops\"]})\nnumeric = pd.to_numeric(raw[\"score\"], errors=\"coerce\")\nfinite = pd.Series(np.isfinite(numeric), index=raw.index)\nvalid = finite & numeric.between(0, 100).fillna(False)\nprint(\"Accepted:\", raw.loc[valid, \"id\"].tolist())\nprint(\"Review:\", raw.loc[~valid, \"id\"].tolist())\nprint(\"Source scores:\", raw[\"score\"].tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Accepted: ['001']\nReview: ['002', '003']\nSource scores: ['80', '150', 'oops']"
+        },
+        {
+          "t": "p",
+          "v": "150 parse भएको भए पनि score domain बाहिर थियो। oops parse भएन। दुवैलाई fill गरेर valid बनाएको छैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Fill every failed score conversion with the median before validation",
+          "right": "Distinguish blank source fields from invalid nonblank tokens",
+          "why": "Filling errors hides evidence and makes invalid data appear acceptable."
+        },
+        {
+          "t": "ex",
+          "v": "Reject a missing required column before accessing values.",
+          "practiceId": "29.2.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"001\"]})\nrequired = {\"id\", \"score\"}\nmissing_columns = sorted(required - set(df.columns))\nprint(\"Missing schema fields:\", missing_columns)\n",
+          "out": "Missing schema fields: ['score']",
+          "why": "Build check: A clean dataset satisfies an explicit schema; parse failures and domain failures stay reviewable."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Validate exact three-ASCII-digit IDs while keeping their leading zeros.",
+          "practiceId": "29.2.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nids = pd.Series([\"001\", \"12\", \"A03\", None], dtype=\"string\")\nvalid = ids.str.fullmatch(r\"[0-9]{3}\").fillna(False)\nprint(valid.tolist())\nprint(ids.loc[valid].tolist())\n",
+          "out": "[True, False, False, False]\n['001']",
+          "why": "Challenge check: A clean dataset satisfies an explicit schema; parse failures and domain failures stay reviewable."
+        },
+        {
+          "t": "try",
+          "q": "Does parsing 150 make it a valid score under0..100?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Successful conversion does not satisfy the domain rule."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.2.3",
+            "quiz": [
+              {
+                "q": "Does parsing 150 make it a valid score under0..100?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only as Float64"
+                ],
+                "correct": 0,
+                "why": "Successful conversion does not satisfy the domain rule."
+              },
+              {
+                "q": "What is quarantine for?",
+                "options": [
+                  "Deleting the original file",
+                  "Reviewing invalid records with reasons",
+                  "Guessing replacement values"
+                ],
+                "correct": 1,
+                "why": "It keeps invalid observations traceable."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "A clean dataset satisfies an explicit schema; parse failures and domain failures stay reviewable."
+        }
+      ]
+    }
+  ]
+},
+"29.3": {
+  "parts": [
+    {
+      "title": "1. Whitespace, case and Unicode boundaries",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Whitespace, case and Unicode boundaries"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Normalize permitted name/category formatting without deleting meaningful text."
+        },
+        {
+          "t": "new",
+          "v": "str.replace; regex=True/False",
+          "note": "replace performs literal replacement with regex=False or regular-expression substitution with regex=True. State the mode explicitly."
+        },
+        {
+          "t": "new",
+          "v": "Unicode normalization",
+          "note": "str.normalize('NFC') can combine equivalent Unicode sequences without changing their intended text. NFKC is stronger compatibility normalization and may change meaningful distinctions."
+        },
+        {
+          "t": "new",
+          "v": "Internal whitespace policy",
+          "note": "Collapsing repeated whitespace can suit display names but may be wrong for source code, addresses or exact IDs. Formatting rules are field-specific."
+        },
+        {
+          "t": "p",
+          "v": "strip removes whitespace only at the edges. A display name can also contain repeated internal spaces; collapse them only if your contract permits it. Normalize case for recognized category matching, not for every user name or password. Unicode text can have equivalent spellings encoded with different code-point sequences; NFC is useful when that distinction should not create separate categories. Do not strip accents or remove every non-ASCII character from multilingual names. A clean field should preserve meaning and retain the raw version. Document which formatting distinctions are intentionally collapsed."
+        },
+        {
+          "t": "syn",
+          "v": "names.str.normalize(\"NFC\").str.strip().str.replace(r\"\\s+\", \" \", regex=True)\ncategories.str.strip().str.casefold()",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nraw = pd.Series([\"  Asha   Rai \", \"Bina\\tShah\", \"Cafe\\u0301\"], dtype=\"string\")\nclean = raw.str.normalize(\"NFC\").str.strip().str.replace(r\"\\s+\", \" \", regex=True)\nprint(clean.tolist())\nprint(\"Raw first:\", raw.iloc[0])\n"
+        },
+        {
+          "t": "out",
+          "v": "['Asha Rai', 'Bina Shah', 'Café']\nRaw first:   Asha   Rai"
+        },
+        {
+          "t": "p",
+          "v": "Name भित्रको repeated whitespace single space बन्यो। Café को accent हटाइएको छैन। Exact text चाहिने field मा यही rule स्वतः लागू नगर्नु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Remove every character outside A-Z from names",
+          "right": "Use permitted whitespace/Unicode normalization and preserve multilingual letters",
+          "why": "Deleting non-ASCII text damages valid names."
+        },
+        {
+          "t": "ex",
+          "v": "Normalize spaced category text with strip/casefold while preserving missing entries.",
+          "practiceId": "29.3.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nraw = pd.Series([\" Nepal \", \"JAPAN\", pd.NA], dtype=\"string\")\nclean = raw.str.strip().str.casefold()\nprint(clean.loc[clean.notna()].tolist(), clean.isna().tolist())\n",
+          "out": "['nepal', 'japan'] [False, False, True]",
+          "why": "Build check: Normalize only meaningful equivalences and preserve multilingual text plus the raw source."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Show that strip alone does not collapse internal spaces.",
+          "practiceId": "29.3.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ns = pd.Series([\" Asha   Rai \"], dtype=\"string\")\nprint(s.str.strip().tolist())\nprint(s.str.strip().str.replace(r\"\\s+\", \" \", regex=True).tolist())\n",
+          "out": "['Asha   Rai']\n['Asha Rai']",
+          "why": "Challenge check: Normalize only meaningful equivalences and preserve multilingual text plus the raw source."
+        },
+        {
+          "t": "try",
+          "q": "Does strip collapse internal repeated spaces?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It removes leading/trailing whitespace."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.3.0",
+            "quiz": [
+              {
+                "q": "Does strip collapse internal repeated spaces?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only tabs"
+                ],
+                "correct": 0,
+                "why": "It removes leading/trailing whitespace."
+              },
+              {
+                "q": "Should names lose all non-ASCII letters?",
+                "options": [
+                  "Only for matching",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Those letters can be essential to valid names."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Normalize only meaningful equivalences and preserve multilingual text plus the raw source."
+        }
+      ]
+    },
+    {
+      "title": "2. Literal replacements versus regex rules",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Literal replacements versus regex rules"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Replace only declared syntax and test characters with special regex meaning."
+        },
+        {
+          "t": "new",
+          "v": "Regular expression metacharacter",
+          "note": "Characters such as . have special regex meaning. regex=False matches their literal text; escape special characters when a regex is genuinely intended."
+        },
+        {
+          "t": "new",
+          "v": "Anchors ^ and $",
+          "note": "^ anchors the start and $ the end of a pattern. Anchors help avoid matching a valid-looking substring inside invalid surrounding text."
+        },
+        {
+          "t": "new",
+          "v": "Exact source format",
+          "note": "A US-style thousands comma and a decimal comma require different interpretations. Use explicit source conventions before removing punctuation."
+        },
+        {
+          "t": "p",
+          "v": "Replacement can quietly corrupt data when its matching mode is wrong. A dot in regex means almost any character, so replacing '.' with regex=True is not the same as removing literal dots. Use literal mode for fixed tokens and regex mode for a stated pattern such as runs of whitespace. When cleaning numbers, know the locale first: 1,234 may mean1234, while 1,23 may mean1.23 under another convention. The exercise accepts only a declared whole-number comma-grouping format before removing commas. Invalid grouping remains visible for review instead of being silently converted."
+        },
+        {
+          "t": "syn",
+          "v": "s.str.replace(\".\", \"\", regex=False)\nvalid = s.str.fullmatch(r\"[0-9]{1,3}(,[0-9]{3})+\")\n# Only permitted comma-grouped integer tokens may be normalized",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ns = pd.Series([\"v1.2\", \"abc\"], dtype=\"string\")\nprint(\"Literal:\", s.str.replace(\".\", \"\", regex=False).tolist())\nprint(\"Regex dot:\", s.str.replace(\".\", \"\", regex=True).tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Literal: ['v12', 'abc']\nRegex dot: ['', '']"
+        },
+        {
+          "t": "p",
+          "v": "Literal dot हटाउँदा v12 भयो। Regex dot ले अक्षरहरू समेत match गर्‍यो। replace मा mode सधैँ स्पष्ट लेख्नु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "s.str.replace(\".\", \"\", regex=True) to remove only punctuation dots",
+          "right": "s.str.replace(\".\", \"\", regex=False)",
+          "why": "Regex dot matches characters beyond a literal dot."
+        },
+        {
+          "t": "ex",
+          "v": "Recognize valid comma-grouped whole numbers ['1,234','12,345','1,23']; convert only the recognized tokens.",
+          "practiceId": "29.3.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nraw = pd.Series([\"1,234\", \"12,345\", \"1,23\"], dtype=\"string\")\nvalid = raw.str.fullmatch(r\"[0-9]{1,3}(,[0-9]{3})+\").fillna(False)\ntokens = raw.loc[valid].str.replace(\",\", \"\", regex=False)\nprint(pd.to_numeric(tokens).tolist())\nprint(\"Review:\", raw.loc[~valid].tolist())\n",
+          "out": "[1234, 12345]\nReview: ['1,23']",
+          "why": "Build check: Choose literal or regex replacement explicitly, validate the source format and keep unrecognized tokens."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Remove a literal currency prefix only after recognizing the declared complete token format.",
+          "practiceId": "29.3.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nraw = pd.Series([\"NPR 100\", \"NPR 200\", \"USD 300\"], dtype=\"string\")\nvalid = raw.str.fullmatch(r\"NPR [0-9]+\").fillna(False)\nclean = raw.loc[valid].str.replace(\"NPR \", \"\", regex=False)\nprint(pd.to_numeric(clean).tolist(), raw.loc[~valid].tolist())\n",
+          "out": "[100, 200] ['USD 300']",
+          "why": "Challenge check: Choose literal or regex replacement explicitly, validate the source format and keep unrecognized tokens."
+        },
+        {
+          "t": "try",
+          "q": "What does regex dot normally match?",
+          "code": "# Predict and explain before revealing.",
+          "a": "A character other than newline",
+          "why": "Dot is a regex metacharacter."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.3.1",
+            "quiz": [
+              {
+                "q": "What does regex dot normally match?",
+                "options": [
+                  "Only numbers",
+                  "A character other than newline",
+                  "Only a literal dot"
+                ],
+                "correct": 1,
+                "why": "Dot is a regex metacharacter."
+              },
+              {
+                "q": "Should every comma in numeric text simply be deleted?",
+                "options": [
+                  "Always",
+                  "Only before astype",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Its meaning depends on the source format/locale."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Choose literal or regex replacement explicitly, validate the source format and keep unrecognized tokens."
+        }
+      ]
+    },
+    {
+      "title": "3. contains, fullmatch and extract",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. contains, fullmatch and extract"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Separate finding a substring from validating a whole field and extracting structured parts."
+        },
+        {
+          "t": "new",
+          "v": "str.contains; na",
+          "note": "contains finds a substring/pattern. regex=False uses literal text; na=False explicitly treats missing fields as not matching."
+        },
+        {
+          "t": "new",
+          "v": "str.fullmatch",
+          "note": "fullmatch requires the entire string to match a pattern, useful for validating IDs. contains can find a valid fragment inside invalid surrounding text."
+        },
+        {
+          "t": "new",
+          "v": "str.extract; capture group",
+          "note": "extract returns captured regex groups from a match. A capture group in parentheses identifies the desired part. Missing matches become missing results."
+        },
+        {
+          "t": "p",
+          "v": "Searching and validating answer different questions. contains('NP',regex=False) can find NP anywhere, including inside a longer invalid code. fullmatch checks the whole field. extract retrieves a part of a matched structure, but extraction success alone does not establish the rest of the field's meaning. Use anchors or fullmatch when validating complete tokens. Handle missing text through an explicit na policy. These examples validate fictional order references; they do not claim that a small regex validates every real email, address or Unicode name."
+        },
+        {
+          "t": "syn",
+          "v": "s.str.contains(\"NP\", regex=False, na=False)\nvalid = s.str.fullmatch(r\"ORD-[0-9]{3}\").fillna(False)\nnumber = s.loc[valid].str.extract(r\"ORD-([0-9]{3})\", expand=False)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nraw = pd.Series([\"ORD-001\", \"xORD-002x\", \"ORD-ABC\", None], dtype=\"string\")\ncontains = raw.str.contains(\"ORD-\", regex=False, na=False)\nvalid = raw.str.fullmatch(r\"ORD-[0-9]{3}\").fillna(False)\nnumber = raw.loc[valid].str.extract(r\"ORD-([0-9]{3})\", expand=False)\nprint(\"Contains prefix:\", contains.tolist())\nprint(\"Full valid:\", valid.tolist())\nprint(\"Text number:\", number.tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Contains prefix: [True, True, True, False]\nFull valid: [True, False, False, False]\nText number: ['001']"
+        },
+        {
+          "t": "p",
+          "v": "xORD-002x मा prefix भेटियो तर पूरा ID valid भएन। Extract गरेको001 लाई text नै राख्दा leading zero बच्यो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Use contains to prove a whole ID is valid",
+          "right": "Use fullmatch for the complete ID contract",
+          "why": "A valid substring can appear inside an invalid full field."
+        },
+        {
+          "t": "ex",
+          "v": "Find literal dots in a nullable text Series without treating dot as a regex wildcard.",
+          "practiceId": "29.3.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ns = pd.Series([\"a.b\", \"ab\", None], dtype=\"string\")\nprint(s.str.contains(\".\", regex=False, na=False).tolist())\n",
+          "out": "[True, False, False]",
+          "why": "Build check: contains searches, fullmatch validates the whole token and extract retrieves stated components."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Extract a known LEVEL:beginner/intermediate/advanced token only after validating the whole pattern.",
+          "practiceId": "29.3.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ns = pd.Series([\"LEVEL:beginner\", \"LEVEL:advanced\", \"LEVEL:expert\"], dtype=\"string\")\nvalid = s.str.fullmatch(r\"LEVEL:(beginner|intermediate|advanced)\").fillna(False)\nprint(s.loc[valid].str.extract(r\"LEVEL:(beginner|intermediate|advanced)\", expand=False).tolist())\nprint(\"Unknown:\", s.loc[~valid].tolist())\n",
+          "out": "['beginner', 'advanced']\nUnknown: ['LEVEL:expert']",
+          "why": "Challenge check: contains searches, fullmatch validates the whole token and extract retrieves stated components."
+        },
+        {
+          "t": "try",
+          "q": "Does contains prove the whole field matches a schema?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It searches for matching parts."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.3.2",
+            "quiz": [
+              {
+                "q": "Does contains prove the whole field matches a schema?",
+                "options": [
+                  "Always",
+                  "Only with na=False",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "It searches for matching parts."
+              },
+              {
+                "q": "What does a regex capture group identify?",
+                "options": [
+                  "A part to extract",
+                  "An automatic database key",
+                  "A missing column"
+                ],
+                "correct": 0,
+                "why": "Parentheses capture a specified portion of a match."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "contains searches, fullmatch validates the whole token and extract retrieves stated components."
+        }
+      ]
+    },
+    {
+      "title": "4. Splitting structured fields and validating parts",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Splitting structured fields and validating parts"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Split an explicitly delimited field without assuming every name/address has that structure."
+        },
+        {
+          "t": "new",
+          "v": "str.split; n; expand",
+          "note": "split divides a string at a delimiter. n limits the number of splits; expand=True produces separate columns. Missing/absent parts still require checks."
+        },
+        {
+          "t": "new",
+          "v": "Compound-field schema",
+          "note": "A compound field needs a known delimiter rule and component domains. Real person names or arbitrary addresses cannot safely be parsed by always splitting on the first space."
+        },
+        {
+          "t": "p",
+          "v": "A declared region|level field is a reasonable splitting exercise because the delimiter and allowed values are specified. Do not transfer this assumption to names: many valid names have different numbers of parts and spaces. n=1 preserves any remaining delimiter in the second component, making an extra delimiter visible to validation. After splitting, strip permitted whitespace and validate each component against its vocabulary. Missing parts, unknown values and extra delimiters belong in a review list. The original compound token stays available for explaining every rejection."
+        },
+        {
+          "t": "syn",
+          "v": "parts = s.str.split(\"|\", n=1, expand=True, regex=False)\nregion = parts[0].str.strip()\nlevel = parts[1].str.strip()\nvalid = region.isin(...) & level.isin(...)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nraw = pd.Series([\"NP|beginner\", \" JP | advanced \", \"NP\", \"NP|beginner|extra\"], dtype=\"string\")\nparts = raw.str.split(\"|\", n=1, expand=True, regex=False)\nregion, level = parts[0].str.strip(), parts[1].str.strip()\nvalid = region.isin([\"NP\", \"JP\"]) & level.isin([\"beginner\", \"advanced\"])\nprint(\"Valid:\", raw.loc[valid].tolist())\nprint(\"Review:\", raw.loc[~valid].tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Valid: ['NP|beginner', ' JP | advanced ']\nReview: ['NP', 'NP|beginner|extra']"
+        },
+        {
+          "t": "p",
+          "v": "Extra delimiter भएको token को दोस्रो part beginner|extra रह्यो र validation ले reject गर्‍यो। Split भएको भन्दैमा field valid भएको होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Split every person name into exactly first and last at one space",
+          "right": "Use a declared compound-field schema; preserve full names when no such schema exists",
+          "why": "Real names do not share one universal two-part structure."
+        },
+        {
+          "t": "ex",
+          "v": "Split 'book:100' and 'pen:20' at a literal colon and parse the declared integer quantity part.",
+          "practiceId": "29.3.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ns = pd.Series([\"book:100\", \"pen:20\"], dtype=\"string\")\nparts = s.str.split(\":\", n=1, expand=True, regex=False)\nquantity = pd.to_numeric(parts[1], errors=\"raise\")\nprint(parts[0].tolist(), quantity.tolist())\n",
+          "out": "['book', 'pen'] [100, 20]",
+          "why": "Build check: A split is only structural parsing. Validate every part and avoid imposing arbitrary structures on real names."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Reject a missing component in a declared region|level field.",
+          "practiceId": "29.3.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ns = pd.Series([\"NP|beginner\", \"JP|\", \"|advanced\"], dtype=\"string\")\nparts = s.str.split(\"|\", n=1, expand=True, regex=False)\nvalid = parts[0].isin([\"NP\", \"JP\"]) & parts[1].isin([\"beginner\", \"advanced\"])\nprint(valid.tolist())\n",
+          "out": "[True, False, False]",
+          "why": "Challenge check: A split is only structural parsing. Validate every part and avoid imposing arbitrary structures on real names."
+        },
+        {
+          "t": "try",
+          "q": "Does successful splitting guarantee valid components?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Vocabulary and missingness rules still need checking."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.3.3",
+            "quiz": [
+              {
+                "q": "Does successful splitting guarantee valid components?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only with expand=True"
+                ],
+                "correct": 0,
+                "why": "Vocabulary and missingness rules still need checking."
+              },
+              {
+                "q": "What does n=1 limit?",
+                "options": [
+                  "The allowed categories",
+                  "The number of splits",
+                  "The number of input rows"
+                ],
+                "correct": 1,
+                "why": "Only the first delimiter splits the field."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "A split is only structural parsing. Validate every part and avoid imposing arbitrary structures on real names."
+        }
+      ]
+    }
+  ]
+},
+"29.4": {
+  "parts": [
+    {
+      "title": "1. Domain errors versus statistical surprises",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Domain errors versus statistical surprises"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Validate finite values and known bounds before applying statistical outlier rules."
+        },
+        {
+          "t": "new",
+          "v": "Domain constraint",
+          "note": "A domain constraint comes from field meaning: a score here is finite and between0 and100. A statistical rarity is a different kind of check."
+        },
+        {
+          "t": "new",
+          "v": "clip",
+          "note": "clip caps values at chosen bounds. It changes observations; use it only under an explicit adjustment policy, not to make invalid source values appear valid."
+        },
+        {
+          "t": "new",
+          "v": "Inspection versus correction",
+          "note": "A flag requests investigation. Correct only with trustworthy source evidence, quarantine invalid records, or retain legitimate rare values with documentation."
+        },
+        {
+          "t": "p",
+          "v": "A score150 violates our declared score domain regardless of the rest of the dataset. A valid score0 might be statistically unusual but still true. Validate source constraints before fitting statistical thresholds; invalid infinities and impossible values can corrupt mean and spread estimates. Do not clip input scores to0..100 merely so validation passes. Clipping can be a documented derived adjustment, but it must not erase evidence of bad source data. Keep flags and reasons separate from decisions. A high salary, large sale or low grade can be important precisely because it is unusual."
+        },
+        {
+          "t": "syn",
+          "v": "finite = np.isfinite(values.to_numpy(dtype=float, na_value=np.nan))\nvalid = finite & values.between(0,100).fillna(False)\n# Preserve invalid values in raw data for review",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import numpy as np\nimport pandas as pd\nscores = pd.Series([0, 80, 150, np.inf, pd.NA], dtype=\"Float64\")\nfinite = np.isfinite(scores.to_numpy(dtype=float, na_value=np.nan))\nvalid = finite & scores.between(0, 100).fillna(False)\nprint(\"Valid:\", valid.tolist())\nprint(\"Valid scores:\", scores.loc[valid].tolist())\nprint(\"Missing:\", scores.isna().tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Valid: [True, True, False, False, False]\nValid scores: [0.0, 80.0]\nMissing: [False, False, False, False, True]"
+        },
+        {
+          "t": "p",
+          "v": "0 valid score हो।150 domain बाहिर, infinity finite होइन, र missing अर्को अवस्था हो। Statistical rule ले यी अर्थ छुट्याउँदैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Clip invalid score150 to100 and call the source correct",
+          "right": "Flag/quarantine the invalid source; adjust only with a documented separate policy",
+          "why": "Clipping removes evidence of the original violation."
+        },
+        {
+          "t": "ex",
+          "v": "Flag negative durations independently from missing durations.",
+          "practiceId": "29.4.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nduration = pd.Series([0, -5, 30, pd.NA], dtype=\"Float64\")\ninvalid = (duration < 0).fillna(False)\nprint(\"Negative:\", invalid.tolist(), \"Missing:\", duration.isna().tolist())\n",
+          "out": "Negative: [False, True, False, False] Missing: [False, False, False, True]",
+          "why": "Build check: Validate domain rules first. A rare valid observation and an impossible value need different decisions."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Create a separately named capped display column and keep the original large values.",
+          "practiceId": "29.4.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"raw_value\": [10, 20, 1000]})\ndf[\"display_capped\"] = df[\"raw_value\"].clip(upper=100)\nprint(df.to_dict(orient=\"records\"))\n",
+          "out": "[{'raw_value': 10, 'display_capped': 10}, {'raw_value': 20, 'display_capped': 20}, {'raw_value': 1000, 'display_capped': 100}]",
+          "why": "Challenge check: Validate domain rules first. A rare valid observation and an impossible value need different decisions."
+        },
+        {
+          "t": "try",
+          "q": "Is every statistically unusual value an error?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Rare events can be genuine and important."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.4.0",
+            "quiz": [
+              {
+                "q": "Is every statistically unusual value an error?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only negative numbers"
+                ],
+                "correct": 0,
+                "why": "Rare events can be genuine and important."
+              },
+              {
+                "q": "Does clipping prove an invalid source value was correct?",
+                "options": [
+                  "Only with upper=100",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "It changes the value without proving its truth."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Validate domain rules first. A rare valid observation and an impossible value need different decisions."
+        }
+      ]
+    },
+    {
+      "title": "2. IQR fences with explicit edge cases",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. IQR fences with explicit edge cases"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Calculate quartiles and fences while treating outlier flags as inspection signals."
+        },
+        {
+          "t": "new",
+          "v": "quantile; Q1/Q3; IQR",
+          "note": "Q1 is the25th percentile, Q3 the75th and IQR=Q3-Q1. pandas quantile interpolates by default; state the method for reproducibility."
+        },
+        {
+          "t": "new",
+          "v": "Tukey-style fences",
+          "note": "The example flags values below Q1-1.5*IQR or above Q3+1.5*IQR. Boundaries themselves are not flagged; this is a descriptive convention, not a universal probability guarantee."
+        },
+        {
+          "t": "new",
+          "v": "Zero IQR; small samples",
+          "note": "Repeated values can make IQR zero and small samples make thresholds unstable. Here zero IQR returns no automatic fence decision and requests manual domain review."
+        },
+        {
+          "t": "p",
+          "v": "IQR uses the middle half of the observed distribution, which can resist some extremes better than mean-based spread. Compute thresholds from valid known values only and retain the threshold policy in the report. Quantile conventions can differ across tools, especially on small datasets. Use fences to select records for inspection, not as a command to delete them. A skewed distribution may legitimately have many high values. When IQR is zero, this lesson avoids mechanically treating every different value as a bad record. Report the degenerate spread and use domain knowledge. An all-missing column cannot provide meaningful quartiles."
+        },
+        {
+          "t": "syn",
+          "v": "q1,q3 = known.quantile([0.25,0.75], interpolation=\"linear\")\niqr = q3-q1\nlower,upper = q1-1.5*iqr, q3+1.5*iqr\nflags = (known < lower) | (known > upper)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nvalues = pd.Series([10, 11, 12, 13, 100], dtype=\"Float64\")\nq1, q3 = values.quantile([0.25, 0.75], interpolation=\"linear\")\niqr = q3 - q1\nlower, upper = q1 - 1.5 * iqr, q3 + 1.5 * iqr\nprint(\"Q1,Q3,IQR:\", float(q1), float(q3), float(iqr))\nprint(\"Fences:\", float(lower), float(upper))\nprint(\"Inspect:\", values.loc[(values < lower) | (values > upper)].tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Q1,Q3,IQR: 11.0 13.0 2.0\nFences: 8.0 16.0\nInspect: [100.0]"
+        },
+        {
+          "t": "p",
+          "v": "100 fence बाहिर पर्‍यो, त्यसैले inspect list मा आयो। यो स्वतः गलत भन्न मिल्दैन; source र measurement को अर्थ जाँच्नु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Drop every row outside an IQR fence without a report",
+          "right": "Record thresholds and flags, then decide using domain/source evidence",
+          "why": "A descriptive fence does not establish an error."
+        },
+        {
+          "t": "ex",
+          "v": "Calculate IQR fences for [1,2,3,4,20] and list flagged values.",
+          "practiceId": "29.4.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ns = pd.Series([1, 2, 3, 4, 20], dtype=\"Float64\")\nq1, q3 = s.quantile([0.25, 0.75])\nlower, upper = q1 - 1.5 * (q3 - q1), q3 + 1.5 * (q3 - q1)\nprint(float(lower), float(upper), s.loc[(s < lower) | (s > upper)].tolist())\n",
+          "out": "-1.0 7.0 [20.0]",
+          "why": "Build check: IQR flags depend on valid data, quantile convention and spread; flags request inspection."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Handle zero IQR explicitly rather than inventing a robust statistical decision.",
+          "practiceId": "29.4.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ns = pd.Series([10, 10, 10, 10, 10, 11], dtype=\"Float64\")\nq1, q3 = s.quantile([0.25, 0.75])\nif q3 == q1:\n    print(\"Zero IQR: domain review; no automatic fence decision\")\n",
+          "out": "Zero IQR: domain review; no automatic fence decision",
+          "why": "Challenge check: IQR flags depend on valid data, quantile convention and spread; flags request inspection."
+        },
+        {
+          "t": "try",
+          "q": "Is IQR Q3 minus Q1?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Yes",
+          "why": "It measures the middle-half spread."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.4.1",
+            "quiz": [
+              {
+                "q": "Is IQR Q3 minus Q1?",
+                "options": [
+                  "Only maximum minus minimum",
+                  "Yes",
+                  "No; mean minus median"
+                ],
+                "correct": 1,
+                "why": "It measures the middle-half spread."
+              },
+              {
+                "q": "Do IQR flags prove source errors?",
+                "options": [
+                  "Always",
+                  "Only on small samples",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Thresholds are descriptive screening rules."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "IQR flags depend on valid data, quantile convention and spread; flags request inspection."
+        }
+      ]
+    },
+    {
+      "title": "3. Z-scores, spread conventions and constant columns",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Z-scores, spread conventions and constant columns"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Compute an explicitly defined z-score and handle zero/absent spread."
+        },
+        {
+          "t": "new",
+          "v": "z-score; abs",
+          "note": "z=(value-mean)/standard_deviation measures signed distance in spread units. abs gives its magnitude for two-sided threshold checks."
+        },
+        {
+          "t": "new",
+          "v": "std(ddof=0/1)",
+          "note": "ddof=0 uses population-style spread for this complete descriptive fixture; pandas defaults to ddof=1. Record the convention rather than relying on defaults."
+        },
+        {
+          "t": "new",
+          "v": "Zero spread; contaminated statistics",
+          "note": "A constant column has zero spread, so ordinary z division is undefined. Extreme values can also pull mean/std and mask themselves; z flags are not universal robust decisions."
+        },
+        {
+          "t": "p",
+          "v": "Z-scores are useful when the mean/spread representation is appropriate. They are not interchangeable with IQR fences or proof of a particular probability distribution. Record whether the threshold comparison is > or >= and which ddof you use. The fixture flags magnitudes at least2 using ddof=0. Constant or absent observations cannot support the ordinary division. Report no spread-based decision instead of silently dividing by zero. Skew, small sample sizes and influential extremes can make mean-based screening misleading. Choose a method for the data's meaning and preserve raw values for follow-up."
+        },
+        {
+          "t": "syn",
+          "v": "spread = known.std(ddof=0)\nif spread > 0:\n    z = (known-known.mean())/spread\n    inspect = z.abs() >= 2\nelse: report no spread-based decision",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nvalues = pd.Series([10] * 9 + [100], dtype=\"Float64\")\nspread = values.std(ddof=0)\nz = (values - values.mean()) / spread\nprint(\"Mean/std:\", float(values.mean()), float(spread))\nprint(\"Last z:\", round(float(z.iloc[-1]), 3))\nprint(\"Inspect:\", values.loc[z.abs() >= 2].tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Mean/std: 19.0 27.0\nLast z: 3.0\nInspect: [100.0]"
+        },
+        {
+          "t": "p",
+          "v": "Mean19 र std27 बाट100 को z3 आयो। ddof=0 र threshold>=2 स्पष्ट छन्। यो screening हो, delete गर्ने आदेश होइन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Divide by std without checking zero or missing spread",
+          "right": "Check observed count and finite positive spread before division",
+          "why": "A constant/all-missing column makes ordinary z division undefined."
+        },
+        {
+          "t": "ex",
+          "v": "Compare population/sample spread for [10,20,30] using explicit ddof.",
+          "practiceId": "29.4.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ns = pd.Series([10, 20, 30], dtype=\"Float64\")\nprint(round(float(s.std(ddof=0)), 3), round(float(s.std(ddof=1)), 3))\n",
+          "out": "8.165 10.0",
+          "why": "Build check: Z-score screening needs valid observations, a defined spread convention, a threshold and edge-case handling."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Handle a constant column with no automatic z-score decision.",
+          "practiceId": "29.4.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ns = pd.Series([20, 20, 20], dtype=\"Float64\")\nspread = s.std(ddof=0)\nif pd.isna(spread) or spread == 0:\n    print(\"No positive spread: review domain, no automatic z decision\")\n",
+          "out": "No positive spread: review domain, no automatic z decision",
+          "why": "Challenge check: Z-score screening needs valid observations, a defined spread convention, a threshold and edge-case handling."
+        },
+        {
+          "t": "try",
+          "q": "Which ddof does pandas std use by default?",
+          "code": "# Predict and explain before revealing.",
+          "a": "1",
+          "why": "Specify your convention explicitly."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.4.2",
+            "quiz": [
+              {
+                "q": "Which ddof does pandas std use by default?",
+                "options": [
+                  "0",
+                  "The threshold",
+                  "1"
+                ],
+                "correct": 2,
+                "why": "Specify your convention explicitly."
+              },
+              {
+                "q": "Is ordinary z division defined for zero spread?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only for integers"
+                ],
+                "correct": 0,
+                "why": "Its denominator would be zero."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Z-score screening needs valid observations, a defined spread convention, a threshold and edge-case handling."
+        }
+      ]
+    },
+    {
+      "title": "4. Decisions, reasons and validation after changes",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Decisions, reasons and validation after changes"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Document keep/quarantine/fill choices and prove final invariants after a transformation."
+        },
+        {
+          "t": "new",
+          "v": "Decision ledger",
+          "note": "A ledger records what was observed, which rule applied, what changed and why. Keep statistical inspection flags separate from verified invalidity."
+        },
+        {
+          "t": "new",
+          "v": "Postconditions",
+          "note": "Postconditions are required properties of a returned result: valid ranges, known identity, permitted vocabulary and preserved raw input."
+        },
+        {
+          "t": "new",
+          "v": "Fit/transform separation preview",
+          "note": "Data-derived parameters such as medians should be learned once from the intended reference/training population and reused where appropriate. Recomputing from future data can change meaning or leak information."
+        },
+        {
+          "t": "p",
+          "v": "Cleaning is a chain of decisions, not a collection of convenient method calls. Validate first, quarantine invalid records, apply any justified fill only to genuinely missing values, and validate the result again. For this fictional score exercise, the chosen policy fills an unknown score with the median of valid observed scores; it does not fill a score outside0..100. Report both dropped records and estimated cells. Keep the input table unchanged so decisions remain reversible. In predictive work, learn parameters from the permitted training/reference population rather than the combined dataset. Our examples are descriptive local exercises and do not claim a universal imputation model."
+        },
+        {
+          "t": "syn",
+          "v": "validate known scores\nseparate invalid rows\nsave missing flags\nfill genuinely missing values under stated policy\nvalidate final invariants and preserve raw input",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nraw = pd.DataFrame({\"id\": [\"A\", \"B\", \"C\", \"D\"],\n                   \"score\": pd.Series([80, pd.NA, 90, 150], dtype=\"Float64\")})\ninvalid = raw[\"score\"].notna() & ~raw[\"score\"].between(0, 100).fillna(False)\nclean = raw.loc[~invalid].copy()\nclean[\"was_missing\"] = clean[\"score\"].isna()\nmedian = clean[\"score\"].median()\nif pd.isna(median):\n    raise ValueError(\"No observed median\")\nclean[\"score\"] = clean[\"score\"].fillna(median)\nassert clean[\"score\"].between(0, 100).all()\nprint(clean.to_dict(orient=\"records\"))\nprint(\"Quarantine:\", raw.loc[invalid, \"id\"].tolist())\nprint(\"Raw missing:\", raw[\"score\"].isna().tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "[{'id': 'A', 'score': 80.0, 'was_missing': False}, {'id': 'B', 'score': 85.0, 'was_missing': True}, {'id': 'C', 'score': 90.0, 'was_missing': False}]\nQuarantine: ['D']\nRaw missing: [False, True, False, False]"
+        },
+        {
+          "t": "p",
+          "v": "D को150 quarantine भयो। B को missing score मात्रै85 estimate भयो र was_missing=True रह्यो। Raw score अझै missing छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Treat all invalid and missing scores as the same median-fill group",
+          "right": "Quarantine invalid known scores before estimating genuine missing values",
+          "why": "The pipeline must not hide domain violations behind imputation."
+        },
+        {
+          "t": "ex",
+          "v": "Record an explicit decision to retain a valid rare score rather than deleting it.",
+          "practiceId": "29.4.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"A\", \"B\"], \"score\": [0, 90]})\nledger = [{\"id\": \"A\", \"signal\": \"unusually low\", \"decision\": \"retain\",\n           \"reason\": \"source verified; score is within declared bounds\"}]\nprint(df[\"score\"].tolist())\nprint(ledger)\n",
+          "out": "[0, 90]\n[{'id': 'A', 'signal': 'unusually low', 'decision': 'retain', 'reason': 'source verified; score is within declared bounds'}]",
+          "why": "Build check: Every change needs a reason, source reference and final validity check; keep raw data and estimation provenance."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Use a previously chosen fill parameter85 on a new missing score, not a recomputed median from that new table.",
+          "practiceId": "29.4.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nreference_median = 85.0\nnew_scores = pd.Series([pd.NA, 10], dtype=\"Float64\")\nprint(new_scores.fillna(reference_median).tolist())\n",
+          "out": "[85.0, 10.0]",
+          "why": "Challenge check: Every change needs a reason, source reference and final validity check; keep raw data and estimation provenance."
+        },
+        {
+          "t": "try",
+          "q": "Should an invalid known score be hidden by median filling?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Invalidity and missingness need different actions."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.4.3",
+            "quiz": [
+              {
+                "q": "Should an invalid known score be hidden by median filling?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only if rare"
+                ],
+                "correct": 0,
+                "why": "Invalidity and missingness need different actions."
+              },
+              {
+                "q": "Why validate after changes?",
+                "options": [
+                  "To guarantee all assumptions are true",
+                  "To prove the result still meets the schema",
+                  "To delete the source"
+                ],
+                "correct": 1,
+                "why": "Implementation changes can introduce violations."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Every change needs a reason, source reference and final validity check; keep raw data and estimation provenance."
+        }
+      ]
+    }
+  ]
+},
+"29.5": {
+  "parts": [
+    {
+      "title": "1. Tidy data and melt: wide to long",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Tidy data and melt: wide to long"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Identify observation units and convert subject columns into a long table without losing IDs."
+        },
+        {
+          "t": "new",
+          "v": "Tidy-data principle",
+          "note": "For a chosen observation unit, each variable is a column and each observation a row. Long form often suits repeated measurements, but a wide presentation can still be useful."
+        },
+        {
+          "t": "new",
+          "v": "melt; id_vars; value_vars",
+          "note": "melt keeps identifier columns and turns selected measurement columns into variable/value rows. var_name and value_name name the new columns."
+        },
+        {
+          "t": "new",
+          "v": "Observation key",
+          "note": "In this example, id+subject identifies one student-subject observation. Validate that compound key rather than assuming id alone is unique after reshaping."
+        },
+        {
+          "t": "p",
+          "v": "A wide table can store one student per row and separate subject columns. A long table stores one student-subject observation per row, with subject and score as columns. The best layout depends on what constitutes an observation and the operation you need. Preserve IDs as explicit columns during reshape; do not use positional row counters as identity. melt repeats identifier values for each selected measurement. Two students and two subjects produce four long rows. Missing scores remain missing observations unless you deliberately drop them. Reshaping must not silently replace unknown scores with zero."
+        },
+        {
+          "t": "syn",
+          "v": "long = wide.melt(id_vars=[\"id\"], value_vars=[\"math\",\"english\"],\n                 var_name=\"subject\", value_name=\"score\")",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nwide = pd.DataFrame({\"id\": [\"001\", \"002\"], \"math\": [80, 90], \"english\": [70, 85]})\nlong = wide.melt(id_vars=[\"id\"], value_vars=[\"math\", \"english\"],\n                 var_name=\"subject\", value_name=\"score\")\nprint(long.to_dict(orient=\"records\"))\nprint(\"Shape:\", long.shape)\nprint(\"Repeated observation keys:\", int(long.duplicated([\"id\", \"subject\"]).sum()))\n"
+        },
+        {
+          "t": "out",
+          "v": "[{'id': '001', 'subject': 'math', 'score': 80}, {'id': '002', 'subject': 'math', 'score': 90}, {'id': '001', 'subject': 'english', 'score': 70}, {'id': '002', 'subject': 'english', 'score': 85}]\nShape: (4, 3)\nRepeated observation keys: 0"
+        },
+        {
+          "t": "p",
+          "v": "Long table मा001 दुई पटक आउँछ, किनकि दुई subjects छन्। त्यसैले id मात्रको repeat duplicate error होइन; id+subject observation key हो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Treat repeated id after melt as duplicated students to delete",
+          "right": "Use the declared student-subject observation key",
+          "why": "melt intentionally creates one row per measurement."
+        },
+        {
+          "t": "ex",
+          "v": "Melt January/February minutes for two students while retaining text IDs.",
+          "practiceId": "29.5.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nwide = pd.DataFrame({\"id\": [\"001\", \"002\"], \"Jan\": [30, 40], \"Feb\": [50, 60]})\nlong = wide.melt(id_vars=\"id\", value_vars=[\"Jan\", \"Feb\"], var_name=\"month\", value_name=\"minutes\")\nprint(long.to_dict(orient=\"records\"))\n",
+          "out": "[{'id': '001', 'month': 'Jan', 'minutes': 30}, {'id': '002', 'month': 'Jan', 'minutes': 40}, {'id': '001', 'month': 'Feb', 'minutes': 50}, {'id': '002', 'month': 'Feb', 'minutes': 60}]",
+          "why": "Build check: Define the observation unit and key; melt changes layout, not missing-data truth."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Retain a missing measurement through melt and report how many long observations remain unknown.",
+          "practiceId": "29.5.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nwide = pd.DataFrame({\"id\": [\"001\"], \"math\": [80.0], \"english\": [None]})\nlong = wide.melt(id_vars=\"id\", value_vars=[\"math\", \"english\"], var_name=\"subject\", value_name=\"score\")\nprint(long.shape, int(long[\"score\"].isna().sum()))\n",
+          "out": "(2, 3) 1",
+          "why": "Challenge check: Define the observation unit and key; melt changes layout, not missing-data truth."
+        },
+        {
+          "t": "try",
+          "q": "How many long rows come from2 students×2 subjects?",
+          "code": "# Predict and explain before revealing.",
+          "a": "4",
+          "why": "Each student-subject measurement becomes a row."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.5.0",
+            "quiz": [
+              {
+                "q": "How many long rows come from2 students×2 subjects?",
+                "options": [
+                  "4",
+                  "2",
+                  "8"
+                ],
+                "correct": 0,
+                "why": "Each student-subject measurement becomes a row."
+              },
+              {
+                "q": "Does a repeated id after melt always mean an error?",
+                "options": [
+                  "Only if numerical",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "The observation key may include the measurement label."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Define the observation unit and key; melt changes layout, not missing-data truth."
+        }
+      ]
+    },
+    {
+      "title": "2. pivot is reshape; pivot_table is aggregation",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. pivot is reshape; pivot_table is aggregation"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Rebuild wide data only when keys are unique, and aggregate duplicates only deliberately."
+        },
+        {
+          "t": "new",
+          "v": "pivot",
+          "note": "pivot reshapes unique index/column combinations without aggregation. Duplicate combinations raise an error because one output cell has multiple candidate values."
+        },
+        {
+          "t": "new",
+          "v": "pivot_table; aggfunc; observed",
+          "note": "pivot_table combines repeated combinations with an explicit aggregate such as mean or sum. observed=True limits categorical grouping to observed categories; choose this parameter explicitly."
+        },
+        {
+          "t": "new",
+          "v": "reset_index; rename_axis",
+          "note": "reset_index moves index labels into columns; rename_axis changes axis metadata. These help reconstruct a conventional table after pivot without changing cell values."
+        },
+        {
+          "t": "p",
+          "v": "Round-trip a unique long table with pivot when each student-subject pair has one score. If that key repeats, pandas cannot decide which value belongs in the cell. Investigate duplicates rather than hiding them with an accidental default mean. pivot_table intentionally aggregates: mean for repeated measurements and sum for additive transactions answer different questions. State the aggregation and preserve counts or source rows when they matter. Aggregation cannot generally be reversed into the original observations. After a pivot, make IDs ordinary columns again when exporting a flat table. Column order and axis names may differ even when the measurements are correctly reconstructed."
+        },
+        {
+          "t": "syn",
+          "v": "wide = long.pivot(index=\"id\", columns=\"subject\", values=\"score\")\nsummary = long.pivot_table(index=\"id\", columns=\"subject\", values=\"score\", aggfunc=\"mean\", observed=True)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nlong = pd.DataFrame({\"id\": [\"001\", \"001\", \"002\", \"002\"], \"subject\": [\"math\", \"english\", \"math\", \"english\"],\n                     \"score\": [80, 70, 90, 85]})\nwide = long.pivot(index=\"id\", columns=\"subject\", values=\"score\")\nflat = wide.reset_index().rename_axis(None, axis=1)\nprint(flat[[\"id\", \"math\", \"english\"]].to_dict(orient=\"records\"))\n"
+        },
+        {
+          "t": "out",
+          "v": "[{'id': '001', 'math': 80, 'english': 70}, {'id': '002', 'math': 90, 'english': 85}]"
+        },
+        {
+          "t": "p",
+          "v": "Unique pair भएकाले pivot ले कुनै mean/sum नगरी values फर्कायो। Flat export का लागि id index बाट column मा ल्याइयो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Use pivot_table merely to hide unexplained duplicate keys",
+          "right": "Investigate duplicates; choose aggregation only when it answers the intended question",
+          "why": "Aggregation changes observation meaning and can destroy source distinctions."
+        },
+        {
+          "t": "ex",
+          "v": "Demonstrate pivot's duplicate-key error, then explicitly summarize repeated scores using mean.",
+          "practiceId": "29.5.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nlong = pd.DataFrame({\"id\": [\"001\", \"001\"], \"subject\": [\"math\", \"math\"], \"score\": [80, 90]})\ntry:\n    long.pivot(index=\"id\", columns=\"subject\", values=\"score\")\nexcept ValueError:\n    print(\"Duplicate observation key: pivot rejected\")\nmean = long.pivot_table(index=\"id\", columns=\"subject\", values=\"score\", aggfunc=\"mean\", observed=True)\nprint(float(mean.loc[\"001\", \"math\"]))\n",
+          "out": "Duplicate observation key: pivot rejected\n85.0",
+          "why": "Build check: pivot requires a unique observation key; pivot_table performs a declared, generally irreversible aggregation."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Show that mean and sum aggregate the same two transactions differently.",
+          "practiceId": "29.5.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nrows = pd.DataFrame({\"id\": [\"A\", \"A\"], \"item\": [\"book\", \"book\"], \"amount\": [10, 20]})\nmean = rows.pivot_table(index=\"id\", columns=\"item\", values=\"amount\", aggfunc=\"mean\", observed=True)\ntotal = rows.pivot_table(index=\"id\", columns=\"item\", values=\"amount\", aggfunc=\"sum\", observed=True)\nprint(float(mean.loc[\"A\", \"book\"]), float(total.loc[\"A\", \"book\"]))\n",
+          "out": "15.0 30.0",
+          "why": "Challenge check: pivot requires a unique observation key; pivot_table performs a declared, generally irreversible aggregation."
+        },
+        {
+          "t": "try",
+          "q": "What does pivot do with duplicate output-cell keys?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Raises an error",
+          "why": "One output cell cannot represent two candidates without a policy."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.5.1",
+            "quiz": [
+              {
+                "q": "What does pivot do with duplicate output-cell keys?",
+                "options": [
+                  "Always keeps the last",
+                  "Raises an error",
+                  "Always sums"
+                ],
+                "correct": 1,
+                "why": "One output cell cannot represent two candidates without a policy."
+              },
+              {
+                "q": "Can mean aggregation recover every original repeated observation?",
+                "options": [
+                  "Always",
+                  "Only for text IDs",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Aggregation loses individual values."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "pivot requires a unique observation key; pivot_table performs a declared, generally irreversible aggregation."
+        }
+      ]
+    },
+    {
+      "title": "3. stack/unstack and named index levels",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. stack/unstack and named index levels"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Move a named measurement axis into a MultiIndex and reverse it explicitly."
+        },
+        {
+          "t": "new",
+          "v": "MultiIndex",
+          "note": "A MultiIndex stores multiple label levels for one axis. Here a tuple (id,subject) identifies each stacked value."
+        },
+        {
+          "t": "new",
+          "v": "stack; unstack",
+          "note": "stack moves a column level into index levels; unstack moves an index level into columns. Name the levels so the chosen axis is understandable."
+        },
+        {
+          "t": "new",
+          "v": "pandas3 stack behavior",
+          "note": "These examples use pandas3's default stack implementation. Do not paste legacy dropna/sort arguments blindly; choose an explicit later missing filter if your policy requires it."
+        },
+        {
+          "t": "p",
+          "v": "melt produces regular columns, while stack commonly creates a Series with a multi-level index. Both can represent student-subject measurements, but the result interface differs. Name the index and column axes before stacking so a tuple label has an understandable meaning. unstack('subject') moves that named level back to columns. A round-trip should preserve measurement values under an explicit row/column ordering. Sparse combinations and missing values may need additional policies; absence of an observation is not necessarily a measured zero. Use the pandas3 stack interface shown here; older tutorials may assume different sorting or missing-value defaults."
+        },
+        {
+          "t": "syn",
+          "v": "wide = wide.rename_axis(\"id\", axis=0).rename_axis(\"subject\", axis=1)\nstacked = wide.stack()\nrestored = stacked.unstack(\"subject\")",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nwide = pd.DataFrame({\"math\": [80, 90], \"english\": [70, 85]}, index=[\"001\", \"002\"])\nwide = wide.rename_axis(\"id\", axis=0).rename_axis(\"subject\", axis=1)\nstacked = wide.stack()\nrestored = stacked.unstack(\"subject\")\nprint(\"Levels:\", stacked.index.names)\nprint(\"One value:\", stacked.loc[(\"001\", \"math\")])\nprint(\"Round trip:\", restored.equals(wide))\n"
+        },
+        {
+          "t": "out",
+          "v": "Levels: ['id', 'subject']\nOne value: 80\nRound trip: True"
+        },
+        {
+          "t": "p",
+          "v": "Tuple('001','math') ले एउटा measurement चिनायो। Named subject level unstack गर्दा wide table फेरि आयो। MultiIndex positions भन्दा labels को structure हो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Treat a MultiIndex tuple as two unrelated row positions",
+          "right": "Interpret tuple components as the named index levels",
+          "why": "The components identify one labeled observation."
+        },
+        {
+          "t": "ex",
+          "v": "Stack two item columns for one student and read the item-specific value by tuple label.",
+          "practiceId": "29.5.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nwide = pd.DataFrame({\"pen\": [2], \"book\": [3]}, index=[\"001\"])\nwide = wide.rename_axis(\"id\").rename_axis(\"item\", axis=1)\nstacked = wide.stack()\nprint(stacked.loc[(\"001\", \"book\")], stacked.index.names)\n",
+          "out": "3 ['id', 'item']",
+          "why": "Build check: Named index levels make stack/unstack predictable. Check ordering, keys and missing policies in round trips."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Complete a melt/pivot round-trip and restore explicit column order before testing equality.",
+          "practiceId": "29.5.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nwide = pd.DataFrame({\"id\": [\"001\", \"002\"], \"math\": [80, 90], \"english\": [70, 85]})\nlong = wide.melt(id_vars=\"id\", var_name=\"subject\", value_name=\"score\")\nrestored = long.pivot(index=\"id\", columns=\"subject\", values=\"score\").reset_index().rename_axis(None, axis=1)\nrestored = restored[wide.columns.tolist()]\nprint(restored.equals(wide))\n",
+          "out": "True",
+          "why": "Challenge check: Named index levels make stack/unstack predictable. Check ordering, keys and missing policies in round trips."
+        },
+        {
+          "t": "try",
+          "q": "What does stack move into index levels?",
+          "code": "# Predict and explain before revealing.",
+          "a": "A column level",
+          "why": "It reshapes a column axis into row-index structure."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.5.2",
+            "quiz": [
+              {
+                "q": "What does stack move into index levels?",
+                "options": [
+                  "The Python interpreter",
+                  "Only missing cells",
+                  "A column level"
+                ],
+                "correct": 2,
+                "why": "It reshapes a column axis into row-index structure."
+              },
+              {
+                "q": "Why name MultiIndex levels?",
+                "options": [
+                  "To identify their meaning and select them explicitly",
+                  "To convert every value to text",
+                  "To remove missing rows"
+                ],
+                "correct": 0,
+                "why": "Named levels clarify tuple labels and unstack choices."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Named index levels make stack/unstack predictable. Check ordering, keys and missing policies in round trips."
+        }
+      ]
+    },
+    {
+      "title": "4. Complete audited cleaning pipeline and week review",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Complete audited cleaning pipeline and week review"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Combine small cleaning stages into a validated result and a documented new output bundle."
+        },
+        {
+          "t": "new",
+          "v": "Cleaning pipeline contract",
+          "note": "This project cleans one supplied student schema, not arbitrary CSVs: id,name,region,score,updated. It reads bounded local UTF-8 comma CSV, preserves raw input and never guesses unknown categories."
+        },
+        {
+          "t": "new",
+          "v": "items; ne; to_csv; date_format",
+          "note": "items iterates named dictionary/Series entries; ne is element-wise !=. to_csv exports a table; index=False omits row labels, date_format specifies date text and lineterminator='\\n' makes output newline choice explicit."
+        },
+        {
+          "t": "new",
+          "v": "Function stages",
+          "note": "load_raw parses a bounded snapshot; normalize_text applies declared formatting; convert_types parses quantities/dates; rejection_reasons separates invalid records; cleaning_pipeline chooses latest records, estimates genuine missing scores and audits changes."
+        },
+        {
+          "t": "new",
+          "v": "at; index-aligned assignment; source records",
+          "note": "at reads one scalar by row/column labels. Internal source records retain one-based parsed observation identity across sorting/filtering. typed.loc[latest.index,'score'] aligns retained score updates by those stable row labels."
+        },
+        {
+          "t": "p",
+          "v": "Project walkthrough 1 — loading and normalization: load_raw reads one bounded byte snapshot, checks unique required headers and record widths, then loads every field as string. normalize_text keeps IDs textual, assigns parsed record references, permits name whitespace/NFC normalization and maps only declared region aliases. Unknown tokens survive for validation."
+        },
+        {
+          "t": "p",
+          "v": "Project walkthrough 2 — conversion and selection: convert_types creates nullable numerical scores and parsed dates. rejection_reasons retains all applicable errors per record. Only valid records enter newest-date/same-day-source-order selection. Missing-score estimation uses known scores from the retained population, not invalid or superseded observations."
+        },
+        {
+          "t": "p",
+          "v": "Project walkthrough 3 — audit and publication: cell_changes compares every raw field with its final staged representation, with conversion/normalization/fill rule labels. validate_clean checks the final result and row accounting proves where every source record went. publish_bundle validates and serializes before writing two files to an owned temporary folder; only a new destination is published."
+        },
+        {
+          "t": "new",
+          "v": "Postconditions and row accounting",
+          "note": "validate_clean proves final schema/domain constraints. Input rows must equal kept + quarantined + superseded records. The audit records raw-to-final-staged cells, including attempted transformations of rejected rows."
+        },
+        {
+          "t": "new",
+          "v": "New output bundle",
+          "note": "publish_bundle writes clean.csv and report.json in one owned temporary directory, then renames it to a new destination. Existing bundles are refused, so reruns cannot overwrite previous outputs."
+        },
+        {
+          "t": "new",
+          "v": "Canonical export and idempotence",
+          "note": "The clean CSV exports IDs as text, scores as numerical text and dates as YYYY-MM-DD. Reloading through the explicit string schema and cleaning again should reproduce the same CSV values; source/provenance reports necessarily refer to the new input."
+        },
+        {
+          "t": "p",
+          "v": "Read the schema before running this project. A valid ID is exactly three ASCII digits, a name is required, region must map to NP/JP, a known score must be finite0..100 and updated is a calendar date. Only a genuinely blank score can be estimated. Invalid text, unknown categories, impossible scores and invalid dates are quarantined with record references and reasons. For each valid ID, the newest valid date wins; same-day ties choose the later input record. Then the median of known retained scores fills any genuinely missing retained scores. All-missing retained scores stop the run if an estimate is required. Every source-to-staged cell change is logged; estimated records are separately listed. IQR flags on the final table include disclosed estimates and request inspection only. Raw data is unchanged, and an existing output bundle is never overwritten. The sample is fictional; actual personal datasets and their audit reports belong in private storage. This teaching policy is specific to this schema, not a universal cleaning recipe."
+        },
+        {
+          "t": "syn",
+          "v": "python cleaning_pipeline.py messy_students.csv run-01\n# run-01/clean.csv + run-01/report.json; destination must not exist\nraw = load_raw(path)\nclean, report = cleaning_pipeline(raw)\npublish_bundle(clean, report, new_directory)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import argparse\nimport csv\nfrom io import StringIO\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport tempfile\nimport numpy as np\nimport pandas as pd\n\nCOLUMNS = [\"id\", \"name\", \"region\", \"score\", \"updated\"]\nMAX_BYTES, MAX_ROWS = 5 * 1024 * 1024, 10_000\nALIASES = {\"np\": \"NP\", \"nepal\": \"NP\", \"jp\": \"JP\", \"japan\": \"JP\"}\n\ndef load_raw(path):\n    with Path(path).open(\"rb\") as handle:\n        data = handle.read(MAX_BYTES + 1)\n    if len(data) > MAX_BYTES:\n        raise ValueError(\"Input exceeds 5 MiB\")\n    try:\n        text = data.decode(\"utf-8-sig\")\n        reader = csv.reader(StringIO(text, newline=\"\"), strict=True)\n        header = next(reader, None)\n        if header is None or len(header) != len(set(header)) or set(header) != set(COLUMNS):\n            raise ValueError(\"Require exactly id,name,region,score,updated with unique headers\")\n        rows = 0\n        for record in reader:\n            if not record:\n                continue\n            rows += 1\n            if len(record) != len(COLUMNS) or rows > MAX_ROWS:\n                raise ValueError(\"Ragged or oversized CSV\")\n    except (UnicodeDecodeError, csv.Error) as error:\n        raise ValueError(\"Expected well-formed UTF-8 comma CSV\") from error\n    raw = pd.read_csv(StringIO(text), dtype=\"string\", keep_default_na=False,\n                      na_values=[\"\"], skip_blank_lines=True)\n    if raw.shape != (rows, len(COLUMNS)) or raw.columns.tolist() != header:\n        raise ValueError(\"Parser/header mismatch\")\n    return raw[COLUMNS]\n\ndef normalize_text(raw):\n    if not raw.columns.is_unique or set(raw.columns) != set(COLUMNS):\n        raise ValueError(\"Unexpected source schema\")\n    if len(raw) > MAX_ROWS or not all(isinstance(dtype, pd.StringDtype) for dtype in raw.dtypes):\n        raise ValueError(\"Require bounded raw string columns\")\n    out = raw[COLUMNS].reset_index(drop=True).copy()\n    out[\"_source_record\"] = range(1, len(out) + 1)\n    for column in COLUMNS:\n        out[column] = out[column].str.strip()\n    out[\"name\"] = out[\"name\"].str.normalize(\"NFC\").str.replace(r\"\\s+\", \" \", regex=True)\n    tokens = out[\"region\"].str.casefold()\n    out[\"region\"] = tokens.map(ALIASES).fillna(tokens).astype(\"string\")\n    out[\"score\"] = out[\"score\"].mask(out[\"score\"].eq(\"\").fillna(False), pd.NA)\n    return out\n\ndef convert_types(normalized):\n    out = normalized.copy()\n    out[\"score\"] = pd.to_numeric(out[\"score\"], errors=\"coerce\").astype(\"Float64\")\n    out[\"updated\"] = pd.to_datetime(out[\"updated\"], format=\"%Y-%m-%d\", errors=\"coerce\")\n    return out\n\ndef rejection_reasons(normalized, typed):\n    finite = pd.Series(np.isfinite(typed[\"score\"].to_numpy(dtype=float, na_value=np.nan)), index=typed.index)\n    rules = {\n        \"id_requires_three_ASCII_digits\": ~normalized[\"id\"].str.fullmatch(r\"[0-9]{3}\").fillna(False),\n        \"name_required\": normalized[\"name\"].isna() | normalized[\"name\"].eq(\"\").fillna(False),\n        \"unknown_region\": ~normalized[\"region\"].isin([\"NP\", \"JP\"]),\n        \"invalid_or_missing_updated_date\": typed[\"updated\"].isna() | ~normalized[\"updated\"].str.fullmatch(r\"[0-9]{4}-[0-9]{2}-[0-9]{2}\").fillna(False),\n        \"score_not_numeric\": normalized[\"score\"].notna() & typed[\"score\"].isna(),\n        \"score_nonfinite\": typed[\"score\"].notna() & ~finite,\n        \"score_outside_0_100\": finite & ~typed[\"score\"].between(0, 100).fillna(False),\n    }\n    reasons = {i: [] for i in typed.index}\n    for reason, mask in rules.items():\n        for i in typed.index[mask]:\n            reasons[i].append(reason)\n    return reasons\n\ndef validate_clean(clean):\n    if clean.empty or clean.columns.tolist() != COLUMNS:\n        raise ValueError(\"Require a nonempty canonical result\")\n    if not clean[\"id\"].is_unique or not clean[\"id\"].str.fullmatch(r\"[0-9]{3}\").fillna(False).all():\n        raise ValueError(\"Invalid or repeated result ID\")\n    if not clean[\"name\"].notna().all() or not clean[\"name\"].str.strip().ne(\"\").fillna(False).all():\n        raise ValueError(\"Invalid result name\")\n    if not clean[\"region\"].isin([\"NP\", \"JP\"]).all() or clean[\"updated\"].isna().any():\n        raise ValueError(\"Invalid result region/date\")\n    finite = np.isfinite(clean[\"score\"].to_numpy(dtype=float, na_value=np.nan))\n    if not finite.all() or not clean[\"score\"].between(0, 100).fillna(False).all():\n        raise ValueError(\"Invalid result score\")\n\ndef cleaning_pipeline(raw):\n    normalized = normalize_text(raw)\n    typed = convert_types(normalized)\n    reasons = rejection_reasons(normalized, typed)\n    rejected = [i for i in typed.index if reasons[i]]\n    accepted = typed.loc[[i for i in typed.index if not reasons[i]]].copy()\n    ordered = accepted.sort_values([\"id\", \"updated\", \"_source_record\"], ascending=[True, False, False])\n    repeated = ordered.duplicated(\"id\", keep=\"first\")\n    removed = ordered.loc[repeated]\n    latest = ordered.loc[~repeated].copy()\n    if latest.empty:\n        raise ValueError(\"No valid records remain\")\n    missing = latest[\"score\"].isna()\n    fill_value = None\n    if missing.any():\n        median = latest[\"score\"].median()\n        if pd.isna(median):\n            raise ValueError(\"No observed retained scores to estimate a median\")\n        fill_value = float(median)\n        latest[\"score\"] = latest[\"score\"].fillna(fill_value)\n    estimated_records = latest.loc[missing, \"_source_record\"].astype(int).tolist()\n    typed.loc[latest.index, \"score\"] = latest[\"score\"]\n    staged = typed[COLUMNS].copy()\n    staged[\"updated\"] = typed[\"updated\"].dt.strftime(\"%Y-%m-%d\").astype(\"string\")\n    staged[\"score\"] = typed[\"score\"].astype(\"string\")\n    source = raw[COLUMNS].reset_index(drop=True)\n    changes = []\n    for i in staged.index:\n        for column in COLUMNS:\n            old = None if pd.isna(source.at[i, column]) else str(source.at[i, column])\n            new = None if pd.isna(staged.at[i, column]) else str(staged.at[i, column])\n            if old != new:\n                rule = \"normalize_text\"\n                if column in (\"score\", \"updated\"):\n                    rule = \"convert_type\"\n                if column == \"score\" and int(typed.at[i, \"_source_record\"]) in estimated_records:\n                    rule = \"median_fill\"\n                changes.append({\"record\": i + 1, \"column\": column, \"before\": old, \"after\": new, \"rule\": rule})\n    clean = latest[COLUMNS].reset_index(drop=True)\n    clean[\"region\"] = clean[\"region\"].astype(pd.CategoricalDtype([\"NP\", \"JP\"]))\n    validate_clean(clean)\n    q1, q3 = clean[\"score\"].quantile([0.25, 0.75], interpolation=\"linear\")\n    iqr = float(q3 - q1)\n    lower, upper = float(q1 - 1.5 * iqr), float(q3 + 1.5 * iqr)\n    flags = [] if iqr == 0 else clean.loc[(clean[\"score\"] < lower) | (clean[\"score\"] > upper), \"id\"].tolist()\n    report = {\n        \"input_rows\": len(raw), \"kept_rows\": len(clean),\n        \"quarantined\": [{\"record\": i + 1, \"reasons\": reasons[i]} for i in rejected],\n        \"removed_duplicate_records\": removed[\"_source_record\"].astype(int).tolist(),\n        \"imputed_score_records\": estimated_records, \"score_fill_value\": fill_value,\n        \"cell_changes\": changes,\n        \"iqr_inspection\": {\"computed_on\": \"final scores, including disclosed estimates\",\n                           \"iqr\": iqr, \"lower\": lower, \"upper\": upper, \"ids\": flags,\n                           \"decision\": \"inspect only\" if iqr > 0 else \"zero IQR; no automatic decision\"},\n        \"policy\": {\"schema\": \"three-digit text id; required name; region NP/JP; score finite0..100; updated YYYY-MM-DD\",\n                   \"missing\": \"empty/whitespace-only scores only; invalid known tokens quarantined\",\n                   \"latest\": \"newest valid date, then later input record for same-day ties\",\n                   \"fill\": \"median of known retained scores; stop if estimation has no observations\",\n                   \"audit\": \"source-to-final-staged cell changes include quarantined and superseded records\",\n                   \"record\": \"one-based parsed observation position, not physical CSV line number\",\n                   \"limits\": {\"bytes\": MAX_BYTES, \"rows\": MAX_ROWS}},\n    }\n    assert len(raw) == len(clean) + len(rejected) + len(removed)\n    return clean, report\n\ndef publish_bundle(clean, report, destination):\n    \"\"\"Publish one new directory; never overwrite an existing output bundle.\"\"\"\n    destination = Path(destination)\n    if destination.exists():\n        raise ValueError(\"Output already exists; choose a new bundle directory\")\n    validate_clean(clean)\n    payload = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + \"\\n\"\n    csv_text = clean.to_csv(index=False, date_format=\"%Y-%m-%d\", lineterminator=\"\\n\")\n    with tempfile.TemporaryDirectory(prefix=\".cleaning-\", dir=destination.parent) as folder:\n        stage = Path(folder)\n        (stage / \"clean.csv\").write_text(csv_text, encoding=\"utf-8\", newline=\"\\n\")\n        (stage / \"report.json\").write_text(payload, encoding=\"utf-8\", newline=\"\\n\")\n        os.rename(stage, destination)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Clean the supplied student schema into a new output bundle\")\n    parser.add_argument(\"raw_csv\")\n    parser.add_argument(\"new_bundle\")\n    args = parser.parse_args(argv)\n    try:\n        raw = load_raw(args.raw_csv)\n        clean, report = cleaning_pipeline(raw)\n        report[\"input_name\"] = Path(args.raw_csv).name\n        publish_bundle(clean, report, args.new_bundle)\n    except (OSError, ValueError, pd.errors.ParserError) as error:\n        print(\"No new bundle:\", error, file=sys.stderr)\n        return 1\n    print(\"Published new bundle; raw CSV unchanged\")\n    return 0\n\nPath('messy.csv').write_text('id,name,region,score,updated\\n 001 , Asha   Rai ,nepal,80,2026-01-01\\n001,Asha Rai,NP,90,2026-01-03\\n002,Bina, Japan ,,2026-01-02\\n003,Chandra,JP,70,2026-01-02\\n004,Dipa,NP,150,2026-01-01\\n005,Eka,Npeal,oops,bad\\n003,Chandra,JP,75,2026-01-02\\n', encoding='utf-8', newline='\\n')\n\nraw = load_raw(\"messy.csv\")\nbefore = raw.copy()\nclean, report = cleaning_pipeline(raw)\nprint(clean[[\"id\", \"name\", \"region\", \"score\"]].to_dict(orient=\"records\"))\nprint(\"Rows:\", report[\"input_rows\"], report[\"kept_rows\"])\nprint(\"Quarantine:\", [row[\"record\"] for row in report[\"quarantined\"]])\nprint(\"Superseded:\", report[\"removed_duplicate_records\"])\nprint(\"Estimated:\", report[\"imputed_score_records\"], report[\"score_fill_value\"])\nprint(\"Raw unchanged:\", raw.equals(before))\n"
+        },
+        {
+          "t": "out",
+          "v": "[{'id': '001', 'name': 'Asha Rai', 'region': 'NP', 'score': 90.0}, {'id': '002', 'name': 'Bina', 'region': 'JP', 'score': 82.5}, {'id': '003', 'name': 'Chandra', 'region': 'JP', 'score': 75.0}]\nRows: 7 3\nQuarantine: [5, 6]\nSuperseded: [1, 4]\nEstimated: [3] 82.5\nRaw unchanged: True"
+        },
+        {
+          "t": "p",
+          "v": "001 को newer90 र003 को same-day later75 बच्यो। त्यसैले002 को blank score median82.5 भयो। Invalid records5/6 estimate भएनन्; report मा review reasons छन्।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Publish clean.csv first and discover a report-writing error afterward",
+          "right": "Validate and serialize first, then publish both files in a new bundle",
+          "why": "A new bundle keeps dataset/report together and refuses overwriting an earlier run."
+        },
+        {
+          "t": "ex",
+          "v": "Run the full pipeline, publish the bundle and inspect the retained score, audit count and unchanged CSV bytes.",
+          "practiceId": "29.5.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport csv\nfrom io import StringIO\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport tempfile\nimport numpy as np\nimport pandas as pd\n\nCOLUMNS = [\"id\", \"name\", \"region\", \"score\", \"updated\"]\nMAX_BYTES, MAX_ROWS = 5 * 1024 * 1024, 10_000\nALIASES = {\"np\": \"NP\", \"nepal\": \"NP\", \"jp\": \"JP\", \"japan\": \"JP\"}\n\ndef load_raw(path):\n    with Path(path).open(\"rb\") as handle:\n        data = handle.read(MAX_BYTES + 1)\n    if len(data) > MAX_BYTES:\n        raise ValueError(\"Input exceeds 5 MiB\")\n    try:\n        text = data.decode(\"utf-8-sig\")\n        reader = csv.reader(StringIO(text, newline=\"\"), strict=True)\n        header = next(reader, None)\n        if header is None or len(header) != len(set(header)) or set(header) != set(COLUMNS):\n            raise ValueError(\"Require exactly id,name,region,score,updated with unique headers\")\n        rows = 0\n        for record in reader:\n            if not record:\n                continue\n            rows += 1\n            if len(record) != len(COLUMNS) or rows > MAX_ROWS:\n                raise ValueError(\"Ragged or oversized CSV\")\n    except (UnicodeDecodeError, csv.Error) as error:\n        raise ValueError(\"Expected well-formed UTF-8 comma CSV\") from error\n    raw = pd.read_csv(StringIO(text), dtype=\"string\", keep_default_na=False,\n                      na_values=[\"\"], skip_blank_lines=True)\n    if raw.shape != (rows, len(COLUMNS)) or raw.columns.tolist() != header:\n        raise ValueError(\"Parser/header mismatch\")\n    return raw[COLUMNS]\n\ndef normalize_text(raw):\n    if not raw.columns.is_unique or set(raw.columns) != set(COLUMNS):\n        raise ValueError(\"Unexpected source schema\")\n    if len(raw) > MAX_ROWS or not all(isinstance(dtype, pd.StringDtype) for dtype in raw.dtypes):\n        raise ValueError(\"Require bounded raw string columns\")\n    out = raw[COLUMNS].reset_index(drop=True).copy()\n    out[\"_source_record\"] = range(1, len(out) + 1)\n    for column in COLUMNS:\n        out[column] = out[column].str.strip()\n    out[\"name\"] = out[\"name\"].str.normalize(\"NFC\").str.replace(r\"\\s+\", \" \", regex=True)\n    tokens = out[\"region\"].str.casefold()\n    out[\"region\"] = tokens.map(ALIASES).fillna(tokens).astype(\"string\")\n    out[\"score\"] = out[\"score\"].mask(out[\"score\"].eq(\"\").fillna(False), pd.NA)\n    return out\n\ndef convert_types(normalized):\n    out = normalized.copy()\n    out[\"score\"] = pd.to_numeric(out[\"score\"], errors=\"coerce\").astype(\"Float64\")\n    out[\"updated\"] = pd.to_datetime(out[\"updated\"], format=\"%Y-%m-%d\", errors=\"coerce\")\n    return out\n\ndef rejection_reasons(normalized, typed):\n    finite = pd.Series(np.isfinite(typed[\"score\"].to_numpy(dtype=float, na_value=np.nan)), index=typed.index)\n    rules = {\n        \"id_requires_three_ASCII_digits\": ~normalized[\"id\"].str.fullmatch(r\"[0-9]{3}\").fillna(False),\n        \"name_required\": normalized[\"name\"].isna() | normalized[\"name\"].eq(\"\").fillna(False),\n        \"unknown_region\": ~normalized[\"region\"].isin([\"NP\", \"JP\"]),\n        \"invalid_or_missing_updated_date\": typed[\"updated\"].isna() | ~normalized[\"updated\"].str.fullmatch(r\"[0-9]{4}-[0-9]{2}-[0-9]{2}\").fillna(False),\n        \"score_not_numeric\": normalized[\"score\"].notna() & typed[\"score\"].isna(),\n        \"score_nonfinite\": typed[\"score\"].notna() & ~finite,\n        \"score_outside_0_100\": finite & ~typed[\"score\"].between(0, 100).fillna(False),\n    }\n    reasons = {i: [] for i in typed.index}\n    for reason, mask in rules.items():\n        for i in typed.index[mask]:\n            reasons[i].append(reason)\n    return reasons\n\ndef validate_clean(clean):\n    if clean.empty or clean.columns.tolist() != COLUMNS:\n        raise ValueError(\"Require a nonempty canonical result\")\n    if not clean[\"id\"].is_unique or not clean[\"id\"].str.fullmatch(r\"[0-9]{3}\").fillna(False).all():\n        raise ValueError(\"Invalid or repeated result ID\")\n    if not clean[\"name\"].notna().all() or not clean[\"name\"].str.strip().ne(\"\").fillna(False).all():\n        raise ValueError(\"Invalid result name\")\n    if not clean[\"region\"].isin([\"NP\", \"JP\"]).all() or clean[\"updated\"].isna().any():\n        raise ValueError(\"Invalid result region/date\")\n    finite = np.isfinite(clean[\"score\"].to_numpy(dtype=float, na_value=np.nan))\n    if not finite.all() or not clean[\"score\"].between(0, 100).fillna(False).all():\n        raise ValueError(\"Invalid result score\")\n\ndef cleaning_pipeline(raw):\n    normalized = normalize_text(raw)\n    typed = convert_types(normalized)\n    reasons = rejection_reasons(normalized, typed)\n    rejected = [i for i in typed.index if reasons[i]]\n    accepted = typed.loc[[i for i in typed.index if not reasons[i]]].copy()\n    ordered = accepted.sort_values([\"id\", \"updated\", \"_source_record\"], ascending=[True, False, False])\n    repeated = ordered.duplicated(\"id\", keep=\"first\")\n    removed = ordered.loc[repeated]\n    latest = ordered.loc[~repeated].copy()\n    if latest.empty:\n        raise ValueError(\"No valid records remain\")\n    missing = latest[\"score\"].isna()\n    fill_value = None\n    if missing.any():\n        median = latest[\"score\"].median()\n        if pd.isna(median):\n            raise ValueError(\"No observed retained scores to estimate a median\")\n        fill_value = float(median)\n        latest[\"score\"] = latest[\"score\"].fillna(fill_value)\n    estimated_records = latest.loc[missing, \"_source_record\"].astype(int).tolist()\n    typed.loc[latest.index, \"score\"] = latest[\"score\"]\n    staged = typed[COLUMNS].copy()\n    staged[\"updated\"] = typed[\"updated\"].dt.strftime(\"%Y-%m-%d\").astype(\"string\")\n    staged[\"score\"] = typed[\"score\"].astype(\"string\")\n    source = raw[COLUMNS].reset_index(drop=True)\n    changes = []\n    for i in staged.index:\n        for column in COLUMNS:\n            old = None if pd.isna(source.at[i, column]) else str(source.at[i, column])\n            new = None if pd.isna(staged.at[i, column]) else str(staged.at[i, column])\n            if old != new:\n                rule = \"normalize_text\"\n                if column in (\"score\", \"updated\"):\n                    rule = \"convert_type\"\n                if column == \"score\" and int(typed.at[i, \"_source_record\"]) in estimated_records:\n                    rule = \"median_fill\"\n                changes.append({\"record\": i + 1, \"column\": column, \"before\": old, \"after\": new, \"rule\": rule})\n    clean = latest[COLUMNS].reset_index(drop=True)\n    clean[\"region\"] = clean[\"region\"].astype(pd.CategoricalDtype([\"NP\", \"JP\"]))\n    validate_clean(clean)\n    q1, q3 = clean[\"score\"].quantile([0.25, 0.75], interpolation=\"linear\")\n    iqr = float(q3 - q1)\n    lower, upper = float(q1 - 1.5 * iqr), float(q3 + 1.5 * iqr)\n    flags = [] if iqr == 0 else clean.loc[(clean[\"score\"] < lower) | (clean[\"score\"] > upper), \"id\"].tolist()\n    report = {\n        \"input_rows\": len(raw), \"kept_rows\": len(clean),\n        \"quarantined\": [{\"record\": i + 1, \"reasons\": reasons[i]} for i in rejected],\n        \"removed_duplicate_records\": removed[\"_source_record\"].astype(int).tolist(),\n        \"imputed_score_records\": estimated_records, \"score_fill_value\": fill_value,\n        \"cell_changes\": changes,\n        \"iqr_inspection\": {\"computed_on\": \"final scores, including disclosed estimates\",\n                           \"iqr\": iqr, \"lower\": lower, \"upper\": upper, \"ids\": flags,\n                           \"decision\": \"inspect only\" if iqr > 0 else \"zero IQR; no automatic decision\"},\n        \"policy\": {\"schema\": \"three-digit text id; required name; region NP/JP; score finite0..100; updated YYYY-MM-DD\",\n                   \"missing\": \"empty/whitespace-only scores only; invalid known tokens quarantined\",\n                   \"latest\": \"newest valid date, then later input record for same-day ties\",\n                   \"fill\": \"median of known retained scores; stop if estimation has no observations\",\n                   \"audit\": \"source-to-final-staged cell changes include quarantined and superseded records\",\n                   \"record\": \"one-based parsed observation position, not physical CSV line number\",\n                   \"limits\": {\"bytes\": MAX_BYTES, \"rows\": MAX_ROWS}},\n    }\n    assert len(raw) == len(clean) + len(rejected) + len(removed)\n    return clean, report\n\ndef publish_bundle(clean, report, destination):\n    \"\"\"Publish one new directory; never overwrite an existing output bundle.\"\"\"\n    destination = Path(destination)\n    if destination.exists():\n        raise ValueError(\"Output already exists; choose a new bundle directory\")\n    validate_clean(clean)\n    payload = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + \"\\n\"\n    csv_text = clean.to_csv(index=False, date_format=\"%Y-%m-%d\", lineterminator=\"\\n\")\n    with tempfile.TemporaryDirectory(prefix=\".cleaning-\", dir=destination.parent) as folder:\n        stage = Path(folder)\n        (stage / \"clean.csv\").write_text(csv_text, encoding=\"utf-8\", newline=\"\\n\")\n        (stage / \"report.json\").write_text(payload, encoding=\"utf-8\", newline=\"\\n\")\n        os.rename(stage, destination)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Clean the supplied student schema into a new output bundle\")\n    parser.add_argument(\"raw_csv\")\n    parser.add_argument(\"new_bundle\")\n    args = parser.parse_args(argv)\n    try:\n        raw = load_raw(args.raw_csv)\n        clean, report = cleaning_pipeline(raw)\n        report[\"input_name\"] = Path(args.raw_csv).name\n        publish_bundle(clean, report, args.new_bundle)\n    except (OSError, ValueError, pd.errors.ParserError) as error:\n        print(\"No new bundle:\", error, file=sys.stderr)\n        return 1\n    print(\"Published new bundle; raw CSV unchanged\")\n    return 0\n\nPath('messy.csv').write_text('id,name,region,score,updated\\n 001 , Asha   Rai ,nepal,80,2026-01-01\\n001,Asha Rai,NP,90,2026-01-03\\n002,Bina, Japan ,,2026-01-02\\n003,Chandra,JP,70,2026-01-02\\n004,Dipa,NP,150,2026-01-01\\n005,Eka,Npeal,oops,bad\\n003,Chandra,JP,75,2026-01-02\\n', encoding='utf-8', newline='\\n')\n\nsource = Path(\"messy.csv\")\nbefore = source.read_bytes()\nraw = load_raw(source)\nclean, report = cleaning_pipeline(raw)\npublish_bundle(clean, report, \"run-01\")\nstored = json.loads(Path(\"run-01/report.json\").read_text(encoding=\"utf-8\"))\nprint(\"Bundle files:\", sorted(path.name for path in Path(\"run-01\").iterdir()))\nprint(\"Cell changes:\", len(stored[\"cell_changes\"]))\nprint(\"Input unchanged:\", source.read_bytes() == before)\nprint(\"Saved IDs:\", load_raw(\"run-01/clean.csv\")[\"id\"].tolist())\n",
+          "out": "Bundle files: ['clean.csv', 'report.json']\nCell changes: 13\nInput unchanged: True\nSaved IDs: ['001', '002', '003']",
+          "why": "Build check: Week29 mastery: deliberate missing policies, identity-aware deduplication, audited conversion, meaningful text rules, domain/outlier distinctions, valid reshaping and a repeatable documented pipeline."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Reload the clean CSV, run cleaning again and prove canonical values are unchanged; also reject overwriting run-01.",
+          "practiceId": "29.5.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport csv\nfrom io import StringIO\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport tempfile\nimport numpy as np\nimport pandas as pd\n\nCOLUMNS = [\"id\", \"name\", \"region\", \"score\", \"updated\"]\nMAX_BYTES, MAX_ROWS = 5 * 1024 * 1024, 10_000\nALIASES = {\"np\": \"NP\", \"nepal\": \"NP\", \"jp\": \"JP\", \"japan\": \"JP\"}\n\ndef load_raw(path):\n    with Path(path).open(\"rb\") as handle:\n        data = handle.read(MAX_BYTES + 1)\n    if len(data) > MAX_BYTES:\n        raise ValueError(\"Input exceeds 5 MiB\")\n    try:\n        text = data.decode(\"utf-8-sig\")\n        reader = csv.reader(StringIO(text, newline=\"\"), strict=True)\n        header = next(reader, None)\n        if header is None or len(header) != len(set(header)) or set(header) != set(COLUMNS):\n            raise ValueError(\"Require exactly id,name,region,score,updated with unique headers\")\n        rows = 0\n        for record in reader:\n            if not record:\n                continue\n            rows += 1\n            if len(record) != len(COLUMNS) or rows > MAX_ROWS:\n                raise ValueError(\"Ragged or oversized CSV\")\n    except (UnicodeDecodeError, csv.Error) as error:\n        raise ValueError(\"Expected well-formed UTF-8 comma CSV\") from error\n    raw = pd.read_csv(StringIO(text), dtype=\"string\", keep_default_na=False,\n                      na_values=[\"\"], skip_blank_lines=True)\n    if raw.shape != (rows, len(COLUMNS)) or raw.columns.tolist() != header:\n        raise ValueError(\"Parser/header mismatch\")\n    return raw[COLUMNS]\n\ndef normalize_text(raw):\n    if not raw.columns.is_unique or set(raw.columns) != set(COLUMNS):\n        raise ValueError(\"Unexpected source schema\")\n    if len(raw) > MAX_ROWS or not all(isinstance(dtype, pd.StringDtype) for dtype in raw.dtypes):\n        raise ValueError(\"Require bounded raw string columns\")\n    out = raw[COLUMNS].reset_index(drop=True).copy()\n    out[\"_source_record\"] = range(1, len(out) + 1)\n    for column in COLUMNS:\n        out[column] = out[column].str.strip()\n    out[\"name\"] = out[\"name\"].str.normalize(\"NFC\").str.replace(r\"\\s+\", \" \", regex=True)\n    tokens = out[\"region\"].str.casefold()\n    out[\"region\"] = tokens.map(ALIASES).fillna(tokens).astype(\"string\")\n    out[\"score\"] = out[\"score\"].mask(out[\"score\"].eq(\"\").fillna(False), pd.NA)\n    return out\n\ndef convert_types(normalized):\n    out = normalized.copy()\n    out[\"score\"] = pd.to_numeric(out[\"score\"], errors=\"coerce\").astype(\"Float64\")\n    out[\"updated\"] = pd.to_datetime(out[\"updated\"], format=\"%Y-%m-%d\", errors=\"coerce\")\n    return out\n\ndef rejection_reasons(normalized, typed):\n    finite = pd.Series(np.isfinite(typed[\"score\"].to_numpy(dtype=float, na_value=np.nan)), index=typed.index)\n    rules = {\n        \"id_requires_three_ASCII_digits\": ~normalized[\"id\"].str.fullmatch(r\"[0-9]{3}\").fillna(False),\n        \"name_required\": normalized[\"name\"].isna() | normalized[\"name\"].eq(\"\").fillna(False),\n        \"unknown_region\": ~normalized[\"region\"].isin([\"NP\", \"JP\"]),\n        \"invalid_or_missing_updated_date\": typed[\"updated\"].isna() | ~normalized[\"updated\"].str.fullmatch(r\"[0-9]{4}-[0-9]{2}-[0-9]{2}\").fillna(False),\n        \"score_not_numeric\": normalized[\"score\"].notna() & typed[\"score\"].isna(),\n        \"score_nonfinite\": typed[\"score\"].notna() & ~finite,\n        \"score_outside_0_100\": finite & ~typed[\"score\"].between(0, 100).fillna(False),\n    }\n    reasons = {i: [] for i in typed.index}\n    for reason, mask in rules.items():\n        for i in typed.index[mask]:\n            reasons[i].append(reason)\n    return reasons\n\ndef validate_clean(clean):\n    if clean.empty or clean.columns.tolist() != COLUMNS:\n        raise ValueError(\"Require a nonempty canonical result\")\n    if not clean[\"id\"].is_unique or not clean[\"id\"].str.fullmatch(r\"[0-9]{3}\").fillna(False).all():\n        raise ValueError(\"Invalid or repeated result ID\")\n    if not clean[\"name\"].notna().all() or not clean[\"name\"].str.strip().ne(\"\").fillna(False).all():\n        raise ValueError(\"Invalid result name\")\n    if not clean[\"region\"].isin([\"NP\", \"JP\"]).all() or clean[\"updated\"].isna().any():\n        raise ValueError(\"Invalid result region/date\")\n    finite = np.isfinite(clean[\"score\"].to_numpy(dtype=float, na_value=np.nan))\n    if not finite.all() or not clean[\"score\"].between(0, 100).fillna(False).all():\n        raise ValueError(\"Invalid result score\")\n\ndef cleaning_pipeline(raw):\n    normalized = normalize_text(raw)\n    typed = convert_types(normalized)\n    reasons = rejection_reasons(normalized, typed)\n    rejected = [i for i in typed.index if reasons[i]]\n    accepted = typed.loc[[i for i in typed.index if not reasons[i]]].copy()\n    ordered = accepted.sort_values([\"id\", \"updated\", \"_source_record\"], ascending=[True, False, False])\n    repeated = ordered.duplicated(\"id\", keep=\"first\")\n    removed = ordered.loc[repeated]\n    latest = ordered.loc[~repeated].copy()\n    if latest.empty:\n        raise ValueError(\"No valid records remain\")\n    missing = latest[\"score\"].isna()\n    fill_value = None\n    if missing.any():\n        median = latest[\"score\"].median()\n        if pd.isna(median):\n            raise ValueError(\"No observed retained scores to estimate a median\")\n        fill_value = float(median)\n        latest[\"score\"] = latest[\"score\"].fillna(fill_value)\n    estimated_records = latest.loc[missing, \"_source_record\"].astype(int).tolist()\n    typed.loc[latest.index, \"score\"] = latest[\"score\"]\n    staged = typed[COLUMNS].copy()\n    staged[\"updated\"] = typed[\"updated\"].dt.strftime(\"%Y-%m-%d\").astype(\"string\")\n    staged[\"score\"] = typed[\"score\"].astype(\"string\")\n    source = raw[COLUMNS].reset_index(drop=True)\n    changes = []\n    for i in staged.index:\n        for column in COLUMNS:\n            old = None if pd.isna(source.at[i, column]) else str(source.at[i, column])\n            new = None if pd.isna(staged.at[i, column]) else str(staged.at[i, column])\n            if old != new:\n                rule = \"normalize_text\"\n                if column in (\"score\", \"updated\"):\n                    rule = \"convert_type\"\n                if column == \"score\" and int(typed.at[i, \"_source_record\"]) in estimated_records:\n                    rule = \"median_fill\"\n                changes.append({\"record\": i + 1, \"column\": column, \"before\": old, \"after\": new, \"rule\": rule})\n    clean = latest[COLUMNS].reset_index(drop=True)\n    clean[\"region\"] = clean[\"region\"].astype(pd.CategoricalDtype([\"NP\", \"JP\"]))\n    validate_clean(clean)\n    q1, q3 = clean[\"score\"].quantile([0.25, 0.75], interpolation=\"linear\")\n    iqr = float(q3 - q1)\n    lower, upper = float(q1 - 1.5 * iqr), float(q3 + 1.5 * iqr)\n    flags = [] if iqr == 0 else clean.loc[(clean[\"score\"] < lower) | (clean[\"score\"] > upper), \"id\"].tolist()\n    report = {\n        \"input_rows\": len(raw), \"kept_rows\": len(clean),\n        \"quarantined\": [{\"record\": i + 1, \"reasons\": reasons[i]} for i in rejected],\n        \"removed_duplicate_records\": removed[\"_source_record\"].astype(int).tolist(),\n        \"imputed_score_records\": estimated_records, \"score_fill_value\": fill_value,\n        \"cell_changes\": changes,\n        \"iqr_inspection\": {\"computed_on\": \"final scores, including disclosed estimates\",\n                           \"iqr\": iqr, \"lower\": lower, \"upper\": upper, \"ids\": flags,\n                           \"decision\": \"inspect only\" if iqr > 0 else \"zero IQR; no automatic decision\"},\n        \"policy\": {\"schema\": \"three-digit text id; required name; region NP/JP; score finite0..100; updated YYYY-MM-DD\",\n                   \"missing\": \"empty/whitespace-only scores only; invalid known tokens quarantined\",\n                   \"latest\": \"newest valid date, then later input record for same-day ties\",\n                   \"fill\": \"median of known retained scores; stop if estimation has no observations\",\n                   \"audit\": \"source-to-final-staged cell changes include quarantined and superseded records\",\n                   \"record\": \"one-based parsed observation position, not physical CSV line number\",\n                   \"limits\": {\"bytes\": MAX_BYTES, \"rows\": MAX_ROWS}},\n    }\n    assert len(raw) == len(clean) + len(rejected) + len(removed)\n    return clean, report\n\ndef publish_bundle(clean, report, destination):\n    \"\"\"Publish one new directory; never overwrite an existing output bundle.\"\"\"\n    destination = Path(destination)\n    if destination.exists():\n        raise ValueError(\"Output already exists; choose a new bundle directory\")\n    validate_clean(clean)\n    payload = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + \"\\n\"\n    csv_text = clean.to_csv(index=False, date_format=\"%Y-%m-%d\", lineterminator=\"\\n\")\n    with tempfile.TemporaryDirectory(prefix=\".cleaning-\", dir=destination.parent) as folder:\n        stage = Path(folder)\n        (stage / \"clean.csv\").write_text(csv_text, encoding=\"utf-8\", newline=\"\\n\")\n        (stage / \"report.json\").write_text(payload, encoding=\"utf-8\", newline=\"\\n\")\n        os.rename(stage, destination)\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Clean the supplied student schema into a new output bundle\")\n    parser.add_argument(\"raw_csv\")\n    parser.add_argument(\"new_bundle\")\n    args = parser.parse_args(argv)\n    try:\n        raw = load_raw(args.raw_csv)\n        clean, report = cleaning_pipeline(raw)\n        report[\"input_name\"] = Path(args.raw_csv).name\n        publish_bundle(clean, report, args.new_bundle)\n    except (OSError, ValueError, pd.errors.ParserError) as error:\n        print(\"No new bundle:\", error, file=sys.stderr)\n        return 1\n    print(\"Published new bundle; raw CSV unchanged\")\n    return 0\n\nPath('messy.csv').write_text('id,name,region,score,updated\\n 001 , Asha   Rai ,nepal,80,2026-01-01\\n001,Asha Rai,NP,90,2026-01-03\\n002,Bina, Japan ,,2026-01-02\\n003,Chandra,JP,70,2026-01-02\\n004,Dipa,NP,150,2026-01-01\\n005,Eka,Npeal,oops,bad\\n003,Chandra,JP,75,2026-01-02\\n', encoding='utf-8', newline='\\n')\n\nclean, report = cleaning_pipeline(load_raw(\"messy.csv\"))\npublish_bundle(clean, report, \"run-01\")\nagain, second_report = cleaning_pipeline(load_raw(\"run-01/clean.csv\"))\ndef canonical_csv(frame):\n    return frame.to_csv(index=False, date_format=\"%Y-%m-%d\", lineterminator=\"\\n\")\nprint(\"Repeatable CSV:\", canonical_csv(clean) == canonical_csv(again))\nprint(\"Second imputation:\", second_report[\"imputed_score_records\"])\ntry:\n    publish_bundle(clean, report, \"run-01\")\nexcept ValueError:\n    print(\"Existing bundle preserved\")\n",
+          "out": "Repeatable CSV: True\nSecond imputation: []\nExisting bundle preserved",
+          "why": "Challenge check: Week29 mastery: deliberate missing policies, identity-aware deduplication, audited conversion, meaningful text rules, domain/outlier distinctions, valid reshaping and a repeatable documented pipeline."
+        },
+        {
+          "t": "try",
+          "q": "Is unknown data the same as observed zero?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Unknown does not establish a zero value."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:29.5.3",
+            "quiz": [
+              {
+                "q": "Is unknown data the same as observed zero?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only for scores"
+                ],
+                "correct": 0,
+                "why": "Unknown does not establish a zero value."
+              },
+              {
+                "q": "What must an imputation report preserve?",
+                "options": [
+                  "No source references",
+                  "Which cells were estimated",
+                  "Only the final mean"
+                ],
+                "correct": 1,
+                "why": "Estimated values must stay distinguishable from observations."
+              },
+              {
+                "q": "Is linear interpolation appropriate for random student-ID order?",
+                "options": [
+                  "Always",
+                  "Only with numeric IDs",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "The ordering needs a continuous measurement meaning."
+              },
+              {
+                "q": "Does keep='last' mean newest timestamp automatically?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only after loading CSV"
+                ],
+                "correct": 0,
+                "why": "It follows current row order."
+              },
+              {
+                "q": "What follows numeric coercion?",
+                "options": [
+                  "Delete the raw file",
+                  "Audit failures and validate domain",
+                  "Fill every error with zero"
+                ],
+                "correct": 1,
+                "why": "Coercion can hide source errors if not audited."
+              },
+              {
+                "q": "Can naive timestamps' timezone be guessed by utc=True?",
+                "options": [
+                  "Always",
+                  "Only with dates",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "The source time convention must be declared."
+              },
+              {
+                "q": "Does categorical casting preserve every unknown token?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only with ordered=True"
+                ],
+                "correct": 0,
+                "why": "Unknown values may become missing."
+              },
+              {
+                "q": "Which validates a whole token?",
+                "options": [
+                  "head",
+                  "fullmatch",
+                  "contains alone"
+                ],
+                "correct": 1,
+                "why": "Substring matching does not validate surrounding text."
+              },
+              {
+                "q": "Do outlier flags prove errors?",
+                "options": [
+                  "Always",
+                  "Only IQR flags",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Flags request domain/source investigation."
+              },
+              {
+                "q": "Can ordinary z division use zero spread?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only with ddof=0"
+                ],
+                "correct": 0,
+                "why": "The denominator would be zero."
+              },
+              {
+                "q": "Which reshapes without aggregating unique keys?",
+                "options": [
+                  "fillna",
+                  "pivot",
+                  "pivot_table with mean"
+                ],
+                "correct": 1,
+                "why": "pivot requires unique output-cell keys."
+              },
+              {
+                "q": "Should an existing project output bundle be overwritten?",
+                "options": [
+                  "Always silently",
+                  "Only when CSV parsed",
+                  "No; choose a new directory"
+                ],
+                "correct": 2,
+                "why": "Previous output remains available for comparison."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Week29 mastery: deliberate missing policies, identity-aware deduplication, audited conversion, meaningful text rules, domain/outlier distinctions, valid reshaping and a repeatable documented pipeline."
+        },
+        {
+          "t": "sh",
+          "v": "python cleaning_pipeline.py messy_students.csv run-01\npython cleaning_pipeline.py --help",
+          "note": "Complete standalone project and fictional sample: docs/python-week29. Choose run-02 for another run; existing bundles and raw CSVs remain intact."
+        },
+        {
+          "t": "p",
+          "v": "Primary references: https://pandas.pydata.org/docs/user_guide/missing_data.html · https://pandas.pydata.org/docs/user_guide/text.html · https://pandas.pydata.org/docs/reference/api/pandas.to_datetime.html · https://pandas.pydata.org/docs/user_guide/reshaping.html · https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.stack.html. Original explanations, fictional fixtures, examples/outputs, exercises and complete solutions are included for offline study."
+        }
+      ]
+    }
+  ]
+},
 };
 
 const REST_DAY = ["Review & rest",
