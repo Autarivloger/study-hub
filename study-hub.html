@@ -40464,6 +40464,2918 @@ const DAY_TEACH = {
     }
   ]
 },
+"28.0": {
+  "parts": [
+    {
+      "title": "1. Series: values with labels",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Series: values with labels"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Build a Series, read its labels and predict label-aligned arithmetic."
+        },
+        {
+          "t": "new",
+          "v": "pandas; import pandas as pd",
+          "note": "pandas is a separately installed library for labeled tables. pd is its conventional alias. Use Python 3.11+ and pandas 3.x for this week's verified examples."
+        },
+        {
+          "t": "sh",
+          "v": "python -m pip install \"pandas>=3,<4\" openpyxl",
+          "note": "One-time setup in your own Python practice environment; internet is needed for installation only. Verified with pandas3.0.6/openpyxl3.1.5. The course website stays offline."
+        },
+        {
+          "t": "new",
+          "v": "Series; index; name",
+          "note": "A Series is a one-dimensional labeled collection. index holds row labels; name describes the collection. Labels can be strings or numbers and need not be unique."
+        },
+        {
+          "t": "new",
+          "v": "loc; to_dict; isna",
+          "note": "loc selects by label, not by position. Series.to_dict converts label/value pairs to a dictionary (duplicate labels would be lost). isna marks missing values; Day4 expands selection."
+        },
+        {
+          "t": "p",
+          "v": "NumPy taught arrays and positions. pandas adds labels that carry meaning: a student's name or an order ID can identify a value. A Series contains both values and an index; its name is separate metadata. Arithmetic between two Series aligns matching labels, even when their order differs. A label present on only one side creates a missing result rather than guessing a partner. Labels are not guaranteed to be unique, so use dictionary output only in these unique-label examples. Install the practice libraries once with internet; the lessons and local examples then remain usable offline. The website displays examples; run Python in your own practice environment."
+        },
+        {
+          "t": "syn",
+          "v": "pd.Series(values, index=labels, name=\"description\")\nseries.loc[\"label\"]\nseries.isna()",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nhours = pd.Series([2, 3], index=[\"Asha\", \"Bina\"], name=\"hours\")\nextra = pd.Series([10, 20], index=[\"Bina\", \"Asha\"])\nprint(hours.to_dict())\nprint(\"Asha:\", hours.loc[\"Asha\"])\nprint(\"Aligned total:\", (hours + extra).to_dict())\n"
+        },
+        {
+          "t": "out",
+          "v": "{'Asha': 2, 'Bina': 3}\nAsha: 2\nAligned total: {'Asha': 22, 'Bina': 13}"
+        },
+        {
+          "t": "p",
+          "v": "Asha को 2 मा Asha कै 20 जोडियो। पहिलो position को 10 होइन। pandas मा labels ले matching गर्छन्; values को order मात्र हेरेर हिसाब नगर्नु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Assume Series addition always pairs positions",
+          "right": "Check indexes; arithmetic matches labels",
+          "why": "The left and right positions may refer to different people."
+        },
+        {
+          "t": "ex",
+          "v": "Store Monday/Tuesday study minutes 30/45 in a named Series; add 5 minutes and print the result.",
+          "practiceId": "28.0.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nminutes = pd.Series([30, 45], index=[\"Monday\", \"Tuesday\"], name=\"minutes\")\nprint((minutes + 5).to_dict())\nprint(minutes.name)\n",
+          "out": "{'Monday': 35, 'Tuesday': 50}\nminutes",
+          "why": "Build check: Series arithmetic aligns labels. A missing partner is missing data, not automatically zero."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Add Series whose labels only partly overlap. Print which result labels are missing, without inventing a value.",
+          "practiceId": "28.0.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\na = pd.Series([1, 2], index=[\"A\", \"B\"])\nb = pd.Series([10, 20], index=[\"B\", \"C\"])\nprint((a + b).isna().to_dict())\nprint(\"B:\", (a + b).loc[\"B\"])\n",
+          "out": "{'A': True, 'B': False, 'C': True}\nB: 12.0",
+          "why": "Challenge check: Series arithmetic aligns labels. A missing partner is missing data, not automatically zero."
+        },
+        {
+          "t": "try",
+          "q": "Series arithmetic normally matches what?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Index labels",
+          "why": "Indexes determine alignment."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.0.0",
+            "quiz": [
+              {
+                "q": "Series arithmetic normally matches what?",
+                "options": [
+                  "Index labels",
+                  "Only positions",
+                  "Variable names"
+                ],
+                "correct": 0,
+                "why": "Indexes determine alignment."
+              },
+              {
+                "q": "What is pd?",
+                "options": [
+                  "A row label",
+                  "An import alias",
+                  "A Python keyword"
+                ],
+                "correct": 1,
+                "why": "The alias is chosen in the import statement."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Series arithmetic aligns labels. A missing partner is missing data, not automatically zero."
+        }
+      ]
+    },
+    {
+      "title": "2. DataFrames: three construction patterns",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. DataFrames: three construction patterns"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Construct equivalent tables from columns, records and rows, then inspect their shape."
+        },
+        {
+          "t": "new",
+          "v": "DataFrame",
+          "note": "A DataFrame is a two-dimensional labeled table. Each column is a Series and may have a different dtype; its rows share one index."
+        },
+        {
+          "t": "new",
+          "v": "shape; columns; to_dict(orient='records')",
+          "note": "shape gives (row_count, column_count); columns holds column labels. records output creates one dictionary per row, without including the index."
+        },
+        {
+          "t": "new",
+          "v": "equals",
+          "note": "equals compares shape, labels, corresponding values and dtypes. It is useful here for checking independently constructed small tables."
+        },
+        {
+          "t": "p",
+          "v": "Choose the construction pattern that fits the source. A dictionary of equally long lists naturally represents columns. A list of dictionaries naturally represents records and can represent omitted fields as missing. A list of rows needs an explicit column list so that the numbers are understandable. A dictionary of lists is not itself a DataFrame: pandas supplies selection, alignment, per-column types and table operations. The default row labels are 0,1,..., but those labels are not permanent business identities. All three examples use the same column order and complete records, so equals is True."
+        },
+        {
+          "t": "syn",
+          "v": "pd.DataFrame({\"name\": [...], \"score\": [...]})\npd.DataFrame([{\"name\": ..., \"score\": ...}])\npd.DataFrame(rows, columns=[\"name\", \"score\"])",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\na = pd.DataFrame({\"name\": [\"Asha\", \"Bina\"], \"score\": [80, 90]})\nb = pd.DataFrame([{\"name\": \"Asha\", \"score\": 80}, {\"name\": \"Bina\", \"score\": 90}])\nc = pd.DataFrame([[\"Asha\", 80], [\"Bina\", 90]], columns=[\"name\", \"score\"])\nprint(a.shape, a.columns.tolist())\nprint(a.to_dict(orient=\"records\"))\nprint(a.equals(b), a.equals(c))\n"
+        },
+        {
+          "t": "out",
+          "v": "(2, 2) ['name', 'score']\n[{'name': 'Asha', 'score': 80}, {'name': 'Bina', 'score': 90}]\nTrue True"
+        },
+        {
+          "t": "p",
+          "v": "shape (2,2) को अर्थ दुई records र दुई columns हुन्। records output मा row index आउँदैन। नाम र score एउटै column मा मिसाउनु पर्दैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "pd.DataFrame({\"name\": [\"Asha\", \"Bina\"], \"score\": [80]})",
+          "right": "pd.DataFrame({\"name\": [\"Asha\", \"Bina\"], \"score\": [80, 90]})",
+          "why": "Ordinary column lists must have equal lengths; pandas cannot guess the missing student's score."
+        },
+        {
+          "t": "ex",
+          "v": "Build the same two-book title/pages table with all three construction patterns and verify equality.",
+          "practiceId": "28.0.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\na = pd.DataFrame({\"title\": [\"Python\", \"Data\"], \"pages\": [100, 150]})\nb = pd.DataFrame([{\"title\": \"Python\", \"pages\": 100}, {\"title\": \"Data\", \"pages\": 150}])\nc = pd.DataFrame([[\"Python\", 100], [\"Data\", 150]], columns=[\"title\", \"pages\"])\nprint(a.equals(b) and b.equals(c))\nprint(c.shape)\n",
+          "out": "True\n(2, 2)",
+          "why": "Build check: Choose columns, records or explicit rows according to the source; inspect shape before using the table."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Create records where one record has no score. Locate that missing field using isna, without filling it.",
+          "practiceId": "28.0.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame([{\"name\": \"Asha\", \"score\": 80}, {\"name\": \"Bina\"}])\nprint(df[\"score\"].isna().tolist())\nprint(df.shape)\n",
+          "out": "[False, True]\n(2, 2)",
+          "why": "Challenge check: Choose columns, records or explicit rows according to the source; inspect shape before using the table."
+        },
+        {
+          "t": "try",
+          "q": "What does shape (3,2) mean?",
+          "code": "# Predict and explain before revealing.",
+          "a": "3 rows and 2 columns",
+          "why": "The first dimension counts rows."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.0.1",
+            "quiz": [
+              {
+                "q": "What does shape (3,2) mean?",
+                "options": [
+                  "6 columns",
+                  "3 rows and 2 columns",
+                  "2 rows and 3 columns"
+                ],
+                "correct": 1,
+                "why": "The first dimension counts rows."
+              },
+              {
+                "q": "Does records output include the DataFrame index?",
+                "options": [
+                  "Always",
+                  "Only numeric indexes",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "It outputs dictionaries of column/value pairs."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Choose columns, records or explicit rows according to the source; inspect shape before using the table."
+        }
+      ]
+    },
+    {
+      "title": "3. Column types and honest missing values",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Column types and honest missing values"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Keep IDs as text and represent missing integer values without calling them zero."
+        },
+        {
+          "t": "new",
+          "v": "dtype; dtypes",
+          "note": "dtype is one Series' storage type; dtypes lists the type of every DataFrame column. A DataFrame does not require one common numerical dtype."
+        },
+        {
+          "t": "new",
+          "v": "sum(min_count=1)",
+          "note": "min_count requires at least that many nonmissing observations for a valid sum. With no observed numbers, min_count=1 gives a missing result instead of the default zero."
+        },
+        {
+          "t": "new",
+          "v": "string; Int64; pd.NA",
+          "note": "Explicit string is pandas' nullable text dtype. Capital-I Int64 is a nullable integer dtype that accepts pd.NA; lowercase int64 cannot represent a missing integer in the same way."
+        },
+        {
+          "t": "new",
+          "v": "notna; sum; count",
+          "note": "notna marks present values. Summing a Boolean mask counts True entries; count counts nonmissing observations. sum normally skips missing values, which is not a data-completeness guarantee."
+        },
+        {
+          "t": "p",
+          "v": "A code such as 001 is an identifier, not the number one. Preserve it as text before numerical inference loses its leading zeros. A missing age means unknown; assigning zero would claim a known age of zero. Use nullable integer storage when integer values may be missing. pandas 3 changed default string inference, so these lessons explicitly request string where its missing-value behavior matters. Missing markers can differ across dtypes; use isna/notna rather than equality with None, NaN or pd.NA. When summarizing, report the number of observed values too. Week29 teaches repair decisions; this week observes them."
+        },
+        {
+          "t": "syn",
+          "v": "pd.Series([\"001\", \"002\"], dtype=\"string\")\npd.Series([20, pd.NA], dtype=\"Int64\")\nseries.isna().sum()\nseries.count()",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"id\": pd.Series([\"001\", \"002\"], dtype=\"string\"),\n                   \"age\": pd.Series([20, pd.NA], dtype=\"Int64\")})\nprint(df[\"id\"].tolist())\nprint(str(df[\"id\"].dtype), str(df[\"age\"].dtype))\nprint(\"Missing:\", df[\"age\"].isna().sum())\nprint(\"Known:\", df[\"age\"].count())\n"
+        },
+        {
+          "t": "out",
+          "v": "['001', '002']\nstring Int64\nMissing: 1\nKnown: 1"
+        },
+        {
+          "t": "p",
+          "v": "001 जस्ताको तस्तै बच्यो। दोस्रो age थाहा छैन, त्यसैले pd.NA हो। Missing र known count छुट्टै देखाउँदा report ले वास्तविक अवस्था बताउँछ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Store every missing age as 0",
+          "right": "Use nullable Int64 and report missing counts",
+          "why": "Unknown is not zero. A false value changes means and filters."
+        },
+        {
+          "t": "ex",
+          "v": "Create three text IDs and nullable integer scores [90, missing, 70]. Print missing flags and known-count.",
+          "practiceId": "28.0.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": pd.Series([\"007\", \"008\", \"009\"], dtype=\"string\"),\n                   \"score\": pd.Series([90, pd.NA, 70], dtype=\"Int64\")})\nprint(df[\"id\"].tolist())\nprint(df[\"score\"].isna().tolist())\nprint(df[\"score\"].count())\n",
+          "out": "['007', '008', '009']\n[False, True, False]\n2",
+          "why": "Build check: Preserve identifiers as text. Choose nullable dtypes deliberately and report missingness alongside totals."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Compare an all-missing integer Series' default sum with its observed count. Explain why that sum alone is misleading.",
+          "practiceId": "28.0.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nscores = pd.Series([pd.NA, pd.NA], dtype=\"Int64\")\nprint(\"Default sum:\", scores.sum())\nprint(\"Observed:\", scores.count())\nprint(\"Require one observation:\", scores.sum(min_count=1))\n",
+          "out": "Default sum: 0\nObserved: 0\nRequire one observation: <NA>",
+          "why": "Challenge check: Preserve identifiers as text. Choose nullable dtypes deliberately and report missingness alongside totals."
+        },
+        {
+          "t": "try",
+          "q": "Which dtype accepts missing whole numbers explicitly?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Int64",
+          "why": "Capital-I Int64 is pandas' nullable integer type."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.0.2",
+            "quiz": [
+              {
+                "q": "Which dtype accepts missing whole numbers explicitly?",
+                "options": [
+                  "int64 with no missing policy",
+                  "All IDs as float",
+                  "Int64"
+                ],
+                "correct": 2,
+                "why": "Capital-I Int64 is pandas' nullable integer type."
+              },
+              {
+                "q": "Does a default sum of zero prove observations exist?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only with text IDs"
+                ],
+                "correct": 0,
+                "why": "Check count or require min_count=1."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Preserve identifiers as text. Choose nullable dtypes deliberately and report missingness alongside totals."
+        }
+      ]
+    },
+    {
+      "title": "4. Labels, aliases and Copy-on-Write",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Labels, aliases and Copy-on-Write"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish two names for one table from a separate pandas object."
+        },
+        {
+          "t": "new",
+          "v": "DataFrame.index; copy",
+          "note": "index stores row labels independently of row positions. copy() creates a separate DataFrame object; nested mutable Python objects inside object columns need extra care beyond this numeric example."
+        },
+        {
+          "t": "new",
+          "v": "Copy-on-Write in pandas 3",
+          "note": "Derived Series/DataFrames behave independently when updated. A selected Series edit does not update its parent DataFrame. Two Python names bound to the same object still share every edit."
+        },
+        {
+          "t": "new",
+          "v": "iloc; single-step loc assignment",
+          "note": "iloc selects zero-based positions. df.loc[row_label, column_label] = value updates that DataFrame directly. These appear now for the ownership experiment and are developed fully on Day4."
+        },
+        {
+          "t": "p",
+          "v": "Do not transfer NumPy slice assumptions directly to pandas. In pandas 3, Copy-on-Write prevents changing a separately derived Series from silently changing its parent table. However, alias = df creates no separate object: both names still refer to the same DataFrame. df.copy() creates an independent table for the ordinary numeric values shown here. Labels such as 10 and 20 are not positions 10 and 20; iloc[0] means the first row while loc[10] means the row labeled 10. Keep transformations explicit and update the intended DataFrame in one loc operation. Avoid legacy chained-assignment tutorials when using pandas 3."
+        },
+        {
+          "t": "syn",
+          "v": "alias = df\nindependent = df.copy()\nselected = df[\"score\"]\nselected.iloc[0] = 99\ndf.loc[10, \"score\"] = 85",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"score\": [80, 90]}, index=[10, 20])\nselected = df[\"score\"]\nselected.iloc[0] = 99\nprint(\"Parent:\", df[\"score\"].tolist())\nprint(\"Selected:\", selected.tolist())\nalias = df\nalias.loc[10, \"score\"] = 85\nprint(\"Same object:\", alias is df)\nprint(\"After direct edit:\", df[\"score\"].tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Parent: [80, 90]\nSelected: [99, 90]\nSame object: True\nAfter direct edit: [85, 90]"
+        },
+        {
+          "t": "p",
+          "v": "selected छुट्टै pandas object हो, उसको edit parent मा सरेन। alias भने उही object को अर्को नाम हो, त्यसैले alias बाट गरेको edit df मा देखियो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "df[\"score\"][0] = 99",
+          "right": "df.loc[10, \"score\"] = 99",
+          "why": "Chained assignment does not update the parent under pandas 3 Copy-on-Write; 0 is also the wrong row label here."
+        },
+        {
+          "t": "ex",
+          "v": "Copy a table, edit only its copy, then prove that the original numbers are unchanged.",
+          "practiceId": "28.0.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\noriginal = pd.DataFrame({\"score\": [50, 60]}, index=[\"A\", \"B\"])\nchanged = original.copy()\nchanged.loc[\"A\", \"score\"] = 100\nprint(original[\"score\"].tolist())\nprint(changed[\"score\"].tolist())\n",
+          "out": "[50, 60]\n[100, 60]",
+          "why": "Build check: Use pandas 3 Copy-on-Write rules, but remember that Python aliases still identify the same object."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: For index [20,10], read the first score by position and the score with label 10 separately.",
+          "practiceId": "28.0.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"score\": [50, 90]}, index=[20, 10])\nprint(\"First row:\", df.iloc[0][\"score\"])\nprint(\"Label 10:\", df.loc[10, \"score\"])\n",
+          "out": "First row: 50\nLabel 10: 90",
+          "why": "Challenge check: Use pandas 3 Copy-on-Write rules, but remember that Python aliases still identify the same object."
+        },
+        {
+          "t": "try",
+          "q": "Does alias = df make an independent table?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It binds another name to the same object."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.0.3",
+            "quiz": [
+              {
+                "q": "Does alias = df make an independent table?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only if indexes are integers"
+                ],
+                "correct": 0,
+                "why": "It binds another name to the same object."
+              },
+              {
+                "q": "Does changing a selected Series update its parent in pandas 3?",
+                "options": [
+                  "Only with iloc",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Update the intended parent directly."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Use pandas 3 Copy-on-Write rules, but remember that Python aliases still identify the same object."
+        }
+      ]
+    }
+  ]
+},
+"28.1": {
+  "parts": [
+    {
+      "title": "1. CSV loading with a declared schema",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. CSV loading with a declared schema"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Load a local CSV while preserving IDs and controlling which tokens mean missing."
+        },
+        {
+          "t": "new",
+          "v": "read_csv; StringIO",
+          "note": "read_csv reads delimited text into a DataFrame. StringIO presents our supplied text as an in-memory file, so this example needs no download."
+        },
+        {
+          "t": "new",
+          "v": "dtype; keep_default_na; na_values",
+          "note": "dtype declares column types. keep_default_na=False disables pandas' default missing-word list. na_values=[''] marks empty fields missing while preserving literal text such as NA."
+        },
+        {
+          "t": "new",
+          "v": "sep; usecols; encoding",
+          "note": "sep sets the delimiter, usecols chooses columns and encoding decodes a real text file. Use UTF-8 or UTF-8-SIG for supplied UTF-8/BOM files; a wrong encoding is not fixed by ignoring errors."
+        },
+        {
+          "t": "p",
+          "v": "CSV stores text and separators, not an authoritative type schema. If you let pandas infer an ID like 001, it may become the number 1. Declare the ID type before reading. Also decide what missing means: the text NA could be a region code or a legitimate answer rather than a missing value. Here empty fields are missing, while NA is kept as text. Inspect shape, types and null counts immediately after loading. Quoted commas belong inside a field; do not replace read_csv with a naive split(','). All datasets in this week are fictional, small and included locally."
+        },
+        {
+          "t": "syn",
+          "v": "pd.read_csv(\"students.csv\", dtype={\"id\":\"string\",\"score\":\"Int64\"},\n            keep_default_na=False, na_values=[\"\"], encoding=\"utf-8-sig\")",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "from io import StringIO\nimport pandas as pd\ntext = 'id,name,score,region\\n001,\"Asha, Rai\",80,NA\\n002,Bina,,NP\\n'\ndf = pd.read_csv(StringIO(text), dtype={\"id\": \"string\", \"score\": \"Int64\", \"region\": \"string\"},\n                 keep_default_na=False, na_values=[\"\"])\nprint(df[\"id\"].tolist())\nprint(df[\"name\"].tolist())\nprint(df[\"region\"].tolist())\nprint(df.shape, df[\"score\"].isna().tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "['001', '002']\n['Asha, Rai', 'Bina']\n['NA', 'NP']\n(2, 4) [False, True]"
+        },
+        {
+          "t": "p",
+          "v": "Quoted नाममा comma भए पनि एउटै field रह्यो। NA region हराएन। Score को खाली ठाउँ मात्रै missing भयो। Read गर्दा नै policy राख्नु, पछि lost zeros फर्काउन सकिँदैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "df = pd.read_csv(path)  # assume IDs and NA tokens are always inferred correctly",
+          "right": "Declare dtype and missing-token policy when reading",
+          "why": "Inference guesses types; it cannot know the meaning of your IDs or region codes."
+        },
+        {
+          "t": "ex",
+          "v": "Load a semicolon-separated table with IDs 007/008. Select only id and minutes while preserving zeros.",
+          "practiceId": "28.1.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "from io import StringIO\nimport pandas as pd\ndf = pd.read_csv(StringIO(\"id;minutes;note\\n007;30;ok\\n008;45;ok\\n\"),\n                 sep=\";\", usecols=[\"id\", \"minutes\"], dtype={\"id\": \"string\"})\nprint(df.to_dict(orient=\"records\"))\n",
+          "out": "[{'id': '007', 'minutes': 30}, {'id': '008', 'minutes': 45}]",
+          "why": "Build check: Declare types and missing tokens before loading. Parsing successfully is not the same as interpreting the data correctly."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Keep literal NULL as a text label but mark an empty label missing.",
+          "practiceId": "28.1.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from io import StringIO\nimport pandas as pd\ndf = pd.read_csv(StringIO(\"label\\nNULL\\n\\\"\\\"\\n\"), dtype={\"label\": \"string\"},\n                 keep_default_na=False, na_values=[\"\"])\nprint(df[\"label\"].isna().tolist())\nprint(df.loc[0, \"label\"])\n",
+          "out": "[False, True]\nNULL",
+          "why": "Challenge check: Declare types and missing tokens before loading. Parsing successfully is not the same as interpreting the data correctly."
+        },
+        {
+          "t": "try",
+          "q": "How do you preserve 001 as an ID?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Read it as string",
+          "why": "Numeric inference discards leading zeros."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.1.0",
+            "quiz": [
+              {
+                "q": "How do you preserve 001 as an ID?",
+                "options": [
+                  "Read it as string",
+                  "Infer it as an integer",
+                  "Multiply by 100"
+                ],
+                "correct": 0,
+                "why": "Numeric inference discards leading zeros."
+              },
+              {
+                "q": "Must the literal NA always mean missing?",
+                "options": [
+                  "Only in CSV headers",
+                  "No; choose a policy",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Some domains use NA as ordinary text."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Declare types and missing tokens before loading. Parsing successfully is not the same as interpreting the data correctly."
+        }
+      ]
+    },
+    {
+      "title": "2. Excel workbooks and deliberate sheet selection",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Excel workbooks and deliberate sheet selection"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Round-trip a small workbook and inspect one named sheet explicitly."
+        },
+        {
+          "t": "new",
+          "v": "to_excel; read_excel; openpyxl",
+          "note": "to_excel writes a workbook; read_excel loads it. openpyxl is an additional engine used here for .xlsx files. Excel installation itself is not needed."
+        },
+        {
+          "t": "new",
+          "v": "sheet_name; index=False",
+          "note": "sheet_name selects the intended worksheet. index=False prevents writing the pandas row index as an extra column."
+        },
+        {
+          "t": "new",
+          "v": "TemporaryDirectory; Path",
+          "note": "These standard-library tools create an owned temporary folder and portable file paths. Only fictional workbook data is written; the folder is removed at the end."
+        },
+        {
+          "t": "p",
+          "v": "An Excel workbook can contain many sheets, titles, formulas and formatted cells. A successful load of the first sheet does not prove it is the intended table. Choose sheet_name explicitly, check headers and verify shape. Preserve text IDs in both the source workbook and the read schema: if Excel already stored 001 as numeric 1, a text dtype cannot restore the lost zeros. Our fixture has one clean table with no formulas. Formula values may depend on a workbook's saved calculation cache, so do not treat pandas as an Excel calculation engine. This example creates its own workbook safely, then loads it using openpyxl."
+        },
+        {
+          "t": "syn",
+          "v": "df.to_excel(path, sheet_name=\"Students\", index=False, engine=\"openpyxl\")\npd.read_excel(path, sheet_name=\"Students\", dtype={\"id\":\"string\"}, engine=\"openpyxl\")",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import tempfile\nfrom pathlib import Path\nimport pandas as pd\nwith tempfile.TemporaryDirectory() as folder:\n    path = Path(folder) / \"students.xlsx\"\n    source = pd.DataFrame({\"id\": [\"001\", \"002\"], \"score\": [80, 90]})\n    source.to_excel(path, sheet_name=\"Students\", index=False, engine=\"openpyxl\")\n    loaded = pd.read_excel(path, sheet_name=\"Students\", dtype={\"id\": \"string\"}, engine=\"openpyxl\")\n    print(loaded.to_dict(orient=\"records\"))\n    print(loaded.shape)\n"
+        },
+        {
+          "t": "out",
+          "v": "[{'id': '001', 'score': 80}, {'id': '002', 'score': 90}]\n(2, 2)"
+        },
+        {
+          "t": "p",
+          "v": "index=False ले अनावश्यक index column हटायो। Students sheet नै पढिएको छ। वास्तविक file मा sheet को नाम र header row पहिले जाँच्नु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "pd.read_excel(path)  # assume first sheet is always the data",
+          "right": "pd.read_excel(path, sheet_name=\"Students\", engine=\"openpyxl\")",
+          "why": "A workbook may place instructions before the actual data sheet."
+        },
+        {
+          "t": "ex",
+          "v": "Write a local Books sheet with two title/page records; read it and verify its column names and page total.",
+          "practiceId": "28.1.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import tempfile\nfrom pathlib import Path\nimport pandas as pd\nwith tempfile.TemporaryDirectory() as folder:\n    path = Path(folder) / \"books.xlsx\"\n    pd.DataFrame({\"title\": [\"Python\", \"Data\"], \"pages\": [100, 150]}).to_excel(\n        path, sheet_name=\"Books\", index=False, engine=\"openpyxl\")\n    df = pd.read_excel(path, sheet_name=\"Books\", engine=\"openpyxl\")\n    print(df.columns.tolist(), int(df[\"pages\"].sum()))\n",
+          "out": "['title', 'pages'] 250",
+          "why": "Build check: Choose the sheet and schema explicitly. pandas reads workbook data; it does not recalculate Excel formulas."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Load a specific column from a named sheet and prove no pandas index column was written.",
+          "practiceId": "28.1.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import tempfile\nfrom pathlib import Path\nimport pandas as pd\nwith tempfile.TemporaryDirectory() as folder:\n    path = Path(folder) / \"table.xlsx\"\n    pd.DataFrame({\"name\": [\"Asha\"], \"score\": [80]}).to_excel(\n        path, sheet_name=\"Scores\", index=False, engine=\"openpyxl\")\n    df = pd.read_excel(path, sheet_name=\"Scores\", usecols=[\"score\"], engine=\"openpyxl\")\n    print(df.columns.tolist(), df[\"score\"].tolist())\n",
+          "out": "['score'] [80]",
+          "why": "Challenge check: Choose the sheet and schema explicitly. pandas reads workbook data; it does not recalculate Excel formulas."
+        },
+        {
+          "t": "try",
+          "q": "Does openpyxl require the Excel desktop app?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It is a Python workbook engine."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.1.1",
+            "quiz": [
+              {
+                "q": "Does openpyxl require the Excel desktop app?",
+                "options": [
+                  "Only for small tables",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "It is a Python workbook engine."
+              },
+              {
+                "q": "What does index=False do when exporting?",
+                "options": [
+                  "Deletes all workbook rows",
+                  "Disables sheet names",
+                  "Omits the pandas index column"
+                ],
+                "correct": 2,
+                "why": "Row labels are not exported as a data column."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Choose the sheet and schema explicitly. pandas reads workbook data; it does not recalculate Excel formulas."
+        }
+      ]
+    },
+    {
+      "title": "3. JSON orientation and local round trips",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. JSON orientation and local round trips"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Load record-oriented JSON without confusing its structure with a column-oriented document."
+        },
+        {
+          "t": "new",
+          "v": "read_json; to_json; orient",
+          "note": "orient specifies the JSON layout. records represents a list of row dictionaries; columns represents column mappings. Agree on orientation before loading."
+        },
+        {
+          "t": "new",
+          "v": "JSON null versus empty text",
+          "note": "JSON null expresses a missing value; an empty string remains text unless you deliberately convert it. File formats can encode missingness differently."
+        },
+        {
+          "t": "p",
+          "v": "JSON is a container format, not one fixed table layout. A list of records maps naturally to rows, but a nested API response may wrap those records under another key. Do not pass an arbitrary nested response to read_json and assume it becomes the intended table. For a wrapper, parse JSON first and construct the DataFrame from the chosen record list. Use StringIO for literal JSON text and declare orient='records'. Explicit ID dtype protects text identifiers. A records export omits row labels; if those labels contain important identity, preserve identity as a regular column or choose another supported orientation."
+        },
+        {
+          "t": "syn",
+          "v": "pd.read_json(StringIO(text), orient=\"records\", dtype={\"id\":\"string\"})\ndf.to_json(orient=\"records\")",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "from io import StringIO\nimport pandas as pd\ntext = '[{\"id\":\"001\",\"score\":80},{\"id\":\"002\",\"score\":null}]'\ndf = pd.read_json(StringIO(text), orient=\"records\", dtype={\"id\": \"string\"})\nprint(df[\"id\"].tolist())\nprint(df[\"score\"].isna().tolist())\nprint(df.to_json(orient=\"records\"))\n"
+        },
+        {
+          "t": "out",
+          "v": "['001', '002']\n[False, True]\n[{\"id\":\"001\",\"score\":80.0},{\"id\":\"002\",\"score\":null}]"
+        },
+        {
+          "t": "p",
+          "v": "JSON null missing भयो, तर id text रह्यो। records मा table को index हुँदैन। Metadata पनि चाहियो भने format को contract छुट्टै बनाउनु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Assume every JSON document is already a flat list of rows",
+          "right": "Inspect the JSON structure and select the intended record list",
+          "why": "Nested wrappers and records have different shapes."
+        },
+        {
+          "t": "ex",
+          "v": "Extract the items list from a wrapped JSON response and build a two-row DataFrame.",
+          "practiceId": "28.1.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import json\nimport pandas as pd\npayload = json.loads('{\"items\":[{\"name\":\"Asha\"},{\"name\":\"Bina\"}],\"count\":2}')\ndf = pd.DataFrame(payload[\"items\"])\nprint(df[\"name\"].tolist(), df.shape)\n",
+          "out": "['Asha', 'Bina'] (2, 1)",
+          "why": "Build check: Agree on JSON orientation and missing-value meaning; a nested document is not automatically a flat table."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Compare null and empty string in a JSON label column using explicit string dtype.",
+          "practiceId": "28.1.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from io import StringIO\nimport pandas as pd\ndf = pd.read_json(StringIO('[{\"label\":null},{\"label\":\"\"}]'),\n                  orient=\"records\", dtype={\"label\": \"string\"})\nprint(df[\"label\"].isna().tolist())\nprint(df.loc[1, \"label\"] == \"\")\n",
+          "out": "[True, False]\nTrue",
+          "why": "Challenge check: Agree on JSON orientation and missing-value meaning; a nested document is not automatically a flat table."
+        },
+        {
+          "t": "try",
+          "q": "What does records orientation represent?",
+          "code": "# Predict and explain before revealing.",
+          "a": "A list of row dictionaries",
+          "why": "Each dictionary describes one row."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.1.2",
+            "quiz": [
+              {
+                "q": "What does records orientation represent?",
+                "options": [
+                  "Only row indexes",
+                  "An Excel sheet",
+                  "A list of row dictionaries"
+                ],
+                "correct": 2,
+                "why": "Each dictionary describes one row."
+              },
+              {
+                "q": "Is empty JSON text automatically null?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only with IDs"
+                ],
+                "correct": 0,
+                "why": "An empty string and null are different values."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Agree on JSON orientation and missing-value meaning; a nested document is not automatically a flat table."
+        }
+      ]
+    },
+    {
+      "title": "4. SQL results as DataFrames",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. SQL results as DataFrames"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Load a bounded SQLite query with parameters and a deliberate order."
+        },
+        {
+          "t": "new",
+          "v": "sqlite3.connect; in-memory database",
+          "note": "sqlite3 is Python's local database module. :memory: creates a temporary database for this example; no server or credentials are involved."
+        },
+        {
+          "t": "new",
+          "v": "read_sql_query; read_sql",
+          "note": "read_sql_query loads query results into a DataFrame. read_sql is a convenience interface; for this SQLite SELECT example, read_sql_query makes the purpose explicit."
+        },
+        {
+          "t": "new",
+          "v": "SQL params; ORDER BY; LIMIT",
+          "note": "params binds values instead of concatenating them into SQL text. ORDER BY defines result ordering; LIMIT bounds the number of returned rows."
+        },
+        {
+          "t": "p",
+          "v": "SQL performs the query; pandas receives a table-shaped result. Filter and choose needed columns in the query when that avoids loading unnecessary rows. Without ORDER BY, a database result has no guaranteed business order. Give tied rows a secondary key when you need a reproducible report. Pass values through params rather than building SQL with user text. Values can be bound; table/column identifiers need a separate trusted allow-list if they ever become configurable. The fixture creates three fictional students in memory, queries two of them, and closes the connection in finally. SQL connection management belongs to the database layer, not DataFrame storage."
+        },
+        {
+          "t": "syn",
+          "v": "pd.read_sql_query(\"SELECT id,score FROM students WHERE score >= ? ORDER BY score DESC,id LIMIT 10\",\n                  connection, params=(70,), dtype={\"id\":\"string\"})",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import sqlite3\nimport pandas as pd\ncon = sqlite3.connect(\":memory:\")\ntry:\n    con.execute(\"CREATE TABLE students (id TEXT, score INTEGER)\")\n    con.executemany(\"INSERT INTO students VALUES (?,?)\", [(\"001\", 80), (\"002\", 60), (\"003\", 90)])\n    df = pd.read_sql_query(\"SELECT id,score FROM students WHERE score >= ? ORDER BY score DESC,id\",\n                           con, params=(70,), dtype={\"id\": \"string\"})\n    print(df.to_dict(orient=\"records\"))\nfinally:\n    con.close()\n"
+        },
+        {
+          "t": "out",
+          "v": "[{'id': '003', 'score': 90}, {'id': '001', 'score': 80}]"
+        },
+        {
+          "t": "p",
+          "v": "70 SQL text मा जोडिएको होइन, bound parameter हो। ORDER BY ले report को क्रम स्पष्ट बनायो। SQLite connection अन्त्यमा बन्द गरियो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "sql = \"SELECT * FROM students WHERE name = '\" + user_name + \"'\"",
+          "right": "Use WHERE name = ? with params=(user_name,)",
+          "why": "Concatenated text can change SQL meaning and breaks on quoted names."
+        },
+        {
+          "t": "ex",
+          "v": "Query books costing at most 500, sorted by price then title, using a bound maximum.",
+          "practiceId": "28.1.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import sqlite3\nimport pandas as pd\ncon = sqlite3.connect(\":memory:\")\ntry:\n    con.execute(\"CREATE TABLE books (title TEXT, price INTEGER)\")\n    con.executemany(\"INSERT INTO books VALUES (?,?)\", [(\"Data\", 600), (\"Python\", 400), (\"Basics\", 300)])\n    df = pd.read_sql_query(\"SELECT title,price FROM books WHERE price <= ? ORDER BY price,title\",\n                           con, params=(500,))\n    print(df.to_dict(orient=\"records\"))\nfinally:\n    con.close()\n",
+          "out": "[{'title': 'Basics', 'price': 300}, {'title': 'Python', 'price': 400}]",
+          "why": "Build check: Bind SQL values and define result order. Loading a query does not turn pandas into a database server."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Safely query a name containing an apostrophe and confirm the correct row.",
+          "practiceId": "28.1.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import sqlite3\nimport pandas as pd\ncon = sqlite3.connect(\":memory:\")\ntry:\n    con.execute(\"CREATE TABLE people (name TEXT)\")\n    con.execute(\"INSERT INTO people VALUES (?)\", (\"O'Neil\",))\n    df = pd.read_sql_query(\"SELECT name FROM people WHERE name = ?\", con, params=(\"O'Neil\",))\n    print(df[\"name\"].tolist())\nfinally:\n    con.close()\n",
+          "out": "[\"O'Neil\"]",
+          "why": "Challenge check: Bind SQL values and define result order. Loading a query does not turn pandas into a database server."
+        },
+        {
+          "t": "try",
+          "q": "Which keeps values separate from SQL syntax?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Bound params",
+          "why": "The database driver handles parameter values."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.1.3",
+            "quiz": [
+              {
+                "q": "Which keeps values separate from SQL syntax?",
+                "options": [
+                  "Bound params",
+                  "String concatenation",
+                  "Renaming pd"
+                ],
+                "correct": 0,
+                "why": "The database driver handles parameter values."
+              },
+              {
+                "q": "Does SELECT without ORDER BY promise a report order?",
+                "options": [
+                  "Only for ID columns",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Specify ordering whenever the report requires it."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Bind SQL values and define result order. Loading a query does not turn pandas into a database server."
+        }
+      ]
+    }
+  ]
+},
+"28.2": {
+  "parts": [
+    {
+      "title": "1. First inspection: shape, head, tail and info",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. First inspection: shape, head, tail and info"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Identify table dimensions, column names and observed counts before analysis."
+        },
+        {
+          "t": "new",
+          "v": "head; tail",
+          "note": "head(n) returns the first n rows; tail(n) returns the last n. They show samples of the current order, not a random or representative sample."
+        },
+        {
+          "t": "new",
+          "v": "info; buf; memory_usage",
+          "note": "info prints a structural summary and normally returns None. buf redirects its text to a file-like object; memory_usage=False omits a version-dependent memory estimate."
+        },
+        {
+          "t": "p",
+          "v": "Your first question is whether the loaded table matches the source you intended. Count rows and columns, inspect headers, and look at both ends. A neat first five rows does not prove every later row is valid. info exposes dtypes and non-null counts; inspect it directly instead of doing print(df.info()), which also prints its None return. Column labels can contain unexpected spaces or duplicates. An index might be a default row counter rather than an ID. Treat these checks as discovery, not cleaning. Keep a repeatable first-look routine so each new dataset gets the same basic questions."
+        },
+        {
+          "t": "syn",
+          "v": "df.shape\ndf.columns.tolist()\ndf.head(2)\ndf.tail(2)\ndf.info(show_counts=True)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "from io import StringIO\nimport pandas as pd\ndf = pd.DataFrame({\"id\": pd.Series([\"001\", \"002\", \"003\"], dtype=\"string\"),\n                   \"score\": pd.Series([80, pd.NA, 90], dtype=\"Int64\")})\nprint(\"Shape:\", df.shape)\nprint(\"First:\", df.head(1)[\"id\"].tolist())\nprint(\"Last:\", df.tail(1)[\"id\"].tolist())\nbuf = StringIO()\ndf.info(buf=buf, show_counts=True, memory_usage=False)\nprint(\"Info has non-null counts:\", \"non-null\" in buf.getvalue())\nprint(\"Observed:\", df.count().to_dict())\n"
+        },
+        {
+          "t": "out",
+          "v": "Shape: (3, 2)\nFirst: ['001']\nLast: ['003']\nInfo has non-null counts: True\nObserved: {'id': 3, 'score': 2}"
+        },
+        {
+          "t": "p",
+          "v": "First र last ले अहिलेको order का ends देखाउँछन्, random sample होइनन्। info structural check हो; missing score भएर score count दुई मात्रै आयो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "print(df.info())  # expect a reusable DataFrame",
+          "right": "df.info(); use df.shape, df.dtypes and df.count() for structured results",
+          "why": "info prints a summary and returns None, not a new table."
+        },
+        {
+          "t": "ex",
+          "v": "Inspect a three-row inventory's shape, headers, first item and last item.",
+          "practiceId": "28.2.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"item\": [\"pen\", \"book\", \"bag\"], \"stock\": [10, 5, 2]})\nprint(df.shape, df.columns.tolist())\nprint(df.head(1)[\"item\"].tolist(), df.tail(1)[\"item\"].tolist())\n",
+          "out": "(3, 2) ['item', 'stock']\n['pen'] ['bag']",
+          "why": "Build check: Inspect dimensions, headers, dtypes and observed counts. Head/tail are order-based previews, not validation."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Demonstrate that head(5) on a two-row table does not create extra records.",
+          "practiceId": "28.2.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"score\": [80, 90]})\nprint(df.head(5).shape)\nprint(df.tail(1)[\"score\"].tolist())\n",
+          "out": "(2, 1)\n[90]",
+          "why": "Challenge check: Inspect dimensions, headers, dtypes and observed counts. Head/tail are order-based previews, not validation."
+        },
+        {
+          "t": "try",
+          "q": "Is head a representative random sample?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It takes the first rows in current order."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.2.0",
+            "quiz": [
+              {
+                "q": "Is head a representative random sample?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only when n=5"
+                ],
+                "correct": 0,
+                "why": "It takes the first rows in current order."
+              },
+              {
+                "q": "What does info normally return?",
+                "options": [
+                  "The row count",
+                  "None",
+                  "A new DataFrame"
+                ],
+                "correct": 1,
+                "why": "Its main job is printing structural information."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Inspect dimensions, headers, dtypes and observed counts. Head/tail are order-based previews, not validation."
+        }
+      ]
+    },
+    {
+      "title": "2. Numeric describe and missingness denominators",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Numeric describe and missingness denominators"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Interpret count, mean and spread without forgetting missing or absent observations."
+        },
+        {
+          "t": "new",
+          "v": "describe",
+          "note": "For numerical columns, describe reports nonmissing count, mean, sample standard deviation, min, quartiles and max. Text summaries use different fields."
+        },
+        {
+          "t": "new",
+          "v": "isna().sum; missing percentage",
+          "note": "isna().sum() counts missing cells per column. Divide by total row count for column missing percentage; an empty table has no meaningful denominator."
+        },
+        {
+          "t": "new",
+          "v": "std: sample versus population",
+          "note": "pandas' usual std/describe std uses ddof=1. Week27 NumPy std defaulted to ddof=0. One observation has no defined sample standard deviation."
+        },
+        {
+          "t": "p",
+          "v": "Descriptive statistics are a summary of observed values, not a certificate of data quality. A mean of 85 might describe two scores while a third score is missing. Report total rows and observed counts together. A column's missing percentage uses all rows as its denominator; using only present rows answers a different question. An empty table needs an explicit no-data result instead of division by zero or a misleading zero-percent claim. Remember the default standard-deviation difference from NumPy. Numeric IDs can accidentally appear in describe; numerical storage does not prove a field is meaningful to average."
+        },
+        {
+          "t": "syn",
+          "v": "df[[\"score\"]].describe()\nmissing = df.isna().sum()\npercentage = missing / len(df) * 100  # only when rows > 0",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"score\": pd.Series([80, 90, pd.NA], dtype=\"Int64\")})\nsummary = df[\"score\"].describe()\nprint(\"Rows:\", len(df), \"Observed:\", int(summary[\"count\"]))\nprint(\"Mean:\", float(summary[\"mean\"]))\nprint(\"Missing %:\", round(float(df[\"score\"].isna().sum()) / len(df) * 100, 2))\nprint(\"Sample std:\", round(float(summary[\"std\"]), 2))\n"
+        },
+        {
+          "t": "out",
+          "v": "Rows: 3 Observed: 2\nMean: 85.0\nMissing %: 33.33\nSample std: 7.07"
+        },
+        {
+          "t": "p",
+          "v": "Mean दुई known scores बाट आयो। Missing percentage भने तीनै rows को आधारमा 33.33% भयो। NumPy र pandas का std defaults एउटै सम्झिनु हुँदैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "missing / nonmissing * 100  # claim percentage of all rows",
+          "right": "missing / total_rows * 100, with an explicit empty-table policy",
+          "why": "The denominator defines the meaning of a percentage."
+        },
+        {
+          "t": "ex",
+          "v": "For four scores [10,20,missing,missing], report row count, observed mean and missing percentage.",
+          "practiceId": "28.2.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nscores = pd.Series([10, 20, pd.NA, pd.NA], dtype=\"Int64\")\nprint(len(scores), scores.count(), float(scores.mean()))\nprint(float(scores.isna().sum()) / len(scores) * 100)\n",
+          "out": "4 2 15.0\n50.0",
+          "why": "Build check: Every statistic needs its observed count, denominator and convention; empty data is not a measured zero."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Profile missingness for an empty table without claiming a measurable missing percentage.",
+          "practiceId": "28.2.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"score\": pd.Series([], dtype=\"Int64\")})\nrows = len(df)\nmissing_percent = None if rows == 0 else float(df[\"score\"].isna().sum()) / rows * 100\nprint(\"Rows:\", rows, \"Missing percentage:\", missing_percent)\n",
+          "out": "Rows: 0 Missing percentage: None",
+          "why": "Challenge check: Every statistic needs its observed count, denominator and convention; empty data is not a measured zero."
+        },
+        {
+          "t": "try",
+          "q": "What denominator gives missing percentage of rows?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Total row count",
+          "why": "Each row is a possible observation."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.2.1",
+            "quiz": [
+              {
+                "q": "What denominator gives missing percentage of rows?",
+                "options": [
+                  "Number of columns",
+                  "Total row count",
+                  "Only present rows"
+                ],
+                "correct": 1,
+                "why": "Each row is a possible observation."
+              },
+              {
+                "q": "Which ddof does pandas std normally use?",
+                "options": [
+                  "0",
+                  "The column count",
+                  "1"
+                ],
+                "correct": 2,
+                "why": "Its default is sample standard deviation."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Every statistic needs its observed count, denominator and convention; empty data is not a measured zero."
+        }
+      ]
+    },
+    {
+      "title": "3. Categories: counts, unique values and missing labels",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Categories: counts, unique values and missing labels"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Count category frequencies and distinguish missing observations from unused labels."
+        },
+        {
+          "t": "new",
+          "v": "value_counts; normalize; dropna",
+          "note": "value_counts counts category occurrences. dropna=False includes missing values. normalize=True reports proportions under the chosen missing policy."
+        },
+        {
+          "t": "new",
+          "v": "unique; nunique",
+          "note": "unique returns distinct observed values in appearance order. nunique counts distinct values and normally excludes missing values; dropna=False includes them."
+        },
+        {
+          "t": "new",
+          "v": "duplicated",
+          "note": "duplicated marks repeated rows (after their first occurrence by default). Repeated categories alone are not necessarily duplicate records."
+        },
+        {
+          "t": "p",
+          "v": "A frequency table answers how often a category occurs. Decide whether missing observations belong in its denominator before comparing proportions. By default value_counts excludes missing values, so a two-thirds proportion among known regions may differ from a one-half proportion among all records. unique preserves appearance order; it does not sort categories. nunique counts distinct values under a missing policy. A category repeated many times is often expected. Duplicated rows are a different question, and even identical rows may represent valid repeated events unless a business key says otherwise."
+        },
+        {
+          "t": "syn",
+          "v": "series.value_counts(dropna=False)\nseries.value_counts(normalize=True, dropna=False)\nseries.nunique(dropna=False)\ndf.duplicated().sum()",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nregions = pd.Series([\"NP\", \"JP\", \"NP\", pd.NA], dtype=\"string\")\nprint(\"Known counts:\", regions.value_counts().to_dict())\nprint(\"NP among known:\", round(float(regions.value_counts(normalize=True)[\"NP\"]), 3))\nprint(\"NP among all:\", float(regions.value_counts(normalize=True, dropna=False)[\"NP\"]))\nprint(\"Distinct known:\", regions.nunique(), \"Including missing:\", regions.nunique(dropna=False))\n"
+        },
+        {
+          "t": "out",
+          "v": "Known counts: {'NP': 2, 'JP': 1}\nNP among known: 0.667\nNP among all: 0.5\nDistinct known: 2 Including missing: 3"
+        },
+        {
+          "t": "p",
+          "v": "Known regions मात्रै गन्दा NP को share 2/3 भयो। Missing समेत चार rows गन्दा 2/4 भयो। कुन population को proportion हो, report मा खुलाउनु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Treat repeated region values as duplicated people",
+          "right": "Check full rows or a declared business key separately from category frequencies",
+          "why": "Several people can legitimately share the same region."
+        },
+        {
+          "t": "ex",
+          "v": "Count pen/book/pen/bag frequencies and print their appearance-order unique values.",
+          "practiceId": "28.2.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nitems = pd.Series([\"pen\", \"book\", \"pen\", \"bag\"], dtype=\"string\")\nprint(items.value_counts().to_dict())\nprint(items.unique().tolist())\n",
+          "out": "{'pen': 2, 'book': 1, 'bag': 1}\n['pen', 'book', 'bag']",
+          "why": "Build check: State whether missing categories count. Repeated categories and duplicated records are different checks."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Find repeated complete records while keeping two people with the same region as distinct.",
+          "practiceId": "28.2.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"001\", \"002\", \"001\"], \"region\": [\"NP\", \"NP\", \"NP\"]})\nprint(df.duplicated().tolist())\nprint(\"Repeated after first:\", int(df.duplicated().sum()))\n",
+          "out": "[False, False, True]\nRepeated after first: 1",
+          "why": "Challenge check: State whether missing categories count. Repeated categories and duplicated records are different checks."
+        },
+        {
+          "t": "try",
+          "q": "Does value_counts include missing values by default?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Use dropna=False when that is the desired policy."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.2.2",
+            "quiz": [
+              {
+                "q": "Does value_counts include missing values by default?",
+                "options": [
+                  "Always",
+                  "Only for string",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Use dropna=False when that is the desired policy."
+              },
+              {
+                "q": "Does unique sort its result alphabetically?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only for regions"
+                ],
+                "correct": 0,
+                "why": "It returns values in order of appearance."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "State whether missing categories count. Repeated categories and duplicated records are different checks."
+        }
+      ]
+    },
+    {
+      "title": "4. A reusable first-look function",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. A reusable first-look function"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Combine structural checks in one nonmutating function with an explicit empty policy."
+        },
+        {
+          "t": "new",
+          "v": "Profiling contract",
+          "note": "A profiler observes and reports the table; it does not silently fill, delete or reinterpret records. State its missing and duplicate policies."
+        },
+        {
+          "t": "new",
+          "v": "dtype-to-text conversion",
+          "note": "str(dtype) provides a readable type name. JSON reports need ordinary Python int/float/None values rather than every pandas or NumPy scalar."
+        },
+        {
+          "t": "p",
+          "v": "Turn the repeated checks into a function you can call on each newly loaded table. The function should return structured results rather than only printing a decorative summary. This first version reports shape, per-column types, missing counts and percentages, and duplicated full rows after the first. It does not edit the source. Empty input returns None for percentages, because no rows exist to estimate them. Column names must be unique for a dictionary-based report; otherwise two columns could overwrite one key. Day6 extends this core into a bounded CSV command-line tool. Keep interpretation separate from repair: a suspicious column deserves inspection, not an automatic destructive fix."
+        },
+        {
+          "t": "syn",
+          "v": "def first_look(df):\n    # require unique columns\n    # return shape, dtypes, missing counts/percentages and duplicate count",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndef first_look(df):\n    if not df.columns.is_unique:\n        raise ValueError(\"Require unique column labels\")\n    rows = len(df)\n    return {\"shape\": list(df.shape),\n            \"dtypes\": {str(c): str(df[c].dtype) for c in df.columns},\n            \"missing\": {str(c): int(df[c].isna().sum()) for c in df.columns},\n            \"missing_percent\": {str(c): None if rows == 0 else round(float(df[c].isna().sum()) / rows * 100, 2) for c in df.columns},\n            \"duplicate_rows_after_first\": int(df.duplicated().sum())}\ndf = pd.DataFrame({\"score\": pd.Series([80, pd.NA, 80], dtype=\"Int64\")})\nbefore = df.copy()\nreport = first_look(df)\nprint(report)\nprint(\"Unchanged:\", df.equals(before))\n"
+        },
+        {
+          "t": "out",
+          "v": "{'shape': [3, 1], 'dtypes': {'score': 'Int64'}, 'missing': {'score': 1}, 'missing_percent': {'score': 33.33}, 'duplicate_rows_after_first': 1}\nUnchanged: True"
+        },
+        {
+          "t": "p",
+          "v": "Function ले report फर्कायो; source बदलिएको छैन। Percent र duplicate count को policy पनि स्पष्ट छ। पछि cleaning गर्दा यही raw report सँग तुलना गर्न सकिन्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Fill missing values inside first_look without asking what they mean",
+          "right": "Report missingness first; keep repair in a separate, deliberate operation",
+          "why": "Profiling must not secretly change the data being diagnosed."
+        },
+        {
+          "t": "ex",
+          "v": "Write a small function returning rows, columns and total missing cells for any DataFrame.",
+          "practiceId": "28.2.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndef dimensions_and_missing(df):\n    return {\"rows\": len(df), \"columns\": len(df.columns),\n            \"missing_cells\": int(df.isna().sum().sum())}\ndf = pd.DataFrame({\"a\": [1, None], \"b\": [None, 2]})\nprint(dimensions_and_missing(df))\n",
+          "out": "{'rows': 2, 'columns': 2, 'missing_cells': 2}",
+          "why": "Build check: A useful first-look function has explicit policies, structured output and no source mutation."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Reject duplicate column labels before creating a dictionary-based report.",
+          "practiceId": "28.2.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame([[1, 2]], columns=[\"score\", \"score\"])\ntry:\n    if not df.columns.is_unique:\n        raise ValueError(\"Require unique column labels\")\nexcept ValueError as error:\n    print(error)\n",
+          "out": "Require unique column labels",
+          "why": "Challenge check: A useful first-look function has explicit policies, structured output and no source mutation."
+        },
+        {
+          "t": "try",
+          "q": "Should a profiler silently repair its source?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Observation and repair need separate decisions."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.2.3",
+            "quiz": [
+              {
+                "q": "Should a profiler silently repair its source?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only missing values"
+                ],
+                "correct": 0,
+                "why": "Observation and repair need separate decisions."
+              },
+              {
+                "q": "Why reject duplicate labels before dictionary reporting?",
+                "options": [
+                  "They mean missing rows",
+                  "Keys could overwrite each other",
+                  "They always crash Python"
+                ],
+                "correct": 1,
+                "why": "A mapping cannot keep two identical keys separately."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "A useful first-look function has explicit policies, structured output and no source mutation."
+        }
+      ]
+    }
+  ]
+},
+"28.3": {
+  "parts": [
+    {
+      "title": "1. One column, several columns and result shape",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. One column, several columns and result shape"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose Series or DataFrame output deliberately and avoid ambiguous duplicate labels."
+        },
+        {
+          "t": "new",
+          "v": "df['column'] versus df[['column']]",
+          "note": "For a unique column label, one label returns a Series; a list of labels returns a DataFrame even when the list contains one label."
+        },
+        {
+          "t": "new",
+          "v": "Column order; KeyError",
+          "note": "A list specifies the order of selected columns. An unknown column label raises KeyError; inspect columns rather than quietly substituting the wrong field."
+        },
+        {
+          "t": "p",
+          "v": "Before selecting rows, be precise about columns. df['score'] normally gives one Series with shape (rows,). df[['score']] keeps a table with shape (rows,1). That difference matters when a downstream function expects two dimensions or named columns. A list such as ['score','name'] also specifies the resulting order. The usual one-label rule assumes the column label is unique; duplicate column labels can make selection return a DataFrame unexpectedly. Inspect df.columns and require uniqueness for predictable beginner workflows. Selection asks for actual labels, including their capitalization and spaces."
+        },
+        {
+          "t": "syn",
+          "v": "series = df[\"score\"]\ntable = df[[\"score\"]]\nordered = df[[\"score\", \"name\"]]",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"name\": [\"Asha\", \"Bina\"], \"score\": [80, 90]})\na, b = df[\"score\"], df[[\"score\"]]\nprint(type(a).__name__, a.shape)\nprint(type(b).__name__, b.shape)\nprint(df[[\"score\", \"name\"]].columns.tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Series (2,)\nDataFrame (2, 1)\n['score', 'name']"
+        },
+        {
+          "t": "p",
+          "v": "एक bracket मा column name दिँदा Series आयो। List दिएपछि एक column भए पनि DataFrame रह्यो। Shape बुझ्दा पछिका operations सजिला हुन्छन्।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Assume df[\"score\"] and df[[\"score\"]] always have identical shape",
+          "right": "Choose a Series or one-column DataFrame to fit the operation",
+          "why": "One-dimensional and two-dimensional results have different contracts."
+        },
+        {
+          "t": "ex",
+          "v": "Select name and minutes in that order from a table whose original columns are minutes/name/id.",
+          "practiceId": "28.3.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"minutes\": [30, 45], \"name\": [\"Asha\", \"Bina\"], \"id\": [\"001\", \"002\"]})\nselected = df[[\"name\", \"minutes\"]]\nprint(selected.columns.tolist(), selected.shape)\n",
+          "out": "['name', 'minutes'] (2, 2)",
+          "why": "Build check: Selection has a shape contract. Unique labels make Series-versus-DataFrame behavior predictable."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Catch an unknown-column request and print the available columns rather than guessing a substitute.",
+          "practiceId": "28.3.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"score\": [80]})\ntry:\n    print(df[\"scores\"])\nexcept KeyError:\n    print(\"Available:\", df.columns.tolist())\n",
+          "out": "Available: ['score']",
+          "why": "Challenge check: Selection has a shape contract. Unique labels make Series-versus-DataFrame behavior predictable."
+        },
+        {
+          "t": "try",
+          "q": "With unique columns, what is df[['score']]?",
+          "code": "# Predict and explain before revealing.",
+          "a": "A DataFrame",
+          "why": "A label list preserves table shape."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.3.0",
+            "quiz": [
+              {
+                "q": "With unique columns, what is df[['score']]?",
+                "options": [
+                  "A DataFrame",
+                  "Always a scalar",
+                  "A Series"
+                ],
+                "correct": 0,
+                "why": "A label list preserves table shape."
+              },
+              {
+                "q": "Which determines selected-column order?",
+                "options": [
+                  "Alphabetical sorting automatically",
+                  "The supplied label list",
+                  "The values' size"
+                ],
+                "correct": 1,
+                "why": "pandas uses the requested order."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Selection has a shape contract. Unique labels make Series-versus-DataFrame behavior predictable."
+        }
+      ]
+    },
+    {
+      "title": "2. loc labels versus iloc positions",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. loc labels versus iloc positions"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Predict scalar, row and table selections and the two slice endpoint rules."
+        },
+        {
+          "t": "new",
+          "v": "loc[row_selector, column_selector]",
+          "note": "loc selects row and column labels. A matching scalar pair usually returns a scalar; lists preserve a table. Label slices include both endpoints when present."
+        },
+        {
+          "t": "new",
+          "v": "iloc[row_positions, column_positions]",
+          "note": "iloc selects zero-based integer positions. Its slices exclude the stop, like ordinary Python slicing. Integer row labels do not change this rule."
+        },
+        {
+          "t": "p",
+          "v": "The most common selection error is treating an integer label as a position. In a table indexed [10,20,30], loc[20] asks for label20 while iloc[1] asks for the second row. They happen to identify the same row here, but an order change would change the positional result. Use lists on both axes when you need a DataFrame. A label slice loc[10:20] includes both labels on this ordered unique index; iloc[0:2] contains positions0 and1 and excludes2. For unsorted or duplicate indexes, label slicing can be ambiguous or fail; prefer explicit label lists until you understand those cases. Do not treat temporary row positions as stable student IDs."
+        },
+        {
+          "t": "syn",
+          "v": "df.loc[20, \"score\"]\ndf.loc[[10,20], [\"name\",\"score\"]]\ndf.loc[10:20, [\"score\"]]\ndf.iloc[0:2, [1]]",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"name\": [\"Asha\", \"Bina\", \"Chandra\"], \"score\": [80, 90, 70]}, index=[10, 20, 30])\nprint(\"Label:\", df.loc[20, \"score\"])\nprint(\"Position:\", df.iloc[1, 1])\nprint(\"loc rows:\", df.loc[10:20, [\"score\"]].index.tolist())\nprint(\"iloc rows:\", df.iloc[0:2, [1]].index.tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Label: 90\nPosition: 90\nloc rows: [10, 20]\niloc rows: [10, 20]"
+        },
+        {
+          "t": "p",
+          "v": "loc[20] मा 20 label हो। iloc[1] मा 1 दोस्रो row को position हो। यो उदाहरणमा दुवैले एउटै row पाए, तर नियम फरक हुन्।"
+        },
+        {
+          "t": "mis",
+          "wrong": "df.loc[0]  # assume first row when labels are 10,20,30",
+          "right": "df.iloc[0] for first position; df.loc[10] for label 10",
+          "why": "loc does not interpret an integer as an offset."
+        },
+        {
+          "t": "ex",
+          "v": "With labels [30,10,20], select label10 and the last row's score separately.",
+          "practiceId": "28.3.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"score\": [70, 80, 90]}, index=[30, 10, 20])\nprint(\"Label10:\", df.loc[10, \"score\"])\nprint(\"Last position:\", df.iloc[-1, 0])\n",
+          "out": "Label10: 80\nLast position: 90",
+          "why": "Build check: loc names labels and includes slice endpoints; iloc names positions and excludes the stop."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Preserve table shape while selecting just label20 and column score.",
+          "practiceId": "28.3.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"score\": [80, 90]}, index=[10, 20])\nselected = df.loc[[20], [\"score\"]]\nprint(type(selected).__name__, selected.shape)\nprint(selected.to_dict(orient=\"records\"))\n",
+          "out": "DataFrame (1, 1)\n[{'score': 90}]",
+          "why": "Challenge check: loc names labels and includes slice endpoints; iloc names positions and excludes the stop."
+        },
+        {
+          "t": "try",
+          "q": "What does loc[10] mean?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Label 10",
+          "why": "Integer labels are still labels."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.3.1",
+            "quiz": [
+              {
+                "q": "What does loc[10] mean?",
+                "options": [
+                  "First ten rows",
+                  "Label 10",
+                  "Always the eleventh row"
+                ],
+                "correct": 1,
+                "why": "Integer labels are still labels."
+              },
+              {
+                "q": "Does iloc[0:2] include position2?",
+                "options": [
+                  "Yes",
+                  "Only with string labels",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Positional slices follow Python's exclusive stop."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "loc names labels and includes slice endpoints; iloc names positions and excludes the stop."
+        }
+      ]
+    },
+    {
+      "title": "3. Boolean filters and missing decisions",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Boolean filters and missing decisions"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Combine conditions with parenthesized operators and choose how unknown values affect selection."
+        },
+        {
+          "t": "new",
+          "v": "&; |; ~ on masks",
+          "note": "& combines element-wise AND, | combines OR and ~ negates Boolean masks. Parenthesize comparisons; Python and/or do not combine whole pandas Series element-wise."
+        },
+        {
+          "t": "new",
+          "v": "isin; between; fillna on a mask",
+          "note": "isin tests membership; between checks a numeric interval (both endpoints by default). fillna(False) explicitly excludes unknown decisions without replacing missing source values."
+        },
+        {
+          "t": "new",
+          "v": "Mask alignment",
+          "note": "A Boolean Series aligns by index when used with loc. Build the mask from the same DataFrame to avoid selecting the wrong rows or an unalignable mask error."
+        },
+        {
+          "t": "p",
+          "v": "A filter is a Boolean decision per row. First write each comparison separately, then combine the decisions. For nullable columns, a comparison against a missing value may itself be unknown. This lesson excludes unknown scores explicitly using mask.fillna(False); it does not pretend the score equals zero. Missing comparisons therefore remain visible in the source table. isin is clearer than many repeated equality comparisons. between states a range directly, but you still need a missing policy. Use masks with the same row labels as the table. A bare Python list of True/False is positional, while a Boolean Series can align labels."
+        },
+        {
+          "t": "syn",
+          "v": "mask = (df[\"score\"] >= 80) & df[\"region\"].isin([\"NP\",\"JP\"])\nselected = df.loc[mask.fillna(False), [\"id\",\"score\"]]",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"001\", \"002\", \"003\", \"004\"], \"region\": [\"NP\", \"US\", \"JP\", \"NP\"],\n                   \"score\": pd.Series([80, 95, pd.NA, 90], dtype=\"Int64\")})\nmask = (df[\"score\"] >= 80) & df[\"region\"].isin([\"NP\", \"JP\"])\nprint(\"Unknown decisions:\", mask.isna().tolist())\nprint(df.loc[mask.fillna(False), \"id\"].tolist())\nprint(\"Source still missing:\", df[\"score\"].isna().tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Unknown decisions: [False, False, True, False]\n['001', '004']\nSource still missing: [False, False, True, False]"
+        },
+        {
+          "t": "p",
+          "v": "Missing score को decision unknown थियो। filter मा exclude गरियो, source score बदलिएको छैन। Practice मा conditions छुट्टाछुट्टै लेखेर result जाँच्नु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "(df[\"score\"] >= 80) and (df[\"region\"] == \"NP\")",
+          "right": "(df[\"score\"] >= 80) & (df[\"region\"] == \"NP\")",
+          "why": "Python and asks for one truth value; a Series contains many row decisions."
+        },
+        {
+          "t": "ex",
+          "v": "Select score80 through90 inclusive, excluding missing scores explicitly.",
+          "practiceId": "28.3.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"A\", \"B\", \"C\", \"D\"],\n                   \"score\": pd.Series([79, 80, 90, pd.NA], dtype=\"Int64\")})\nmask = df[\"score\"].between(80, 90).fillna(False)\nprint(df.loc[mask, \"id\"].tolist())\n",
+          "out": "['B', 'C']",
+          "why": "Build check: Filter with parenthesized element-wise conditions, aligned masks and an explicit unknown-value policy."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Select NP students OR students scoring at least90, then separately show missing-score IDs.",
+          "practiceId": "28.3.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"A\", \"B\", \"C\"], \"region\": [\"NP\", \"US\", \"JP\"],\n                   \"score\": pd.Series([60, 95, pd.NA], dtype=\"Int64\")})\nmask = ((df[\"region\"] == \"NP\") | (df[\"score\"] >= 90)).fillna(False)\nprint(df.loc[mask, \"id\"].tolist())\nprint(\"Missing:\", df.loc[df[\"score\"].isna(), \"id\"].tolist())\n",
+          "out": "['A', 'B']\nMissing: ['C']",
+          "why": "Challenge check: Filter with parenthesized element-wise conditions, aligned masks and an explicit unknown-value policy."
+        },
+        {
+          "t": "try",
+          "q": "Which operator combines row-wise AND?",
+          "code": "# Predict and explain before revealing.",
+          "a": "&",
+          "why": "Use & and parentheses around comparisons."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.3.2",
+            "quiz": [
+              {
+                "q": "Which operator combines row-wise AND?",
+                "options": [
+                  "and",
+                  "+",
+                  "&"
+                ],
+                "correct": 2,
+                "why": "Use & and parentheses around comparisons."
+              },
+              {
+                "q": "Does fillna(False) on a separate mask replace missing source scores?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only for integers"
+                ],
+                "correct": 0,
+                "why": "It changes the decision mask, not the score column."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Filter with parenthesized element-wise conditions, aligned masks and an explicit unknown-value policy."
+        }
+      ]
+    },
+    {
+      "title": "4. Ten selection questions and trusted query expressions",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Ten selection questions and trusted query expressions"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Answer ten concrete table questions and use query only with a trusted expression."
+        },
+        {
+          "t": "new",
+          "v": "query; @variable; engine",
+          "note": "query evaluates a trusted expression string against columns. @name refers to a supplied local variable. engine='python' avoids needing numexpr for these small examples."
+        },
+        {
+          "t": "new",
+          "v": "Query expression trust",
+          "note": "query can evaluate code; never feed it arbitrary user-provided expressions. For configurable beginner filters, validate values and use direct Boolean comparisons."
+        },
+        {
+          "t": "p",
+          "v": "Practice selection until you can translate a question into labels, positions or a mask without guessing. Our ten questions ask for: (1) IDs; (2) names/scores; (3) first row; (4) labelb; (5) scores>=80; (6) NP rows; (7) NP and score>=80; (8) NP or score>=90; (9) names at positions1:3; (10) score80..90 inclusive. The example uses a complete nonmissing numeric table so query is easy to read. Boolean masks remain the clearer choice when you need explicit nullable policies. query is an optional expression interface, not a security boundary or a way to execute any text typed into the website."
+        },
+        {
+          "t": "syn",
+          "v": "threshold = 80\ndf.query(\"score >= @threshold and region == 'NP'\", engine=\"python\")\n# expression is written by us, not obtained from user input",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"001\", \"002\", \"003\"], \"name\": [\"Asha\", \"Bina\", \"Chandra\"],\n                   \"score\": [80, 90, 70], \"region\": [\"NP\", \"JP\", \"NP\"]}, index=[\"a\", \"b\", \"c\"])\nthreshold = 80\nresult = df.query(\"score >= @threshold and region == 'NP'\", engine=\"python\")\nprint(result[\"id\"].tolist())\nprint(\"Row b:\", df.loc[\"b\", \"name\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "['001']\nRow b: Bina"
+        },
+        {
+          "t": "p",
+          "v": "Expression हामीले लेखेको trusted string हो। Threshold value मात्र बदलिएको छ। मनपरी input string लाई query मा नपठाउनु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "df.query(input(\"Enter any expression: \"))",
+          "right": "Use a trusted fixed expression or validated values in Boolean comparisons",
+          "why": "query expressions can evaluate code; arbitrary user expressions are not safe data."
+        },
+        {
+          "t": "ex",
+          "v": "Answer all ten listed selection questions on the supplied table. Predict each result before looking at the solution.",
+          "practiceId": "28.3.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"001\", \"002\", \"003\"], \"name\": [\"Asha\", \"Bina\", \"Chandra\"],\n                   \"score\": [80, 90, 70], \"region\": [\"NP\", \"JP\", \"NP\"]}, index=[\"a\", \"b\", \"c\"])\nprint(\"1:\", df[\"id\"].tolist())\nprint(\"2:\", df[[\"name\", \"score\"]].to_dict(orient=\"records\"))\nprint(\"3:\", df.iloc[0][\"name\"])\nprint(\"4:\", df.loc[\"b\", \"name\"])\nprint(\"5:\", df.loc[df[\"score\"] >= 80, \"id\"].tolist())\nprint(\"6:\", df.loc[df[\"region\"] == \"NP\", \"id\"].tolist())\nprint(\"7:\", df.loc[(df[\"region\"] == \"NP\") & (df[\"score\"] >= 80), \"id\"].tolist())\nprint(\"8:\", df.loc[(df[\"region\"] == \"NP\") | (df[\"score\"] >= 90), \"id\"].tolist())\nprint(\"9:\", df.iloc[1:3][\"name\"].tolist())\nprint(\"10:\", df.loc[df[\"score\"].between(80, 90), \"id\"].tolist())\n",
+          "out": "1: ['001', '002', '003']\n2: [{'name': 'Asha', 'score': 80}, {'name': 'Bina', 'score': 90}, {'name': 'Chandra', 'score': 70}]\n3: Asha\n4: Bina\n5: ['001', '002']\n6: ['001', '003']\n7: ['001']\n8: ['001', '002', '003']\n9: ['Bina', 'Chandra']\n10: ['001', '002']",
+          "why": "Build check: Translate the question first. Use query only for trusted expressions; handle missing decisions explicitly with masks."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Use a fixed query with threshold85 and compare its IDs with a direct Boolean filter.",
+          "practiceId": "28.3.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"A\", \"B\", \"C\"], \"score\": [80, 90, 70]})\nthreshold = 85\na = df.query(\"score >= @threshold\", engine=\"python\")[\"id\"].tolist()\nb = df.loc[df[\"score\"] >= threshold, \"id\"].tolist()\nprint(a, a == b)\n",
+          "out": "['B'] True",
+          "why": "Challenge check: Translate the question first. Use query only for trusted expressions; handle missing decisions explicitly with masks."
+        },
+        {
+          "t": "try",
+          "q": "What does @threshold mean inside query?",
+          "code": "# Predict and explain before revealing.",
+          "a": "A local variable value",
+          "why": "The @ prefix refers to the Python variable."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.3.3",
+            "quiz": [
+              {
+                "q": "What does @threshold mean inside query?",
+                "options": [
+                  "A local variable value",
+                  "A column always named threshold",
+                  "A row index"
+                ],
+                "correct": 0,
+                "why": "The @ prefix refers to the Python variable."
+              },
+              {
+                "q": "Should arbitrary user expressions go into query?",
+                "options": [
+                  "Only with engine='python'",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Changing engine does not make untrusted expressions safe."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Translate the question first. Use query only for trusted expressions; handle missing decisions explicitly with masks."
+        }
+      ]
+    }
+  ]
+},
+"28.4": {
+  "parts": [
+    {
+      "title": "1. Five derived columns using vectorized operations",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Five derived columns using vectorized operations"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Derive useful columns while preserving raw observations and naming each operation."
+        },
+        {
+          "t": "new",
+          "v": "Vectorized Series arithmetic; round",
+          "note": "Arithmetic combines entire columns, aligned by index. round(n) controls displayed/computed decimal rounding; floating arithmetic is not an exact-money accounting engine."
+        },
+        {
+          "t": "new",
+          "v": "astype; str.upper",
+          "note": "astype converts to a chosen dtype. The str accessor provides element-wise text operations such as upper; nullable string operations retain missing values."
+        },
+        {
+          "t": "new",
+          "v": "Derived column",
+          "note": "A derived column records a calculation from source columns. Keep raw inputs alongside it so assumptions and mistakes can be traced."
+        },
+        {
+          "t": "p",
+          "v": "Prefer built-in column operations for ordinary arithmetic and text transformations. You do not need a loop or a Python callback to multiply each row's price by its quantity. We derive subtotal, tax, total, an expensive flag and an uppercase category. The fictional tax rate is a teaching parameter, not real tax advice. Use whole currency units here; for real accounting choose a deliberate exact representation and rounding policy. Vectorized floating arithmetic alone does not solve money precision. A new column should have an understandable name and definition. Leave price and quantity unchanged so every derived value can be explained and checked."
+        },
+        {
+          "t": "syn",
+          "v": "df[\"subtotal\"] = df[\"price\"] * df[\"quantity\"]\ndf[\"tax\"] = (df[\"subtotal\"] * rate).round(2)\ndf[\"total\"] = df[\"subtotal\"] + df[\"tax\"]",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"price\": [100, 200], \"quantity\": [2, 3], \"category\": [\"book\", \"pen\"]})\ndf[\"subtotal\"] = df[\"price\"] * df[\"quantity\"]\ndf[\"tax\"] = (df[\"subtotal\"] * 0.10).round(2)\ndf[\"total\"] = df[\"subtotal\"] + df[\"tax\"]\ndf[\"expensive\"] = df[\"total\"] > 500\ndf[\"category_upper\"] = df[\"category\"].astype(\"string\").str.upper()\nprint(df[[\"subtotal\", \"tax\", \"total\", \"expensive\", \"category_upper\"]].to_dict(orient=\"records\"))\nprint(\"Raw prices:\", df[\"price\"].tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "[{'subtotal': 200, 'tax': 20.0, 'total': 220.0, 'expensive': False, 'category_upper': 'BOOK'}, {'subtotal': 600, 'tax': 60.0, 'total': 660.0, 'expensive': True, 'category_upper': 'PEN'}]\nRaw prices: [100, 200]"
+        },
+        {
+          "t": "p",
+          "v": "प्रत्येक row को price र quantity multiply भयो। Raw price बचेकाले calculation फेरि जाँच्न सकिन्छ। Simple arithmetic मा apply चाहिँदैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Overwrite price with total and forget the source",
+          "right": "Keep price/quantity and add named derived columns",
+          "why": "Losing raw inputs makes errors and policy changes harder to trace."
+        },
+        {
+          "t": "ex",
+          "v": "Add study hours and target-met columns from minutes [30,90,120], using a60-minute target.",
+          "practiceId": "28.4.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"minutes\": [30, 90, 120]})\ndf[\"hours\"] = df[\"minutes\"] / 60\ndf[\"target_met\"] = df[\"minutes\"] >= 60\nprint(df.to_dict(orient=\"records\"))\n",
+          "out": "[{'minutes': 30, 'hours': 0.5, 'target_met': False}, {'minutes': 90, 'hours': 1.5, 'target_met': True}, {'minutes': 120, 'hours': 2.0, 'target_met': True}]",
+          "why": "Build check: Prefer built-in column operations, name derived values clearly and preserve the raw data."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Create uppercase nullable names and prove a missing name stays missing.",
+          "practiceId": "28.4.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"name\": pd.Series([\"Asha\", pd.NA], dtype=\"string\")})\ndf[\"upper\"] = df[\"name\"].str.upper()\nprint(df.loc[0, \"upper\"])\nprint(df[\"upper\"].isna().tolist())\n",
+          "out": "ASHA\n[False, True]",
+          "why": "Challenge check: Prefer built-in column operations, name derived values clearly and preserve the raw data."
+        },
+        {
+          "t": "try",
+          "q": "What pairs rows in Series arithmetic?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Index labels",
+          "why": "Column Series align on their row indexes."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.4.0",
+            "quiz": [
+              {
+                "q": "What pairs rows in Series arithmetic?",
+                "options": [
+                  "Index labels",
+                  "Only the first values",
+                  "Column text length"
+                ],
+                "correct": 0,
+                "why": "Column Series align on their row indexes."
+              },
+              {
+                "q": "Must simple column multiplication use apply?",
+                "options": [
+                  "Only with quantities",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Built-in multiplication is already element-wise."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Prefer built-in column operations, name derived values clearly and preserve the raw data."
+        }
+      ]
+    },
+    {
+      "title": "2. Assignment alignment: labels are not decoration",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Assignment alignment: labels are not decoration"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Predict assignment from a Series versus a list and handle unmatched labels deliberately."
+        },
+        {
+          "t": "new",
+          "v": "Series assignment alignment",
+          "note": "Assigning a Series to a DataFrame column matches row labels, not source positions. An unmatched target row becomes missing."
+        },
+        {
+          "t": "new",
+          "v": "to_dict(orient='index')",
+          "note": "This orientation produces one row dictionary per index label. Require unique index labels; records orientation does not use index labels as dictionary keys."
+        },
+        {
+          "t": "new",
+          "v": "List assignment",
+          "note": "A plain list has no index labels; assignment is positional and its length must match the target rows. Use this only when positional matching is genuinely intended."
+        },
+        {
+          "t": "new",
+          "v": "reindex",
+          "note": "reindex conforms a Series to a requested index, introducing missing values for absent labels. It makes intended alignment visible but does not validate business identity."
+        },
+        {
+          "t": "p",
+          "v": "Alignment affects assignment as well as arithmetic. A shuffled Series of bonuses can still match people correctly if its labels are correct. Converting it to a list too early discards those labels and may attach bonuses to the wrong people. Conversely, a default-indexed Series assigned to a table indexed by names has no matching names and produces missing values. Decide whether matching should be by identity or position before assignment. reindex makes the requested label order explicit and exposes absent entries. For a real dataset, validate uniqueness and expected identity coverage; matching labels alone cannot detect a mislabeled source."
+        },
+        {
+          "t": "syn",
+          "v": "df[\"bonus\"] = bonus_series  # label matching\ndf[\"positional\"] = values_list  # position matching\naligned = bonus_series.reindex(df.index)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"score\": [80, 90]}, index=[\"A\", \"B\"])\nbonus = pd.Series([20, 10], index=[\"B\", \"A\"])\ndf[\"bonus\"] = bonus\ndf[\"positional\"] = [20, 10]\nprint(df.to_dict(orient=\"index\"))\nprint(\"Aligned bonus:\", bonus.reindex(df.index).tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "{'A': {'score': 80, 'bonus': 10, 'positional': 20}, 'B': {'score': 90, 'bonus': 20, 'positional': 10}}\nAligned bonus: [10, 20]"
+        },
+        {
+          "t": "p",
+          "v": "Bonus मा B पहिले भए पनि A ले A कै 10 पायो। List मा labels नभएकाले पहिलो row ले पहिलो value पायो। कुन matching चाहिएको हो पहिले तय गर्नु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "df[\"bonus\"] = pd.Series([10,20])  # assume named rows match positions",
+          "right": "Give the Series matching labels, or use a deliberate length-checked list",
+          "why": "The default 0/1 labels do not match named rows A/B."
+        },
+        {
+          "t": "ex",
+          "v": "Assign scores with source labels B/A to a target indexed A/B and print the correctly aligned scores.",
+          "practiceId": "28.4.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame(index=[\"A\", \"B\"])\nscores = pd.Series([90, 80], index=[\"B\", \"A\"])\ndf[\"score\"] = scores\nprint(df[\"score\"].tolist())\n",
+          "out": "[80, 90]",
+          "why": "Build check: Series assignment matches labels; list assignment matches positions. Preserve identity until matching is complete."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Assign a Series containing only labelA to rowsA/B. Identify the unmatched row without filling it.",
+          "practiceId": "28.4.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame(index=[\"A\", \"B\"])\ndf[\"bonus\"] = pd.Series([10], index=[\"A\"], dtype=\"Int64\")\nprint(df[\"bonus\"].isna().to_dict())\n",
+          "out": "{'A': False, 'B': True}",
+          "why": "Challenge check: Series assignment matches labels; list assignment matches positions. Preserve identity until matching is complete."
+        },
+        {
+          "t": "try",
+          "q": "What does assigning a Series match?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Row labels",
+          "why": "The Series index aligns to the DataFrame index."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.4.1",
+            "quiz": [
+              {
+                "q": "What does assigning a Series match?",
+                "options": [
+                  "Dictionary size",
+                  "Row labels",
+                  "Only source order"
+                ],
+                "correct": 1,
+                "why": "The Series index aligns to the DataFrame index."
+              },
+              {
+                "q": "What happens to an unmatched target label?",
+                "options": [
+                  "It is silently deleted",
+                  "It receives the last value",
+                  "Its new value is missing"
+                ],
+                "correct": 2,
+                "why": "No source value exists for that label."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Series assignment matches labels; list assignment matches positions. Preserve identity until matching is complete."
+        }
+      ]
+    },
+    {
+      "title": "3. map and apply: choose the right level",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. map and apply: choose the right level"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish mapping individual values from row/column callbacks and simpler vectorized operations."
+        },
+        {
+          "t": "new",
+          "v": "Series.map",
+          "note": "map replaces each value using a dictionary or callable. With a dictionary, an unmapped key becomes missing; report that instead of claiming every code was recognized."
+        },
+        {
+          "t": "new",
+          "v": "DataFrame.apply; axis=1 versus axis=0",
+          "note": "apply passes each row Series when axis=1, or each column Series when axis=0, to a callback. This is different from NumPy reduction-axis examples and can be slower than built-in operations."
+        },
+        {
+          "t": "new",
+          "v": "Series.apply; pure callback",
+          "note": "Series.apply commonly calls a function on individual values. Keep callbacks free of mutations to the objects passed to them; prefer built-in arithmetic for simple formulas."
+        },
+        {
+          "t": "p",
+          "v": "Use map when each code needs one replacement label. Use apply when a custom function genuinely needs a row or a column that cannot be expressed clearly through built-in operations. For price times quantity, direct vectorized multiplication is simpler and usually faster than apply(axis=1). With DataFrame.apply, axis describes which objects the callback receives: axis=1 means one row at a time, while axis=0 means one column at a time. This is not the same wording as 'which axis disappears' in NumPy reductions. Inspect unknown mapping codes and missing values explicitly. A row callback is not permission to edit the row or parent while pandas is iterating."
+        },
+        {
+          "t": "syn",
+          "v": "df[\"label\"] = df[\"code\"].map({\"NP\":\"Nepal\",\"JP\":\"Japan\"})\ndf.apply(function_receiving_row, axis=1)\ndf.apply(function_receiving_column, axis=0)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"code\": [\"NP\", \"JP\", \"XX\"], \"price\": [100, 200, 50], \"quantity\": [2, 3, 4]})\ndf[\"label\"] = df[\"code\"].map({\"NP\": \"Nepal\", \"JP\": \"Japan\"})\ndef row_total(row):\n    return row[\"price\"] * row[\"quantity\"]\ncallback = df.apply(row_total, axis=1)\nvectorized = df[\"price\"] * df[\"quantity\"]\nprint(df[\"label\"].isna().tolist())\nprint(callback.tolist(), callback.equals(vectorized))\n"
+        },
+        {
+          "t": "out",
+          "v": "[False, False, True]\n[200, 600, 200] True"
+        },
+        {
+          "t": "p",
+          "v": "XX mapping मा थिएन, त्यसैले missing label आयो। Apply ले row पायो, तर यो multiplication built-in operation बाट झन् सजिलो भयो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Use apply(axis=1) for every ordinary column formula",
+          "right": "Use vectorized arithmetic first; reserve apply for a justified callback",
+          "why": "A Python row callback adds work and hides an otherwise simple formula."
+        },
+        {
+          "t": "ex",
+          "v": "Map level codes B/I to Beginner/Intermediate and separately flag an unknown code X.",
+          "practiceId": "28.4.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ncodes = pd.Series([\"B\", \"I\", \"X\"], dtype=\"string\")\nlabels = codes.map({\"B\": \"Beginner\", \"I\": \"Intermediate\"})\nprint(labels.isna().tolist())\nprint(\"Unknown:\", codes.loc[labels.isna()].tolist())\n",
+          "out": "[False, False, True]\nUnknown: ['X']",
+          "why": "Build check: map transforms values; apply supplies rows or columns to callbacks. Prefer clear built-in operations when available."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Use apply(axis=0) to receive each numeric column, then compare with the built-in column sum.",
+          "practiceId": "28.4.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"a\": [1, 2], \"b\": [10, 20]})\ndef column_sum(column):\n    return column.sum()\nprint(df.apply(column_sum, axis=0).to_dict())\nprint(df.sum().to_dict())\n",
+          "out": "{'a': 3, 'b': 30}\n{'a': 3, 'b': 30}",
+          "why": "Challenge check: map transforms values; apply supplies rows or columns to callbacks. Prefer clear built-in operations when available."
+        },
+        {
+          "t": "try",
+          "q": "What does apply(axis=1) normally pass to the callback?",
+          "code": "# Predict and explain before revealing.",
+          "a": "One row Series",
+          "why": "axis=1 invokes the callback across each row."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.4.2",
+            "quiz": [
+              {
+                "q": "What does apply(axis=1) normally pass to the callback?",
+                "options": [
+                  "One whole database",
+                  "One column Series",
+                  "One row Series"
+                ],
+                "correct": 2,
+                "why": "axis=1 invokes the callback across each row."
+              },
+              {
+                "q": "What does dictionary map do to an unknown key?",
+                "options": [
+                  "Produces missing",
+                  "Always keeps the original code",
+                  "Deletes the record"
+                ],
+                "correct": 0,
+                "why": "Inspect unmapped keys explicitly."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "map transforms values; apply supplies rows or columns to callbacks. Prefer clear built-in operations when available."
+        }
+      ]
+    },
+    {
+      "title": "4. Safe edits with one loc operation",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Safe edits with one loc operation"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Update intended rows directly, preserve the source when needed and avoid chained assignment."
+        },
+        {
+          "t": "new",
+          "v": "Conditional loc assignment",
+          "note": "df.loc[mask, column] = value modifies the intended DataFrame in one indexing operation. A separate working copy preserves the raw table."
+        },
+        {
+          "t": "new",
+          "v": "assign",
+          "note": "assign returns a DataFrame with supplied new/replaced columns. A callable receives the evolving DataFrame; later assignments can refer to columns added earlier in that assign call."
+        },
+        {
+          "t": "p",
+          "v": "Changing a table should be an explicit decision. Copy the raw table when you need an editable working version, build a clear Boolean mask and perform one loc assignment. Do not select a column, select rows from that result and expect the parent to update. Under pandas3 Copy-on-Write, chained assignment cannot implement that intention. assign is useful for a transformation that returns a new table. Callable expressions allow later derived columns to use an earlier column from the same call. Keep edits easy to audit: identify the row labels, explain the policy and check both changed and unchanged records. A missing score is not automatically a failed score."
+        },
+        {
+          "t": "syn",
+          "v": "working = raw.copy()\nworking.loc[working[\"score\"] < 60, \"status\"] = \"review\"\nresult = raw.assign(total=lambda table: table[\"price\"] * table[\"quantity\"])",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\nraw = pd.DataFrame({\"score\": [50, 80, 90]}, index=[\"A\", \"B\", \"C\"])\nworking = raw.copy()\nworking[\"status\"] = \"ready\"\nworking.loc[working[\"score\"] < 60, \"status\"] = \"review\"\nprint(working[\"status\"].to_dict())\nprint(\"Raw columns:\", raw.columns.tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "{'A': 'review', 'B': 'ready', 'C': 'ready'}\nRaw columns: ['score']"
+        },
+        {
+          "t": "p",
+          "v": "Working copy मा A मात्रै review भयो। Raw table को columns समेत उस्तै छन्। किसलाई किन बदलियो भन्ने कुरा code बाटै देखिनुपर्छ।"
+        },
+        {
+          "t": "mis",
+          "wrong": "df[\"status\"][mask] = \"review\"",
+          "right": "df.loc[mask, \"status\"] = \"review\"",
+          "why": "Update the parent in one operation; do not depend on a separately derived selection."
+        },
+        {
+          "t": "ex",
+          "v": "Assign subtotal and a doubled total in one assign call without adding columns to raw.",
+          "practiceId": "28.4.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\nraw = pd.DataFrame({\"price\": [10, 20], \"quantity\": [2, 3]})\nresult = raw.assign(subtotal=lambda x: x[\"price\"] * x[\"quantity\"],\n                    doubled=lambda x: x[\"subtotal\"] * 2)\nprint(result[[\"subtotal\", \"doubled\"]].to_dict(orient=\"records\"))\nprint(raw.columns.tolist())\n",
+          "out": "[{'subtotal': 20, 'doubled': 40}, {'subtotal': 60, 'doubled': 120}]\n['price', 'quantity']",
+          "why": "Build check: Edit the intended table directly through loc. Preserve raw data when policy changes create a working version."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Update a nullable score column only where a known score is below60; keep unknown scores missing.",
+          "practiceId": "28.4.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"score\": pd.Series([50, pd.NA, 80], dtype=\"Int64\")})\nmask = (df[\"score\"] < 60).fillna(False)\ndf.loc[mask, \"score\"] = 60\nprint(df[\"score\"].isna().tolist())\nprint(df.loc[df[\"score\"].notna(), \"score\"].tolist())\n",
+          "out": "[False, True, False]\n[60, 80]",
+          "why": "Challenge check: Edit the intended table directly through loc. Preserve raw data when policy changes create a working version."
+        },
+        {
+          "t": "try",
+          "q": "Which directly updates a DataFrame?",
+          "code": "# Predict and explain before revealing.",
+          "a": "df.loc[mask, 'status'] = value",
+          "why": "One loc operation identifies the target object."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.4.3",
+            "quiz": [
+              {
+                "q": "Which directly updates a DataFrame?",
+                "options": [
+                  "df.loc[mask, 'status'] = value",
+                  "df['status'][mask] = value",
+                  "Only print(df)"
+                ],
+                "correct": 0,
+                "why": "One loc operation identifies the target object."
+              },
+              {
+                "q": "Does assign normally add columns to the original object?",
+                "options": [
+                  "Only with lambdas",
+                  "No; it returns a result",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Save the returned DataFrame."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Edit the intended table directly through loc. Preserve raw data when policy changes create a working version."
+        }
+      ]
+    }
+  ]
+},
+"28.5": {
+  "parts": [
+    {
+      "title": "1. Sorting with explicit ties and missing placement",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Sorting with explicit ties and missing placement"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Sort rows by values or labels while preserving the original table and defining ties."
+        },
+        {
+          "t": "new",
+          "v": "sort_values; ascending; na_position",
+          "note": "sort_values orders rows using column values. ascending can be one flag or one flag per sort key. na_position='last' puts missing sort values last."
+        },
+        {
+          "t": "new",
+          "v": "kind='stable'; secondary sort key",
+          "note": "For a single-column sort, stable preserves original order among equal values. For a multi-column sort, explicit secondary keys define ties; kind is only applied for a single key."
+        },
+        {
+          "t": "new",
+          "v": "sort_index",
+          "note": "sort_index orders row labels, not a chosen metric. Sorting normally returns a result rather than editing the original DataFrame."
+        },
+        {
+          "t": "p",
+          "v": "A ranked report needs a deterministic order. If two scores are equal, decide whether source order, ID or another business rule breaks the tie. A stable single-column sort retains source order among ties. A multi-key sort can instead order by score descending and ID ascending. Missing values need an explicit placement policy and should not become zero merely to make sorting easier. Sorting by index answers a different question from sorting by score. Keep the sorted report as a separate object and verify that the raw row order is unchanged. The example uses unique text IDs to make the tie policy understandable."
+        },
+        {
+          "t": "syn",
+          "v": "df.sort_values([\"score\",\"id\"], ascending=[False,True], na_position=\"last\")\ndf.sort_values(\"score\", ascending=False, kind=\"stable\")\ndf.sort_index()",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"B\", \"A\", \"C\", \"D\"],\n                   \"score\": pd.Series([90, 90, 70, pd.NA], dtype=\"Int64\")})\nstable = df.sort_values(\"score\", ascending=False, kind=\"stable\", na_position=\"last\")\nby_id = df.sort_values([\"score\", \"id\"], ascending=[False, True], na_position=\"last\")\nprint(\"Source-tie order:\", stable[\"id\"].tolist())\nprint(\"ID-tie order:\", by_id[\"id\"].tolist())\nprint(\"Raw:\", df[\"id\"].tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Source-tie order: ['B', 'A', 'C', 'D']\nID-tie order: ['A', 'B', 'C', 'D']\nRaw: ['B', 'A', 'C', 'D']"
+        },
+        {
+          "t": "p",
+          "v": "Equal scores को order policy अनुसार फरक भयो। Missing D अन्तिममा रह्यो। Raw table sorted भएको छैन; report मात्रै अलग order मा आयो।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Sort by score and assume tied IDs are always alphabetical",
+          "right": "Add id as a secondary key when alphabetical ID order is required",
+          "why": "The metric alone does not encode an ID tie-break rule."
+        },
+        {
+          "t": "ex",
+          "v": "Sort scores descending, break ties by ID ascending and keep missing scores last.",
+          "practiceId": "28.5.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"C\", \"B\", \"A\"], \"score\": [70, 90, 90]})\nprint(df.sort_values([\"score\", \"id\"], ascending=[False, True])[\"id\"].tolist())\n",
+          "out": "['A', 'B', 'C']",
+          "why": "Build check: State metric direction, tie-break and missing placement. sort_index sorts labels, not the metric."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Show that index sorting and score sorting can yield different row orders.",
+          "practiceId": "28.5.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"score\": [90, 60, 80]}, index=[\"C\", \"A\", \"B\"])\nprint(\"Labels:\", df.sort_index().index.tolist())\nprint(\"Scores:\", df.sort_values(\"score\", ascending=False).index.tolist())\n",
+          "out": "Labels: ['A', 'B', 'C']\nScores: ['C', 'B', 'A']",
+          "why": "Challenge check: State metric direction, tie-break and missing placement. sort_index sorts labels, not the metric."
+        },
+        {
+          "t": "try",
+          "q": "Which sorts row labels?",
+          "code": "# Predict and explain before revealing.",
+          "a": "sort_index",
+          "why": "The index is separate from data columns."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.5.0",
+            "quiz": [
+              {
+                "q": "Which sorts row labels?",
+                "options": [
+                  "sort_index",
+                  "value_counts",
+                  "describe"
+                ],
+                "correct": 0,
+                "why": "The index is separate from data columns."
+              },
+              {
+                "q": "What does a stable single-key sort preserve among ties?",
+                "options": [
+                  "No rows",
+                  "Source order",
+                  "Always alphabetical IDs"
+                ],
+                "correct": 1,
+                "why": "Equal values retain their earlier relative order."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "State metric direction, tie-break and missing placement. sort_index sorts labels, not the metric."
+        }
+      ]
+    },
+    {
+      "title": "2. Top, bottom and ranking are different reports",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Top, bottom and ranking are different reports"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Create top/bottom reports and choose a meaningful tie policy for ranks."
+        },
+        {
+          "t": "new",
+          "v": "nlargest; nsmallest; keep",
+          "note": "These select largest/smallest values of numeric/orderable columns. keep='first' resolves boundary ties by source order; keep='all' can return more than n rows. Text columns are not supported for numerical top-N selection."
+        },
+        {
+          "t": "new",
+          "v": "rank; method; ascending",
+          "note": "rank assigns rank numbers without reordering rows. method='average' gives tied observations their average rank; dense uses consecutive tied groups. ascending=False makes larger values rank first."
+        },
+        {
+          "t": "new",
+          "v": "Top-N availability policy",
+          "note": "A request for ten rows cannot create ten genuine observations if fewer are eligible. Filter missing scores explicitly and report how many rows were available."
+        },
+        {
+          "t": "p",
+          "v": "Sorting changes report order; ranking adds a position-like measure to each original row. With scores90,90,80, descending average ranks are1.5,1.5,3, while dense ranks are1,1,2. Neither convention is universally correct; state which one answers your question. Missing values normally remain unranked. For a top10 report, first identify eligible known scores. If only three exist, return three and say so. keep='all' can exceed the requested size when the boundary is tied. For deterministic ID tie-breaking, a multi-key sort followed by head(10) is often clearer than relying on source order."
+        },
+        {
+          "t": "syn",
+          "v": "known.nlargest(10,\"score\",keep=\"first\")\nknown.nsmallest(10,\"score\")\ndf[\"rank\"] = df[\"score\"].rank(method=\"dense\",ascending=False)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"A\", \"B\", \"C\", \"D\"],\n                   \"score\": pd.Series([90, 90, 80, pd.NA], dtype=\"Int64\")})\nknown = df.loc[df[\"score\"].notna()]\nprint(\"Top1 first:\", known.nlargest(1, \"score\", keep=\"first\")[\"id\"].tolist())\nprint(\"Top1 all ties:\", known.nlargest(1, \"score\", keep=\"all\")[\"id\"].tolist())\nprint(\"Average ranks:\", df[\"score\"].rank(method=\"average\", ascending=False).isna().tolist())\nprint(\"Dense known:\", known[\"score\"].rank(method=\"dense\", ascending=False).tolist())\n"
+        },
+        {
+          "t": "out",
+          "v": "Top1 first: ['A']\nTop1 all ties: ['A', 'B']\nAverage ranks: [False, False, False, True]\nDense known: [1, 1, 2]"
+        },
+        {
+          "t": "p",
+          "v": "Top1 मा keep='all' ले दुई tied rows दियो। Dense rank मा gap हुँदैन। Missing score को rank बनाउनका लागि बनावटी zero नराख्नु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Assume keep=\"all\" always returns exactly n records",
+          "right": "Check result size; boundary ties may increase it",
+          "why": "Including all tied observations can make the result larger than the requested n."
+        },
+        {
+          "t": "ex",
+          "v": "Make top10 and bottom10 lists from12 known scores with IDs and print the available counts.",
+          "practiceId": "28.5.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [f\"S{i:02}\" for i in range(1, 13)], \"score\": list(range(10, 130, 10))})\ntop, bottom = df.nlargest(10, \"score\"), df.nsmallest(10, \"score\")\nprint(\"Top:\", top[\"id\"].tolist())\nprint(\"Bottom:\", bottom[\"id\"].tolist())\nprint(\"Counts:\", len(top), len(bottom))\n",
+          "out": "Top: ['S12', 'S11', 'S10', 'S09', 'S08', 'S07', 'S06', 'S05', 'S04', 'S03']\nBottom: ['S01', 'S02', 'S03', 'S04', 'S05', 'S06', 'S07', 'S08', 'S09', 'S10']\nCounts: 10 10",
+          "why": "Build check: Top/bottom selection, sorting and ranking answer different questions. Always state tie and missing policies."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Compare average/dense ranks for90,90,80 without changing the source row order.",
+          "practiceId": "28.5.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import pandas as pd\ndf = pd.DataFrame({\"id\": [\"A\", \"B\", \"C\"], \"score\": [90, 90, 80]})\ndf[\"average_rank\"] = df[\"score\"].rank(method=\"average\", ascending=False)\ndf[\"dense_rank\"] = df[\"score\"].rank(method=\"dense\", ascending=False)\nprint(df.to_dict(orient=\"records\"))\n",
+          "out": "[{'id': 'A', 'score': 90, 'average_rank': 1.5, 'dense_rank': 1.0}, {'id': 'B', 'score': 90, 'average_rank': 1.5, 'dense_rank': 1.0}, {'id': 'C', 'score': 80, 'average_rank': 3.0, 'dense_rank': 2.0}]",
+          "why": "Challenge check: Top/bottom selection, sorting and ranking answer different questions. Always state tie and missing policies."
+        },
+        {
+          "t": "try",
+          "q": "Does rank reorder the rows?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "It assigns rank values to the existing rows."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.5.1",
+            "quiz": [
+              {
+                "q": "Does rank reorder the rows?",
+                "options": [
+                  "Only dense ranks",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "It assigns rank values to the existing rows."
+              },
+              {
+                "q": "Can keep='all' return more than n rows?",
+                "options": [
+                  "No",
+                  "Only when n=0",
+                  "Yes"
+                ],
+                "correct": 2,
+                "why": "All boundary ties are included."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Top/bottom selection, sorting and ranking answer different questions. Always state tie and missing policies."
+        }
+      ]
+    },
+    {
+      "title": "3. Dataset profiler: complete local CSV project",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Dataset profiler: complete local CSV project"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Build a reusable read-only CSV report with limits, explicit inference and atomic output."
+        },
+        {
+          "t": "new",
+          "v": "CSV profiling contract",
+          "note": "This local tool accepts UTF-8 comma-separated CSV up to5MiB,10000 rows and100 columns, with unique nonempty headers. It rejects malformed/ragged records and reports header-only input as zero rows."
+        },
+        {
+          "t": "new",
+          "v": "csv.reader(strict=True); bounded snapshot",
+          "note": "csv.reader validates quoted record structure and row widths. Reading at most MAX_BYTES+1 makes one bounded snapshot so validation and pandas see the same input."
+        },
+        {
+          "t": "new",
+          "v": "to_numeric(errors='coerce'); numeric candidates",
+          "note": "to_numeric attempts numerical interpretation; failures become missing in a separate result. The source stays string. Numeric-looking IDs and large integers may lose precision in float summaries, so candidates are inspection aids, not verified types."
+        },
+        {
+          "t": "new",
+          "v": "np.isfinite; finite subset",
+          "note": "isfinite excludes NaN and infinities from descriptive numerical summaries. Nonfinite and unparsed text are counted separately instead of silently disappearing."
+        },
+        {
+          "t": "new",
+          "v": "argparse; NamedTemporaryFile; os.replace",
+          "note": "argparse reads CLI paths. NamedTemporaryFile creates an owned unique temporary output beside the destination. os.replace installs the completed report; cleanup removes only that owned temporary file."
+        },
+        {
+          "t": "new",
+          "v": "JSON allow_nan=False; scalar conversion",
+          "note": "JSON serialization rejects NaN/infinity with allow_nan=False. Convert counts to int, stats to finite float and unavailable results to None (JSON null)."
+        },
+        {
+          "t": "p",
+          "v": "The final project extends Day3's first-look idea to a reusable command-line program. It preserves every input field as nullable text, treating only empty fields as missing. It reports dimensions, types, missing counts/percentages, full-row duplicates, top observed categories, numeric-looking candidates and inspection flags. Literal NA/NULL remains text. Numeric conversion happens in a separate exploratory Series; it never rewrites IDs or drops source rows. Read the contract before interpreting the report: category output is limited to five values, numeric statistics are approximate, and a flag is a reason to inspect, not delete. Reports can contain values from your file, so keep reports of personal data private. All supplied examples use fictional data. Larger, different-encoding or semicolon files need an explicitly adapted loader, not silent guessing."
+        },
+        {
+          "t": "syn",
+          "v": "python dataset_profiler.py students.csv report.json\n# separate output; input stays unchanged\nreport = profile(load_csv(source))\nwrite_report(report, destination)",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import argparse\nimport csv\nfrom io import StringIO\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport tempfile\nimport numpy as np\nimport pandas as pd\n\nMAX_BYTES = 5 * 1024 * 1024\nMAX_ROWS = 10_000\nMAX_COLUMNS = 100\n\ndef load_csv(path):\n    \"\"\"Read one bounded UTF-8 comma-separated snapshot; preserve text identifiers.\"\"\"\n    with Path(path).open(\"rb\") as handle:\n        raw = handle.read(MAX_BYTES + 1)\n    if len(raw) > MAX_BYTES:\n        raise ValueError(\"CSV exceeds 5 MiB; use a separately designed chunked profiler\")\n    try:\n        text = raw.decode(\"utf-8-sig\")\n    except UnicodeDecodeError as error:\n        raise ValueError(\"Expected UTF-8 CSV\") from error\n    try:\n        reader = csv.reader(StringIO(text, newline=\"\"), strict=True)\n        header = next(reader, None)\n        if not header or any(not name.strip() for name in header):\n            raise ValueError(\"Require a nonempty header with named columns\")\n        if len(header) > MAX_COLUMNS:\n            raise ValueError(\"Too many columns\")\n        if len(header) != len(set(header)):\n            raise ValueError(\"Duplicate headers would make column reports ambiguous\")\n        rows = 0\n        for record in reader:\n            if not record:  # physically empty lines are not observations\n                continue\n            if len(record) != len(header):\n                raise ValueError(\"Ragged CSV record\")\n            rows += 1\n            if rows > MAX_ROWS:\n                raise ValueError(\"Too many rows\")\n    except csv.Error as error:\n        raise ValueError(\"Malformed CSV\") from error\n    df = pd.read_csv(StringIO(text), dtype=\"string\", keep_default_na=False,\n                     na_values=[\"\"], skip_blank_lines=True)\n    if df.shape != (rows, len(header)) or df.columns.tolist() != header:\n        raise ValueError(\"Parser shape/header mismatch\")\n    return df\n\ndef profile(df):\n    \"\"\"Observe text fields; numeric-looking candidates are not verified business types.\"\"\"\n    if not df.columns.is_unique or not all(isinstance(name, str) for name in df.columns):\n        raise ValueError(\"Require unique text column names\")\n    if len(df) > MAX_ROWS or len(df.columns) > MAX_COLUMNS:\n        raise ValueError(\"Table exceeds profiling limits\")\n    if not all(isinstance(dtype, pd.StringDtype) for dtype in df.dtypes):\n        raise ValueError(\"Expected explicitly loaded string columns\")\n    rows = len(df)\n    columns = {}\n    for name in df.columns:\n        series = df[name]\n        missing = int(series.isna().sum())\n        known = int(series.count())\n        unique = int(series.nunique())\n        counts = series.value_counts(dropna=True).head(5)\n        numeric = pd.to_numeric(series, errors=\"coerce\")\n        array = numeric.to_numpy(dtype=float, na_value=np.nan)\n        finite_mask = np.isfinite(array)\n        finite = array[finite_mask]\n        parsed = int(numeric.notna().sum())\n        nonfinite = int((numeric.notna().to_numpy(dtype=bool) & ~finite_mask).sum())\n        failed = known - parsed\n        mean = None\n        if finite.size:\n            # Scaling before summing avoids overflow from a large finite total.\n            mean = float(np.sum(finite / finite.size))\n            if not np.isfinite(mean):\n                mean = None\n        flags = []\n        if missing:\n            flags.append(\"missing_values\")\n        if known == 0:\n            flags.append(\"all_missing_or_no_rows\")\n        elif unique == 1:\n            flags.append(\"constant_observed_value\")\n        if bool((series.str.strip() != series).fillna(False).any()):\n            flags.append(\"surrounding_whitespace\")\n        if bool(series.str.match(r\"^[+-]?0\\d\").fillna(False).any()):\n            flags.append(\"leading_zero_numeric_text\")\n        if parsed and failed:\n            flags.append(\"mixed_numeric_and_other_text\")\n        if nonfinite:\n            flags.append(\"nonfinite_numeric_text\")\n        if name.strip() != name:\n            flags.append(\"header_surrounding_whitespace\")\n        columns[name] = {\n            \"storage_dtype\": str(series.dtype),\n            \"observed\": known, \"missing\": missing,\n            \"missing_percent\": None if rows == 0 else round(missing / rows * 100, 2),\n            \"unique_nonmissing\": unique,\n            \"top_nonmissing\": [{\"value\": str(value), \"count\": int(count)} for value, count in counts.items()],\n            \"numeric_candidate\": {\n                \"parsed_nonmissing\": parsed, \"failed_nonmissing\": failed,\n                \"finite\": int(finite.size), \"nonfinite\": nonfinite,\n                \"min\": None if not finite.size else float(finite.min()),\n                \"max\": None if not finite.size else float(finite.max()),\n                \"mean\": mean,\n            },\n            \"inspect_flags\": flags,\n        }\n    return {\n        \"shape\": [rows, len(df.columns)],\n        \"duplicate_rows_after_first\": int(df.duplicated().sum()),\n        \"policy\": {\"missing\": \"empty fields only; literal NA/NULL preserved\",\n                   \"input\": \"UTF-8 comma CSV; unique headers; blank physical lines skipped\",\n                   \"numeric\": \"approximate float candidates only; never change source types\",\n                   \"flags\": \"inspection signals, not instructions to delete\",\n                   \"limits\": {\"bytes\": MAX_BYTES, \"rows\": MAX_ROWS, \"columns\": MAX_COLUMNS}},\n        \"columns\": columns,\n    }\n\ndef write_report(report, destination):\n    \"\"\"Serialize first; replace only after writing an owned temporary file.\"\"\"\n    destination = Path(destination)\n    payload = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + \"\\n\"\n    temporary = None\n    try:\n        with tempfile.NamedTemporaryFile(mode=\"w\", encoding=\"utf-8\", newline=\"\\n\",\n                                         dir=destination.parent, prefix=destination.name + \".\",\n                                         suffix=\".tmp\", delete=False) as handle:\n            temporary = Path(handle.name)\n            handle.write(payload)\n        os.replace(temporary, destination)\n    finally:\n        if temporary is not None and temporary.exists():\n            temporary.unlink()\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Profile a bounded local CSV without cleaning it\")\n    parser.add_argument(\"csv_path\")\n    parser.add_argument(\"report_path\")\n    args = parser.parse_args(argv)\n    source, destination = Path(args.csv_path), Path(args.report_path)\n    try:\n        if source.resolve() == destination.resolve():\n            raise ValueError(\"Choose an output path different from the source\")\n        if destination.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a .json report output\")\n        report = profile(load_csv(source))\n        report[\"input_name\"] = source.name\n        write_report(report, destination)\n    except (OSError, ValueError, pd.errors.ParserError) as error:\n        print(\"No new report:\", error, file=sys.stderr)\n        return 1\n    print(\"Report saved; input unchanged\")\n    return 0\n\nfrom pathlib import Path\nPath(\"students.csv\").write_text(\"id,score,region\\n001,80,NP\\n002,,NA\\n003,90,JP\\n\", encoding=\"utf-8\")\nreport = profile(load_csv(\"students.csv\"))\nprint(\"Shape:\", report[\"shape\"])\nprint(\"Missing score:\", report[\"columns\"][\"score\"][\"missing\"])\nprint(\"ID flags:\", report[\"columns\"][\"id\"][\"inspect_flags\"])\nprint(\"Region known:\", report[\"columns\"][\"region\"][\"observed\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "Shape: [3, 3]\nMissing score: 1\nID flags: ['leading_zero_numeric_text']\nRegion known: 3"
+        },
+        {
+          "t": "p",
+          "v": "Report मा ID string नै छ; leading zeros inspect flag मात्र हो। NA region missing बनेन। Score का numeric candidates छुट्टै छन्, raw file बदलिएको छैन।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Infer every numeric-looking column as a verified quantity and delete every flagged row",
+          "right": "Keep raw text, label candidate statistics clearly and inspect flags using domain knowledge",
+          "why": "IDs can look numeric; duplicate rows, constants and missing values may all be legitimate."
+        },
+        {
+          "t": "ex",
+          "v": "Run the complete profiler on a four-row CSV with a duplicate, one missing score and mixed region labels. Inspect its dimensions and counts.",
+          "practiceId": "28.5.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport csv\nfrom io import StringIO\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport tempfile\nimport numpy as np\nimport pandas as pd\n\nMAX_BYTES = 5 * 1024 * 1024\nMAX_ROWS = 10_000\nMAX_COLUMNS = 100\n\ndef load_csv(path):\n    \"\"\"Read one bounded UTF-8 comma-separated snapshot; preserve text identifiers.\"\"\"\n    with Path(path).open(\"rb\") as handle:\n        raw = handle.read(MAX_BYTES + 1)\n    if len(raw) > MAX_BYTES:\n        raise ValueError(\"CSV exceeds 5 MiB; use a separately designed chunked profiler\")\n    try:\n        text = raw.decode(\"utf-8-sig\")\n    except UnicodeDecodeError as error:\n        raise ValueError(\"Expected UTF-8 CSV\") from error\n    try:\n        reader = csv.reader(StringIO(text, newline=\"\"), strict=True)\n        header = next(reader, None)\n        if not header or any(not name.strip() for name in header):\n            raise ValueError(\"Require a nonempty header with named columns\")\n        if len(header) > MAX_COLUMNS:\n            raise ValueError(\"Too many columns\")\n        if len(header) != len(set(header)):\n            raise ValueError(\"Duplicate headers would make column reports ambiguous\")\n        rows = 0\n        for record in reader:\n            if not record:  # physically empty lines are not observations\n                continue\n            if len(record) != len(header):\n                raise ValueError(\"Ragged CSV record\")\n            rows += 1\n            if rows > MAX_ROWS:\n                raise ValueError(\"Too many rows\")\n    except csv.Error as error:\n        raise ValueError(\"Malformed CSV\") from error\n    df = pd.read_csv(StringIO(text), dtype=\"string\", keep_default_na=False,\n                     na_values=[\"\"], skip_blank_lines=True)\n    if df.shape != (rows, len(header)) or df.columns.tolist() != header:\n        raise ValueError(\"Parser shape/header mismatch\")\n    return df\n\ndef profile(df):\n    \"\"\"Observe text fields; numeric-looking candidates are not verified business types.\"\"\"\n    if not df.columns.is_unique or not all(isinstance(name, str) for name in df.columns):\n        raise ValueError(\"Require unique text column names\")\n    if len(df) > MAX_ROWS or len(df.columns) > MAX_COLUMNS:\n        raise ValueError(\"Table exceeds profiling limits\")\n    if not all(isinstance(dtype, pd.StringDtype) for dtype in df.dtypes):\n        raise ValueError(\"Expected explicitly loaded string columns\")\n    rows = len(df)\n    columns = {}\n    for name in df.columns:\n        series = df[name]\n        missing = int(series.isna().sum())\n        known = int(series.count())\n        unique = int(series.nunique())\n        counts = series.value_counts(dropna=True).head(5)\n        numeric = pd.to_numeric(series, errors=\"coerce\")\n        array = numeric.to_numpy(dtype=float, na_value=np.nan)\n        finite_mask = np.isfinite(array)\n        finite = array[finite_mask]\n        parsed = int(numeric.notna().sum())\n        nonfinite = int((numeric.notna().to_numpy(dtype=bool) & ~finite_mask).sum())\n        failed = known - parsed\n        mean = None\n        if finite.size:\n            # Scaling before summing avoids overflow from a large finite total.\n            mean = float(np.sum(finite / finite.size))\n            if not np.isfinite(mean):\n                mean = None\n        flags = []\n        if missing:\n            flags.append(\"missing_values\")\n        if known == 0:\n            flags.append(\"all_missing_or_no_rows\")\n        elif unique == 1:\n            flags.append(\"constant_observed_value\")\n        if bool((series.str.strip() != series).fillna(False).any()):\n            flags.append(\"surrounding_whitespace\")\n        if bool(series.str.match(r\"^[+-]?0\\d\").fillna(False).any()):\n            flags.append(\"leading_zero_numeric_text\")\n        if parsed and failed:\n            flags.append(\"mixed_numeric_and_other_text\")\n        if nonfinite:\n            flags.append(\"nonfinite_numeric_text\")\n        if name.strip() != name:\n            flags.append(\"header_surrounding_whitespace\")\n        columns[name] = {\n            \"storage_dtype\": str(series.dtype),\n            \"observed\": known, \"missing\": missing,\n            \"missing_percent\": None if rows == 0 else round(missing / rows * 100, 2),\n            \"unique_nonmissing\": unique,\n            \"top_nonmissing\": [{\"value\": str(value), \"count\": int(count)} for value, count in counts.items()],\n            \"numeric_candidate\": {\n                \"parsed_nonmissing\": parsed, \"failed_nonmissing\": failed,\n                \"finite\": int(finite.size), \"nonfinite\": nonfinite,\n                \"min\": None if not finite.size else float(finite.min()),\n                \"max\": None if not finite.size else float(finite.max()),\n                \"mean\": mean,\n            },\n            \"inspect_flags\": flags,\n        }\n    return {\n        \"shape\": [rows, len(df.columns)],\n        \"duplicate_rows_after_first\": int(df.duplicated().sum()),\n        \"policy\": {\"missing\": \"empty fields only; literal NA/NULL preserved\",\n                   \"input\": \"UTF-8 comma CSV; unique headers; blank physical lines skipped\",\n                   \"numeric\": \"approximate float candidates only; never change source types\",\n                   \"flags\": \"inspection signals, not instructions to delete\",\n                   \"limits\": {\"bytes\": MAX_BYTES, \"rows\": MAX_ROWS, \"columns\": MAX_COLUMNS}},\n        \"columns\": columns,\n    }\n\ndef write_report(report, destination):\n    \"\"\"Serialize first; replace only after writing an owned temporary file.\"\"\"\n    destination = Path(destination)\n    payload = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + \"\\n\"\n    temporary = None\n    try:\n        with tempfile.NamedTemporaryFile(mode=\"w\", encoding=\"utf-8\", newline=\"\\n\",\n                                         dir=destination.parent, prefix=destination.name + \".\",\n                                         suffix=\".tmp\", delete=False) as handle:\n            temporary = Path(handle.name)\n            handle.write(payload)\n        os.replace(temporary, destination)\n    finally:\n        if temporary is not None and temporary.exists():\n            temporary.unlink()\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Profile a bounded local CSV without cleaning it\")\n    parser.add_argument(\"csv_path\")\n    parser.add_argument(\"report_path\")\n    args = parser.parse_args(argv)\n    source, destination = Path(args.csv_path), Path(args.report_path)\n    try:\n        if source.resolve() == destination.resolve():\n            raise ValueError(\"Choose an output path different from the source\")\n        if destination.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a .json report output\")\n        report = profile(load_csv(source))\n        report[\"input_name\"] = source.name\n        write_report(report, destination)\n    except (OSError, ValueError, pd.errors.ParserError) as error:\n        print(\"No new report:\", error, file=sys.stderr)\n        return 1\n    print(\"Report saved; input unchanged\")\n    return 0\n\nPath(\"sample.csv\").write_text(\"id,score,region\\n001,80,NP\\n002,,NA\\n003,90,JP\\n001,80,NP\\n\", encoding=\"utf-8\")\nreport = profile(load_csv(\"sample.csv\"))\nprint(report[\"shape\"], report[\"duplicate_rows_after_first\"])\nprint(report[\"columns\"][\"score\"][\"missing_percent\"])\nprint(report[\"columns\"][\"score\"][\"numeric_candidate\"][\"mean\"])\nprint(report[\"columns\"][\"region\"][\"top_nonmissing\"])\n",
+          "out": "[4, 3] 1\n25.0\n83.33333333333334\n[{'value': 'NP', 'count': 2}, {'value': 'NA', 'count': 1}, {'value': 'JP', 'count': 1}]",
+          "why": "Build check: Profile before cleaning: preserve input, declare format/limits, separate candidate inference, and replace reports only after successful validation."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Save a JSON report through the CLI function; prove the CSV bytes stayed unchanged.",
+          "practiceId": "28.5.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport csv\nfrom io import StringIO\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport tempfile\nimport numpy as np\nimport pandas as pd\n\nMAX_BYTES = 5 * 1024 * 1024\nMAX_ROWS = 10_000\nMAX_COLUMNS = 100\n\ndef load_csv(path):\n    \"\"\"Read one bounded UTF-8 comma-separated snapshot; preserve text identifiers.\"\"\"\n    with Path(path).open(\"rb\") as handle:\n        raw = handle.read(MAX_BYTES + 1)\n    if len(raw) > MAX_BYTES:\n        raise ValueError(\"CSV exceeds 5 MiB; use a separately designed chunked profiler\")\n    try:\n        text = raw.decode(\"utf-8-sig\")\n    except UnicodeDecodeError as error:\n        raise ValueError(\"Expected UTF-8 CSV\") from error\n    try:\n        reader = csv.reader(StringIO(text, newline=\"\"), strict=True)\n        header = next(reader, None)\n        if not header or any(not name.strip() for name in header):\n            raise ValueError(\"Require a nonempty header with named columns\")\n        if len(header) > MAX_COLUMNS:\n            raise ValueError(\"Too many columns\")\n        if len(header) != len(set(header)):\n            raise ValueError(\"Duplicate headers would make column reports ambiguous\")\n        rows = 0\n        for record in reader:\n            if not record:  # physically empty lines are not observations\n                continue\n            if len(record) != len(header):\n                raise ValueError(\"Ragged CSV record\")\n            rows += 1\n            if rows > MAX_ROWS:\n                raise ValueError(\"Too many rows\")\n    except csv.Error as error:\n        raise ValueError(\"Malformed CSV\") from error\n    df = pd.read_csv(StringIO(text), dtype=\"string\", keep_default_na=False,\n                     na_values=[\"\"], skip_blank_lines=True)\n    if df.shape != (rows, len(header)) or df.columns.tolist() != header:\n        raise ValueError(\"Parser shape/header mismatch\")\n    return df\n\ndef profile(df):\n    \"\"\"Observe text fields; numeric-looking candidates are not verified business types.\"\"\"\n    if not df.columns.is_unique or not all(isinstance(name, str) for name in df.columns):\n        raise ValueError(\"Require unique text column names\")\n    if len(df) > MAX_ROWS or len(df.columns) > MAX_COLUMNS:\n        raise ValueError(\"Table exceeds profiling limits\")\n    if not all(isinstance(dtype, pd.StringDtype) for dtype in df.dtypes):\n        raise ValueError(\"Expected explicitly loaded string columns\")\n    rows = len(df)\n    columns = {}\n    for name in df.columns:\n        series = df[name]\n        missing = int(series.isna().sum())\n        known = int(series.count())\n        unique = int(series.nunique())\n        counts = series.value_counts(dropna=True).head(5)\n        numeric = pd.to_numeric(series, errors=\"coerce\")\n        array = numeric.to_numpy(dtype=float, na_value=np.nan)\n        finite_mask = np.isfinite(array)\n        finite = array[finite_mask]\n        parsed = int(numeric.notna().sum())\n        nonfinite = int((numeric.notna().to_numpy(dtype=bool) & ~finite_mask).sum())\n        failed = known - parsed\n        mean = None\n        if finite.size:\n            # Scaling before summing avoids overflow from a large finite total.\n            mean = float(np.sum(finite / finite.size))\n            if not np.isfinite(mean):\n                mean = None\n        flags = []\n        if missing:\n            flags.append(\"missing_values\")\n        if known == 0:\n            flags.append(\"all_missing_or_no_rows\")\n        elif unique == 1:\n            flags.append(\"constant_observed_value\")\n        if bool((series.str.strip() != series).fillna(False).any()):\n            flags.append(\"surrounding_whitespace\")\n        if bool(series.str.match(r\"^[+-]?0\\d\").fillna(False).any()):\n            flags.append(\"leading_zero_numeric_text\")\n        if parsed and failed:\n            flags.append(\"mixed_numeric_and_other_text\")\n        if nonfinite:\n            flags.append(\"nonfinite_numeric_text\")\n        if name.strip() != name:\n            flags.append(\"header_surrounding_whitespace\")\n        columns[name] = {\n            \"storage_dtype\": str(series.dtype),\n            \"observed\": known, \"missing\": missing,\n            \"missing_percent\": None if rows == 0 else round(missing / rows * 100, 2),\n            \"unique_nonmissing\": unique,\n            \"top_nonmissing\": [{\"value\": str(value), \"count\": int(count)} for value, count in counts.items()],\n            \"numeric_candidate\": {\n                \"parsed_nonmissing\": parsed, \"failed_nonmissing\": failed,\n                \"finite\": int(finite.size), \"nonfinite\": nonfinite,\n                \"min\": None if not finite.size else float(finite.min()),\n                \"max\": None if not finite.size else float(finite.max()),\n                \"mean\": mean,\n            },\n            \"inspect_flags\": flags,\n        }\n    return {\n        \"shape\": [rows, len(df.columns)],\n        \"duplicate_rows_after_first\": int(df.duplicated().sum()),\n        \"policy\": {\"missing\": \"empty fields only; literal NA/NULL preserved\",\n                   \"input\": \"UTF-8 comma CSV; unique headers; blank physical lines skipped\",\n                   \"numeric\": \"approximate float candidates only; never change source types\",\n                   \"flags\": \"inspection signals, not instructions to delete\",\n                   \"limits\": {\"bytes\": MAX_BYTES, \"rows\": MAX_ROWS, \"columns\": MAX_COLUMNS}},\n        \"columns\": columns,\n    }\n\ndef write_report(report, destination):\n    \"\"\"Serialize first; replace only after writing an owned temporary file.\"\"\"\n    destination = Path(destination)\n    payload = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + \"\\n\"\n    temporary = None\n    try:\n        with tempfile.NamedTemporaryFile(mode=\"w\", encoding=\"utf-8\", newline=\"\\n\",\n                                         dir=destination.parent, prefix=destination.name + \".\",\n                                         suffix=\".tmp\", delete=False) as handle:\n            temporary = Path(handle.name)\n            handle.write(payload)\n        os.replace(temporary, destination)\n    finally:\n        if temporary is not None and temporary.exists():\n            temporary.unlink()\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Profile a bounded local CSV without cleaning it\")\n    parser.add_argument(\"csv_path\")\n    parser.add_argument(\"report_path\")\n    args = parser.parse_args(argv)\n    source, destination = Path(args.csv_path), Path(args.report_path)\n    try:\n        if source.resolve() == destination.resolve():\n            raise ValueError(\"Choose an output path different from the source\")\n        if destination.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a .json report output\")\n        report = profile(load_csv(source))\n        report[\"input_name\"] = source.name\n        write_report(report, destination)\n    except (OSError, ValueError, pd.errors.ParserError) as error:\n        print(\"No new report:\", error, file=sys.stderr)\n        return 1\n    print(\"Report saved; input unchanged\")\n    return 0\n\nsource, destination = Path(\"students.csv\"), Path(\"report.json\")\nsource.write_text(\"id,score\\n001,80\\n002,90\\n\", encoding=\"utf-8\")\nbefore = source.read_bytes()\nstatus = main([str(source), str(destination)])\nstored = json.loads(destination.read_text(encoding=\"utf-8\"))\nprint(\"Status:\", status, \"Shape:\", stored[\"shape\"])\nprint(\"Unchanged:\", source.read_bytes() == before)\n",
+          "out": "Report saved; input unchanged\nStatus: 0 Shape: [2, 2]\nUnchanged: True",
+          "why": "Challenge check: Profile before cleaning: preserve input, declare format/limits, separate candidate inference, and replace reports only after successful validation."
+        },
+        {
+          "t": "try",
+          "q": "Does this profiler change ID columns into numbers?",
+          "code": "# Predict and explain before revealing.",
+          "a": "No",
+          "why": "Its source DataFrame is explicitly nullable text."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.5.2",
+            "quiz": [
+              {
+                "q": "Does this profiler change ID columns into numbers?",
+                "options": [
+                  "Always",
+                  "Only with leading zeros",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Its source DataFrame is explicitly nullable text."
+              },
+              {
+                "q": "Are inspection flags automatic deletion instructions?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only for duplicate rows"
+                ],
+                "correct": 0,
+                "why": "Domain knowledge decides whether a flagged observation is valid."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Profile before cleaning: preserve input, declare format/limits, separate candidate inference, and replace reports only after successful validation."
+        },
+        {
+          "t": "sh",
+          "v": "python dataset_profiler.py students.csv report.json\npython dataset_profiler.py --help",
+          "note": "The complete code above is also supplied in docs/python-week28. Use a separate report filename and keep private-data reports off public GitHub."
+        }
+      ]
+    },
+    {
+      "title": "4. Whole-week retrieval and failure tests",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Whole-week retrieval and failure tests"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Verify table semantics and failure boundaries, then explain the week without copying."
+        },
+        {
+          "t": "new",
+          "v": "Failure preservation",
+          "note": "Invalid input must fail before replacing a prior report. This protects useful output when a later dataset is malformed."
+        },
+        {
+          "t": "new",
+          "v": "Owned-file cleanup",
+          "note": "Remove only the temporary file created by this run. Do not clean up by deleting every matching .tmp file in the folder."
+        },
+        {
+          "t": "new",
+          "v": "Schema versus inference",
+          "note": "A declared schema communicates business meaning; inferred numeric candidates only suggest possible interpretations. This difference remains important during Week29 cleaning."
+        },
+        {
+          "t": "p",
+          "v": "Finish by predicting results, not just recognizing method names. Explain label alignment, the Series/table shape difference, loc versus iloc and why chained assignment fails in pandas3. Write filters with explicit missing policies and derive columns without overwriting raw data. Build top/bottom reports with stated tie rules. Then test a boundary case for each profiler promise: duplicate headers, ragged rows, header-only input, literal NA, leading-zero IDs, nonfinite numeric text and a failed output path. A good result is both numerically understandable and safe to rerun. The project tests verify input preservation, old-report preservation and owned temporary-file cleanup. Week29 will teach cleaning decisions; knowing what you observed first makes those decisions explainable."
+        },
+        {
+          "t": "syn",
+          "v": "assert source_bytes_unchanged\nassert valid_report_shape_and_missing_policy\nassert invalid_input_does_not_replace_old_report\nassert unrelated_temporary_files_remain",
+          "note": "Pattern first; run the complete example below."
+        },
+        {
+          "t": "code",
+          "v": "import argparse\nimport csv\nfrom io import StringIO\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport tempfile\nimport numpy as np\nimport pandas as pd\n\nMAX_BYTES = 5 * 1024 * 1024\nMAX_ROWS = 10_000\nMAX_COLUMNS = 100\n\ndef load_csv(path):\n    \"\"\"Read one bounded UTF-8 comma-separated snapshot; preserve text identifiers.\"\"\"\n    with Path(path).open(\"rb\") as handle:\n        raw = handle.read(MAX_BYTES + 1)\n    if len(raw) > MAX_BYTES:\n        raise ValueError(\"CSV exceeds 5 MiB; use a separately designed chunked profiler\")\n    try:\n        text = raw.decode(\"utf-8-sig\")\n    except UnicodeDecodeError as error:\n        raise ValueError(\"Expected UTF-8 CSV\") from error\n    try:\n        reader = csv.reader(StringIO(text, newline=\"\"), strict=True)\n        header = next(reader, None)\n        if not header or any(not name.strip() for name in header):\n            raise ValueError(\"Require a nonempty header with named columns\")\n        if len(header) > MAX_COLUMNS:\n            raise ValueError(\"Too many columns\")\n        if len(header) != len(set(header)):\n            raise ValueError(\"Duplicate headers would make column reports ambiguous\")\n        rows = 0\n        for record in reader:\n            if not record:  # physically empty lines are not observations\n                continue\n            if len(record) != len(header):\n                raise ValueError(\"Ragged CSV record\")\n            rows += 1\n            if rows > MAX_ROWS:\n                raise ValueError(\"Too many rows\")\n    except csv.Error as error:\n        raise ValueError(\"Malformed CSV\") from error\n    df = pd.read_csv(StringIO(text), dtype=\"string\", keep_default_na=False,\n                     na_values=[\"\"], skip_blank_lines=True)\n    if df.shape != (rows, len(header)) or df.columns.tolist() != header:\n        raise ValueError(\"Parser shape/header mismatch\")\n    return df\n\ndef profile(df):\n    \"\"\"Observe text fields; numeric-looking candidates are not verified business types.\"\"\"\n    if not df.columns.is_unique or not all(isinstance(name, str) for name in df.columns):\n        raise ValueError(\"Require unique text column names\")\n    if len(df) > MAX_ROWS or len(df.columns) > MAX_COLUMNS:\n        raise ValueError(\"Table exceeds profiling limits\")\n    if not all(isinstance(dtype, pd.StringDtype) for dtype in df.dtypes):\n        raise ValueError(\"Expected explicitly loaded string columns\")\n    rows = len(df)\n    columns = {}\n    for name in df.columns:\n        series = df[name]\n        missing = int(series.isna().sum())\n        known = int(series.count())\n        unique = int(series.nunique())\n        counts = series.value_counts(dropna=True).head(5)\n        numeric = pd.to_numeric(series, errors=\"coerce\")\n        array = numeric.to_numpy(dtype=float, na_value=np.nan)\n        finite_mask = np.isfinite(array)\n        finite = array[finite_mask]\n        parsed = int(numeric.notna().sum())\n        nonfinite = int((numeric.notna().to_numpy(dtype=bool) & ~finite_mask).sum())\n        failed = known - parsed\n        mean = None\n        if finite.size:\n            # Scaling before summing avoids overflow from a large finite total.\n            mean = float(np.sum(finite / finite.size))\n            if not np.isfinite(mean):\n                mean = None\n        flags = []\n        if missing:\n            flags.append(\"missing_values\")\n        if known == 0:\n            flags.append(\"all_missing_or_no_rows\")\n        elif unique == 1:\n            flags.append(\"constant_observed_value\")\n        if bool((series.str.strip() != series).fillna(False).any()):\n            flags.append(\"surrounding_whitespace\")\n        if bool(series.str.match(r\"^[+-]?0\\d\").fillna(False).any()):\n            flags.append(\"leading_zero_numeric_text\")\n        if parsed and failed:\n            flags.append(\"mixed_numeric_and_other_text\")\n        if nonfinite:\n            flags.append(\"nonfinite_numeric_text\")\n        if name.strip() != name:\n            flags.append(\"header_surrounding_whitespace\")\n        columns[name] = {\n            \"storage_dtype\": str(series.dtype),\n            \"observed\": known, \"missing\": missing,\n            \"missing_percent\": None if rows == 0 else round(missing / rows * 100, 2),\n            \"unique_nonmissing\": unique,\n            \"top_nonmissing\": [{\"value\": str(value), \"count\": int(count)} for value, count in counts.items()],\n            \"numeric_candidate\": {\n                \"parsed_nonmissing\": parsed, \"failed_nonmissing\": failed,\n                \"finite\": int(finite.size), \"nonfinite\": nonfinite,\n                \"min\": None if not finite.size else float(finite.min()),\n                \"max\": None if not finite.size else float(finite.max()),\n                \"mean\": mean,\n            },\n            \"inspect_flags\": flags,\n        }\n    return {\n        \"shape\": [rows, len(df.columns)],\n        \"duplicate_rows_after_first\": int(df.duplicated().sum()),\n        \"policy\": {\"missing\": \"empty fields only; literal NA/NULL preserved\",\n                   \"input\": \"UTF-8 comma CSV; unique headers; blank physical lines skipped\",\n                   \"numeric\": \"approximate float candidates only; never change source types\",\n                   \"flags\": \"inspection signals, not instructions to delete\",\n                   \"limits\": {\"bytes\": MAX_BYTES, \"rows\": MAX_ROWS, \"columns\": MAX_COLUMNS}},\n        \"columns\": columns,\n    }\n\ndef write_report(report, destination):\n    \"\"\"Serialize first; replace only after writing an owned temporary file.\"\"\"\n    destination = Path(destination)\n    payload = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + \"\\n\"\n    temporary = None\n    try:\n        with tempfile.NamedTemporaryFile(mode=\"w\", encoding=\"utf-8\", newline=\"\\n\",\n                                         dir=destination.parent, prefix=destination.name + \".\",\n                                         suffix=\".tmp\", delete=False) as handle:\n            temporary = Path(handle.name)\n            handle.write(payload)\n        os.replace(temporary, destination)\n    finally:\n        if temporary is not None and temporary.exists():\n            temporary.unlink()\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Profile a bounded local CSV without cleaning it\")\n    parser.add_argument(\"csv_path\")\n    parser.add_argument(\"report_path\")\n    args = parser.parse_args(argv)\n    source, destination = Path(args.csv_path), Path(args.report_path)\n    try:\n        if source.resolve() == destination.resolve():\n            raise ValueError(\"Choose an output path different from the source\")\n        if destination.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a .json report output\")\n        report = profile(load_csv(source))\n        report[\"input_name\"] = source.name\n        write_report(report, destination)\n    except (OSError, ValueError, pd.errors.ParserError) as error:\n        print(\"No new report:\", error, file=sys.stderr)\n        return 1\n    print(\"Report saved; input unchanged\")\n    return 0\n\nPath(\"bad.csv\").write_text(\"id,score\\n001,80,extra\\n\", encoding=\"utf-8\")\nPath(\"report.json\").write_text(\"previous report\", encoding=\"utf-8\")\ntry:\n    report = profile(load_csv(\"bad.csv\"))\n    write_report(report, \"report.json\")\nexcept ValueError:\n    print(\"Rejected ragged input\")\nprint(Path(\"report.json\").read_text(encoding=\"utf-8\"))\n"
+        },
+        {
+          "t": "out",
+          "v": "Rejected ragged input\nprevious report"
+        },
+        {
+          "t": "p",
+          "v": "Invalid CSV हुँदा नयाँ report बनेन। पहिलेको report सुरक्षित रह्यो। Success case मात्रै होइन, failure हुँदा के बच्यो भनेर पनि जाँच्नु।"
+        },
+        {
+          "t": "mis",
+          "wrong": "Open the final report for writing before validating the CSV",
+          "right": "Load, validate and serialize first; replace through an owned temporary file",
+          "why": "Opening the old report early could truncate it before a later error."
+        },
+        {
+          "t": "ex",
+          "v": "Profile a header-only CSV and confirm zero rows with undefined missing percentages.",
+          "practiceId": "28.5.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport csv\nfrom io import StringIO\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport tempfile\nimport numpy as np\nimport pandas as pd\n\nMAX_BYTES = 5 * 1024 * 1024\nMAX_ROWS = 10_000\nMAX_COLUMNS = 100\n\ndef load_csv(path):\n    \"\"\"Read one bounded UTF-8 comma-separated snapshot; preserve text identifiers.\"\"\"\n    with Path(path).open(\"rb\") as handle:\n        raw = handle.read(MAX_BYTES + 1)\n    if len(raw) > MAX_BYTES:\n        raise ValueError(\"CSV exceeds 5 MiB; use a separately designed chunked profiler\")\n    try:\n        text = raw.decode(\"utf-8-sig\")\n    except UnicodeDecodeError as error:\n        raise ValueError(\"Expected UTF-8 CSV\") from error\n    try:\n        reader = csv.reader(StringIO(text, newline=\"\"), strict=True)\n        header = next(reader, None)\n        if not header or any(not name.strip() for name in header):\n            raise ValueError(\"Require a nonempty header with named columns\")\n        if len(header) > MAX_COLUMNS:\n            raise ValueError(\"Too many columns\")\n        if len(header) != len(set(header)):\n            raise ValueError(\"Duplicate headers would make column reports ambiguous\")\n        rows = 0\n        for record in reader:\n            if not record:  # physically empty lines are not observations\n                continue\n            if len(record) != len(header):\n                raise ValueError(\"Ragged CSV record\")\n            rows += 1\n            if rows > MAX_ROWS:\n                raise ValueError(\"Too many rows\")\n    except csv.Error as error:\n        raise ValueError(\"Malformed CSV\") from error\n    df = pd.read_csv(StringIO(text), dtype=\"string\", keep_default_na=False,\n                     na_values=[\"\"], skip_blank_lines=True)\n    if df.shape != (rows, len(header)) or df.columns.tolist() != header:\n        raise ValueError(\"Parser shape/header mismatch\")\n    return df\n\ndef profile(df):\n    \"\"\"Observe text fields; numeric-looking candidates are not verified business types.\"\"\"\n    if not df.columns.is_unique or not all(isinstance(name, str) for name in df.columns):\n        raise ValueError(\"Require unique text column names\")\n    if len(df) > MAX_ROWS or len(df.columns) > MAX_COLUMNS:\n        raise ValueError(\"Table exceeds profiling limits\")\n    if not all(isinstance(dtype, pd.StringDtype) for dtype in df.dtypes):\n        raise ValueError(\"Expected explicitly loaded string columns\")\n    rows = len(df)\n    columns = {}\n    for name in df.columns:\n        series = df[name]\n        missing = int(series.isna().sum())\n        known = int(series.count())\n        unique = int(series.nunique())\n        counts = series.value_counts(dropna=True).head(5)\n        numeric = pd.to_numeric(series, errors=\"coerce\")\n        array = numeric.to_numpy(dtype=float, na_value=np.nan)\n        finite_mask = np.isfinite(array)\n        finite = array[finite_mask]\n        parsed = int(numeric.notna().sum())\n        nonfinite = int((numeric.notna().to_numpy(dtype=bool) & ~finite_mask).sum())\n        failed = known - parsed\n        mean = None\n        if finite.size:\n            # Scaling before summing avoids overflow from a large finite total.\n            mean = float(np.sum(finite / finite.size))\n            if not np.isfinite(mean):\n                mean = None\n        flags = []\n        if missing:\n            flags.append(\"missing_values\")\n        if known == 0:\n            flags.append(\"all_missing_or_no_rows\")\n        elif unique == 1:\n            flags.append(\"constant_observed_value\")\n        if bool((series.str.strip() != series).fillna(False).any()):\n            flags.append(\"surrounding_whitespace\")\n        if bool(series.str.match(r\"^[+-]?0\\d\").fillna(False).any()):\n            flags.append(\"leading_zero_numeric_text\")\n        if parsed and failed:\n            flags.append(\"mixed_numeric_and_other_text\")\n        if nonfinite:\n            flags.append(\"nonfinite_numeric_text\")\n        if name.strip() != name:\n            flags.append(\"header_surrounding_whitespace\")\n        columns[name] = {\n            \"storage_dtype\": str(series.dtype),\n            \"observed\": known, \"missing\": missing,\n            \"missing_percent\": None if rows == 0 else round(missing / rows * 100, 2),\n            \"unique_nonmissing\": unique,\n            \"top_nonmissing\": [{\"value\": str(value), \"count\": int(count)} for value, count in counts.items()],\n            \"numeric_candidate\": {\n                \"parsed_nonmissing\": parsed, \"failed_nonmissing\": failed,\n                \"finite\": int(finite.size), \"nonfinite\": nonfinite,\n                \"min\": None if not finite.size else float(finite.min()),\n                \"max\": None if not finite.size else float(finite.max()),\n                \"mean\": mean,\n            },\n            \"inspect_flags\": flags,\n        }\n    return {\n        \"shape\": [rows, len(df.columns)],\n        \"duplicate_rows_after_first\": int(df.duplicated().sum()),\n        \"policy\": {\"missing\": \"empty fields only; literal NA/NULL preserved\",\n                   \"input\": \"UTF-8 comma CSV; unique headers; blank physical lines skipped\",\n                   \"numeric\": \"approximate float candidates only; never change source types\",\n                   \"flags\": \"inspection signals, not instructions to delete\",\n                   \"limits\": {\"bytes\": MAX_BYTES, \"rows\": MAX_ROWS, \"columns\": MAX_COLUMNS}},\n        \"columns\": columns,\n    }\n\ndef write_report(report, destination):\n    \"\"\"Serialize first; replace only after writing an owned temporary file.\"\"\"\n    destination = Path(destination)\n    payload = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + \"\\n\"\n    temporary = None\n    try:\n        with tempfile.NamedTemporaryFile(mode=\"w\", encoding=\"utf-8\", newline=\"\\n\",\n                                         dir=destination.parent, prefix=destination.name + \".\",\n                                         suffix=\".tmp\", delete=False) as handle:\n            temporary = Path(handle.name)\n            handle.write(payload)\n        os.replace(temporary, destination)\n    finally:\n        if temporary is not None and temporary.exists():\n            temporary.unlink()\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Profile a bounded local CSV without cleaning it\")\n    parser.add_argument(\"csv_path\")\n    parser.add_argument(\"report_path\")\n    args = parser.parse_args(argv)\n    source, destination = Path(args.csv_path), Path(args.report_path)\n    try:\n        if source.resolve() == destination.resolve():\n            raise ValueError(\"Choose an output path different from the source\")\n        if destination.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a .json report output\")\n        report = profile(load_csv(source))\n        report[\"input_name\"] = source.name\n        write_report(report, destination)\n    except (OSError, ValueError, pd.errors.ParserError) as error:\n        print(\"No new report:\", error, file=sys.stderr)\n        return 1\n    print(\"Report saved; input unchanged\")\n    return 0\n\nPath(\"empty.csv\").write_text(\"id,score\\n\", encoding=\"utf-8\")\nreport = profile(load_csv(\"empty.csv\"))\nprint(report[\"shape\"])\nprint(report[\"columns\"][\"score\"][\"missing_percent\"])\nprint(report[\"columns\"][\"score\"][\"inspect_flags\"])\n",
+          "out": "[0, 2]\nNone\n['all_missing_or_no_rows']",
+          "why": "Build check: Week28 mastery: labeled tables, deliberate file schemas, honest inspection, predictable selection, safe derivation and reproducible read-only reports."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Count nonfinite numeric text and mixed text without changing the original string values.",
+          "practiceId": "28.5.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import argparse\nimport csv\nfrom io import StringIO\nimport json\nimport os\nfrom pathlib import Path\nimport sys\nimport tempfile\nimport numpy as np\nimport pandas as pd\n\nMAX_BYTES = 5 * 1024 * 1024\nMAX_ROWS = 10_000\nMAX_COLUMNS = 100\n\ndef load_csv(path):\n    \"\"\"Read one bounded UTF-8 comma-separated snapshot; preserve text identifiers.\"\"\"\n    with Path(path).open(\"rb\") as handle:\n        raw = handle.read(MAX_BYTES + 1)\n    if len(raw) > MAX_BYTES:\n        raise ValueError(\"CSV exceeds 5 MiB; use a separately designed chunked profiler\")\n    try:\n        text = raw.decode(\"utf-8-sig\")\n    except UnicodeDecodeError as error:\n        raise ValueError(\"Expected UTF-8 CSV\") from error\n    try:\n        reader = csv.reader(StringIO(text, newline=\"\"), strict=True)\n        header = next(reader, None)\n        if not header or any(not name.strip() for name in header):\n            raise ValueError(\"Require a nonempty header with named columns\")\n        if len(header) > MAX_COLUMNS:\n            raise ValueError(\"Too many columns\")\n        if len(header) != len(set(header)):\n            raise ValueError(\"Duplicate headers would make column reports ambiguous\")\n        rows = 0\n        for record in reader:\n            if not record:  # physically empty lines are not observations\n                continue\n            if len(record) != len(header):\n                raise ValueError(\"Ragged CSV record\")\n            rows += 1\n            if rows > MAX_ROWS:\n                raise ValueError(\"Too many rows\")\n    except csv.Error as error:\n        raise ValueError(\"Malformed CSV\") from error\n    df = pd.read_csv(StringIO(text), dtype=\"string\", keep_default_na=False,\n                     na_values=[\"\"], skip_blank_lines=True)\n    if df.shape != (rows, len(header)) or df.columns.tolist() != header:\n        raise ValueError(\"Parser shape/header mismatch\")\n    return df\n\ndef profile(df):\n    \"\"\"Observe text fields; numeric-looking candidates are not verified business types.\"\"\"\n    if not df.columns.is_unique or not all(isinstance(name, str) for name in df.columns):\n        raise ValueError(\"Require unique text column names\")\n    if len(df) > MAX_ROWS or len(df.columns) > MAX_COLUMNS:\n        raise ValueError(\"Table exceeds profiling limits\")\n    if not all(isinstance(dtype, pd.StringDtype) for dtype in df.dtypes):\n        raise ValueError(\"Expected explicitly loaded string columns\")\n    rows = len(df)\n    columns = {}\n    for name in df.columns:\n        series = df[name]\n        missing = int(series.isna().sum())\n        known = int(series.count())\n        unique = int(series.nunique())\n        counts = series.value_counts(dropna=True).head(5)\n        numeric = pd.to_numeric(series, errors=\"coerce\")\n        array = numeric.to_numpy(dtype=float, na_value=np.nan)\n        finite_mask = np.isfinite(array)\n        finite = array[finite_mask]\n        parsed = int(numeric.notna().sum())\n        nonfinite = int((numeric.notna().to_numpy(dtype=bool) & ~finite_mask).sum())\n        failed = known - parsed\n        mean = None\n        if finite.size:\n            # Scaling before summing avoids overflow from a large finite total.\n            mean = float(np.sum(finite / finite.size))\n            if not np.isfinite(mean):\n                mean = None\n        flags = []\n        if missing:\n            flags.append(\"missing_values\")\n        if known == 0:\n            flags.append(\"all_missing_or_no_rows\")\n        elif unique == 1:\n            flags.append(\"constant_observed_value\")\n        if bool((series.str.strip() != series).fillna(False).any()):\n            flags.append(\"surrounding_whitespace\")\n        if bool(series.str.match(r\"^[+-]?0\\d\").fillna(False).any()):\n            flags.append(\"leading_zero_numeric_text\")\n        if parsed and failed:\n            flags.append(\"mixed_numeric_and_other_text\")\n        if nonfinite:\n            flags.append(\"nonfinite_numeric_text\")\n        if name.strip() != name:\n            flags.append(\"header_surrounding_whitespace\")\n        columns[name] = {\n            \"storage_dtype\": str(series.dtype),\n            \"observed\": known, \"missing\": missing,\n            \"missing_percent\": None if rows == 0 else round(missing / rows * 100, 2),\n            \"unique_nonmissing\": unique,\n            \"top_nonmissing\": [{\"value\": str(value), \"count\": int(count)} for value, count in counts.items()],\n            \"numeric_candidate\": {\n                \"parsed_nonmissing\": parsed, \"failed_nonmissing\": failed,\n                \"finite\": int(finite.size), \"nonfinite\": nonfinite,\n                \"min\": None if not finite.size else float(finite.min()),\n                \"max\": None if not finite.size else float(finite.max()),\n                \"mean\": mean,\n            },\n            \"inspect_flags\": flags,\n        }\n    return {\n        \"shape\": [rows, len(df.columns)],\n        \"duplicate_rows_after_first\": int(df.duplicated().sum()),\n        \"policy\": {\"missing\": \"empty fields only; literal NA/NULL preserved\",\n                   \"input\": \"UTF-8 comma CSV; unique headers; blank physical lines skipped\",\n                   \"numeric\": \"approximate float candidates only; never change source types\",\n                   \"flags\": \"inspection signals, not instructions to delete\",\n                   \"limits\": {\"bytes\": MAX_BYTES, \"rows\": MAX_ROWS, \"columns\": MAX_COLUMNS}},\n        \"columns\": columns,\n    }\n\ndef write_report(report, destination):\n    \"\"\"Serialize first; replace only after writing an owned temporary file.\"\"\"\n    destination = Path(destination)\n    payload = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + \"\\n\"\n    temporary = None\n    try:\n        with tempfile.NamedTemporaryFile(mode=\"w\", encoding=\"utf-8\", newline=\"\\n\",\n                                         dir=destination.parent, prefix=destination.name + \".\",\n                                         suffix=\".tmp\", delete=False) as handle:\n            temporary = Path(handle.name)\n            handle.write(payload)\n        os.replace(temporary, destination)\n    finally:\n        if temporary is not None and temporary.exists():\n            temporary.unlink()\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=\"Profile a bounded local CSV without cleaning it\")\n    parser.add_argument(\"csv_path\")\n    parser.add_argument(\"report_path\")\n    args = parser.parse_args(argv)\n    source, destination = Path(args.csv_path), Path(args.report_path)\n    try:\n        if source.resolve() == destination.resolve():\n            raise ValueError(\"Choose an output path different from the source\")\n        if destination.suffix.lower() != \".json\":\n            raise ValueError(\"Choose a .json report output\")\n        report = profile(load_csv(source))\n        report[\"input_name\"] = source.name\n        write_report(report, destination)\n    except (OSError, ValueError, pd.errors.ParserError) as error:\n        print(\"No new report:\", error, file=sys.stderr)\n        return 1\n    print(\"Report saved; input unchanged\")\n    return 0\n\nPath(\"mixed.csv\").write_text(\"value\\n10\\ninf\\nunknown\\n\", encoding=\"utf-8\")\ndf = load_csv(\"mixed.csv\")\nreport = profile(df)\nprint(df[\"value\"].tolist())\nprint(report[\"columns\"][\"value\"][\"numeric_candidate\"])\nprint(report[\"columns\"][\"value\"][\"inspect_flags\"])\n",
+          "out": "['10', 'inf', 'unknown']\n{'parsed_nonmissing': 2, 'failed_nonmissing': 1, 'finite': 1, 'nonfinite': 1, 'min': 10.0, 'max': 10.0, 'mean': 10.0}\n['mixed_numeric_and_other_text', 'nonfinite_numeric_text']",
+          "why": "Challenge check: Week28 mastery: labeled tables, deliberate file schemas, honest inspection, predictable selection, safe derivation and reproducible read-only reports."
+        },
+        {
+          "t": "try",
+          "q": "What matches Series arithmetic?",
+          "code": "# Predict and explain before revealing.",
+          "a": "Index labels",
+          "why": "Labels align the observations."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:28.5.3",
+            "quiz": [
+              {
+                "q": "What matches Series arithmetic?",
+                "options": [
+                  "Index labels",
+                  "Only positions",
+                  "Variable names"
+                ],
+                "correct": 0,
+                "why": "Labels align the observations."
+              },
+              {
+                "q": "Is a DataFrame restricted to one dtype?",
+                "options": [
+                  "Only numerical tables",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Different columns can have different dtypes."
+              },
+              {
+                "q": "How should ID001 be preserved?",
+                "options": [
+                  "As integer1",
+                  "As floating1.0",
+                  "As text before inference"
+                ],
+                "correct": 2,
+                "why": "Once leading zeros are lost, dtype conversion cannot restore them."
+              },
+              {
+                "q": "What does info normally return?",
+                "options": [
+                  "None",
+                  "A copied table",
+                  "The first row"
+                ],
+                "correct": 0,
+                "why": "It prints a structural summary."
+              },
+              {
+                "q": "Does value_counts include missing values by default?",
+                "options": [
+                  "Only with NA text",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Specify dropna=False if the policy includes them."
+              },
+              {
+                "q": "Does loc[10] select by position?",
+                "options": [
+                  "Always the eleventh row",
+                  "Only for named indexes",
+                  "No; it selects label10"
+                ],
+                "correct": 2,
+                "why": "Integer labels are labels."
+              },
+              {
+                "q": "Does iloc[0:2] include position2?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only in NumPy"
+                ],
+                "correct": 0,
+                "why": "Its stop is exclusive."
+              },
+              {
+                "q": "Which combines row-wise AND?",
+                "options": [
+                  "A comma",
+                  "& with parentheses",
+                  "Python and"
+                ],
+                "correct": 1,
+                "why": "Use element-wise Boolean logic."
+              },
+              {
+                "q": "Does assigning a Series match labels?",
+                "options": [
+                  "No; only positions",
+                  "Only when sorted",
+                  "Yes"
+                ],
+                "correct": 2,
+                "why": "Missing partners produce missing values."
+              },
+              {
+                "q": "Does chained assignment update the parent under pandas3 CoW?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only numeric columns"
+                ],
+                "correct": 0,
+                "why": "Use one direct loc operation."
+              },
+              {
+                "q": "Can top1 keep='all' return two tied rows?",
+                "options": [
+                  "Only if both IDs match",
+                  "Yes",
+                  "Never"
+                ],
+                "correct": 1,
+                "why": "All boundary ties may be returned."
+              },
+              {
+                "q": "Does a numeric candidate prove a meaningful quantity?",
+                "options": [
+                  "Always",
+                  "Only for IDs",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Storage and business meaning require an explicit schema."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Week28 mastery: labeled tables, deliberate file schemas, honest inspection, predictable selection, safe derivation and reproducible read-only reports."
+        },
+        {
+          "t": "p",
+          "v": "Primary references: https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html · https://pandas.pydata.org/docs/user_guide/indexing.html · https://pandas.pydata.org/docs/user_guide/copy_on_write.html · https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html · https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html · https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rank.html. These original explanations, local fixtures, outputs and solutions are included for offline study."
+        }
+      ]
+    }
+  ]
+},
 };
 
 const REST_DAY = ["Review & rest",
