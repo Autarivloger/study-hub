@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 5 · Local request lab</title>
+<style>
+:root{color-scheme:light;--bg:#f5f4ef;--card:#fff;--ink:#252c34;--dim:#5c6470;--line:#d7d9df;--accent:#425fc0;--soft:#eef1fc;--good:#1b6b46;--bad:#9b3540}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){color-scheme:dark;--bg:#17191e;--card:#22252d;--ink:#eeeef4;--dim:#b1b7c6;--line:#414650;--accent:#a7b8ff;--soft:#29334d;--good:#95deb4;--bad:#ffa6ad}}
+:root[data-theme=dark]{color-scheme:dark;--bg:#17191e;--card:#22252d;--ink:#eeeef4;--dim:#b1b7c6;--line:#414650;--accent:#a7b8ff;--soft:#29334d;--good:#95deb4;--bad:#ffa6ad}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,sans-serif}main{max-width:1120px;margin:auto;padding:24px}a{color:var(--accent)}header{display:flex;gap:16px;justify-content:space-between;align-items:start;flex-wrap:wrap}h1{font-size:clamp(25px,4vw,38px);line-height:1.2;margin:8px 0}h2{font-size:21px;line-height:1.3;margin:0 0 12px}p{margin:9px 0}.eyebrow{font-weight:700;letter-spacing:.09em;font-size:12px;color:var(--dim)}.intro{max-width:850px}.notice{background:var(--soft);border-left:4px solid var(--accent);border-radius:8px;padding:14px;margin:18px 0}.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}.panel{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:21px;min-width:0}.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{display:block;font-weight:650}label span,.muted{font-size:13px;color:var(--dim);font-weight:400}select,textarea{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;min-width:0}textarea{min-height:150px;resize:vertical;font-family:Consolas,monospace}button{border:1px solid var(--line);border-radius:8px;padding:10px 15px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer}.primary{background:var(--accent);color:var(--bg);font-weight:750}.actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 0}button:focus-visible,a:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:3px}.status{display:inline-block;padding:5px 10px;border:1px solid var(--line);border-radius:8px;font-weight:750}.status[data-kind=allow]{color:var(--good)}.status[data-kind=deny]{color:var(--bad)}#trace{padding-left:24px}#trace li{margin:9px 0;overflow-wrap:anywhere}pre{white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%;padding:13px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font:14px/1.6 Consolas,monospace}.notes{display:grid;grid-template-columns:1fr 1fr;gap:14px}.note{border:1px solid var(--line);border-radius:9px;padding:14px;min-width:0}.note p{white-space:pre-wrap;overflow-wrap:anywhere}.full{margin-top:20px}.cases{padding-left:22px}.cases li{margin:8px 0}footer{margin:24px 0;color:var(--dim);font-size:13px}button:disabled{opacity:.6;cursor:default}@media(max-width:720px){main{padding:16px}.grid,.notes{grid-template-columns:1fr}.panel{padding:17px}}@media(max-width:400px){.fields{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header>
+ <div><a href="../../study-hub.html">← Study Hub</a><div class="eyebrow">CYBERSECURITY · WEEK 5 · DAY 6</div><h1>Local request lab</h1></div>
+ <button id="theme" type="button" aria-label="Switch light or dark theme">Light / dark</button>
+</header>
+<p class="intro">Predict an outcome, run a fictional request, then inspect the first failed requirement and the before/after notes.</p>
+<div class="notice"><strong>Offline simulation — no real server or accounts.</strong> All users, sessions, intent evidence and records below are fictional. No network requests or persistent storage are used. Reload or Reset lab restores the starting notes. This page does not read or change Study Hub progress.</div>
+<div class="grid">
+ <section class="panel" aria-labelledby="requestTitle">
+  <h2 id="requestTitle">1. Choose the request</h2>
+  <p class="muted">Model policy: an authenticated learner may read/edit only their own note. An edit also needs the model’s valid intent evidence and nonblank text of at most 200 Unicode code points.</p>
+  <form id="requestForm">
+   <div class="fields">
+    <label>Caller<select id="actor"><option value="maya">Maya · signed in</option><option value="ravi">Ravi · signed in</option><option value="guest">Guest · no session</option></select></label>
+    <label>Requested note<select id="resource"><option value="N1">N1 · Maya owns it</option><option value="N2">N2 · Ravi owns it</option><option value="N9">N9 · unknown ID</option></select></label>
+    <label>Action<select id="action"><option value="read">Read · GET</option><option value="edit">Edit · POST</option></select></label>
+    <label>Pretend CSRF evidence<select id="csrf"><option value="valid">Valid for this model</option><option value="missing">Missing</option><option value="wrong">Wrong</option></select></label>
+    <label>Request origin<select id="origin"><option value="app">Expected app origin</option><option value="other">Unexpected origin</option></select></label>
+   </div>
+   <p id="readHint" class="muted">Read does not change notes. This model checks CSRF/origin only for edits.</p>
+   <label>Proposed note text <span>(used only for Edit)</span><textarea id="text" spellcheck="false">My fictional study plan.</textarea></label>
+   <p class="muted" id="length" aria-live="polite">25 /200 code points</p>
+   <div class="actions"><button class="primary" type="submit">Run request</button><button type="button" id="resetLab">Reset lab</button></div>
+  </form>
+ </section>
+ <section class="panel" aria-labelledby="resultTitle">
+  <h2 id="resultTitle">2. Inspect the outcome</h2>
+  <div role="status" aria-live="polite"><span class="status" id="status">Predict first</span><p id="result">Choose caller, note and action. Explain your expected result before running.</p></div>
+  <p class="muted" id="change">No request has run.</p>
+  <h3>Decision trace</h3><ol id="trace"><li>The first failed requirement stops the model before a protected write.</li></ol>
+  <h3>Model response body</h3><pre id="response">No model response yet.</pre>
+ </section>
+</div>
+<section class="panel full" aria-labelledby="notesTitle">
+ <h2 id="notesTitle">3. Compare the fictional stored notes</h2>
+ <p class="muted">Both records are intentionally visible as a classroom baseline. This page is not an actual private-note service.</p>
+ <div class="notes"><article class="note"><strong>N1 · owner Maya</strong><p id="noteN1"></p></article><article class="note"><strong>N2 · owner Ravi</strong><p id="noteN2"></p></article></div>
+ <p class="muted">A refused write must leave both records unchanged. An allowed edit must change only the requested owner’s note.</p>
+</section>
+<section class="panel full" aria-labelledby="practiceTitle">
+ <h2 id="practiceTitle">Practice cases</h2>
+ <ol class="cases">
+  <li>Maya → Read N1. Predict200; no data change.</li>
+  <li>Guest → Read N1. Predict401; stop at authentication.</li>
+  <li>Ravi → Edit N1 with valid intent. Predict403; stop at permission.</li>
+  <li>Maya → Edit N1 with valid intent and normal text. Predict200; only N1 changes.</li>
+  <li>Maya → Edit N1 with missing/wrong intent or unexpected origin. Predict403; no write.</li>
+  <li>Maya → Edit N1 with blank or over 200-code-point text. Predict400; no write.</li>
+  <li>Maya → Read N9. Predict404 in this model; the note does not exist.</li>
+  <li>As the owner, save the literal text <code>&lt;b&gt;Study&lt;/b&gt;</code> or <code>O'Brien</code>. It stays ordinary text, not executable markup or SQL.</li>
+ </ol>
+ <p>Record caller, resource, action, expected/observed outcome, stopping stage, and changed/unchanged IDs in your Week5 Day6 notes. Reset when the initial state matters.</p>
+</section>
+<footer>This model uses an in-memory lookup and safe plain-text display. It does not execute SQL, validate real sessions, issue real CSRF tokens or implement a secure backend. Real services need maintained mechanisms and testing of their complete boundaries.</footer>
+</main>
+<script>
+(()=>{
+ 'use strict';
+ const initial=[{id:'N1',owner:'maya',text:'Maya: study HTTP requests.'},{id:'N2',owner:'ravi',text:'Ravi: review account permissions.'}];
+ let notes;
+ const $=id=>document.getElementById(id);
+ function restore(){notes=new Map(initial.map(n=>[n.id,{...n}]));}
+ function paintNotes(){for(const n of notes.values())$('note'+n.id).textContent=n.text;}
+ function count(){ $('length').textContent=Array.from($('text').value).length+' /200 code points'; }
+ function run(req){
+  const trace=[],before=new Map(Array.from(notes,([id,n])=>[id,n.text]));
+  function finish(status,message,body={message}){
+   const changed=Array.from(notes,([id,n])=>before.get(id)!==n.text?id:null).filter(Boolean);
+   return {status,message,body,trace,changed};
+  }
+  trace.push(req.method+' /api/notes/'+req.id+' · fictional request, not a network call');
+  if(!['maya','ravi'].includes(req.actor)){trace.push('STOP · authentication: no valid fictional session');return finish(401,'Authentication required.');}
+  trace.push('PASS · authenticated fictional caller: '+req.actor);
+  const note=notes.get(req.id);
+  if(!note){trace.push('STOP · resource lookup: unknown note ID');return finish(404,'Note not found in this model.');}
+  trace.push('PASS · resource exists: '+note.id);
+  if(note.owner!==req.actor){trace.push('STOP · authorisation: caller does not own the requested note');return finish(403,'Owner permission refused.');}
+  trace.push('PASS · caller may perform this owner operation on '+note.id);
+  if(req.method==='GET'){
+   trace.push('READ · no state change or CSRF check needed for this model retrieval');
+   trace.push('OUTPUT · response is displayed as text, not interpreted HTML');
+   return finish(200,'Allowed read; no stored change.',{note_id:note.id,owner:note.owner,text:note.text});
+  }
+  if(req.method!=='POST'){trace.push('STOP · operation: unsupported method');return finish(405,'Unsupported model operation.');}
+  if(req.origin!=='app'||req.csrf!=='valid'){
+   trace.push('STOP · intent: required pretend CSRF evidence or expected origin is absent');
+   return finish(403,'Model request-intent check refused.');
+  }
+  trace.push('PASS · fictional intent evidence and origin accepted (not real token validation)');
+  if(typeof req.text!=='string'||!req.text.trim()||Array.from(req.text).length>200){
+   trace.push('STOP · input: require nonblank text of at most 200 Unicode code points');
+   return finish(400,'Input contract refused; no write.');
+  }
+  trace.push('PASS · text meets the note contract');
+  trace.push('DATA BOUNDARY · fixed intended operation + separate text value; actual storage is an in-memory lookup, not SQL');
+  note.text=req.text;
+  trace.push('WRITE · updated only '+note.id+'; other records are unchanged');
+  trace.push('OUTPUT · literal text through textContent, not parsed markup');
+  return finish(200,'Allowed edit of '+note.id+'.',{note_id:note.id,owner:note.owner,text:note.text});
+ }
+ function present(result){
+  $('status').textContent=result.status+' · simulated';$('status').dataset.kind=result.status===200?'allow':'deny';
+  $('result').textContent=result.message;$('change').textContent=result.changed.length?'Changed IDs: '+result.changed.join(', '):'Stored data unchanged.';
+  $('trace').replaceChildren();for(const line of result.trace){const li=document.createElement('li');li.textContent=line;$('trace').append(li);}
+  $('response').textContent=JSON.stringify(result.body,null,2);paintNotes();
+ }
+ $('requestForm').addEventListener('submit',e=>{e.preventDefault();present(run({actor:$('actor').value,id:$('resource').value,
+  method:$('action').value==='read'?'GET':'POST',csrf:$('csrf').value,origin:$('origin').value,text:$('text').value}));});
+ $('resetLab').onclick=()=>{
+  restore();$('requestForm').reset();count();paintNotes();
+  $('status').textContent='Predict first';delete $('status').dataset.kind;$('result').textContent='Lab reset. Predict your next fictional request.';
+  $('change').textContent='Starting notes restored; Study Hub untouched.';$('trace').replaceChildren();$('response').textContent='No model response yet.';
+ };
+ $('theme').onclick=()=>{const current=document.documentElement.dataset.theme||
+  (matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.dataset.theme=current==='dark'?'light':'dark';};
+ $('text').addEventListener('input',count);
+ restore();paintNotes();count();
+})();
+</script>
+</body>
+</html>

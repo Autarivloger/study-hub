@@ -10693,6 +10693,920 @@ const CYBERSECURITY_TEACH = {
         "url": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository"
       }
     ]
+  },
+  "5.1": {
+    "objective": "Follow a browser request through a response, interpret common HTTP status codes, and explain how headers, cookies and sessions support a login without proving permission for every action.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Start with a question the browser asks"
+      },
+      {
+        "t": "p",
+        "v": "Week4 explained account control and the limits of HTTPS. This week follows what an application does with a request. Imagine Maya opens her own note in a fictional online learning service. The browser asks the service for a resource, the service makes an access decision, and the browser displays the returned result. A note already present in an offline page can also be displayed without contacting that service. Identify which journey you are discussing before interpreting evidence."
+      },
+      {
+        "t": "new",
+        "v": "HTTP request, response and endpoint",
+        "note": "An HTTP request asks an endpoint to perform a defined operation or return a resource. A response contains a status, headers and sometimes a body. An endpoint is an address/operation exposed by a service, such as reading one note."
+      },
+      {
+        "t": "new",
+        "v": "Method, path and body",
+        "note": "The method states the requested operation type, such as GET for retrieval or POST for submitting an operation. The path identifies a resource within the service. A body carries submitted data when the operation uses one. Their exact meaning also depends on the application contract."
+      },
+      {
+        "t": "p",
+        "v": "Fictional request description: method GET, path /api/notes/N1, desired result Maya’s saved text. No real request is needed to reason about it. A later edit could use POST with a note-text body in this course’s fictional API. Different APIs may use PATCH or PUT instead. Read the documented contract rather than assuming every route implements every method."
+      },
+      {
+        "t": "h",
+        "v": "2. Read the response at the right level"
+      },
+      {
+        "t": "new",
+        "v": "Status-code families",
+        "note": "2xx describes HTTP success, 3xx redirection, 4xx client-request issues and 5xx server-side failures. These categories do not automatically identify an attacker or prove the intended business task succeeded."
+      },
+      {
+        "t": "p",
+        "v": "Useful examples: 200 means the HTTP request succeeded under that response’s semantics; 201 commonly indicates a resource was created; 204 has no response content. 400 indicates a bad request, 401 that valid authentication credentials are required, 403 refusal of the action, 404 that a resource is not found or not disclosed, and 500 an internal server error. Read the body and context too: a login page returned with 200 is not the private note you meant to retrieve."
+      },
+      {
+        "t": "p",
+        "v": "A permission-denied application may use403, or deliberately use404 to avoid revealing the existence of another user’s record. That choice does not change the need for a real permission check. A browser can also follow redirects, making the final displayed page different from the first response. Record the route and outcome you actually inspected instead of reducing the whole journey to one number."
+      },
+      {
+        "t": "h",
+        "v": "3. Headers carry message context"
+      },
+      {
+        "t": "new",
+        "v": "Header and Content-Type",
+        "note": "Headers carry message metadata and controls. Content-Type describes the representation, such as application/json or text/html. It does not establish that content is valid, trustworthy or safe for every use."
+      },
+      {
+        "t": "p",
+        "v": "A JSON-looking body is data until the application parses and uses it. A response claiming to contain JSON can still be malformed. A request declaring a small note can still submit more text than allowed. Day2 explains why declared types must be checked against actual parsed data. Sensitive headers, including authorisation or session credentials, must not be copied into ordinary learning notes."
+      },
+      {
+        "t": "h",
+        "v": "4. Connect login to later requests"
+      },
+      {
+        "t": "new",
+        "v": "Set-Cookie, Cookie and session identifier",
+        "note": "A service can use Set-Cookie to ask the browser to store a cookie; the browser can later attach Cookie data to matching requests under its rules. A session identifier may link those requests to a server-side session. Not every cookie is a login credential."
+      },
+      {
+        "t": "new",
+        "v": "Secure, HttpOnly and SameSite",
+        "note": "Secure restricts cookie transmission to secure connections, apart from relevant browser development exceptions. HttpOnly prevents direct access through ordinary JavaScript cookie APIs. SameSite limits some cross-site cookie sending. These controls reduce specific risks but are not complete access-control or XSS/CSRF solutions."
+      },
+      {
+        "t": "p",
+        "v": "Simplified login journey: Maya authenticates through the known service → service creates a session → browser keeps its session cookie → later note request presents it → service checks that the session is valid and the account may read N1. HTTPS protects that connection; the cookie and server-side checks serve different jobs. Closing a tab does not necessarily end the server’s session, and an expired session should not silently retain access."
+      },
+      {
+        "t": "h",
+        "v": "5. Organise observations without collecting credentials"
+      },
+      {
+        "t": "p",
+        "v": "Worked report: route /api/notes/N1, method GET, final status200, expected JSON note, observed note belonging to Maya. Another observation might say final status200 but observed HTML login page. Those should not be treated as identical successful note retrievals. On your own permitted test app, browser developer tools can help inspect a request, but real logs can contain credentials or personal data. Begin with the fictional observations supplied here."
+      },
+      {
+        "t": "p",
+        "v": "Python can later organise approved HTTP/API observations into a table of route, method, status, expected result and actual result. Redact credentials and private bodies. It can help compare repeated results; it cannot decide permission from status alone or turn an unapproved external target into a permitted exercise. Today, write the observation table in words."
+      },
+      {
+        "t": "key",
+        "v": "A request describes a task; a response describes an HTTP outcome. A valid session still needs resource-specific permission, and a 200 status still needs the expected application result."
+      }
+    ],
+    "checks": [
+      {
+        "q": "The browser receives200 with a login page instead of the expected private note. Was note retrieval established?",
+        "a": "No. HTTP delivery succeeded, but the returned application result is not the requested note.",
+        "why": "Compare route, response representation and expected data; do not use the status alone as a business-success test."
+      },
+      {
+        "q": "Which is the clearer distinction between401 and403?",
+        "a": "401 indicates a need for valid authentication credentials;403 means the server refuses the action.",
+        "why": "Actual applications may conceal resources with404 as well. Status semantics do not replace access decisions."
+      },
+      {
+        "q": "Does a session cookie prove Maya may edit every learner’s note?",
+        "a": "No. The server must check the account’s permission for the particular record and action.",
+        "why": "A session represents continued account access; authorisation remains a separate operation."
+      },
+      {
+        "q": "What should an approved HTTP observation table leave out?",
+        "a": "Live session/authorisation values and private response content that is not needed for the exercise.",
+        "why": "Keep enough metadata to explain the result without creating another credential or personal-data copy."
+      }
+    ],
+    "reflection": "Describe a fictional login and read-note journey in six steps. Then write two observation rows with the same200 status but different application outcomes. State what each proves and what remains unknown.",
+    "references": [
+      {
+        "title": "MDN: HTTP request/response overview",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview"
+      },
+      {
+        "title": "MDN: response status codes",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+      },
+      {
+        "title": "MDN: cookie controls",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies"
+      }
+    ]
+  },
+  "5.2": {
+    "objective": "Map frontend, backend, API and database boundaries; distinguish format/business validation from output encoding; and design a small fictional input contract.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Put the work in the right place"
+      },
+      {
+        "t": "new",
+        "v": "Frontend and backend",
+        "note": "The frontend is the interface and code running in the user-facing client. A backend service performs server-side work such as enforcing permissions and reading shared data. A purely offline page may have no backend at all."
+      },
+      {
+        "t": "new",
+        "v": "API and database",
+        "note": "An API is a defined interface for operations and data exchange. A database stores records under a data model. They are different roles: an API may use a database, files or another service, and a database does not automatically provide the application’s permission rules."
+      },
+      {
+        "t": "p",
+        "v": "Maya’s fictional browser form displays a private note. The API receives a save operation, the backend checks it, and the database stores the approved change. The visible form is not the security boundary for shared server records. Conversely, Study Hub’s offline course data and local notes do not acquire a backend just because a lesson discusses APIs. This week teaches architecture; it does not move your progress into a new database."
+      },
+      {
+        "t": "h",
+        "v": "2. Treat a crossed boundary as a new check"
+      },
+      {
+        "t": "new",
+        "v": "Trust boundary",
+        "note": "A place where information crosses between contexts with different control or assumptions. Data arriving from a browser is not trustworthy merely because that browser once displayed the service’s own form."
+      },
+      {
+        "t": "p",
+        "v": "A number field can guide Maya to enter an integer, but the receiving service still needs to validate the submitted value. A hidden role field is still client-controlled input. A frontend check improves the user experience; it does not replace server-side rules. The receiving application must derive trusted account identity from the validated session rather than believe a body field saying owner=maya."
+      },
+      {
+        "t": "h",
+        "v": "3. Give each field a meaningful contract"
+      },
+      {
+        "t": "new",
+        "v": "Syntactic and semantic validation",
+        "note": "Syntactic validation checks type/format, such as a whole-number quantity. Semantic validation checks whether it is meaningful for the operation, such as quantity1..20 and a return date after the borrowing date."
+      },
+      {
+        "t": "new",
+        "v": "Allowed fields and bounded input",
+        "note": "A contract names required fields, accepted choices and size/count limits. It should reject unsupported fields such as an unexpected admin flag rather than automatically apply everything received to an account object."
+      },
+      {
+        "t": "p",
+        "v": "Fictional note contract: note_id is a known identifier; text is a string with1..200 characters after checking for a blank-only value; the request contains no role or owner override. The backend also checks who may edit that note. A correctly shaped ID can still identify someone else’s resource, so validation and authorisation are separate checks. Specify whether length means bytes or characters in a real system; this course’s browser lab uses Unicode code points for its200-character rule."
+      },
+      {
+        "t": "p",
+        "v": "Useful practice inputs are normal text, whitespace-only text, text longer than the limit, a wrong data type and an unsupported field. Each asks a particular contract question. Human names and notes can contain legitimate punctuation and many scripts. Rejecting apostrophes in a name is not a general SQL-injection defence, and stripping every unfamiliar character can destroy real language."
+      },
+      {
+        "t": "h",
+        "v": "4. Displaying data creates a different boundary"
+      },
+      {
+        "t": "new",
+        "v": "Output encoding and output context",
+        "note": "Output encoding represents data safely for the place it will be used, such as HTML text. The correct protection depends on context: HTML text, an attribute, a URL or JavaScript are different. Validation of acceptable input is not a substitute for safe output handling."
+      },
+      {
+        "t": "p",
+        "v": "Imagine a learner wants the note to show the literal characters <b>Study<\/b>. A plain-text note viewer should display those characters, not interpret them as markup. In browser code, assigning to textContent is a suitable way to put ordinary text into a text container. Inserting the same string into innerHTML asks the browser to parse HTML instead. Real rich-text features need a deliberate sanitisation design using maintained tools; a homemade tag-removal expression is not a universal solution."
+      },
+      {
+        "t": "p",
+        "v": "The lab uses only a plain-text container, not script, attribute or URL interpolation. This is why its textContent example fits the context. Do not generalise it to every destination. SQL parameters handle another boundary inside database queries; Day4 will connect that distinction. Encoding for one context cannot stand in for permissions, authentication or every other interpreter."
+      },
+      {
+        "t": "h",
+        "v": "5. Make a small boundary map"
+      },
+      {
+        "t": "p",
+        "v": "Worked map: browser form → parsed request → valid session → note-specific permission → bounded text → database data value → plain-text response display. Label which check belongs to which boundary. If the text is too long, reject it before changing storage. If the note belongs to Ravi, reject Maya’s edit regardless of whether the text is valid. If the database is unavailable, do not report a successful save merely because the frontend form accepted it."
+      },
+      {
+        "t": "key",
+        "v": "Frontend convenience, input validity, resource permission and safe output handling are separate responsibilities. Each interpreter or trust boundary needs its own appropriate control."
+      },
+      {
+        "t": "tip",
+        "v": "Write the contract in plain English before thinking about a framework. Use invented notes and expected outcomes, not personal data."
+      }
+    ],
+    "checks": [
+      {
+        "q": "A browser number field accepted a quantity. Must the backend check it again?",
+        "a": "Yes. Client-side input can differ from the intended form submission and must be validated by the receiver.",
+        "why": "Frontend controls help users but do not enforce the shared-data boundary by themselves."
+      },
+      {
+        "q": "An ID has the correct format. Does that prove the caller may edit its record?",
+        "a": "No. Permission for that resource/action is a separate check.",
+        "why": "A valid reference can point to someone else’s data."
+      },
+      {
+        "q": "A plain-text note contains <b>Study<\/b>. How should the viewer treat it?",
+        "a": "Display it as literal text in a text context, rather than parse it as markup.",
+        "why": "Safe output handling preserves a plain-text field’s meaning and prevents unintended interpretation."
+      },
+      {
+        "q": "The request includes an unsupported role=admin field. What should the contract do?",
+        "a": "Reject the unsupported field; do not let the browser assign privileged account attributes.",
+        "why": "The accepted fields and trusted account context are defined by the backend, not by an arbitrary body field."
+      }
+    ],
+    "reflection": "Draw the fictional note-save map and write its accepted fields, input boundaries and expected errors. Explain why each of valid input, permission and literal output is necessary even when the others are correct.",
+    "references": [
+      {
+        "title": "OWASP: input contracts and validation",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html"
+      },
+      {
+        "title": "OWASP: context-specific output handling",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+      },
+      {
+        "title": "MDN: textContent",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent"
+      }
+    ]
+  },
+  "5.3": {
+    "objective": "Apply least privilege and deny-by-default to resource-specific web actions, distinguish authentication from object permission, and build a fictional access test matrix.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Start with resource and action, not a button"
+      },
+      {
+        "t": "new",
+        "v": "Access-control policy",
+        "note": "A rule describing which identity may perform which action on which resource, under the required conditions. For example, each learner may read/edit their own private notes; a teacher may read only assigned shared worksheets."
+      },
+      {
+        "t": "p",
+        "v": "Maya owns noteN1 and Ravi owns noteN2. Both have a learner role and both sign in correctly. Their role alone does not make every private note accessible. The service must connect the requested note with its owner or applicable sharing rule. Start with a written policy so the test has a meaningful expected result."
+      },
+      {
+        "t": "new",
+        "v": "Object-level and function-level authorisation",
+        "note": "Object-level authorisation checks a particular record, such as noteN2. Function-level authorisation checks an operation, such as managing account roles. A user can be allowed to read one object but not another, or to read while not allowed to administer."
+      },
+      {
+        "t": "h",
+        "v": "2. A request identifier is not proof of ownership"
+      },
+      {
+        "t": "p",
+        "v": "A note ID tells the service which record is requested. It does not say who is allowed to use it. The service needs a validated caller identity and an applicable permission rule. Do not accept an owner name supplied by the same request as proof that the caller is that owner. Identity must come from the authentication context, while ownership comes from trusted resource records or policy."
+      },
+      {
+        "t": "new",
+        "v": "Broken access control and IDOR",
+        "note": "Broken access control occurs when permitted actions/resources are not correctly enforced. IDOR, an insecure direct object reference, is one pattern where a supplied reference reaches an object without the required access check. A readable identifier is not itself the vulnerability; missing enforcement is."
+      },
+      {
+        "t": "p",
+        "v": "Worked policy check: Maya requests N2 while her session identifies Maya. The backend finds that N2 belongs to Ravi and refuses access. Whether the ID is short, long or random does not change that rule. Unpredictable IDs may make guessing harder, but they do not replace authorisation. The classroom exercise uses known fictional IDs only; it does not require trying other people’s records."
+      },
+      {
+        "t": "h",
+        "v": "3. Choose a conservative default"
+      },
+      {
+        "t": "new",
+        "v": "Deny by default and least privilege",
+        "note": "Deny by default means an action is not allowed unless the applicable policy permits it. Least privilege grants only the resources/actions needed for a task. New endpoints or resource types should not silently inherit broad access."
+      },
+      {
+        "t": "p",
+        "v": "For a private-note app, no valid session means no private-note access. A valid session for the wrong owner still means no private-note access. A valid owner with acceptable text may edit only that note under the stated policy. A teacher role is not automatically an all-powerful administrator; define its actual permitted tasks. If a required ownership lookup fails, the application should not convert the error into allow."
+      },
+      {
+        "t": "p",
+        "v": "Hiding Edit, disabling a form field or using a different screen for administrators can help the interface. The receiving service must still enforce the policy on the actual request. Likewise, CORS controls some browser cross-origin response access; it is not the account’s resource permission model. Week5’s browser lessons will explain why browser restrictions and backend authorisation should not be confused."
+      },
+      {
+        "t": "h",
+        "v": "4. Test both allowed and refused cases"
+      },
+      {
+        "t": "new",
+        "v": "Access test matrix",
+        "note": "A table of caller, resource, operation and expected result. Positive cases verify legitimate work; negative cases verify refusals. It should also check that refused writes leave data unchanged."
+      },
+      {
+        "t": "p",
+        "v": "Fictional matrix: Maya/readN1=allow; Maya/editN1 with valid text=allow; Maya/readN2=deny; Maya/editN2=deny; guest/readN1=deny; Ravi/readN2=allow. Add a missing record and an unavailable-policy case. Expected refusals should be explained, not merely counted. A test containing only successful owner actions cannot establish that non-owners are blocked."
+      },
+      {
+        "t": "p",
+        "v": "When an edit is refused, compare the before/after stored note. A displayed error after an unintended database write is not a secure denial. For an allowed edit, check the exact record and text that changed. Logging should record the decision and relevant event metadata without printing session tokens or private note contents unnecessarily."
+      },
+      {
+        "t": "h",
+        "v": "5. Review the complete path"
+      },
+      {
+        "t": "p",
+        "v": "Worked sequence: validate session → locate resource under the permitted data path → decide action permission → validate action-specific input → perform the allowed operation → render the result safely. Some services combine permission and data lookup in one query; implementations vary. The invariant is that no protected response or write occurs without an applicable permission decision, and failures do not open a wider path."
+      },
+      {
+        "t": "key",
+        "v": "An authenticated identity, a valid ID and a visible action are not substitutes for resource/action authorisation. Define the policy and verify allowed and denied outcomes."
+      },
+      {
+        "t": "tip",
+        "v": "Use a two-user fictional matrix. Your exercise is to explain the policy and refusal evidence, not explore real users’ IDs on a public service."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Maya and Ravi share the learner role. May Maya therefore read Ravi’s private note?",
+        "a": "Not under the stated owner-only policy. The particular resource still needs an ownership/permission check.",
+        "why": "A broad role label does not establish access to every object."
+      },
+      {
+        "q": "Would replacing short note IDs with random long IDs remove the need for authorisation?",
+        "a": "No. The service still must enforce who may access each object and action.",
+        "why": "Harder-to-guess references are not the permission rule."
+      },
+      {
+        "q": "What should happen if a necessary policy lookup fails?",
+        "a": "Do not grant the protected operation; handle the failure without converting uncertainty into allow.",
+        "why": "Deny-by-default must survive error paths, not only ordinary requests."
+      },
+      {
+        "q": "The UI says access denied. What additional evidence matters for a refused edit?",
+        "a": "The protected note and other relevant stored state stayed unchanged.",
+        "why": "A refusal message after a write would not demonstrate a properly blocked operation."
+      }
+    ],
+    "reflection": "Create an access matrix for two fictional learners and two private notes, with read/edit actions and a guest. State why each result follows the policy and how you would verify that denied edits changed nothing.",
+    "references": [
+      {
+        "title": "OWASP: authorisation design and checks",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+      },
+      {
+        "title": "OWASP: direct object references",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Insecure_Direct_Object_Reference_Prevention_Cheat_Sheet.html"
+      }
+    ]
+  },
+  "5.4": {
+    "objective": "Explain the code/data boundary behind SQL injection, distinguish parameter binding from input validation and escaping, and design repeatable defensive tests using fictional data.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Understand what SQL is supposed to do"
+      },
+      {
+        "t": "new",
+        "v": "SQL, query and parameter",
+        "note": "SQL is a language used to ask relational databases to read or modify records. A query has a defined structure. A parameter is a separately supplied data value bound to a placeholder using the database driver’s supported interface."
+      },
+      {
+        "t": "p",
+        "v": "The fictional app stores a note ID, owner ID and text. Its intended save operation changes one permitted note’s text. The query structure should be written by the application, while a learner’s submitted text remains a data value. Day2’s input contract still applies, and Day3’s owner permission still applies. Database syntax is another boundary, not a replacement for those checks."
+      },
+      {
+        "t": "new",
+        "v": "SQL injection",
+        "note": "An injection problem occurs when untrusted input is interpreted as part of a database instruction rather than the intended data value. This lesson focuses on preserving the boundary and testing defensive behaviour; it does not provide instructions for attacking a live service."
+      },
+      {
+        "t": "h",
+        "v": "2. Keep instruction structure separate from values"
+      },
+      {
+        "t": "p",
+        "v": "Think of a printed form whose boxes accept values without changing the form’s questions. A parameterised query follows that idea at the database interface: fixed query structure plus separately bound values. Building a query by joining user text directly into its instruction string crosses the boundary. A familiar-looking word or a correctly formatted note ID does not make arbitrary submitted text safe to splice into code."
+      },
+      {
+        "t": "p",
+        "v": "Conceptual pattern only: UPDATE notes SET text = ? WHERE id = ?. The placeholders represent values supplied separately through a supported driver. Placeholder syntax varies by driver, so copying question marks into string concatenation is not parameterisation. A string containing ? is not proof of binding. Follow the actual library’s prepared-query interface."
+      },
+      {
+        "t": "new",
+        "v": "Prepared statement and binding",
+        "note": "A prepared/parameterised operation separates the intended query from parameter values using supported database mechanisms. Binding is passing those values through the interface rather than constructing executable query text from them."
+      },
+      {
+        "t": "h",
+        "v": "3. Valid names and punctuation should remain usable"
+      },
+      {
+        "t": "p",
+        "v": "Maya writes the fictional sentence: Ravi’s study plan includes a note labelled O'Brien. Apostrophes and non-ASCII punctuation can be legitimate text. Rejecting all quotes would damage ordinary data and would still not be a universal database defence. Validate length/type/business meaning, and bind values appropriately. Do not turn the validation contract into a blacklist of every string that seems unusual."
+      },
+      {
+        "t": "p",
+        "v": "An application may need to choose a sort column or table name, which is query structure rather than an ordinary bound value. Use a fixed mapping of supported application choices to known structure when such a feature is required. Do not assume every SQL identifier or keyword can be safely supplied as a normal value parameter. For this week’s small note-save operation, all structure is fixed."
+      },
+      {
+        "t": "h",
+        "v": "4. Limit consequences and handle failures honestly"
+      },
+      {
+        "t": "new",
+        "v": "Database privilege and transaction",
+        "note": "Database privilege limits operations available to the application’s database account. A transaction groups changes so that the application can commit an accepted unit of work or roll it back on a failure, according to the database’s guarantees."
+      },
+      {
+        "t": "p",
+        "v": "A note reader need not have schema-administration privileges. Least privilege limits unnecessary power, but it does not replace parameterisation or resource permission. A protected write also needs a clear success/failure contract: if persistence fails, do not claim the note saved. Handle errors without exposing query internals, credentials or another learner’s data in the public response. Detailed diagnostic records also need access and redaction rules."
+      },
+      {
+        "t": "p",
+        "v": "Before a write, confirm that the authenticated caller may edit the intended note. Binding an ID prevents it becoming query syntax; it does not prove ownership. Conversely, a correct owner check cannot make a text-spliced database statement safe. You need both controls because they enforce different requirements."
+      },
+      {
+        "t": "h",
+        "v": "5. A small repeatable defensive test plan"
+      },
+      {
+        "t": "new",
+        "v": "Regression test and expected state",
+        "note": "A regression test rechecks behaviour after a change. Expected state identifies which records should change and which must remain untouched, not just which message should appear."
+      },
+      {
+        "t": "p",
+        "v": "Fictional test cases: an owner saves normal text; an owner saves valid punctuation; blank/over-limit text is refused; a non-owner edit is refused; an unavailable database does not report success. For allowed text, check that the exact text survives as data and only the intended record changes. For refusals, check unchanged stored state. These cases express the contract without collecting credentials or targeting an external database."
+      },
+      {
+        "t": "p",
+        "v": "Python can later organise fixtures and run approved repeatable security tests against your own isolated training service. It can compare expected/observed outcomes and highlight regressions. Test credentials should be fictional, logs should omit secrets, and the fixture should reset safely between cases. Today, write the test table and explain each boundary; this is cybersecurity reasoning rather than another Python coding worksheet."
+      },
+      {
+        "t": "key",
+        "v": "Bind data through the driver’s supported parameter interface, validate its business contract and check resource permission. None of these controls can stand in for the others."
+      }
+    ],
+    "checks": [
+      {
+        "q": "What is the central boundary behind SQL-injection prevention?",
+        "a": "Keep untrusted values as data rather than let them alter executable query structure.",
+        "why": "Supported parameter binding enforces that separation; joining text into a query does not."
+      },
+      {
+        "q": "Does banning apostrophes provide a complete database defence?",
+        "a": "No. Legitimate text uses punctuation, and a blacklist is not a substitute for proper parameter binding.",
+        "why": "Validation and the query/data boundary solve different requirements."
+      },
+      {
+        "q": "A note ID is bound safely as a parameter. Does that prove Maya owns the note?",
+        "a": "No. The backend still needs resource-specific permission.",
+        "why": "Parameter binding concerns interpretation as SQL, not authorisation."
+      },
+      {
+        "q": "Which result should a punctuation-preservation test check?",
+        "a": "The valid text is stored/retrieved exactly as data, and only the permitted record changes.",
+        "why": "A success message alone cannot establish that the database operation respected both content and record boundaries."
+      }
+    ],
+    "reflection": "Make a five-row defensive test table for note saving. For each row, state caller, input category, expected response and expected stored state. Name separately the validation, authorisation and parameter-binding responsibilities.",
+    "references": [
+      {
+        "title": "OWASP: SQL parameterisation and least privilege",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+      },
+      {
+        "title": "Python: SQLite parameter binding interface",
+        "url": "https://docs.python.org/3/library/sqlite3.html"
+      },
+      {
+        "title": "OWASP: input validation boundaries",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html"
+      }
+    ]
+  },
+  "5.5": {
+    "objective": "Distinguish XSS from CSRF, explain relevant browser protections without treating them as authorisation, and connect this week’s boundaries to the OWASP Top 10:2025 awareness map.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. The browser interprets the output it receives"
+      },
+      {
+        "t": "new",
+        "v": "Cross-site scripting (XSS)",
+        "note": "XSS occurs when untrusted content is interpreted in a way that allows unintended script execution in a web application’s context. Stored, reflected and DOM-based paths describe different ways untrusted data can reach unsafe interpretation."
+      },
+      {
+        "t": "p",
+        "v": "In the plain-text note app, text should remain text when displayed. If a display path instead treats learner content as executable markup or script, it has crossed another interpretation boundary. Day2 introduced context-aware output handling. Text placed into an ordinary text container with textContent is different from constructing HTML. Rich HTML, attributes, URLs and script contexts need their own suitable controls; one encoding recipe does not fit everything."
+      },
+      {
+        "t": "new",
+        "v": "Stored, reflected and DOM-based paths",
+        "note": "Stored content is retained and later displayed. Reflected content travels through a request/response into output. DOM-based paths involve browser-side code moving data into the document or another interpreter. These descriptions can overlap and do not change the need to inspect the actual data path."
+      },
+      {
+        "t": "p",
+        "v": "HttpOnly helps limit direct cookie reads through ordinary script APIs; it does not mean an XSS flaw cannot act using the user’s browser context. A restrictive Content Security Policy can reduce some script risks, but it is another layer rather than permission to use unsafe output construction. The lab intentionally displays submitted text literally and never asks you to execute an injection payload."
+      },
+      {
+        "t": "h",
+        "v": "2. A legitimate session can accompany an unintended request"
+      },
+      {
+        "t": "new",
+        "v": "Cross-site request forgery (CSRF)",
+        "note": "CSRF involves causing a browser to send an unintended request to a service where automatically included credentials may give it access. The concern is whether the state-changing action expresses the legitimate user’s intent, not only whether a session exists."
+      },
+      {
+        "t": "p",
+        "v": "The fictional app uses cookie-based sessions. A note-changing endpoint should not assume that a cookie alone proves Maya deliberately initiated that change through the app. A supported CSRF defence can include an unpredictable session-related token verified by the backend and appropriate origin checks. The token’s actual design and transport depend on the framework; this week’s lab uses a visibly labelled pretend token to model the decision, not implement real protection."
+      },
+      {
+        "t": "new",
+        "v": "Origin, SameSite and CORS",
+        "note": "An origin is a scheme/host/port combination. SameSite cookie rules restrict some cross-site sending; site and origin are different concepts. CORS controls browser access to certain cross-origin responses. It is not a general resource-authorisation system and does not prevent every cross-origin request from being sent."
+      },
+      {
+        "t": "p",
+        "v": "POST is an operation method, not proof of intent or a complete CSRF defence. State-changing operations should not be attached to GET retrieval routes. Use the framework’s supported protections and validate required evidence rather than copying a fixed public token. XSS can also undermine some CSRF protections, so fixing one boundary is not a reason to ignore the other."
+      },
+      {
+        "t": "h",
+        "v": "3. Compare the two questions"
+      },
+      {
+        "t": "p",
+        "v": "For XSS, ask whether untrusted data becomes unintended executable browser content. For CSRF, ask whether automatically authenticated state changes can be triggered without the expected user-intent evidence. Authentication, resource permission, input validity, CSRF defence and safe rendering can all be necessary in one save-note journey. A non-owner should still be refused even with a correct CSRF token."
+      },
+      {
+        "t": "h",
+        "v": "4. Use the 2025 risk map with the right expectations"
+      },
+      {
+        "t": "new",
+        "v": "OWASP Top 10:2025",
+        "note": "An awareness map for important web-application risks. It helps organise learning and design questions; it is not a complete test checklist, a universal ranking for your app or proof of compliance."
+      },
+      {
+        "t": "p",
+        "v": "Here is a plain-English orientation to the 2025 category IDs, not a replacement for their official definitions:\nA01: access rules are not enforced.\nA02: unsafe security configuration.\nA03: weaknesses in software dependencies and delivery chains.\nA04: failed cryptographic protection.\nA05: input crosses an instruction/data boundary.\nA06: protective requirements are missing from the design.\nA07: account/authentication safeguards fail.\nA08: software or data integrity is not adequately checked.\nA09: useful security events do not reach effective monitoring/alerts.\nA10: exceptional/error conditions are handled unsafely."
+      },
+      {
+        "t": "p",
+        "v": "Connect what you already know: owner-note permissions relate toA01; public unnecessary debug output can be a configuration problem; Week4’s key and password discussions relate toA04/A07; injection boundaries relate toA05; refusing policy lookup failures illustratesA10. XSS is covered in injection concerns; CSRF is not a separate named2025 category to memorise as an eleventh item. A specific weakness can involve several boundaries. Future weeks expand dependencies, monitoring and recovery."
+      },
+      {
+        "t": "h",
+        "v": "5. Apply the map without diagnosing from a label"
+      },
+      {
+        "t": "p",
+        "v": "Worked exercise: a note-save API returns a success message after an internal persistence error. Describe the broken requirement—success must mean the allowed change persisted—then consider relevant design/error-handling risks. Merely writing A10 does not explain impact or remediation. Another example is a non-owner reading a note: state the missing resource check before namingA01. Use concrete observations, a requirement and a proposed check."
+      },
+      {
+        "t": "key",
+        "v": "XSS concerns unintended interpretation; CSRF concerns unintended authenticated actions. Browser controls complement, not replace, backend checks. Use OWASP as a learning map and investigate the actual requirement."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Which question best distinguishes XSS from CSRF here?",
+        "a": "XSS asks whether content becomes unintended executable browser input; CSRF asks whether an authenticated state change lacks expected intent evidence.",
+        "why": "Both can affect one application but cross different boundaries."
+      },
+      {
+        "q": "Is POST plus a session cookie automatically sufficient CSRF protection?",
+        "a": "No. The backend needs appropriate supported intent/CSRF defences for the application’s credential model.",
+        "why": "A method name and a valid session do not prove the legitimate user deliberately requested the action."
+      },
+      {
+        "q": "Can CORS replace resource permission checks?",
+        "a": "No. It governs particular browser cross-origin response access, not who may read or edit a note.",
+        "why": "Requests and clients outside that browser restriction still need server-side authorisation."
+      },
+      {
+        "q": "Does checking ten OWASP labels prove the application is secure?",
+        "a": "No. The Top10 is an awareness map, not an exhaustive test or a guarantee.",
+        "why": "Use concrete requirements, evidence and threat context rather than equating a label list with complete coverage."
+      }
+    ],
+    "reflection": "Write two fictional failure stories, one about output interpretation and one about unintended state change. Name the actual boundary and suitable protection. Then map three concrete requirements from this week to2025 category IDs, with reasons.",
+    "references": [
+      {
+        "title": "OWASP: XSS prevention",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+      },
+      {
+        "title": "OWASP: CSRF prevention",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html"
+      },
+      {
+        "title": "OWASP: Top 10:2025 official category definitions",
+        "url": "https://top10.owasp.org/2025/"
+      },
+      {
+        "title": "MDN: CORS boundaries",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS"
+      }
+    ]
+  },
+  "5.6": {
+    "objective": "Use the fictional offline request lab to predict and inspect allowed/denied note operations, record the exact stopping boundary, and verify that failures do not mutate data.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. What this local lab does and does not represent"
+      },
+      {
+        "t": "new",
+        "v": "Offline request simulator",
+        "note": "A self-contained page models a browser, a backend decision pipeline and fictional stored notes in memory. It sends no network requests, uses no real account/token and resets its data on reload. The displayed HTTP-like statuses are model outcomes, not responses from a real server."
+      },
+      {
+        "t": "p",
+        "v": "Open the Local request lab link in the references below. Online, it opens the companion page within this repository. Offline, open docs/cybersecurity-week5/request-lab.html from the downloaded project folder. It has its own light/dark switch and a Reset lab button. Your Study Hub progress is not read or modified. This deliberately separates a teaching model from a real login or database implementation."
+      },
+      {
+        "t": "p",
+        "v": "The lab has two fictional users: Maya owns N1 and Ravi owns N2. Guest has no valid session. Read requests use GET; edits use POST in this model. A selector supplies valid, missing or wrong pretend CSRF evidence. All credential labels are visibly fictional and public. These values must never be copied into a production application as an authentication or token design."
+      },
+      {
+        "t": "h",
+        "v": "2. Predict the owner’s ordinary request"
+      },
+      {
+        "t": "p",
+        "v": "Case1: choose Maya, N1 and Read. Before pressing Run request, predict the status, the resource and the stages. The model verifies an authenticated actor, finds the note, checks owner permission, reads its value and renders it as text. Expected result:200 with N1’s fictional text, with stored notes unchanged. A read needs no CSRF token in this model because it makes no stored change."
+      },
+      {
+        "t": "new",
+        "v": "Trace and stopping boundary",
+        "note": "A trace records which stages were reached and their decisions. The stopping boundary is the first failed required condition. Later stages must not claim they ran, and refused state-changing requests must leave stored data unchanged."
+      },
+      {
+        "t": "h",
+        "v": "3. Compare guest and non-owner refusal"
+      },
+      {
+        "t": "p",
+        "v": "Case2: choose Guest, N1 and Read. Predict401 at authentication. Case3: choose Ravi, N1 and Edit, even with valid text and the pretend valid token. Predict403 at owner permission. The token is not a permission override. In the trace, the model never reaches the data-write step. Compare the fictional notes before and after each refusal."
+      },
+      {
+        "t": "p",
+        "v": "To demonstrate identifier validation separately, the lab also offers a well-formed unknown noteN9. An authenticated read gets404 in this model; it does not discover a record. A real app may deliberately avoid disclosing object existence through consistent denial responses. The model’s chosen response ordering illustrates boundaries, not the only acceptable public error design."
+      },
+      {
+        "t": "h",
+        "v": "4. Inspect a permitted edit and input refusal"
+      },
+      {
+        "t": "p",
+        "v": "Case4: choose Maya, N1 and Edit with valid pretend CSRF evidence and normal note text. Predict200 and a change to N1 only. Case5: keep the same owner/resource but choose missing or wrong CSRF evidence; predict403 before validation/write. Case6: provide blank text or more than200Unicode code points; predict400 at input validation, with no write. The editor allows you to enter over-limit text so the receiving-model check can demonstrate refusal."
+      },
+      {
+        "t": "p",
+        "v": "For an allowed edit, try the literal characters <b>Study<\/b> and a harmless name containing an apostrophe. The model stores/displays them as ordinary text using a text container. It shows the concept of fixed query structure with a separately bound value, but uses an in-memory record lookup rather than executing SQL. This is not a SQL-injection testing environment or an intentionally vulnerable app."
+      },
+      {
+        "t": "h",
+        "v": "5. Use observations as evidence"
+      },
+      {
+        "t": "new",
+        "v": "Expected versus observed result",
+        "note": "A useful case states the caller/resource/action, expected decision, observed trace, before/after data and explanation. A displayed result should be tied to these checks rather than called success simply because a button responded."
+      },
+      {
+        "t": "p",
+        "v": "Create six rows for the cases above. For each refusal, name the first failed requirement and confirm no write occurred. For the allowed edit, identify exactly which note changed and how literal text appeared. Reset between cases when the initial data is important. Reset intentionally clears only the lab’s fictional in-memory notes; it does not reset Study Hub."
+      },
+      {
+        "t": "h",
+        "v": "6. Transfer the model carefully"
+      },
+      {
+        "t": "p",
+        "v": "A real service needs trustworthy session validation, unpredictable framework-supported CSRF protection where applicable, real parameter binding, persistent storage, concurrency/failure handling, appropriate logging and safe context-specific rendering. Those mechanisms are not provided by a browser-only simulation whose controls can be inspected. The lab makes the responsibility order visible so you can ask better questions about an approved real training service later."
+      },
+      {
+        "t": "key",
+        "v": "Predict the decision, inspect the trace and compare stored state. Authentication, resource permission, request intent, valid input, data handling and output handling are separate steps."
+      },
+      {
+        "t": "tip",
+        "v": "Use fictional strings only. The lab is an offline model for learning decisions; no action targets a public service or changes your real account."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Ravi edits Maya’s N1 with the model’s valid CSRF evidence. Should the edit succeed?",
+        "a": "No. Owner permission fails before the token can matter to an allowed state change.",
+        "why": "Intent evidence is not permission to another user’s resource."
+      },
+      {
+        "q": "Maya edits N1 with blank text and valid intent evidence. What should change?",
+        "a": "Nothing in stored notes; the input contract refuses the request.",
+        "why": "An input refusal must precede the data write, not merely show an error afterward."
+      },
+      {
+        "q": "The lab displays a 200 result. Does that mean a real server responded?",
+        "a": "No. The status is a simulated outcome in the page’s in-memory model.",
+        "why": "The lab has no network/back-end account system and explicitly labels this boundary."
+      },
+      {
+        "q": "What should you record for a refused write besides the status?",
+        "a": "The first failed requirement, the trace and evidence that stored data stayed unchanged.",
+        "why": "These observations establish what was actually blocked and avoid relying only on an interface message."
+      }
+    ],
+    "reflection": "Run or reason through the six lab cases. Record expected/observed status, the stopping stage, unchanged/changed note IDs and the reason. State three additional mechanisms a real backend would need that this simulation does not implement.",
+    "references": [
+      {
+        "title": "Local request lab — offline fictional simulation",
+        "url": "docs/cybersecurity-week5/request-lab.html"
+      },
+      {
+        "title": "OWASP: permission checks for each request",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+      },
+      {
+        "title": "MDN: safe plain-text display",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent"
+      }
+    ]
+  },
+  "5.7": {
+    "objective": "Retrieve the week’s terms, connect web-security controls to the boundaries they enforce, and produce a complete fictional request/test record with reasoned answers.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Recall before opening earlier notes"
+      },
+      {
+        "t": "p",
+        "v": "Close the previous explanations for your first attempt. Define request, response, session, API, trust boundary, input validation, output context, resource permission, parameter binding, XSS and CSRF in your own words. Give a note-app example for each. A remembered abbreviation is only the beginning; the important skill is choosing the appropriate check and explaining which requirement it enforces."
+      },
+      {
+        "t": "new",
+        "v": "Boundary-based review",
+        "note": "A review that follows how data and decisions move between contexts. It asks who controls each value, which interpreter uses it, which action is allowed and what result is actually established."
+      },
+      {
+        "t": "h",
+        "v": "2. Reconstruct a save-note journey"
+      },
+      {
+        "t": "p",
+        "v": "Fictional case: Maya submits an edit for N1 with a valid session, required intent evidence and a short note containing punctuation. She owns N1. The service should check the session, verify the resource/action policy, check appropriate CSRF evidence, validate the note contract, supply data separately to its storage operation and render the permitted result in a safe text context. Compare the exact before/after state. Implementation ordering can vary, but a protected write must not happen without all required checks."
+      },
+      {
+        "t": "p",
+        "v": "Now change one fact at a time: the session is absent; the resource belongs to Ravi; intent evidence is wrong; the text is blank; storage fails; the response body is an unexpected login page. Identify the required refusal or the unknown result for each. Do not let a single success-looking status or a hidden button replace the relevant evidence."
+      },
+      {
+        "t": "h",
+        "v": "3. Distinguish controls that sound similar"
+      },
+      {
+        "t": "p",
+        "v": "Validation says data meets the intended type/format/business rules. Authorisation says this identity may perform this action on this resource. Parameter binding says values do not become SQL instruction structure. Output handling says data is appropriate for its display/interpreter context. CSRF defence says automatically credentialed state changes have the required intent evidence. These controls can apply to the same request without being interchangeable."
+      },
+      {
+        "t": "p",
+        "v": "A long random ID is not a permission check. A200 response is not necessarily a completed save. POST is not automatically CSRF prevention. A session cookie is not universal access. CORS is not an authorisation engine. A safe-looking text field is not proof of SQL binding or appropriate HTML display. Explain each negative statement with a positive requirement rather than memorising a list of slogans."
+      },
+      {
+        "t": "h",
+        "v": "4. Make a small evidence-backed test pack"
+      },
+      {
+        "t": "new",
+        "v": "Test fixture and baseline state",
+        "note": "A fixture supplies known fictional inputs and starting records. A baseline state describes the initial values you can compare with later. Without a known start, an unexpected change or absence may be difficult to interpret."
+      },
+      {
+        "t": "p",
+        "v": "Your pack should contain a two-user/two-note access matrix, an input-contract table and six request traces from Day6. Include allowed ordinary work and refused cases. Use ordinary names with punctuation and literal markup-like text to test data preservation, not just rejection. Record that the lab is a browser-only model and identify what would need rechecking against an approved actual backend."
+      },
+      {
+        "t": "p",
+        "v": "For each case, specify expected response and expected state. An owner edit should change only the intended note. A guest, non-owner, invalid-intent or invalid-input edit should change no note. An unavailable persistence layer should not claim success. Log only the minimal necessary event information; tokens and private note bodies do not belong in a public report."
+      },
+      {
+        "t": "h",
+        "v": "5. Connect to the risk map and next week"
+      },
+      {
+        "t": "p",
+        "v": "Pick three concrete requirements from your pack and map them to the OWASP 2025 category IDs with a reason. Owner checks can relate toA01, instruction/data separation toA05 and honest failure handling toA10. The map organises learning; it is not a claim that three tested requirements cover the complete application. Continue naming the actual boundary, impact and evidence."
+      },
+      {
+        "t": "p",
+        "v": "Python’s supporting role remains organising approved HTTP observations and making repeatable permitted checks. It does not supply access permission by itself and should not collect secret values. Next week’s monitoring topics will build on useful event records, so practise clear observations now: what was requested, what happened, what state changed and which conclusion is justified."
+      },
+      {
+        "t": "key",
+        "v": "A strong review connects a concrete request with all its required boundaries, expected result and stored-state evidence. Use the twelve checks below before rereading."
+      },
+      {
+        "t": "tip",
+        "v": "After the closed-notes attempt, revisit only the day behind each unclear answer, then explain it again in your own words and take a rest."
+      }
+    ],
+    "checks": [
+      {
+        "q": "A200 response contains a login page, not the requested note. What can you conclude?",
+        "a": "The HTTP response was delivered, but the requested private-note result is not established.",
+        "why": "Application success needs the expected representation/data, not only a status."
+      },
+      {
+        "q": "Where must shared server-data permissions be enforced?",
+        "a": "At the receiving backend/service for the requested resource and action.",
+        "why": "Frontend visibility and client checks can assist users but are not the protected data boundary."
+      },
+      {
+        "q": "Why is a valid note ID insufficient to prove access?",
+        "a": "It identifies a resource but does not grant the caller permission to it.",
+        "why": "Authentication context and the trusted ownership/sharing rule determine access."
+      },
+      {
+        "q": "What should an unknown or failed required policy decision do?",
+        "a": "Prevent the protected action rather than default to allow.",
+        "why": "Deny-by-default includes exceptional paths."
+      },
+      {
+        "q": "How do validation and output encoding differ?",
+        "a": "Validation checks the input contract; output encoding/handling protects the specific destination context.",
+        "why": "Valid text can still require careful use when placed into a browser interpreter."
+      },
+      {
+        "q": "What distinguishes real parameter binding from a string that contains placeholders?",
+        "a": "The driver receives values separately through its supported binding interface.",
+        "why": "The visible placeholder spelling alone cannot prove that code and data stay separate."
+      },
+      {
+        "q": "Does safe SQL binding replace owner checks?",
+        "a": "No. The resource/action must still be authorised for the caller.",
+        "why": "Query interpretation and access permission are separate responsibilities."
+      },
+      {
+        "q": "Which plain-text display preserves the literal <b>Study<\/b> characters?",
+        "a": "A suitable text container populated as text, such as through textContent.",
+        "why": "Parsing the string as HTML changes its meaning; other output contexts need appropriate controls too."
+      },
+      {
+        "q": "What does CSRF defence check beyond a valid cookie-based session?",
+        "a": "Required evidence that the state-changing request follows the application’s legitimate-intent rules.",
+        "why": "Automatically supplied credentials do not alone establish that the user intended the action."
+      },
+      {
+        "q": "Is CORS a replacement for authentication and authorisation?",
+        "a": "No. It controls certain browser cross-origin response access.",
+        "why": "The backend still needs access checks for every permitted client/path."
+      },
+      {
+        "q": "A refused edit shows403. What stored-state outcome should you verify?",
+        "a": "No protected note changed.",
+        "why": "A denial message alone does not prove a write was prevented."
+      },
+      {
+        "q": "What are the limits of the OWASP map and the offline lab?",
+        "a": "The map is not exhaustive; the lab models decisions but provides no real server, session or database security.",
+        "why": "Transfer the questions to an approved real system without claiming the teaching model implements its protections."
+      }
+    ],
+    "reflection": "Complete your fictional test pack and category map. List your two least clear boundaries, the specific earlier day to revisit and one question for each. Keep all actual session tokens and personal data outside your learning record.",
+    "references": [
+      {
+        "title": "OWASP: Top 10:2025 awareness map",
+        "url": "https://top10.owasp.org/2025/"
+      },
+      {
+        "title": "OWASP: authorisation tests",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+      },
+      {
+        "title": "Local request lab — offline fictional simulation",
+        "url": "docs/cybersecurity-week5/request-lab.html"
+      }
+    ]
   }
 };
 let cyberPage = {mode:"overview", week:1, day:1};
