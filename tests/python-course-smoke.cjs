@@ -271,7 +271,7 @@ async function main(){
   assert(await evalJs('courseView.week>1 && courseView.part>0'),'Prerequisite link did not open exact part');
   const hit=await evalJs('(()=>{const h=buildSearchIndex().find(e=>e.kind==="day" && e.part>0 && e.text.includes("def "));if(!h)throw Error("Missing moved search result");gotoSearchHit(h);return courseView.part===h.part;})()');assert(hit,'Search opened wrong part');
   await evalJs('courseView={mode:"day",week:1,dayIdx:0,part:0};renderCourseDay();practiceView.block="all";practiceView.size=0;practiceView.readyOnly=true;practiceView.order=null;renderCorePractice()');
-  assert(await evalJs('practiceView.order.every(p=>p.week===1 && p.day===1)'), 'Practice jumps ahead');
+  assert(await evalJs('practiceView.order.every(p=>pythonStudiedParts(p.week,p.day-1,true).some(s=>s.part===p.part))'), 'Practice includes unstudied parts');
   await evalJs('document.querySelector("#pracReady").click()');assert(await evalJs('practiceView.order.some(p=>p.week>1)'), 'Exploration filter cannot be disabled');
   await evalJs('courseView={mode:"day",week:2,dayIdx:3,part:0};renderCourseDay();document.querySelector("#dayNote").value="Saved day note";document.querySelector("#dayNote").dispatchEvent(new Event("input",{bubbles:true}));');await sleep(600);
   await send('Page.reload',{ignoreCache:true});for(let i=0;i<50;i++){if(await evalJs('Boolean(window.__studyHubBooted)'))break;await sleep(100);}

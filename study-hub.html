@@ -195,6 +195,17 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .review-reminder{border:1px solid var(--warn);background:rgba(169,120,28,.1);border-radius:11px;padding:11px 13px;margin:0 0 14px;font-size:13px;line-height:1.5}
 @media(max-width:760px){.review-wrap{padding:14px 14px 34px}.review-grid{grid-template-columns:1fr}.review-stats{grid-template-columns:repeat(2,1fr)}.review-calendar{grid-template-columns:repeat(4,1fr)}.recall-grade{grid-template-columns:repeat(2,1fr)}}
 
+/* Python review and practice use the established lesson components. */
+.python-practice-link{margin-bottom:16px}.python-practice-link p{line-height:1.6;color:var(--text-dim)}
+.python-attempt{display:block;font-size:13px;font-weight:700;margin:14px 0}
+.python-attempt textarea{display:block;width:100%;min-height:150px;padding:12px;margin-top:7px;resize:vertical;background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:9px;font:14px/1.6 Consolas,monospace}
+.python-context{margin:12px 0;padding:10px;border:1px solid var(--border);border-radius:9px;min-width:0}
+.python-context summary{cursor:pointer;font-size:13px;font-weight:700}
+.recall-card{min-width:0}.recall-q,.recall-answer,.python-practice-link p{overflow-wrap:anywhere}
+.recall-card .ls-quiz-opt.selected{border-color:var(--accent);background:var(--accent-soft)}
+.recall-card pre{white-space:pre;overflow-x:auto;max-width:100%}
+@media(max-width:600px){.recall-card{padding:16px}.recall-q{font-size:18px}.prac-controls select{max-width:100%}.prac-controls label{max-width:100%}}
+
 /* Notes */
 #noteTitle{
   width:100%; border:none; background:none; outline:none; font-size:22px; font-weight:800;
@@ -1417,7 +1428,7 @@ JavaScript is turned off in this browser, so Study Hub cannot run. Enable JavaSc
       <div class="pane-header">
         <h1>Python Course</h1>
         <button type="button" class="btn secondary btn-sm" id="courseHomeBtn">All phases</button>
-        <button type="button" class="btn secondary btn-sm" id="coursePracticeBtn">🏋️ Practice</button>
+        <button type="button" class="btn secondary btn-sm" id="coursePracticeBtn">🏋️ Python Practice</button>
         <button type="button" class="btn btn-sm" id="courseTodayBtn">Resume</button>
       </div>
       <div id="courseBody"><div id="staticFallback" style="padding:20px;max-width:640px;">
@@ -1694,7 +1705,7 @@ function mergeIntoDB(incoming){
     });
   });
 
-  ["done","notes"].forEach(function(k){
+  ["done","notes","partsDone"].forEach(function(k){
     Object.keys(incoming.course[k]).forEach(function(kk){
       if(DB.course[k][kk] === undefined) DB.course[k][kk] = incoming.course[k][kk];
     });
@@ -1703,6 +1714,7 @@ function mergeIntoDB(incoming){
     if(!DB.course.practice.solved[kk]) DB.course.practice.solved[kk] = incoming.course.practice.solved[kk];
   });
   if(!DB.course.startDate && incoming.course.startDate) DB.course.startDate = incoming.course.startDate;
+  DB.course.practice.attempts=Math.max(Number(DB.course.practice.attempts)||0,Number(incoming.course.practice.attempts)||0);
 
   // Focus sessions carry no id, so de-duplicate on their content.
   const seenLog = new Set(DB.timerLog.map(function(x){ return JSON.stringify(x); }));
@@ -1747,7 +1759,7 @@ function mergeIntoDB(incoming){
     if(!mine){ DB.reviews.items[id]=theirs; return; }
     const histories={}, merged=[];
     (mine.history || []).concat(theirs.history || []).forEach(function(h){
-      const sig=(h.at || h.date || "")+"|"+(h.rating || "")+"|"+(h.nextReview || "");
+      const sig=(h.at || h.date || "")+"|"+(h.rating || "")+"|"+(h.nextReview || "")+"|"+(h.questionId||"");
       if(!histories[sig]){histories[sig]=true;merged.push(h);}
     });
     merged.sort(function(a,b){return String(a.at||a.date).localeCompare(String(b.at||b.date));});
@@ -4088,7 +4100,7 @@ function localDateKey(value){
 function reviewDateFromKey(key){const p=String(key).split("-").map(Number);return new Date(p[0],p[1]-1,p[2],12,0,0,0);}
 function addLocalDays(key,days){const d=reviewDateFromKey(key);d.setDate(d.getDate()+days);return localDateKey(d);}
 function dayDistance(a,b){return Math.round((reviewDateFromKey(b)-reviewDateFromKey(a))/86400000);}
-function reviewItems(){return Object.values(DB.reviews.items||{}).filter(function(x){return x&&x.id;});}
+function reviewItems(){return Object.values(DB.reviews.items||{}).filter(function(x){return x&&x.id&&(x.subject!=="python"||pythonReviewSourceEligible(x));});}
 function reviewStatus(item){
   const today=localDateKey();
   if((item.stage||0)>=7 && item.nextReview>today) return "mastered";
@@ -4135,36 +4147,119 @@ function japaneseReviewPrompts(L){
   if(L.enrich&&L.enrich[1])out.push({level:4,type:"Application",q:L.enrich[1],a:L.enrich[2]||"Open the lesson and compare after answering."});
   return out;
 }
+/* Saved completion defines scope; opening a week never proves it was studied.
+   Old completed days include required parts; supplements need their own tick. */
+function pythonStudiedParts(w,d,includeCurrent){
+  const parts=dayParts(w+"."+d)||[],spot=DB.lastSeen;
+  const legacy=Object.keys(DB.lessonsDone||{}).some(function(id){
+    const r=PYTHON_LESSON_ROUTES[id];return r&&r.week===w&&r.day===d;
+  });
+  return parts.map(function(part,i){return {week:w,dayIdx:d,part:i,title:part.title||dayTitleFor(w,d),sections:part.sections||[]};})
+    .filter(function(p){
+      return isPartDone(w,d,p.part)||(!parts[p.part].optional&&(isDone(w,d)||legacy))||
+        (!!includeCurrent&&spot&&spot.kind==="day"&&spot.week===w&&spot.dayIdx===d&&(spot.part||0)===p.part);
+    });
+}
+const pythonPartPromptCache=new Map();
 function pythonSectionsPrompts(sections,title){
-  const out=[];
+  const out=[],seen=new Map();let context="";
+  function push(p){
+    if(!p.q||(!p.a&&!p.answerCode))return;
+    const sig=String(p.q).trim()+"|"+String(p.code||"").trim();
+    if(seen.has(sig)){const i=seen.get(sig);if(p.options&&!out[i].options)out[i]=p;return;}
+    seen.set(sig,out.length);out.push(p);
+  }
   (sections||[]).forEach(function(s,i){
-    if(out.length>=8)return;
-    if(s.t==="new")out.push({level:0,type:"Concept recall",q:"What is "+s.v+" and why is it used?",a:s.note||s.v});
-    else if(s.t==="key")out.push({level:1,type:"Explain in your own words",q:"Explain this key idea from “"+title+"” without looking.",a:s.v});
-    else if(s.t==="try")out.push({level:2,type:"Predict the output",q:s.q||s.v||"Predict the result.",a:s.a||s.out||s.why||"Compare with the lesson."});
-    else if(s.t==="ex"){
+    if(s.t==="code")context=s.v||"";
+    if(s.t==="ex"){
       const sol=sections[i+1]&&sections[i+1].t==="sol"?sections[i+1]:null;
-      out.push({level:3,type:"Write code from memory",q:s.v,a:sol?([sol.code,sol.out,sol.why].filter(Boolean).join("\n\n")):"Open the lesson after writing your solution."});
+      if(sol)push({key:"ex:"+i,level:1,kind:"exercise",type:"Write code · Exercise",
+        q:s.v,a:sol.why||"Compare your approach with the worked solution.",answerCode:sol.code||"",
+        answerOut:sol.out,context:context});
+    }else if(s.t==="try"){
+      const code=String(s.code||"").trim(),usable=code&&!code.split("\n").every(function(line){return !line.trim()||line.trim().startsWith("#");});
+      push({key:"try:"+i,level:1,kind:usable?"predict":"quiz",type:usable?"Predict / explain the code":"Recall question",
+        q:s.q||s.v,code:usable?code:"",a:s.a||s.out||s.why,why:s.why||"",
+        context:!usable&&/above|following|snippet|example|output/i.test(s.q||s.v||"")?context:""});
+    }else if(s.t==="checkpoint"&&s.lesson&&Array.isArray(s.lesson.quiz)){
+      s.lesson.quiz.forEach(function(q,n){
+        if(!Array.isArray(q.options)||q.options[q.correct]==null)return;
+        push({key:"quiz:"+i+":"+n,level:0,kind:"quiz",type:"Lesson quiz",q:q.q,
+          options:q.options,correct:q.correct,a:q.options[q.correct],why:q.why||"",
+          code:/above|following|snippet|example|output/i.test(q.q||"")?context:""});
+      });
+    }else if(s.t==="mis"&&s.wrong&&s.right){
+      push({key:"mis:"+i,level:1,kind:"debug",type:"Spot and fix the mistake",
+        q:"Find the mistake. Explain what is wrong and write the correction.",code:s.wrong,
+        answerCode:s.right,a:s.why||"Compare the incorrect and corrected forms."});
+    }else if(s.t==="new"&&s.note){
+      push({key:"new:"+i,level:0,kind:"concept",type:"Concept recall",
+        q:"Explain "+s.v+" in your own words. What is it used for?",a:s.note});
     }
   });
   return out;
 }
+function pythonPartPrompts(p){
+  const id=p.week+"."+p.dayIdx+"."+p.part;
+  if(!pythonPartPromptCache.has(id)){
+    pythonPartPromptCache.set(id,pythonSectionsPrompts(p.sections,p.title).map(function(q){
+      return Object.assign({},q,{key:id+":"+q.key,week:p.week,dayIdx:p.dayIdx,part:p.part,partTitle:p.title});
+    }));
+  }
+  return pythonPartPromptCache.get(id);
+}
+/* Mix question kinds and completed parts; do not stop at introductory metadata. */
+function pythonBalancedPrompts(prompts){
+  const kinds=["exercise","predict","quiz","debug","concept"],buckets={};
+  kinds.forEach(function(kind){
+    const groups=new Map();prompts.filter(function(p){return p.kind===kind;}).forEach(function(p){
+      const key=p.week+"."+p.dayIdx+"."+p.part;
+      if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);
+    });
+    const queue=[];while(Array.from(groups.values()).some(function(g){return g.length;})){
+      groups.forEach(function(g){if(g.length)queue.push(g.shift());});
+    }buckets[kind]=queue;
+  });
+  const result=[];while(kinds.some(function(k){return buckets[k].length;})){
+    kinds.forEach(function(k){if(buckets[k].length)result.push(buckets[k].shift());});
+  }return result;
+}
+function pythonReviewPrompts(item){
+  if(item.sourceType==="python-day"){
+    const pos=String(item.sourceId).split(".").map(Number);
+    return pythonBalancedPrompts(pythonStudiedParts(pos[0],pos[1],false).flatMap(pythonPartPrompts));
+  }
+  if(item.sourceType==="python-lesson"&&DB.lessonsDone[item.sourceId]){
+    const route=PYTHON_LESSON_ROUTES[item.sourceId];
+    if(route)return pythonBalancedPrompts(pythonStudiedParts(route.week,route.day,false).flatMap(pythonPartPrompts));
+    const lesson=LEGACY_PYTHON_LESSONS.find(function(l){return l.id===item.sourceId;});
+    return lesson?pythonBalancedPrompts(pythonSectionsPrompts(lesson.sections,lesson.title)):[];
+  }
+  return [];
+}
+function pythonReviewSourceEligible(item){return pythonReviewPrompts(item).length>0;}
 function reviewEnrollJapanese(L,completedAt){
   if(!L)return null;const sid=jpStateId(L),summary=(L.summary||[]).join(" · ")||L.explain;
   return reviewUpsert({id:reviewId("japanese","lesson",sid),subject:"japanese",sourceType:"japanese",sourceId:L.id,courseName:"Japanese · N5 to N3",lessonName:"Week "+L.id.split(".")[0]+" · Day "+L.id.split(".")[1],topic:L.title,completedAt:completedAt,summary:compactText(summary,420),concepts:(L.summary||[]).slice(0,6),prompts:japaneseReviewPrompts(L)});
 }
 function reviewEnrollPythonDay(w,d,completedAt){
-  const wk=weekByNum(w),day=d===6?REST_DAY:(wk&&wk[4]&&wk[4][d]);if(!day)return null;
-  const title=day[0],sections=daySections(w+"."+d)||[];
-  let prompts=pythonSectionsPrompts(sections,title);
-  if(!prompts.length)prompts=[{level:0,type:"Concept recall",q:"Explain the main idea of “"+title+"”.",a:day[1]},{level:3,type:"Build from memory",q:day[2],a:"Build it first, then open the course day and compare."}];
-  return reviewUpsert({id:reviewId("python","day",w+"."+d),subject:"python",sourceType:"python-day",sourceId:w+"."+d,courseName:"Python · 12-month curriculum",lessonName:"Week "+w+" · Day "+(d+1),topic:title,completedAt:completedAt,summary:compactText(day[1],420),concepts:sections.filter(function(s){return s.t==="key"||s.t==="new";}).slice(0,6).map(function(s){return s.t==="new"?s.v+": "+s.note:s.v;}),prompts:prompts});
+  const wk=weekByNum(w),day=d===6?REST_DAY:(wk&&wk[4]&&wk[4][d]);
+  const studied=pythonStudiedParts(w,d,false),prompts=pythonBalancedPrompts(studied.flatMap(pythonPartPrompts));
+  if(!day||!prompts.length){reviewMarkSourceIncomplete(reviewId("python","day",w+"."+d));return null;}
+  const snapshot=prompts.slice(0,12).map(function(p){
+    return {level:p.level,type:p.type,q:p.q,a:compactText(p.a||p.answerCode,420)};
+  });
+  return reviewUpsert({id:reviewId("python","day",w+"."+d),subject:"python",sourceType:"python-day",
+    sourceId:w+"."+d,courseName:"Python · 12-month curriculum",lessonName:"Week "+w+" · Day "+(d+1),
+    topic:day[0],completedAt:completedAt,summary:compactText(studied.map(function(p){return p.title;}).join(" · "),420),
+    concepts:studied.flatMap(function(p){return p.sections;}).filter(function(s){return s.t==="new";})
+      .slice(0,6).map(function(s){return compactText(s.v+": "+s.note,220);}),prompts:snapshot});
 }
 function reviewEnrollPythonLesson(id,completedAt){
   const L=LEGACY_PYTHON_LESSONS.find(function(x){return x.id===id;});if(!L)return null;
   const prompts=[];
   (L.quiz||[]).forEach(function(q){prompts.push({level:0,type:"Recall question",q:q.q,a:q.options[q.correct]+" · "+q.why});});
-  pythonSectionsPrompts(L.sections||[],L.title).forEach(function(p){prompts.push(p);});
+  pythonSectionsPrompts(L.sections||[],L.title).forEach(function(p){prompts.push({level:p.level,type:p.type,q:p.q,a:compactText(p.a||p.answerCode,420)});});
   if(L.challenge)prompts.push({level:4,type:"Problem solving",q:L.challenge.brief,a:[L.challenge.code,L.challenge.out,L.challenge.why].filter(Boolean).join("\n\n")});
   return reviewUpsert({id:reviewId("python","lesson",id),subject:"python",sourceType:"python-lesson",sourceId:id,courseName:"Python Lessons",lessonName:L.title,topic:L.subtitle||L.title,completedAt:completedAt,summary:compactText(L.objective||L.subtitle,420),concepts:(L.sections||[]).filter(function(s){return s.t==="key";}).slice(0,6).map(function(s){return s.v;}),prompts:prompts.slice(0,12)});
 }
@@ -4172,6 +4267,17 @@ function reviewEnrollPythonLesson(id,completedAt){
 function migrateCompletedToReviews(){
   let changed=false;
   Object.keys(DB.course.done||{}).forEach(function(k){const p=k.split(".").map(Number),id=reviewId("python","day",k);if(!DB.reviews.items[id]){reviewEnrollPythonDay(p[0],p[1],DB.course.done[k]);changed=true;}});
+  const partialDays={};
+  Object.keys(DB.course.partsDone||{}).forEach(function(k){
+    const p=k.split(".").map(Number);
+    if(p.length!==3||!dayParts(p[0]+"."+p[1])||!dayParts(p[0]+"."+p[1])[p[2]])return;
+    const day=p[0]+"."+p[1],at=DB.course.partsDone[k];
+    if(!partialDays[day]||at<partialDays[day])partialDays[day]=at;
+  });
+  Object.keys(partialDays).forEach(function(k){
+    const p=k.split(".").map(Number),id=reviewId("python","day",k);
+    if(!DB.reviews.items[id]&&reviewEnrollPythonDay(p[0],p[1],partialDays[k]))changed=true;
+  });
   Object.keys(DB.lessonsDone||{}).forEach(function(k){if(!LEGACY_PYTHON_LESSONS.some(function(l){return l.id===k;}))return;const id=reviewId("python","lesson",k);if(!DB.reviews.items[id]){reviewEnrollPythonLesson(k,DB.lessonsDone[k]);changed=true;}});
   Object.keys(DB.japanese.done||{}).forEach(function(k){
     const L=JP_LESSONS.find(function(x){return jpStateId(x)===k||x.id===k;});
@@ -4190,6 +4296,17 @@ function mixedReviews(items){
   return out;
 }
 function reviewPickPrompt(item){
+  if(item.subject==="python"){
+    const prompts=pythonReviewPrompts(item);
+    if(!prompts.length)return null;
+    const history=item.history||[],counts=new Map(),last=history.length&&history[history.length-1].questionId;
+    history.forEach(function(h){if(h.questionId)counts.set(h.questionId,(counts.get(h.questionId)||0)+1);});
+    const available=prompts.filter(function(p){return prompts.length===1||p.key!==last;});
+    const least=Math.min.apply(null,available.map(function(p){return counts.get(p.key)||0;}));
+    const pool=available.filter(function(p){return (counts.get(p.key)||0)===least;});
+    const offset=(reviewView.pythonOffsets||{})[item.id]||0;
+    return pool[(history.length+offset)%pool.length];
+  }
   const prompts=item.prompts&&item.prompts.length?item.prompts:[{level:0,type:"Active recall",q:"Explain “"+item.topic+"” without looking.",a:item.summary}];
   const stage=item.stage||0,target=Math.min(4,Math.floor(stage/1.5));
   const eligible=prompts.filter(function(p){return (p.level||0)<=target;});
@@ -4204,18 +4321,34 @@ function reviewGrade(item,rating){
   else if(rating==="good"){stage=Math.min(7,old+1);days=REVIEW_GAPS[stage]||180;}
   else {stage=Math.min(7,old+2);days=Math.max(4,Math.round((REVIEW_GAPS[stage]||180)*1.35));}
   const today=localDateKey(),next=addLocalDays(today,days),entry={at:nowISO(),date:today,rating:rating,fromStage:old,toStage:stage,nextReview:next};
+  if(item.subject==="python"){const prompt=reviewPickPrompt(item);if(prompt)entry.questionId=prompt.key;}
   item.stage=stage;item.difficulty=rating;item.nextReview=next;item.updatedAt=entry.at;item.history=item.history||[];item.history.push(entry);
   DB.reviews.sessions.push({id:uid(),at:entry.at,date:today,itemId:item.id,subject:item.subject,rating:rating});
   save();
 }
 function reviewOpenSource(item){
   if(item.sourceType==="japanese"){jpPage={mode:"lesson",week:Number(item.sourceId.split(".")[0]),lesson:item.sourceId};switchView("japanese");renderJapanese();}
-  else if(item.sourceType==="python-day"){const p=item.sourceId.split(".").map(Number);courseView={mode:"day",week:p[0],dayIdx:p[1],part:0};switchView("course");renderCourse();}
-  else {activeLessonId=item.sourceId;switchView("lessons");renderLessons();}
+  else if(item.subject==="python"){
+    const p=reviewPickPrompt(item),route=PYTHON_LESSON_ROUTES[item.sourceId];
+    if(p&&p.week){courseView={mode:"day",week:p.week,dayIdx:p.dayIdx,part:p.part};switchView("course");renderCourse();}
+    else if(route){courseView={mode:"day",week:route.week,dayIdx:route.day,part:0};switchView("course");renderCourse();}
+  }
   window.scrollTo(0,0);
 }
-function reviewStart(items){const q=mixedReviews((items&&items.length?items:reviewDueItems(reviewView.subject)).slice());if(!q.length){toast("No reviews are due in this view");return;}reviewView.mode="session";reviewView.queue=q.map(function(x){return x.id;});reviewView.index=0;reviewView.revealed=false;renderReviews();window.scrollTo(0,0);}
-
+function reviewStart(items){
+  if(document.getElementById("reviewLater"))closeModal();
+  const source=items===undefined?reviewDueItems(reviewView.subject):items;
+  const q=mixedReviews((source||[]).filter(function(x){return x&&(x.subject!=="python"||pythonReviewSourceEligible(x));}));
+  if(!q.length){toast("No studied lessons are due in this view");return;}
+  reviewView.mode="session";reviewView.queue=q.map(function(x){return x.id;});reviewView.index=0;
+  reviewView.revealed=false;reviewView.pythonOffsets={};reviewView.answerChoice=null;reviewView.draft="";
+  renderReviews();window.scrollTo(0,0);
+}
+function openPythonPractice(){
+  if(document.getElementById("reviewLater"))closeModal();
+  courseView={mode:"practice",week:null,dayIdx:null};practiceView.order=null;
+  switchView("course");window.scrollTo(0,0);renderCourse();
+}
 function reviewHomeCardHtml(subject){
   const due=reviewDueItems(subject),over=due.filter(function(x){return reviewStatus(x)==="overdue";}).length;
   const label=subject?reviewSubjectLabel(subject):"Japanese + Python";
@@ -4254,35 +4387,72 @@ function renderReviewDashboard(){
   const due=reviewDueItems(reviewView.subject),over=due.filter(function(x){return reviewStatus(x)==="overdue";}).length,py=due.filter(function(x){return x.subject==="python";}).length,jp=due.length-py,all=reviewItems(),filtered=reviewFilteredItems(),today=localDateKey(),learnPy=all.filter(function(x){return x.subject==="python"&&localDateKey(x.completedAt)===today;}).length,learnJp=all.filter(function(x){return x.subject==="japanese"&&localDateKey(x.completedAt)===today;}).length,focusToday=DB.timerLog.filter(function(x){return x.type==="focus"&&x.date===today;}),minPy=focusToday.filter(function(x){return x.subject==="python";}).reduce(function(s,x){return s+(Number(x.minutes)||DB.timerSettings.focus);},0),minJp=focusToday.filter(function(x){return x.subject==="japanese";}).reduce(function(s,x){return s+(Number(x.minutes)||DB.timerSettings.focus);},0);
   return '<div class="review-wrap">'+
     '<div class="review-hero"><div class="review-kicker">LEARN → TEST → SCHEDULE → REVIEW → ADAPT</div><div class="jp-actions" style="margin:8px 0 14px"><button type="button" class="btn '+(reviewView.subject==='all'?'':'secondary')+' btn-sm" data-review-scope="all">🧠 All Reviews</button><button type="button" class="btn '+(reviewView.subject==='japanese'?'':'secondary')+' btn-sm" data-review-scope="japanese">🇯🇵 Japanese</button><button type="button" class="btn '+(reviewView.subject==='python'?'':'secondary')+' btn-sm" data-review-scope="python">🐍 Python</button></div><div class="review-count">'+due.length+' <small>due today</small></div><h2>'+(due.length?'Review Time!':'You are caught up')+'</h2><p>'+(due.length?'You learned these topics before. Recall them before they disappear from memory.':'Future reviews are scheduled automatically when you complete lessons.')+'</p><button type="button" class="btn" data-review-start="1" '+(!due.length?'disabled':'')+'>START REVIEW</button></div>'+
+    (reviewView.subject!=="japanese"?'<section class="review-panel python-practice-link"><h3>🐍 Python Practice</h3><p>Exercises from completed lesson parts, with an optional current-part filter. Choose a week or mix everything you have studied.</p><button type="button" class="btn secondary" data-python-practice="1">Open Python Practice →</button></section>':'')+
     '<div class="review-stats"><div class="review-stat"><b>'+minPy+'m / '+minJp+'m</b><span>Python / Japanese focus today</span></div><div class="review-stat"><b>'+learnPy+' / '+learnJp+'</b><span>Python / Japanese learned today</span></div><div class="review-stat"><b style="color:var(--danger)">'+over+'</b><span>Overdue</span></div><div class="review-stat"><b>'+py+' / '+jp+'</b><span>Python / Japanese due</span></div><div class="review-stat"><b>'+reviewStreak()+'</b><span>Learning streak · days</span></div><div class="review-stat"><b>'+reviewMemory('python')+'% / '+reviewMemory('japanese')+'%</b><span>Python / Japanese memory</span></div></div>'+
     '<div class="review-grid"><section class="review-panel"><h3>🔴 Due now</h3><div class="review-list">'+(due.length?mixedReviews(due).slice(0,10).map(reviewItemRow).join(''):'<p class="jp-muted">Nothing due today.</p>')+'</div></section><section class="review-panel"><h3>⏰ Upcoming reviews</h3>'+reviewUpcomingRows()+'</section><section class="review-panel"><h3>🔙 Recently learned</h3><div class="review-list">'+reviewRecentHtml()+'</div></section><section class="review-panel"><h3>🎯 What to learn next</h3>'+reviewNextLearningHtml()+'</section><section class="review-panel"><h3>📅 Next 28 days</h3><div class="review-calendar">'+reviewCalendarHtml()+'</div></section></div>'+
     '<section class="review-panel" style="margin-top:14px"><h3>Search all '+all.length+' saved lessons</h3><div class="review-filters"><input id="reviewSearch" placeholder="Search lesson, topic, summary…" value="'+escapeHtml(reviewView.search)+'"><select id="reviewSubject"><option value="all">All subjects</option><option value="japanese" '+(reviewView.subject==='japanese'?'selected':'')+'>Japanese</option><option value="python" '+(reviewView.subject==='python'?'selected':'')+'>Python</option></select><select id="reviewStatus"><option value="all">All statuses</option><option value="due" '+(reviewView.status==='due'?'selected':'')+'>Due today</option><option value="overdue" '+(reviewView.status==='overdue'?'selected':'')+'>Overdue</option><option value="upcoming" '+(reviewView.status==='upcoming'?'selected':'')+'>Upcoming</option><option value="mastered" '+(reviewView.status==='mastered'?'selected':'')+'>Mastered</option></select><select id="reviewDifficulty"><option value="all">All difficulty</option><option value="forgot" '+(reviewView.difficulty==='forgot'?'selected':'')+'>Forgot</option><option value="hard" '+(reviewView.difficulty==='hard'?'selected':'')+'>Hard</option><option value="good" '+(reviewView.difficulty==='good'?'selected':'')+'>Good</option><option value="easy" '+(reviewView.difficulty==='easy'?'selected':'')+'>Easy</option></select></div><div class="review-list" id="reviewSearchResults">'+(filtered.length?filtered.slice(0,50).map(reviewItemRow).join(''):'<p class="jp-muted">No matching review topics.</p>')+'</div></section></div>';
 }
 function renderReviewSession(){
-  const id=reviewView.queue[reviewView.index],item=DB.reviews.items[id];if(!item){reviewView.mode="dashboard";return renderReviewDashboard();}
-  const p=reviewPickPrompt(item),total=reviewView.queue.length,n=reviewView.index+1;
-  return '<div class="review-wrap review-session"><button type="button" class="back-link" data-review-exit="1">← Review dashboard</button><div class="recall-card"><div class="recall-progress">'+n+' of '+total+' · '+reviewSubjectLabel(item.subject)+' · '+escapeHtml(item.lessonName)+'</div><span class="recall-type">'+escapeHtml(p.type)+'</span><div class="recall-q">'+escapeHtml(p.q)+'</div>'+(reviewView.revealed?'<div class="recall-answer"><b>Correct answer / model</b><br>'+escapeHtml(p.a).replace(/\n/g,'<br>')+'</div><h3>How well did you remember this?</h3><div class="recall-grade"><button type="button" data-grade="forgot">🟥 Forgot</button><button type="button" data-grade="hard">🟨 Hard</button><button type="button" data-grade="good">🟩 Good</button><button type="button" data-grade="easy">🟦 Easy</button></div>':'<p class="jp-muted">Answer aloud, on paper, or in your editor before revealing.</p><button type="button" class="btn" data-review-reveal="1">Show answer</button>')+'<div class="jp-actions" style="margin-top:18px"><button type="button" class="btn secondary btn-sm" data-review-source="'+escapeHtml(item.id)+'">Open original lesson</button></div></div></div>';
+  const id=reviewView.queue[reviewView.index],item=DB.reviews.items[id];
+  const p=item&&reviewPickPrompt(item);
+  if(!item||!p){reviewView.mode="dashboard";return renderReviewDashboard();}
+  const total=reviewView.queue.length,n=reviewView.index+1,isPython=item.subject==="python";
+  const code=function(value){return '<div class="ls-code"><div class="ls-code-tag">python / correction</div><pre><code>'+highlightPy(value)+'</code></pre></div>';};
+  const options=p.options?'<div class="ls-quiz">'+p.options.map(function(o,i){
+    const mark=reviewView.revealed?(i===p.correct?" correct":i===reviewView.answerChoice?" wrong":""):(i===reviewView.answerChoice?" selected":"");
+    return '<button type="button" class="ls-quiz-opt'+mark+'" data-review-option="'+i+'" '+(reviewView.revealed?'disabled':'')+'>'+escapeHtml(o)+'</button>';
+  }).join("")+'</div>':"";
+  let answer="";
+  if(reviewView.revealed){
+    answer='<div class="recall-answer"><b>Correct answer / worked model</b>'+
+      (p.answerCode?code(p.answerCode):"")+
+      (p.answerOut!=null?'<div class="ls-out"><div class="ls-out-tag">output</div><pre><code>'+escapeHtml(p.answerOut)+'</code></pre></div>':"")+
+      '<p>'+escapeHtml(p.a||"").replace(/\n/g,"<br>")+'</p>'+
+      (p.why&&p.why!==p.a?'<p>'+escapeHtml(p.why).replace(/\n/g,"<br>")+'</p>':"")+'</div>'+
+      '<h3>How well did you remember this?</h3><div class="recall-grade"><button type="button" data-grade="forgot">🟥 Forgot</button><button type="button" data-grade="hard">🟨 Hard</button><button type="button" data-grade="good">🟩 Good</button><button type="button" data-grade="easy">🟦 Easy</button></div>';
+  }
+  return '<div class="review-wrap review-session"><button type="button" class="back-link" data-review-exit="1">← Review dashboard</button><div class="recall-card">'+
+    '<div class="recall-progress">'+n+' of '+total+' · '+reviewSubjectLabel(item.subject)+' · '+escapeHtml(item.lessonName)+(isPython&&p.part!=null?' · Part '+(p.part+1):'')+'</div>'+
+    (isPython&&p.partTitle?'<p class="jp-muted">'+escapeHtml(p.partTitle)+'</p>':"")+
+    '<span class="recall-type">'+escapeHtml(p.type)+'</span><div class="recall-q">'+escapeHtml(p.q).replace(/\n/g,"<br>")+'</div>'+
+    (p.code?code(p.code):"")+
+    (p.context?'<details class="python-context"><summary>Lesson context / reference example</summary>'+code(p.context)+'</details>':"")+options+
+    (isPython?'<label class="python-attempt">Your answer / code (optional)<textarea id="reviewAttempt" spellcheck="false" placeholder="Try it yourself before showing the answer.">'+escapeHtml(reviewView.draft||"")+'</textarea></label>':"")+
+    (reviewView.revealed?answer:'<p class="jp-muted">Answer aloud, on paper, or run your code in your Python editor before revealing.</p><button type="button" class="btn" data-review-reveal="1">Show answer</button>')+
+    '<div class="jp-actions" style="margin-top:18px">'+
+    (isPython?'<button type="button" class="btn secondary btn-sm" data-review-another="1">🔀 Another question</button>':"")+
+    '<button type="button" class="btn secondary btn-sm" data-review-source="'+escapeHtml(item.id)+'">Open original lesson</button></div></div></div>';
 }
 function renderReviews(){
   const body=document.getElementById("reviewsBody");if(!body)return;
+  if(migrateCompletedToReviews())save();
   body.innerHTML=reviewView.mode==="session"?renderReviewSession():renderReviewDashboard();
   if(reviewEventsBound)return;reviewEventsBound=true;
   body.addEventListener("click",function(ev){const b=ev.target.closest("button");if(!b)return;
+    if(b.dataset.pythonPractice){openPythonPractice();return;}
+    if(b.dataset.reviewOption!=null){reviewView.answerChoice=Number(b.dataset.reviewOption);renderReviews();return;}
+    if(b.dataset.reviewAnother){
+      const id=reviewView.queue[reviewView.index];reviewView.pythonOffsets=reviewView.pythonOffsets||{};
+      reviewView.pythonOffsets[id]=(reviewView.pythonOffsets[id]||0)+1;
+      reviewView.revealed=false;reviewView.answerChoice=null;reviewView.draft="";renderReviews();return;
+    }
     if(b.dataset.reviewStart){reviewStart();return;}
     if(b.dataset.reviewScope){reviewView.subject=b.dataset.reviewScope;reviewView.status="all";reviewView.difficulty="all";renderReviews();return;}
     if(b.dataset.reviewOne){const item=DB.reviews.items[b.dataset.reviewOne];if(item)reviewStart([item]);return;}
     if(b.dataset.reviewHistory){const item=DB.reviews.items[b.dataset.reviewHistory];if(item)showReviewHistory(item);return;}
     if(b.dataset.reviewReveal){reviewView.revealed=true;renderReviews();return;}
-    if(b.dataset.grade){const item=DB.reviews.items[reviewView.queue[reviewView.index]];reviewGrade(item,b.dataset.grade);reviewView.index++;reviewView.revealed=false;if(reviewView.index>=reviewView.queue.length){reviewView.mode="dashboard";toast("Review session complete");}renderReviews();return;}
+    if(b.dataset.grade&&reviewView.revealed){const item=DB.reviews.items[reviewView.queue[reviewView.index]];reviewGrade(item,b.dataset.grade);reviewView.index++;reviewView.revealed=false;reviewView.answerChoice=null;reviewView.draft="";if(reviewView.index>=reviewView.queue.length){reviewView.mode="dashboard";toast("Review session complete");}renderReviews();return;}
     if(b.dataset.reviewExit){reviewView.mode="dashboard";renderReviews();return;}
     if(b.dataset.reviewSource){const item=DB.reviews.items[b.dataset.reviewSource];if(item)reviewOpenSource(item);}
     if(b.dataset.reviewNext==="python"){const n=firstIncompleteDay();courseView={mode:"day",week:n.week,dayIdx:n.dayIdx,part:0};switchView("course");renderCourse();window.scrollTo(0,0);}
     if(b.dataset.reviewNext==="japanese"){const n=jpNextLesson();jpPage={mode:"lesson",week:Number(n.id.split('.')[0]),lesson:n.id};switchView("japanese");renderJapanese();window.scrollTo(0,0);}
   });
-  body.addEventListener("input",function(ev){if(ev.target.id==="reviewSearch"){reviewView.search=ev.target.value;const box=document.getElementById("reviewSearchResults"),a=reviewFilteredItems();if(box)box.innerHTML=a.length?a.slice(0,50).map(reviewItemRow).join(''):'<p class="jp-muted">No matching review topics.</p>';}});
+  body.addEventListener("input",function(ev){if(ev.target.id==="reviewAttempt"){reviewView.draft=ev.target.value;return;}if(ev.target.id==="reviewSearch"){reviewView.search=ev.target.value;const box=document.getElementById("reviewSearchResults"),a=reviewFilteredItems();if(box)box.innerHTML=a.length?a.slice(0,50).map(reviewItemRow).join(''):'<p class="jp-muted">No matching review topics.</p>';}});
   body.addEventListener("change",function(ev){if(ev.target.id==="reviewSubject")reviewView.subject=ev.target.value;else if(ev.target.id==="reviewStatus")reviewView.status=ev.target.value;else if(ev.target.id==="reviewDifficulty")reviewView.difficulty=ev.target.value;else return;renderReviews();});
 }
 function showReviewNotice(){
+  if(document.getElementById("view-reviews").classList.contains("active")||
+     (document.getElementById("view-course").classList.contains("active")&&courseView.mode==="practice"))return;
   const due=reviewDueItems(),today=localDateKey();if(!due.length||sessionStorage.getItem("studyHubReviewNotice")===today)return;sessionStorage.setItem("studyHubReviewNotice",today);
   const over=due.filter(function(x){return reviewStatus(x)==="overdue";}).length;
   openModal('<h2>🧠 Review Time!</h2><p>You learned these topics before. Let’s recall them before they disappear from memory.</p><div class="review-count">'+due.length+' <small>reviews today</small></div>'+(over?'<p style="color:var(--danger)"><b>⚠️ '+over+' overdue reviews</b></p>':'')+'<div class="modal-actions"><button type="button" class="btn secondary" id="reviewLater">Later</button><button type="button" class="btn" id="reviewNow">START REVIEW</button></div>');
@@ -11264,7 +11434,7 @@ function toggleDone(weekNum, dayIdx){
   const k = dayKey(weekNum, dayIdx);
   if(DB.course.done[k]){
     delete DB.course.done[k];
-    reviewMarkSourceIncomplete(reviewId("python","day",k));
+    reviewEnrollPythonDay(weekNum, dayIdx, nowISO());
   }
   else {
     DB.course.done[k] = nowISO();
@@ -11380,6 +11550,7 @@ function renderCourseOverview(){
     </div>
 
     ${resumeCard()}
+    <div class="review-panel python-practice-link"><h3>🐍 Python Practice</h3><p>Revisit exercises from the lesson parts you have studied. Mix weeks or choose one topic, then shuffle a new set.</p><button type="button" class="btn secondary" id="pythonPracticeHome">Open Python Practice →</button></div>
 
     <div class="phase-list">
       ${PHASES.map(p=>{
@@ -11417,6 +11588,7 @@ function renderCourseOverview(){
   `;
 
   wireResumeCard();
+  document.getElementById("pythonPracticeHome").onclick=openPythonPractice;
   el.querySelectorAll("[data-week]").forEach(b=>{
     b.onclick = ()=>{ courseView = {mode:"week", week:parseInt(b.dataset.week), dayIdx:null}; renderCourse(); };
   });
@@ -46368,15 +46540,14 @@ function togglePartDone(w, d, i){
   let all = parts.length > 0;
   for(let n = 0; n < parts.length; n++) if(!parts[n].optional && !isPartDone(w, d, n)) all = false;
   const dk = dayKey(w, d);
-  if(parts[i] && parts[i].optional){ save(); return; }
+  if(parts[i] && parts[i].optional){ reviewEnrollPythonDay(w,d,DB.course.partsDone[k]||nowISO()); save(); return; }
   if(all && !DB.course.done[dk]){
     DB.course.done[dk] = nowISO();
-    reviewEnrollPythonDay(w, d, DB.course.done[dk]);
   }
   if(!all && DB.course.done[dk]){
     delete DB.course.done[dk];
-    reviewMarkSourceIncomplete(reviewId("python","day",dk));
   }
+  reviewEnrollPythonDay(w,d,DB.course.done[dk]||DB.course.partsDone[k]||nowISO());
   save();
 }
 
@@ -46421,27 +46592,26 @@ function taughtWeeks(){
 }
 
 function corePool(){
-  if(corePoolCache) return corePoolCache;
-  const out = [];
-
+  if(corePoolCache)return corePoolCache;
+  const out=[];
   taughtWeeks().forEach(function(w){
-    for(let d = 0; d < 7; d++){
-      const secs = daySections(w + "." + d);
-      if(!secs) continue;
-      let n = 0;
-      for(let i = 0; i < secs.length; i++){
-        if(secs[i].t !== "ex") continue;
-        const sol = (secs[i+1] && secs[i+1].t === "sol") ? secs[i+1] : null;
-        out.push({ id: secs[i].practiceId || w + "." + d + "." + n, week: w, day: d + 1,
-                   topic: dayTitleFor(w, d), ex: secs[i], sol: sol });
-        n++;
-      }
+    for(let d=0;d<7;d++){
+      let n=0;
+      (dayParts(w+"."+d)||[]).forEach(function(part,pi){
+        let context="";
+        (part.sections||[]).forEach(function(s,i){
+          if(s.t==="code")context=s.v||"";
+          if(s.t!=="ex")return;
+          const next=part.sections[i+1],sol=next&&next.t==="sol"?next:null;
+          out.push({id:s.practiceId||w+"."+d+"."+n,week:w,day:d+1,part:pi,
+            partTitle:part.title||dayTitleFor(w,d),topic:dayTitleFor(w,d),ex:s,sol:sol,context:context});
+          n++;
+        });
+      });
     }
   });
-  corePoolCache = out;
-  return out;
+  corePoolCache=out;return out;
 }
-
 /* Practice filters, built from the phases the course already defines and
    narrowed to the weeks that have teaching written. A newly authored phase
    therefore gets its own filter automatically. */
@@ -46472,145 +46642,93 @@ function coreBlocks(){
 }
 
 let practiceView = {
-  block: "w1",
+  block: "all",
   size: 10,
   unsolvedOnly: false,
   readyOnly: true,
+  includeCurrent: true,
   order: null
 };
 
+let pythonPracticeDraftDirty=false;
+window.addEventListener("pagehide",function(){if(pythonPracticeDraftDirty)save();});
 function practiceSolved(){ return DB.course.practice.solved || {}; }
 
+function pythonPracticePool(){
+  return corePool().filter(function(p){
+    return !practiceView.readyOnly||pythonStudiedParts(p.week,p.day-1,practiceView.includeCurrent).some(function(s){return s.part===p.part;});
+  });
+}
 function practiceStats(){
-  const pool = corePool();
-  const solved = practiceSolved();
-  const byWeek = {};
-  pool.forEach(p=>{
-    byWeek[p.week] = byWeek[p.week] || { total:0, done:0 };
-    byWeek[p.week].total++;
-    if(solved[p.id]) byWeek[p.week].done++;
-  });
-  const done = pool.filter(p=> solved[p.id]).length;
-  return { total: pool.length, done: done, byWeek: byWeek };
+  const pool=pythonPracticePool(),solved=practiceSolved(),byWeek={};
+  pool.forEach(function(p){byWeek[p.week]=byWeek[p.week]||{total:0,done:0};byWeek[p.week].total++;if(solved[p.id])byWeek[p.week].done++;});
+  return {total:pool.length,done:pool.filter(function(p){return solved[p.id];}).length,byWeek:byWeek};
 }
-
 function buildPracticeSet(){
-  const blocks = coreBlocks();
-  const block = blocks.find(b=> b.key === practiceView.block) || blocks[0];
-  const solved = practiceSolved();
-  let pool = corePool().filter(p=> block.weeks.indexOf(p.week) !== -1);
-  if(practiceView.readyOnly){const s=DB.lastSeen&&DB.lastSeen.kind==="day"?DB.lastSeen:firstIncompleteDay();pool=pool.filter(p=>p.week<s.week||(p.week===s.week&&p.day<=s.dayIdx+1));}
-  if(practiceView.unsolvedOnly) pool = pool.filter(p=> !solved[p.id]);
-  const mixed = shuffled(pool);
-  return practiceView.size === 0 ? mixed : mixed.slice(0, practiceView.size);
+  const blocks=coreBlocks(),block=blocks.find(function(b){return b.key===practiceView.block;})||blocks[0],solved=practiceSolved();
+  const pool=pythonPracticePool().filter(function(p){return block.weeks.includes(p.week)&&(!practiceView.unsolvedOnly||!solved[p.id]);});
+  const groups=new Map();
+  shuffled(pool).forEach(function(p){const k=p.week+"."+p.day+"."+p.part;if(!groups.has(k))groups.set(k,[]);groups.get(k).push(p);});
+  const mixed=[];while(Array.from(groups.values()).some(function(g){return g.length;})){
+    groups.forEach(function(g){if(g.length)mixed.push(g.shift());});
+  }
+  if(mixed.length>1&&mixed[0].id===practiceView.avoidFirst){const j=mixed.findIndex(function(p){return p.id!==practiceView.avoidFirst;});[mixed[0],mixed[j]]=[mixed[j],mixed[0]];}
+  return practiceView.size===0?mixed:mixed.slice(0,practiceView.size);
 }
-
 function renderCorePractice(){
-  const el = document.getElementById("courseBody");
-  const stats = practiceStats();
-  const solved = practiceSolved();
-
-  if(!practiceView.order) practiceView.order = buildPracticeSet();
-  const set = practiceView.order;
-
-  tryCount = 0; solCount = 0;
-
-  const weakest = Object.keys(stats.byWeek)
-    .map(w=> ({ week:+w, done:stats.byWeek[w].done, total:stats.byWeek[w].total }))
-    .filter(r=> r.done < r.total)
-    .sort((a,b)=> (a.done/a.total) - (b.done/b.total))
-    .slice(0, 3);
-
-  const items = set.map((p, n)=>{
-    const secs = [p.ex];
-    if(p.sol) secs.push(p.sol);
-    const isDone = !!solved[p.id];
-    return `<div class="prac-item">
-      <div class="prac-num">Question ${n+1} of ${set.length} · Week ${p.week} Day ${p.day} · ${escapeHtml(p.topic)}</div>
-      ${renderSections(secs)}
-      <button type="button" class="btn ${isDone?'secondary':''} btn-sm" data-solveid="${p.id}">${isDone?'✓ Solved':'Mark solved'}</button>
-    </div>`;
+  const el=document.getElementById("courseBody"),stats=practiceStats(),solved=practiceSolved(),eligible=new Set(pythonPracticePool().map(function(p){return p.id;}));
+  if(!practiceView.order)practiceView.order=buildPracticeSet();
+  practiceView.order=practiceView.order.filter(function(p){return eligible.has(p.id);});
+  const set=practiceView.order;tryCount=0;solCount=0;
+  const items=set.map(function(p,n){
+    const secs=[p.ex];if(p.sol)secs.push(p.sol);
+    const key="python-practice|"+p.id;
+    return '<div class="prac-item"><div class="prac-num">Exercise '+(n+1)+' of '+set.length+' · Week '+p.week+' Day '+p.day+' · Part '+(p.part+1)+'</div>'+
+      '<h3 class="ls-h">'+escapeHtml(p.partTitle)+'</h3>'+renderSections(secs)+
+      (p.context?'<details class="python-context"><summary>Lesson context / reference example</summary><div class="ls-code"><pre><code>'+highlightPy(p.context)+'</code></pre></div></details>':"")+
+      '<label class="python-attempt">Your attempt / notes <span class="jp-muted">(saved)</span><textarea data-practice-attempt="'+escapeHtml(key)+'" spellcheck="false" placeholder="Write your approach or code. Run it in your own Python editor.">'+escapeHtml(DB.headNotes[key]||"")+'</textarea></label>'+
+      '<div class="jp-actions"><button type="button" class="btn '+(solved[p.id]?'secondary':'')+' btn-sm" data-solveid="'+escapeHtml(p.id)+'">'+(solved[p.id]?'✓ Solved':'Mark solved')+'</button>'+
+      '<button type="button" class="btn secondary btn-sm" data-practice-source="'+p.week+'.'+(p.day-1)+'.'+p.part+'">Open this lesson</button></div></div>';
   }).join("");
-
-  el.innerHTML = `
-    <button type="button" class="back-link" id="backFromPractice">← Course</button>
-    <div class="day-header">
-      <div class="dh-eyebrow">Python practice · Choose your week</div>
-      <h2>🏋️ Core Practice</h2>
-    </div>
-
-    <div class="course-hero">
-      <div class="ch-label">Problems solved</div>
-      <div class="ch-big"><b>${stats.done}</b> <span>/ ${stats.total} across the whole core course</span></div>
-      ${progressBar(stats.done, stats.total)}
-      <div class="ch-sub">${weakest.length ? "Weakest so far: " + weakest.map(r=>`Week ${r.week} (${r.done}/${r.total})`).join(" · ") : "Every problem solved — outstanding."}</div>
-    </div>
-
-    <div class="section-label">Build a set</div>
-    <div class="prac-controls">
-      <label>Topics
-        <select id="pracBlock">
-          ${coreBlocks().map(b=>`<option value="${b.key}" ${practiceView.block===b.key?'selected':''}>${escapeHtml(b.label)}</option>`).join("")}
-        </select>
-      </label>
-      <label>Questions
-        <select id="pracSize">
-          ${[5,10,20,50].map(n=>`<option value="${n}" ${practiceView.size===n?'selected':''}>${n}</option>`).join("")}
-          <option value="0" ${practiceView.size===0?'selected':''}>All</option>
-        </select>
-      </label>
-      <label class="prac-check">
-        <input type="checkbox" id="pracReady" ${practiceView.readyOnly?'checked':''}> Up to my current lesson
-      </label>
-      <label class="prac-check">
-        <input type="checkbox" id="pracUnsolved" ${practiceView.unsolvedOnly?'checked':''}> Only unsolved
-      </label>
-      <button type="button" class="btn btn-sm" id="pracNew">🔀 New set</button>
-    </div>
-    <div class="hint">Solve each one yourself in Python BEFORE opening the solution. Marking a question solved is a promise to yourself — it is what makes the weak-area list honest.</div>
-
-    <div class="section-label">${set.length} question${set.length===1?'':'s'}, shuffled</div>
-    <div class="day-teach">
-      ${set.length ? items : '<p class="ls-p">No questions match those filters. Try turning off "Only unsolved", or pick a wider topic range.</p>'}
-    </div>
-  `;
-
-  document.getElementById("pracReady").onchange=e=>{practiceView.readyOnly=e.target.checked;practiceView.order=null;renderCorePractice();};
-  document.getElementById("backFromPractice").onclick = ()=>{
-    courseView = {mode:"overview", week:null, dayIdx:null};
-    window.scrollTo(0,0); renderCourse();
-  };
+  el.innerHTML='<button type="button" class="back-link" id="backFromPractice">← Course</button>'+
+    '<div class="day-header"><div class="dh-eyebrow">Exercises from your lessons</div><h2>🏋️ Python Practice</h2></div>'+
+    '<div class="course-hero"><div class="ch-label">'+(practiceView.readyOnly?'Your studied exercises':'All authored exercises')+'</div>'+
+    '<div class="ch-big"><b>'+stats.done+'</b> <span>/ '+stats.total+' practised</span></div>'+progressBar(stats.done,stats.total)+
+    '<div class="ch-sub">Completion is measured by lesson parts, not the date or the highest week you opened.</div></div>'+
+    '<div class="section-label">Build a practice set</div><div class="prac-controls">'+
+    '<label>Week / topic<select id="pracBlock">'+coreBlocks().map(function(b){return '<option value="'+b.key+'" '+(practiceView.block===b.key?'selected':'')+'>'+escapeHtml(b.key==="all"?"All studied weeks":b.label)+'</option>';}).join("")+'</select></label>'+
+    '<label>Exercises<select id="pracSize">'+[5,10,20,50,0].map(function(n){return '<option value="'+n+'" '+(practiceView.size===n?'selected':'')+'>'+(n||"All")+'</option>';}).join("")+'</select></label>'+
+    '<label class="prac-check"><input type="checkbox" id="pracReady" '+(practiceView.readyOnly?'checked':'')+'> Studied lessons only</label>'+
+    '<label class="prac-check"><input type="checkbox" id="pracCurrent" '+(practiceView.includeCurrent?'checked':'')+' '+(!practiceView.readyOnly?'disabled':'')+'> Include current part</label>'+
+    '<label class="prac-check"><input type="checkbox" id="pracUnsolved" '+(practiceView.unsolvedOnly?'checked':'')+'> Only unsolved</label>'+
+    '<button type="button" class="btn btn-sm" id="pracNew">🔀 Shuffle / New set</button></div>'+
+    '<p class="hint">'+(practiceView.readyOnly?'Uses completed parts and, when enabled, only your exact current part. Later parts and unopened days are excluded.':'Exploration mode: exercises from all authored lessons, including topics you may not have studied.')+
+    ' Mark lesson parts complete to keep them in your practice pool. Your old solved records remain saved.</p>'+
+    '<div class="section-label">'+set.length+' exercises, shuffled across lesson parts</div><div class="day-teach">'+
+    (set.length?items:'<div class="empty-state"><div class="big">📖</div><p>No studied exercises match these filters.</p><p>Complete a lesson part, include your current part, choose another week, or turn off Only unsolved.</p><button type="button" class="btn secondary" id="practiceResume">Continue learning →</button></div>')+'</div>';
+  function reset(){practiceView.order=null;renderCorePractice();}
+  document.getElementById("pracReady").onchange=function(e){practiceView.readyOnly=e.target.checked;reset();};
+  document.getElementById("pracCurrent").onchange=function(e){practiceView.includeCurrent=e.target.checked;reset();};
+  document.getElementById("pracBlock").onchange=function(e){practiceView.block=e.target.value;reset();};
+  document.getElementById("pracSize").onchange=function(e){practiceView.size=Number(e.target.value);reset();};
+  document.getElementById("pracUnsolved").onchange=function(e){practiceView.unsolvedOnly=e.target.checked;reset();};
+  document.getElementById("pracNew").onclick=function(){practiceView.avoidFirst=set[0]&&set[0].id;practiceView.order=null;window.scrollTo(0,0);renderCorePractice();};
+  document.getElementById("backFromPractice").onclick=function(){courseView={mode:"overview",week:null,dayIdx:null};window.scrollTo(0,0);renderCourse();};
+  const resume=document.getElementById("practiceResume");if(resume)resume.onclick=function(){document.getElementById("courseTodayBtn").click();};
   wireRevealButtons(el);
-
-  document.getElementById("pracBlock").onchange = (e)=>{
-    practiceView.block = e.target.value; practiceView.order = null; renderCorePractice();
-  };
-  document.getElementById("pracSize").onchange = (e)=>{
-    practiceView.size = parseInt(e.target.value, 10); practiceView.order = null; renderCorePractice();
-  };
-  document.getElementById("pracUnsolved").onchange = (e)=>{
-    practiceView.unsolvedOnly = e.target.checked; practiceView.order = null; renderCorePractice();
-  };
-  document.getElementById("pracNew").onclick = ()=>{
-    practiceView.order = null; window.scrollTo(0,0); renderCorePractice();
-  };
-
-  el.querySelectorAll("[data-solveid]").forEach(b=>{
-    b.onclick = ()=>{
-      const id = b.dataset.solveid;
-      if(DB.course.practice.solved[id]){
-        delete DB.course.practice.solved[id];
-      } else {
-        DB.course.practice.solved[id] = true;
-        DB.course.practice.attempts = (DB.course.practice.attempts || 0) + 1;
-      }
-      save();
-      renderCorePractice();
-      renderSideStats();
-    };
+  el.querySelectorAll("[data-practice-source]").forEach(function(b){b.onclick=function(){
+    const pos=b.dataset.practiceSource.split(".").map(Number);courseView={mode:"day",week:pos[0],dayIdx:pos[1],part:pos[2]};renderCourse();window.scrollTo(0,0);
+  };});
+  el.querySelectorAll("[data-practice-attempt]").forEach(function(input){
+    let timer;input.oninput=function(){const key=input.dataset.practiceAttempt,value=input.value;DB.headNotes[key]=value;pythonPracticeDraftDirty=true;clearTimeout(timer);timer=setTimeout(function(){save();pythonPracticeDraftDirty=false;},400);};
+    input.onblur=function(){clearTimeout(timer);save();pythonPracticeDraftDirty=false;};
   });
+  el.querySelectorAll("[data-solveid]").forEach(function(b){b.onclick=function(){
+    const id=b.dataset.solveid;if(DB.course.practice.solved[id])delete DB.course.practice.solved[id];
+    else{DB.course.practice.solved[id]=true;DB.course.practice.attempts=(DB.course.practice.attempts||0)+1;}
+    save();renderCorePractice();renderSideStats();
+  };});
 }
-
 /* Fisher-Yates: walk from the end, swap each item with a random earlier one.
    Every ordering is equally likely, and it shuffles the list in place. */
 function shuffled(list){
@@ -46791,13 +46909,7 @@ document.getElementById("courseHomeBtn").addEventListener("click", ()=>{
   courseView = {mode:"overview", week:null, dayIdx:null};
   renderCourse();
 });
-document.getElementById("coursePracticeBtn").addEventListener("click", ()=>{
-  courseView = {mode:"practice", week:null, dayIdx:null};
-  practiceView.order = null;
-  switchView("course");
-  window.scrollTo(0,0);
-  renderCourse();
-});
+document.getElementById("coursePracticeBtn").addEventListener("click",openPythonPractice);
 /* Resume, not Today: it returns you to the page you were actually on. */
 document.getElementById("courseTodayBtn").addEventListener("click", ()=>{
   const spot = DB.lastSeen;
