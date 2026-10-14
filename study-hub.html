@@ -12529,6 +12529,963 @@ const CYBERSECURITY_TEACH = {
         "url": "https://www.ncsc.gov.uk/collection/top-tips-for-staying-secure-online/always-back-up-your-most-important-data"
       }
     ]
+  },
+  "7.1": {
+    "objective": "Distinguish an event, log, alert and incident; explain the SOC/SIEM role; and describe how a detection question becomes useful monitored evidence.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Monitoring observes what controls cannot guarantee"
+      },
+      {
+        "t": "p",
+        "v": "Week 6 covered maintenance and layered controls. Even well-designed controls need observation: required updates may fail, a permission denial may repeat, or a legitimate account may behave unexpectedly. Maya’s fictional learning service needs to notice relevant changes without treating every unusual action as an attack. Start with the question you want evidence to answer and the people responsible for acting on it."
+      },
+      {
+        "t": "new",
+        "v": "Security monitoring",
+        "note": "Ongoing observation of relevant systems/events so that concerns can be investigated and acted on. It includes deciding what to collect, checking collection health, reviewing detections and improving coverage. A dashboard by itself is not the whole process."
+      },
+      {
+        "t": "h",
+        "v": "2. Separate what happened from the records about it"
+      },
+      {
+        "t": "new",
+        "v": "Event and log record",
+        "note": "An event is an occurrence, such as an authentication result or a requested note edit. A log record describes an occurrence from a particular source. Several records can describe one event, and not every event is recorded or collected."
+      },
+      {
+        "t": "new",
+        "v": "Alert and incident",
+        "note": "An alert indicates that a rule or analysis found something requiring attention. An incident is assessed according to the organisation’s criteria for a security event needing coordinated response. An alert is a prompt to investigate, not automatic proof of a confirmed compromise."
+      },
+      {
+        "t": "p",
+        "v": "Example: the authentication source records three rejected login attempts. A rule produces one alert about their pattern. Do not count the alert as a fourth rejected login. A connector retry can deliver the same event twice. Counting records, source events and alerts answers different questions, just as rows and distinct people differed in the Python course’s grouping lessons."
+      },
+      {
+        "t": "p",
+        "v": "A record can be incomplete, delayed or incorrect. Its usefulness depends on source meaning and trust. An application’s error log may show a failure without the user’s business context; a permission-decision log may describe that context better. Always state whether an observation comes from the browser, application, endpoint or collection system."
+      },
+      {
+        "t": "h",
+        "v": "3. People, process and tools have distinct jobs"
+      },
+      {
+        "t": "new",
+        "v": "Security operations centre (SOC)",
+        "note": "A team/function that monitors, investigates and coordinates security work under defined responsibilities. It may be internal, external or distributed. SOC does not necessarily mean a room full of screens, nor permission to collect every person’s data."
+      },
+      {
+        "t": "new",
+        "v": "SIEM",
+        "note": "Security information and event management tools can collect, search and correlate event records, support detections and organise investigation. Their useful coverage depends on sources, parsing, rules, retained data and analyst workflow. Installing a tool does not supply all those dependencies."
+      },
+      {
+        "t": "p",
+        "v": "Maya’s class service has an owner, an administrator and a designated response contact. A small team can still define who checks an alert, who may change access and who communicates with affected users. The monitoring analyst may propose containment, while the authorised owner approves or performs the action according to the response plan. A detection does not grant an analyst unlimited operational privileges."
+      },
+      {
+        "t": "h",
+        "v": "4. Turn a question into a detection rule"
+      },
+      {
+        "t": "new",
+        "v": "Detection rule, threshold and observation window",
+        "note": "A rule describes which evidence should create an alert. A threshold specifies a triggering condition, such as at least three distinct rejected logins. A window defines the time range and grouping needed to evaluate it."
+      },
+      {
+        "t": "p",
+        "v": "Fictional rule: review at least three distinct login failures for one account in a stated three-minute window. Specify event identities, event versus receipt time, boundary inclusion and missing-data behaviour. The rule does not say the person using that account was definitely malicious. A stale scheduled job, mistyped credentials or misuse may all require different investigation."
+      },
+      {
+        "t": "p",
+        "v": "Ask what happens after the alert: who receives it, what context is attached, how it is acknowledged, and what evidence is needed next. A rule that creates warnings no one reviews offers a different outcome from a monitored queue with accountable follow-up. Record rule changes and verify that legitimate reviewable cases still reach the responsible people."
+      },
+      {
+        "t": "h",
+        "v": "5. Monitor the monitoring path too"
+      },
+      {
+        "t": "new",
+        "v": "Collection health and coverage",
+        "note": "Collection health concerns whether intended records arrive and are parsed/retained correctly. Coverage describes which systems/actions/time periods are represented. A silent source can mean missing collection rather than no relevant activity."
+      },
+      {
+        "t": "p",
+        "v": "Worked example: the endpoint dashboard shows no alerts, but the collector has not received the intended device source since yesterday. You cannot conclude no suspicious endpoint activity occurred. Record the collection gap and ask the authorised owner to verify the source and pipeline. Privacy, purpose and retention matter too: useful monitoring should minimise secret and personal-data copies while preserving necessary evidence."
+      },
+      {
+        "t": "key",
+        "v": "Events, records and alerts are different units. Useful monitoring connects bounded data, healthy collection, a clear detection question and an accountable investigation/response workflow."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Three rejected logins produce one threshold alert. Is that four rejected logins?",
+        "a": "No. The alert describes a pattern; it is not another underlying rejected-login event.",
+        "why": "Count the unit required by your question and preserve source-event identities."
+      },
+      {
+        "q": "Does a SIEM installation establish complete monitoring coverage?",
+        "a": "No. Check configured sources, collection/parsing, rules, retention and follow-up.",
+        "why": "A tool cannot show evidence that was never collected or ensure somebody acted on every alert."
+      },
+      {
+        "q": "The dashboard is quiet, but its endpoint source stopped sending. Is absence of suspicious activity established?",
+        "a": "No. There is a collection gap, so the relevant activity may be unobserved.",
+        "why": "Silence from an unhealthy path is missing evidence, not a verified clean result."
+      },
+      {
+        "q": "Does an alert automatically authorise an analyst to change every account or system?",
+        "a": "No. Investigation and operational response follow the defined scope and roles.",
+        "why": "A finding supplies a reason to assess an action, not unlimited authority."
+      }
+    ],
+    "reflection": "Describe one fictional monitoring question, the event sources it needs, its alert unit/window, the responsible reviewer and one collection-health check. Explain which conclusion missing data would prevent.",
+    "references": [
+      {
+        "title": "OWASP: purposeful event logging",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      },
+      {
+        "title": "Microsoft: SIEM capabilities and sources",
+        "url": "https://learn.microsoft.com/en-us/azure/sentinel/overview"
+      },
+      {
+        "title": "NIST: incident detection and response context",
+        "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+      }
+    ]
+  },
+  "7.2": {
+    "objective": "Use source context to interpret unusual activity, distinguish false positives/negatives, and select login, application, endpoint and network evidence without equating labels with people.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Normal is specific to a role and time"
+      },
+      {
+        "t": "new",
+        "v": "Behaviour baseline",
+        "note": "A description of expected activity for the relevant account, asset, service, schedule and task. It can change through legitimate work. It is context for investigation, not proof that familiar activity is harmless or unfamiliar activity is malicious."
+      },
+      {
+        "t": "p",
+        "v": "Maya usually reads lessons in the afternoon, but the class has an approved overnight backup task. Activity outside her usual reading hours may therefore have more than one explanation. Compare account/service roles, approved changes, collection quality and the actual requested operation. A new hour on a graph is a question, not a complete diagnosis."
+      },
+      {
+        "t": "new",
+        "v": "False positive and false negative",
+        "note": "A false positive alerts on a condition assessed as not the targeted harmful activity. A false negative misses relevant harmful activity. A legitimate event can satisfy a broad rule while still requiring investigation; do not discard its evidence merely because it was benign."
+      },
+      {
+        "t": "p",
+        "v": "Three failed logins can come from an approved job with outdated credentials. If verified as that cause, a malicious-login detection may be a false positive, while the maintenance problem still deserves a fix. Conversely, an account might be misused without enough failures to reach the threshold. No alert is therefore not proof of no misuse. Changing a threshold affects these trade-offs and needs review/test evidence."
+      },
+      {
+        "t": "h",
+        "v": "2. Choose a source for the question"
+      },
+      {
+        "t": "new",
+        "v": "Authentication and identity logs",
+        "note": "Records of account/authenticator decisions, such as acceptance or rejection. They may show an account label and source context, but accepted authentication does not prove which human initiated it or whether that use was authorised in the wider situation."
+      },
+      {
+        "t": "p",
+        "v": "Authentication records can help count rejected attempts and identify a later accepted account session. They may omit the note action that followed. A success could be legitimate, could involve someone misusing valid credentials, or could require more context. Investigate the account-control evidence without claiming the named account owner personally performed every recorded action."
+      },
+      {
+        "t": "new",
+        "v": "Application logs",
+        "note": "Records of application-level tasks and decisions, such as note ownership checks, input rejection or persistence results. Their meaning depends on the application’s actual logging contract and reliability."
+      },
+      {
+        "t": "p",
+        "v": "An application record for N2 may say Maya’s edit was refused by an owner check and no write occurred. That is different from an ordinary web-access log recording only method, path and403. To strengthen the conclusion, use available permitted state evidence and the logging contract. An application’s log is a source claim, not automatically an independently verified snapshot of all stored records."
+      },
+      {
+        "t": "h",
+        "v": "3. Host and network evidence answer other questions"
+      },
+      {
+        "t": "new",
+        "v": "Endpoint telemetry",
+        "note": "Information from a host or its protective/management tools, such as a process observation or agent heartbeat. Collection scope and health determine what it can support; a heartbeat alone is not a complete malware review."
+      },
+      {
+        "t": "new",
+        "v": "Network logs",
+        "note": "Records such as connection allow/deny outcomes or flow metadata. They can help describe a path, source/destination and time, but usually do not establish the application’s owner-note permission or a human actor by themselves."
+      },
+      {
+        "t": "p",
+        "v": "A shared address can represent several users/devices through translation or intermediaries. A familiar IP string does not prove person identity. Do not turn a connection to a service into evidence that a note changed. Correlation needs appropriate shared context and source meaning, not simply two similar-looking labels."
+      },
+      {
+        "t": "h",
+        "v": "4. Link records while preserving uncertainty"
+      },
+      {
+        "t": "new",
+        "v": "Correlation reference and event identity",
+        "note": "A non-credential correlation label can link related observations when its meaning is documented. A source plus its event identifier can distinguish a unique source event from repeated delivery. Never put raw replayable session/token values into a learning log."
+      },
+      {
+        "t": "p",
+        "v": "The Week7 sample uses C-7 as an explicitly public fictional reference, not a session secret. It links an accepted account context with two application decisions. That supports a relationship between those model observations, but still does not establish a person, motive or account takeover. Another network record shares an address but has no independently validated account link; keep that limitation visible."
+      },
+      {
+        "t": "h",
+        "v": "5. Separate explanation from evidence"
+      },
+      {
+        "t": "p",
+        "v": "Worked investigation note: observed repeated rejected logins for Maya’s account; possible stale class job; job run/credential state not yet confirmed. Next question: can the authorised job owner verify its schedule, source and actual run? This is stronger than writing harmless backup job or confirmed attacker without support. Record alternative explanations and what evidence could distinguish them."
+      },
+      {
+        "t": "p",
+        "v": "When a benign cause is established, close or relabel the security hypothesis with its evidence and retain the underlying operational task if necessary. Do not suppress every future alert for that account without considering changed sources, actions or conditions. Privacy and source access remain bounded even when more context would be convenient."
+      },
+      {
+        "t": "key",
+        "v": "An unusual pattern needs source context. Authentication, application, endpoint and network records support different claims; correlate carefully and distinguish account labels from human attribution."
+      }
+    ],
+    "checks": [
+      {
+        "q": "A verified approved job caused the failed-login pattern. Must the failed-login records be treated as invented?",
+        "a": "No. The events occurred; the malicious-activity interpretation may be a false positive.",
+        "why": "Keep the observed failures and address their legitimate maintenance cause separately."
+      },
+      {
+        "q": "Does an accepted account login prove the named owner personally initiated it?",
+        "a": "No. It establishes the recorded account/authenticator decision, not human attribution.",
+        "why": "Who acted and whether the use was intended can require additional permitted evidence."
+      },
+      {
+        "q": "Can a network connection alone prove a private note was edited?",
+        "a": "No. It shows network-path activity, not the application’s complete task outcome.",
+        "why": "Use relevant application/state evidence for a write claim."
+      },
+      {
+        "q": "Why should a future benign-case suppression be bounded?",
+        "a": "The cause, source or action can change; broad suppression could hide a different concern.",
+        "why": "Rule tuning needs a scope and retest rather than treating an account as permanently harmless."
+      }
+    ],
+    "reflection": "Make a four-source evidence map for fictional repeated logins and note activity. Give one supported claim and one limitation per source, then list two competing explanations and a question that would distinguish them.",
+    "references": [
+      {
+        "title": "OWASP: event sources, trust and excluded data",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      },
+      {
+        "title": "Microsoft: collecting and correlating SIEM evidence",
+        "url": "https://learn.microsoft.com/en-us/azure/sentinel/overview"
+      }
+    ]
+  },
+  "7.3": {
+    "objective": "Preserve original timestamps, normalise known offsets, distinguish event/receipt time and duplicates, and build a timeline that leaves undocumented local-clock records explicitly unordered.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Ask what the timestamp describes"
+      },
+      {
+        "t": "new",
+        "v": "Event time and receipt time",
+        "note": "Event time is the source’s stated time for an occurrence. Receipt or ingestion time records when another system obtained the record. Delayed delivery can make those orders different."
+      },
+      {
+        "t": "p",
+        "v": "An application action may occur at00:05 UTC but reach a collector at00:05:02. A network event may reach the same collector several minutes late. For a behaviour timeline, use the appropriate source-event time when trustworthy and sufficiently documented. For investigating a pipeline delay, receipt time is relevant. Do not silently replace one with the other."
+      },
+      {
+        "t": "new",
+        "v": "UTC, offset and local clock",
+        "note": "UTC is a common reference for instants. An explicit offset such as +09:00 relates that displayed clock to UTC. A local-clock string without timezone context does not uniquely identify an instant."
+      },
+      {
+        "t": "p",
+        "v": "Verified conversion example: 2026-10-01T09:00:00+09:00 and 2026-10-01T00:00:00Z represent the same instant. The Z suffix means UTC. Nine hours are subtracted here; the date can also change near midnight. A numeric offset alone is not a full timezone rule for every date, and daylight-saving clocks can repeat or skip values."
+      },
+      {
+        "t": "h",
+        "v": "2. Keep the source representation"
+      },
+      {
+        "t": "new",
+        "v": "Normalisation and source preservation",
+        "note": "A normalised view can add a comparable UTC instant while retaining the original timestamp, source, event identity and uncertainty. It should not overwrite the raw record or guess an undocumented source convention."
+      },
+      {
+        "t": "p",
+        "v": "Week7 record L11 has event_time2026-10-01 09:01:30 with no offset and an undocumented source timezone. Keep that text and flag its event position unknown. Its receipt time has Z and can be ordered as a collector observation, but that does not recover the source event instant. Do not assume Japan just because Maya studies there, or UTC just because the collector uses UTC."
+      },
+      {
+        "t": "h",
+        "v": "3. Clock confidence limits precise ordering"
+      },
+      {
+        "t": "new",
+        "v": "Clock skew and timestamp precision",
+        "note": "Clock skew is a difference between source clock time and the relevant reference. Precision concerns the granularity recorded, such as whole seconds. Explicit offsets do not prove clocks are correct or that two close events have a reliable causal order."
+      },
+      {
+        "t": "p",
+        "v": "The worksheet explicitly assumes its offset-bearing clocks are correct so you can practise conversion. A real investigation must verify clock conventions, synchronisation and known delay/skew where relevant. If two records only have second precision, a tie is not proof they happened simultaneously or in an arbitrary row-number order. Preserve a stable display order separately from any causal claim."
+      },
+      {
+        "t": "h",
+        "v": "4. Deduplicate observations under an identity rule"
+      },
+      {
+        "t": "new",
+        "v": "Duplicate delivery and late arrival",
+        "note": "A duplicate delivery repeats a source event; a late arrival supplies an event after the first analysis window has already run. Deduplication needs a defined source/event identity, and late arrival may require revising an earlier summary."
+      },
+      {
+        "t": "p",
+        "v": "In the sample, L03 and L04 both describe auth eventA03, with matching source event content. L04 is explicitly a connector retry. Count A03 once while keeping both raw deliveries. L12 is auth eventA04, not a duplicate: it occurred at00:01:30 UTC but arrived at00:08:30. Place its event between A02 at00:01 and A03 at00:02 rather than at the end of the behaviour timeline."
+      },
+      {
+        "t": "p",
+        "v": "The alert at00:07 was based on A01/A02/A03 because A04 had not arrived then. A later complete worksheet view includes four distinct rejected logins in [00:00,00:03) UTC. That does not mean the alert’s earlier observation was fabricated. Record the data cutoff so summaries from different collection times can be reconciled."
+      },
+      {
+        "t": "h",
+        "v": "5. Construct a timeline with explicit units"
+      },
+      {
+        "t": "p",
+        "v": "After deduplication, the ten offset-bearing sample events order as A01, A02, A04, A03, A10, N01, P01, P02, E01, Z01. X01 remains outside the UTC event order. Event times order occurrences; received times order available collector evidence. The twelve deliveries describe eleven distinct source events, including the one with unknown event timezone. Separate each denominator."
+      },
+      {
+        "t": "new",
+        "v": "Half-open observation window",
+        "note": "A window [start,end) includes its start and excludes its end. This prevents adjacent windows double-counting an exact boundary. State whether the rule uses event time, receipt time and distinct events or record deliveries."
+      },
+      {
+        "t": "p",
+        "v": "Practice: on paper convert L01/L03/L07 to UTC, identify the duplicate and late arrival, then place the known events on a timeline. Write unknown time for X01 rather than assigning it a false precise position. The Python course’s aware-datetime tools can later support this processing, but the security judgement about source meaning and missing context remains necessary."
+      },
+      {
+        "t": "key",
+        "v": "Preserve source times, normalise only documented context and distinguish event order from arrival order. A tidy sorted table cannot create timezone, clock or identity evidence that was never supplied."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Do09:00+09:00 and00:00Z on the same example date represent different instants?",
+        "a": "No. They represent the same instant under the stated offsets.",
+        "why": "Compare aware timestamps after normalisation rather than sorting their displayed clock text."
+      },
+      {
+        "q": "Can L11’s UTC event time be recovered merely from its documented receipt time?",
+        "a": "No. Receipt time is a different observation; the source timezone remains unknown.",
+        "why": "Keep the event’s uncertainty instead of inventing a local or UTC assumption."
+      },
+      {
+        "q": "Should L04 add another failed login to L03?",
+        "a": "No. Both are prepared deliveries of the same auth eventA03.",
+        "why": "Preserve the deliveries, but count distinct source events under the stated identity rule."
+      },
+      {
+        "q": "Why can an earlier alert count3 while the later worksheet counts4 failures?",
+        "a": "A04 arrived after the alert’s cutoff, so the available evidence changed.",
+        "why": "Data cutoffs and event/receipt times explain the different summaries without silently treating either as the same view."
+      }
+    ],
+    "reflection": "Build the sample’s known-time UTC event order and a separate arrival order. Mark X01 unknown, retain both A03 deliveries in raw evidence, and explain the three different totals: deliveries, distinct events and distinct failed logins.",
+    "references": [
+      {
+        "title": "Python: aware and naive datetime meaning",
+        "url": "https://docs.python.org/3/library/datetime.html"
+      },
+      {
+        "title": "OWASP: event/collection time and source context",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      }
+    ]
+  },
+  "7.4": {
+    "objective": "Triage an alert using bounded evidence, distinguish hypotheses from confirmed impact, propose owner-led containment and communicate a concise situation report without disclosing secrets.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Triage turns a signal into an accountable next step"
+      },
+      {
+        "t": "new",
+        "v": "Triage",
+        "note": "Initial assessment of a concern to establish what is known, its possible scope/impact, urgency and the next authorised investigation or response. It is not a requirement to prove every cause before taking proportionate protective action."
+      },
+      {
+        "t": "p",
+        "v": "Maya’s fictional alert queue shows repeated rejected logins, followed by accepted account access and two note actions. Begin with the source/time window, account/resource references and collection limits. Do not write confirmed takeover merely because a success followed failures. The same sequence may have several explanations, and a legitimate account can still be misused."
+      },
+      {
+        "t": "new",
+        "v": "Observation, hypothesis and confirmed conclusion",
+        "note": "An observation describes evidence, a hypothesis proposes an explanation, and a confirmed conclusion states what sufficient evidence supports under the investigation scope. Use separate wording so uncertainty remains visible."
+      },
+      {
+        "t": "p",
+        "v": "Observation: auth failures are recorded; P01 reports an owner-check refusal on N2; P02 reports a persisted N1 edit. Hypotheses: an approved stale-credential job, normal interactive activity, or some misuse of account access. Missing evidence includes verified job history, legitimate user confirmation through a known route and independent relevant state/history. None of those unknowns becomes true simply because it is a plausible story."
+      },
+      {
+        "t": "h",
+        "v": "2. Assess urgency and scope"
+      },
+      {
+        "t": "new",
+        "v": "Scope, impact and escalation",
+        "note": "Scope identifies relevant systems/accounts/data within the concern. Impact describes affected or potentially affected work. Escalation brings the issue to the responsible people under the response plan when its urgency, authority or expertise requires it."
+      },
+      {
+        "t": "p",
+        "v": "Ask what actions actually succeeded, what was refused, what sensitive task might be affected and whether evidence shows ongoing harm. A refused non-owner edit is different from a successful unauthorised write. Keep both prevention evidence and remaining questions. Initial scope may grow or shrink as sources are verified; track revisions rather than presenting a first guess as final."
+      },
+      {
+        "t": "p",
+        "v": "An organisation should define its incident criteria, contacts and decision authority before a crisis. Current NIST guidance integrates response with broader risk management; the simplified classroom steps here are a way to reason about responsibilities, not a claim that one rigid sequence is the only official process. Follow the applicable response plan and authorised lead."
+      },
+      {
+        "t": "h",
+        "v": "3. Containment is a controlled action with trade-offs"
+      },
+      {
+        "t": "new",
+        "v": "Containment",
+        "note": "An action intended to limit ongoing harm or its spread while investigation/repair proceeds. Examples can include provider-managed access revocation or a scoped communication restriction under the responsible owner’s plan. It is not the same as removing the underlying cause."
+      },
+      {
+        "t": "p",
+        "v": "For a credible ongoing access concern, the authorised account/service owner may decide to revoke affected access through the provider’s known controls. Record the reason, scope and impact. A blanket shutdown can interrupt classes, backups or evidence collection; leaving harmful access active can also carry cost. Preserve available evidence as appropriate, but urgent harm reduction need not wait for an ideal complete evidence copy. Coordinate that trade-off rather than giving a beginner an automatic unplug/reboot instruction."
+      },
+      {
+        "t": "p",
+        "v": "Do not delete logs, run cleanup scripts or power-cycle an unknown machine to make an alert disappear. Such actions can alter evidence or interrupt operations. If the concern exceeds the learner’s role, record what was observed and contact the authorised responder. The worksheet proposes actions for a fictional lead; it changes no actual account or device."
+      },
+      {
+        "t": "h",
+        "v": "4. Communicate facts, gaps and the decision request"
+      },
+      {
+        "t": "new",
+        "v": "Situation report",
+        "note": "A short report giving the observation/cutoff time, affected scope, supported facts, uncertainty, actions already taken, required owner decision and next update condition. A raw dump of sensitive logs is not automatically a useful report."
+      },
+      {
+        "t": "p",
+        "v": "Fictional report: through collector cutoff00:08:30 UTC, four distinct rejected logins and one accepted account event are in the prepared records; two application events under C-7 report one refused N2 edit and one persisted N1 edit. Human attribution and authorisation of the accepted use remain unconfirmed. No live containment was performed in the exercise. Request the lead’s decision on checking job/user context and preserving relevant state/history. Keep the undocumented-time X01 separate."
+      },
+      {
+        "t": "h",
+        "v": "5. Python supports the evidence organisation"
+      },
+      {
+        "t": "p",
+        "v": "Within approved sample data, Python can deduplicate using documented event identities, normalise known offsets, sort relevant events and count patterns under a stated window. It should keep raw/normalised time and unknowns, flag missing sources and avoid printing tokens. A count is not an incident verdict. The responder still supplies policy, context and authority."
+      },
+      {
+        "t": "p",
+        "v": "Paper exercise: make a triage row with facts, two hypotheses, missing evidence, urgency reason, proposed containment owner, operational/evidence trade-off and next review trigger. Distinguish an access restriction from verified eradication, and a requested action from an action actually taken."
+      },
+      {
+        "t": "key",
+        "v": "Triage names evidence and gaps, then coordinates proportionate authorised action. Containment, cause removal, communication and later verification are different responsibilities."
+      }
+    ],
+    "checks": [
+      {
+        "q": "An accepted login follows failures. Is takeover established?",
+        "a": "No. Correlate the relevant context and distinguish plausible explanations from verified impact.",
+        "why": "Sequence alone does not prove who acted or whether that use was legitimate."
+      },
+      {
+        "q": "Must urgent harm reduction always wait until every evidence item is perfectly copied?",
+        "a": "No. The authorised lead balances protective urgency, evidence and operational consequences.",
+        "why": "Preservation matters, but an inflexible delay can permit ongoing harm."
+      },
+      {
+        "q": "Is revoking affected access identical to removing the underlying cause?",
+        "a": "No. It can contain an access route while further investigation and repair are needed.",
+        "why": "A restricted path does not establish how access arose or whether all causes were addressed."
+      },
+      {
+        "q": "What should a short report label about a proposed response?",
+        "a": "Whether it was proposed, approved or actually performed, with owner and evidence cutoff.",
+        "why": "Intent to act is not evidence that containment occurred."
+      }
+    ],
+    "reflection": "Write a fictional one-paragraph situation report and a triage table for the prepared case. Include two explanations, evidence gaps, an owner-led containment proposal and the next information that would change your assessment.",
+    "references": [
+      {
+        "title": "NIST: incident response within risk management",
+        "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+      },
+      {
+        "title": "OWASP: relevant protected event evidence",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      }
+    ]
+  },
+  "7.5": {
+    "objective": "Preserve raw evidence and record handling/digests appropriately, distinguish integrity from truth or attribution, and verify recovery and lessons learned without overwriting useful evidence.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Recovery should address the concern, not only reopen a page"
+      },
+      {
+        "t": "new",
+        "v": "Cause removal and recovery",
+        "note": "Cause removal addresses identified factors enabling the concern. Recovery restores required useful operations under an approved plan, with checks that the necessary protections and data integrity are restored. The details depend on the investigation and system."
+      },
+      {
+        "t": "p",
+        "v": "A service opening again does not establish that the affected account access was handled, a vulnerable component fixed or a private note restored correctly. Week6’s RPO/RTO and retest ideas apply. Use known trustworthy recovery sources and verify the particular account, controls, records and user tasks. If the cause is not established, record that remaining uncertainty rather than claiming complete eradication."
+      },
+      {
+        "t": "h",
+        "v": "2. Preserve raw evidence before transforming a working view"
+      },
+      {
+        "t": "new",
+        "v": "Raw copy and working copy",
+        "note": "A raw preserved copy retains the collected representation under protected access. A working copy is used for parsing, normalisation, annotation and analysis. Those transformations should not overwrite the raw source."
+      },
+      {
+        "t": "p",
+        "v": "In the classroom case, sample-events.json contains the prepared raw deliveries. Duplicate L04 and unknown-time X01 are intentionally retained there. A deduplicated UTC timeline is a derivative view, not a corrected replacement. Record where the raw copy came from, when it was obtained, what was done and where each derived artefact is stored. Real collection needs an authorised scope and may require specialist handling."
+      },
+      {
+        "t": "new",
+        "v": "Evidence handling record",
+        "note": "A record of collection/access/transfers/transformations, including responsible people or roles, times, purpose and methods. It helps explain provenance and integrity. Classroom notes are not automatically a legally sufficient forensic process; real legal requirements vary and require qualified guidance."
+      },
+      {
+        "t": "p",
+        "v": "Store evidence with suitable access, retention and recovery controls. Some logs contain personal data and credentials; minimise and protect them rather than making an unlimited public copy. Public course samples contain only invented accounts, documentation IPs and non-credential references. Do not place real incident material in the public repository to imitate the exercise."
+      },
+      {
+        "t": "h",
+        "v": "3. Use hashes for their actual purpose"
+      },
+      {
+        "t": "new",
+        "v": "SHA-256 digest and reference",
+        "note": "A SHA-256 digest can help compare exact collected-file bytes against a protected reference under the algorithm’s assumptions. Record the algorithm, filename/identity, capture context and digest source. A matching digest does not establish that every logged claim is true or that the file originated from a particular person."
+      },
+      {
+        "t": "p",
+        "v": "The supplied digest-manifest.json records the teaching package’s SHA-256 value for sample-events.json. It is a reference for this fixed classroom file, not a signed forensic assertion about a real device. Changing whitespace or line endings changes the byte digest even when the JSON records remain semantically similar. Hashes computed before and after a working transformation should therefore not be forced to match by overwriting the raw file."
+      },
+      {
+        "t": "p",
+        "v": "If the file and digest came together from an untrusted source, agreement alone cannot establish that source’s authenticity. Keep the trust path and handling record. Likewise, a hash cannot recover an event that was never logged or turn an inaccurate source clock into an accurate timeline. These are separate evidence questions."
+      },
+      {
+        "t": "h",
+        "v": "4. Verify a controlled return to service"
+      },
+      {
+        "t": "new",
+        "v": "Recovery verification and monitoring period",
+        "note": "Verification checks required tasks and protections after recovery. A planned monitoring period looks for relevant recurrence/remaining gaps under healthy collection; a quiet display alone is insufficient if sources stopped reporting."
+      },
+      {
+        "t": "p",
+        "v": "Fictional checklist: the intended account protection is confirmed, owner-note access checks still work, the expected records are usable, legitimate read/write tasks succeed, collector sources are healthy, and the lead’s recovery criteria are met. Restore tests use a separate permitted destination before replacing necessary live data when the plan allows it. If urgent operational recovery changes evidence, record the decision and what was retained."
+      },
+      {
+        "t": "h",
+        "v": "5. Lessons learned become owned improvements"
+      },
+      {
+        "t": "new",
+        "v": "After-action review",
+        "note": "A review of what happened, what evidence supported decisions, what worked or failed and which improvements have owners and verification. Its purpose is improvement, not unsupported blame of a named account owner."
+      },
+      {
+        "t": "p",
+        "v": "For the sample, possible improvements include documented source timezone, duplicate/late-arrival handling, verified job credential maintenance, clearer owner-check/persistence evidence and a tested collection-gap alert. Choose improvements supported by the investigation; do not claim the case proves an actual malicious actor. Assign an owner and a measurable check for each agreed action."
+      },
+      {
+        "t": "p",
+        "v": "Worked improvement: source X01 gets a documented timezone/clock convention and a verified export format. The next authorised test record retains its original value and an unambiguous comparable instant. Another improvement checks whether late auth events revise the review summary. A promise to improve logging is not the same as a deployed/tested improvement."
+      },
+      {
+        "t": "key",
+        "v": "Protect raw provenance, analyse a separate view, use digests as byte-integrity evidence and verify useful protected recovery. Turn supported lessons into accountable improvements."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Should the raw file lose duplicate L04 and unknown-time X01 during analysis?",
+        "a": "No. Keep raw deliveries and build a separate annotated/deduplicated view.",
+        "why": "Those records document collection behaviour and uncertainty even when they are excluded from a particular count/order."
+      },
+      {
+        "q": "Does a matching SHA-256 digest prove that each log statement is true?",
+        "a": "No. It supports byte agreement with the reference, not truth, complete coverage or human attribution.",
+        "why": "Source reliability and provenance need separate evidence."
+      },
+      {
+        "q": "Why can formatting JSON change its digest without changing its parsed record meaning?",
+        "a": "The digest compares exact bytes, including whitespace and line endings.",
+        "why": "A semantic view and a byte-integrity view use different representations."
+      },
+      {
+        "q": "What makes a lessons-learned action more useful than improve monitoring?",
+        "a": "A specific owner, supported change, target/review condition and observable verification.",
+        "why": "An improvement needs an accountable outcome, not just a broad intention."
+      }
+    ],
+    "reflection": "Write an evidence handling record for the fictional raw file and a separate timeline artefact. Define recovery verification and two after-action improvements with owners/tests. Explain three conclusions a hash match cannot establish.",
+    "references": [
+      {
+        "title": "NIST: forensic techniques and evidence handling",
+        "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+      },
+      {
+        "title": "NIST: response/recovery improvements",
+        "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+      },
+      {
+        "title": "Python: digest and exact-byte comparison",
+        "url": "https://docs.python.org/3/library/hashlib.html"
+      }
+    ]
+  },
+  "7.6": {
+    "objective": "Investigate the prepared fictional records by preserving raw deliveries, counting distinct failures, constructing a known-time timeline and producing a bounded triage/evidence summary.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Open the prepared case, not a real log source"
+      },
+      {
+        "t": "new",
+        "v": "Prepared case and evidence cutoff",
+        "note": "The supplied package contains twelve invented collector deliveries and their context. The cutoff is receipt time00:08:30 UTC on2026-10-01. It is not a claim about your account, machine or an external service, and it is not a complete activity history."
+      },
+      {
+        "t": "p",
+        "v": "The complete essential records are explained below for offline study. Optional handout links open sample-events.json, case-notes.txt and digest-manifest.json in docs/cybersecurity-week7. For offline handouts, keep that folder with the downloaded project; downloading only the main HTML does not include separate files. There is no installation, cloud account or live data collection exercise."
+      },
+      {
+        "t": "p",
+        "v": "Assumptions: the explicitly offset-bearing clocks are correct for this worksheet only. X01’s source timezone is unknown. Event identity is source plus event_id. C-7 is a non-credential reference linking the accepted account context and application observations, not a replayable session value. All addresses are documentation placeholders; no IP or account label proves a human identity."
+      },
+      {
+        "t": "h",
+        "v": "2. Read each raw delivery"
+      },
+      {
+        "t": "p",
+        "v": "Record L01 · source auth · event A01 · event_time 2026-10-01T09:00:00+09:00 · received_time 2026-10-01T00:00:05Z · account maya · login.failed → rejected · documentation source IP 192.0.2.40."
+      },
+      {
+        "t": "p",
+        "v": "Record L02 · source auth · event A02 · event_time 2026-10-01T00:01:00Z · received_time 2026-10-01T00:01:04Z · account maya · login.failed → rejected · documentation source IP 192.0.2.40."
+      },
+      {
+        "t": "p",
+        "v": "Record L03 · source auth · event A03 · event_time 2026-10-01T09:02:00+09:00 · received_time 2026-10-01T00:02:06Z · account maya · login.failed → rejected · documentation source IP 192.0.2.40."
+      },
+      {
+        "t": "p",
+        "v": "Record L04 · source auth · event A03 · event_time 2026-10-01T09:02:00+09:00 · received_time 2026-10-01T00:03:00Z · account maya · login.failed → rejected · documentation source IP 192.0.2.40 · Repeated delivery of A03, not another failed login"
+      },
+      {
+        "t": "p",
+        "v": "Record L05 · source auth · event A10 · event_time 2026-10-01T00:03:00Z · received_time 2026-10-01T00:03:02Z · account maya · login.success → accepted · non-credential reference C-7 · documentation source IP 198.51.100.20."
+      },
+      {
+        "t": "p",
+        "v": "Record L06 · source application · event P01 · event_time 2026-10-01T00:04:30Z · received_time 2026-10-01T00:04:31Z · account maya · note.edit → owner_check_refused · resource N2 (owner ravi) · status 403 · write_performed false · non-credential reference C-7."
+      },
+      {
+        "t": "p",
+        "v": "Record L07 · source application · event P02 · event_time 2026-10-01T09:05:00+09:00 · received_time 2026-10-01T00:05:02Z · account maya · note.edit → persisted · resource N1 (owner maya) · status 200 · write_performed true · non-credential reference C-7."
+      },
+      {
+        "t": "p",
+        "v": "Record L08 · source endpoint · event E01 · event_time 2026-10-01T00:06:00Z · received_time 2026-10-01T00:06:10Z · agent.heartbeat → received."
+      },
+      {
+        "t": "p",
+        "v": "Record L09 · source network · event N01 · event_time 2026-10-01T00:03:10Z · received_time 2026-10-01T00:06:20Z · connection.allowed → allowed · documentation source IP 198.51.100.20."
+      },
+      {
+        "t": "p",
+        "v": "Record L10 · source alert · event Z01 · event_time 2026-10-01T00:07:00Z · received_time 2026-10-01T00:07:01Z · account maya · rule.threshold → review_required · alert counted A01, A02, A03 · A04 had not arrived; alert is not another failed login"
+      },
+      {
+        "t": "p",
+        "v": "Record L11 · source legacy-export · event X01 · event_time 2026-10-01 09:01:30 · received_time 2026-10-01T00:08:00Z · account maya · legacy.note_seen → unknown · Source timezone is undocumented; do not infer UTC/Japan from clock text"
+      },
+      {
+        "t": "p",
+        "v": "Record L12 · source auth · event A04 · event_time 2026-10-01T00:01:30Z · received_time 2026-10-01T00:08:30Z · account maya · login.failed → rejected · documentation source IP 192.0.2.40 · Late delivery; earlier event time than receipt time suggests"
+      },
+      {
+        "t": "h",
+        "v": "3. Answer counts before interpreting cause"
+      },
+      {
+        "t": "p",
+        "v": "Closed-notes task: count raw deliveries, unique source events and unique auth failures in [00:00,00:03) UTC. Model result: twelve deliveries; eleven unique source events; four distinct failures A01/A02/A04/A03. L03/L04 are duplicate deliveries of A03, not two failures. Z01 is a generated alert, not another rejected authentication. X01 remains a real prepared record, but its undocumented event timezone prevents placing it in that UTC behaviour window."
+      },
+      {
+        "t": "p",
+        "v": "The earlier Z01 rule saw A01/A02/A03, so its observation count was three. Late A04 arrived at00:08:30, after the alert’s00:07 generation. Preserve both the earlier alert evidence and the later cutoff summary. A count without its unit, time basis and cutoff can create a misleading disagreement."
+      },
+      {
+        "t": "h",
+        "v": "4. Build the timeline and bounded conclusion"
+      },
+      {
+        "t": "p",
+        "v": "Known-time event order: 00:00 A01;00:01 A02;00:01:30 A04;00:02 A03;00:03 A10;00:03:10 N01;00:04:30 P01;00:05 P02;00:06 E01;00:07 Z01. X01 has unknown UTC event placement. The network record N01 arrived late too, so raw row order is not event order. The supplied endpoint heartbeat is limited health evidence, not proof of complete endpoint visibility."
+      },
+      {
+        "t": "p",
+        "v": "Supported observations: the auth source records rejected and accepted account decisions; C-7 links the accepted context and two application events; P01 reports refused access to Ravi’s N2 and no write; P02 reports a persisted owner-note edit to N1. A stronger write/no-write conclusion would use the logging contract and relevant independent stored-state evidence. The network address similarity does not independently identify a human or prove the origin of those account actions."
+      },
+      {
+        "t": "p",
+        "v": "Unestablished claims: confirmed account takeover, successful unauthorised N2 edit, data exfiltration, a specific attacker, or a confirmed benign stale-job cause. The class job might explain some failures, but its actual run/credential evidence is absent. Ask the authorised owner about that context and use a known route for legitimate-user confirmation instead of treating either story as fact."
+      },
+      {
+        "t": "h",
+        "v": "5. Produce a concise incident-review package"
+      },
+      {
+        "t": "new",
+        "v": "Case summary package",
+        "note": "A package linking raw references, handling/digest information, a derived timeline, facts/hypotheses/gaps, proposed owner-led actions and recovery/verification criteria. It must distinguish an alert review from a confirmed incident finding."
+      },
+      {
+        "t": "p",
+        "v": "Your package has four parts: delivery/event-count table; known-time timeline plus X01 uncertainty; triage note with two hypotheses and the evidence needed next; handling/recovery note with owner and verification. State that no actual containment or account change was performed. Preserve the raw sample rather than remove awkward records to make the story cleaner."
+      },
+      {
+        "t": "h",
+        "v": "6. Python’s supporting role"
+      },
+      {
+        "t": "p",
+        "v": "Python can later build the derived timeline and evidence summary from this approved package using aware timestamps, explicit identity rules and grouped counts. It must not assume missing offsets, infer a person from an IP, hide a failed parse or print real secrets. A correct sort/count prepares evidence; it does not supply the missing authorisation/cause/context. This week keeps the exercise focused on security reasoning instead of adding a Python coding worksheet."
+      },
+      {
+        "t": "key",
+        "v": "Twelve deliveries do not mean twelve separate incidents. Preserve raw evidence, count the right units and write a bounded conclusion with explicit missing context."
+      }
+    ],
+    "checks": [
+      {
+        "q": "What are the prepared delivery, distinct-event and distinct-failed-login totals?",
+        "a": "12 deliveries,11 distinct source events and4 distinct auth failures in the stated UTC window.",
+        "why": "A03 is delivered twice; Z01 is an alert; the unknown-time X01 is not guessed into the failure count."
+      },
+      {
+        "q": "Where does late A04 belong in the known-time behaviour timeline?",
+        "a": "At00:01:30 UTC between A02 and A03, despite its00:08:30 receipt.",
+        "why": "Event time and arrival time answer different ordering questions."
+      },
+      {
+        "q": "Do these records establish a successful unauthorised N2 edit?",
+        "a": "No. P01 reports owner-check refusal and no write; relevant independent state evidence would strengthen the observation.",
+        "why": "Do not turn a refused attempt or later permitted N1 edit into an unsupported N2-write claim."
+      },
+      {
+        "q": "Is the stale class job explanation confirmed?",
+        "a": "No. It is a hypothesis requiring permitted job/source/credential-context evidence.",
+        "why": "A plausible explanation is not confirmed simply because it fits the schedule."
+      }
+    ],
+    "reflection": "Complete the four-part case summary before comparing answers. Give the cutoff, units, raw references and X01 uncertainty. Include two competing explanations, next authorised evidence requests and one recovery verification criterion.",
+    "references": [
+      {
+        "title": "Prepared fictional event records",
+        "url": "docs/cybersecurity-week7/sample-events.json"
+      },
+      {
+        "title": "Prepared case notes and exercises",
+        "url": "docs/cybersecurity-week7/case-notes.txt"
+      },
+      {
+        "title": "Teaching-file SHA-256 reference",
+        "url": "docs/cybersecurity-week7/digest-manifest.json"
+      },
+      {
+        "title": "NIST: bounded incident assessment",
+        "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+      }
+    ]
+  },
+  "7.7": {
+    "objective": "Retrieve monitoring/response concepts, reconcile the prepared case’s evidence and counts, and explain an accountable response/recovery plan without overclaiming cause or attribution.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "1. Recall the unit and the boundary"
+      },
+      {
+        "t": "p",
+        "v": "Before opening notes, define event, log record, alert, incident, SOC, SIEM, false positive, collection gap, event time, receipt time, triage, containment and evidence handling. For each, give a sample-case example and a limitation. Your goal is to explain a decision with evidence, not memorise a dashboard abbreviation."
+      },
+      {
+        "t": "new",
+        "v": "Bounded conclusion",
+        "note": "A conclusion that states its source, scope, cutoff and uncertainty. It names what the evidence supports without silently extending it to every system, person or time period."
+      },
+      {
+        "t": "h",
+        "v": "2. Reconstruct the case independently"
+      },
+      {
+        "t": "p",
+        "v": "Describe the auth failures and later account/application events from raw references. L03/L04 repeat source eventA03; L12 brings late A04; X01 has unknown event timezone. At the final cutoff there are twelve deliveries, eleven distinct source events and four distinct failures in the stated window. The generated alert is an observation about a pattern, not another login failure or a proven separate incident."
+      },
+      {
+        "t": "p",
+        "v": "Write the known-time order with A04 between A02/A03, then explain why the earlier three-event alert and later four-event summary can both describe their available evidence. Normalisation can order documented instants; it cannot repair missing source meaning or independently prove the clocks were correct in a real investigation."
+      },
+      {
+        "t": "h",
+        "v": "3. Separate good prevention evidence from remaining concern"
+      },
+      {
+        "t": "p",
+        "v": "P01 reports that the non-owner N2 edit was refused. P02 reports a later persisted N1 edit within the account’s owner permissions. That sequence does not establish who controlled the account or whether the use was intended. A permission control can block one action while another authorised account action still deserves context. The endpoint heartbeat and network allow record answer different limited questions; neither supplies every missing account/state fact."
+      },
+      {
+        "t": "p",
+        "v": "Use two hypotheses: an approved job with stale credentials plus legitimate account use, or some misuse of account access. State missing evidence rather than selecting a story for narrative convenience. Approved user/job context, relevant historical state and source reliability could distinguish explanations. A correlation reference or documentation address is not a human identity or a credential to try using."
+      },
+      {
+        "t": "h",
+        "v": "4. Choose a plan with accountable trade-offs"
+      },
+      {
+        "t": "p",
+        "v": "A fictional lead can prioritise context gathering and proportionate protective action under the response plan. Record who approves any access restriction, its scope, operational impact and evidence considerations. Do not claim containment occurred when your worksheet only proposes it. Urgent harm reduction and evidence preservation must be coordinated rather than treated as one unconditional reboot/delete rule."
+      },
+      {
+        "t": "p",
+        "v": "Recovery criteria should include the specific concern, necessary account/asset protections, usable expected data, legitimate read/write functions and healthy ongoing collection. Week6’s recovery objectives still apply. A quiet dashboard after a source outage is not proof of successful recovery; a hash match is not truth or complete coverage. Cause, privacy and operational requirements need their own evidence."
+      },
+      {
+        "t": "h",
+        "v": "5. Finish the review with improvements you can verify"
+      },
+      {
+        "t": "new",
+        "v": "Improvement verification",
+        "note": "Evidence that an agreed lesson-learned change was actually deployed and performs its intended function, with an owner and review trigger. A promise or newly written policy is not always a demonstrated operational result."
+      },
+      {
+        "t": "p",
+        "v": "Possible case improvements include documenting X01’s timezone, checking duplicate/late delivery handling, strengthening expected state evidence, and testing a collection-gap alert. Do not call all proposed improvements necessary facts of a confirmed attack. Choose an improvement from a supported limitation, assign a responsible role and state how it will be tested."
+      },
+      {
+        "t": "p",
+        "v": "Your final deliverable is the four-part case package: correct units/cutoff table, known-time timeline with unresolved rows, triage communication distinguishing facts and hypotheses, and protected evidence/recovery/improvement notes. Attempt the twelve checks below first, then reveal one answer at a time. Revisit Day1 for monitoring units, Day2 for sources/context, Day3 for chronology, Day4 for triage, Day5 for preservation/recovery and Day6 for worked case reasoning."
+      },
+      {
+        "t": "p",
+        "v": "Python can support a repeatable evidence view once the definitions are clear. It cannot decide legal sufficiency, grant response authority, identify a person from a shared IP or make unknown time known. Next week will consolidate the two-month foundation into an appropriately scoped learning project. Finish with two unclear concepts and take a rest after retrieval."
+      },
+      {
+        "t": "key",
+        "v": "Good monitoring and response preserve evidence, compare the right units and coordinate authorised action. Explain the conclusion’s limits as clearly as its supported facts."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Is an alert automatically a confirmed incident?",
+        "a": "No. Assess the underlying evidence and applicable incident criteria.",
+        "why": "A detection signal is a reason to investigate, not an automatic compromise verdict."
+      },
+      {
+        "q": "Why are12 log deliveries not12 distinct source events here?",
+        "a": "L03/L04 are repeated delivery of auth eventA03, leaving11 distinct source events.",
+        "why": "Preserve deliveries but deduplicate only the defined source-event unit."
+      },
+      {
+        "q": "Which four unique failed logins occur in the stated window?",
+        "a": "A01, A02, A04 and A03.",
+        "why": "A04 is late-delivered but earlier in event time; the alert record is not another failure."
+      },
+      {
+        "q": "What happens to X01’s UTC event placement?",
+        "a": "It stays unknown until its source timezone/convention is documented.",
+        "why": "An offset-bearing receipt time cannot supply the missing event-time context."
+      },
+      {
+        "q": "Why might two summaries of the same case report3 and4 failures?",
+        "a": "Different receipt cutoffs mean late A04 was available only in the later summary.",
+        "why": "State the time basis/cutoff and do not compare differing views as if they used identical evidence."
+      },
+      {
+        "q": "Does accepted authentication establish a human actor?",
+        "a": "No. It reports the account/authenticator result; attribution requires additional evidence.",
+        "why": "An account label is not a proof of the person behind an action."
+      },
+      {
+        "q": "A verified scheduled job caused rejected logins. Are the events themselves false?",
+        "a": "No. The malicious interpretation can be false positive while the maintenance failures remain real.",
+        "why": "Preserve factual observations and separate the explanation."
+      },
+      {
+        "q": "The collector stopped receiving endpoint data. Does no alert establish no endpoint concern?",
+        "a": "No. The collection gap limits the conclusion.",
+        "why": "Healthy coverage is needed before interpreting silence."
+      },
+      {
+        "q": "Should urgent authorised containment always wait for perfect complete evidence?",
+        "a": "No. The lead balances harm reduction, evidence and operational effects.",
+        "why": "Preservation should be coordinated with urgency rather than enforce an unconditional delay."
+      },
+      {
+        "q": "Does a file hash match prove true log claims or a specific originator?",
+        "a": "No. It supports exact-byte agreement with its reference.",
+        "why": "Truth, provenance, coverage and attribution are separate requirements."
+      },
+      {
+        "q": "What distinguishes proposed containment from performed containment?",
+        "a": "Recorded approval/action evidence, responsible role, scope and time.",
+        "why": "A written recommendation is not proof that access changed."
+      },
+      {
+        "q": "What makes recovery/lessons learned reviewable?",
+        "a": "Specific criteria, functioning required tasks, healthy monitoring, and improvements with owners/tests.",
+        "why": "A reopened page or broad promise does not establish the required protected outcome."
+      }
+    ],
+    "reflection": "Complete the case package from memory, then correct it using the raw references. Write one bounded final conclusion, two remaining questions, an owner-led next step and a measurable after-action improvement. Keep real incident data and credentials outside course notes.",
+    "references": [
+      {
+        "title": "NIST: response and recovery recommendations",
+        "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+      },
+      {
+        "title": "OWASP: event-evidence design",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      },
+      {
+        "title": "Prepared fictional case notes",
+        "url": "docs/cybersecurity-week7/case-notes.txt"
+      }
+    ]
   }
 };
 let cyberPage = {mode:"overview", week:1, day:1};

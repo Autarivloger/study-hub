@@ -1,0 +1,16 @@
+{
+  "algorithm": "SHA-256",
+  "purpose": "Reference for exact bytes of this fictional teaching package, not a signed forensic record",
+  "files": [
+    {
+      "file": "sample-events.json",
+      "bytes": 5498,
+      "sha256": "b8283395bf661033881b2b055a39a848e89e9f9acc30b1bd8bad62e63e026c31"
+    },
+    {
+      "file": "case-notes.txt",
+      "bytes": 5137,
+      "sha256": "101b1d4a1913c2d2d5b8e3d709eb7bd6c0676d3b30136354abff7d92c9a078dc"
+    }
+  ]
+}
