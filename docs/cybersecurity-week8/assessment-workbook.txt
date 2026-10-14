@@ -1,0 +1,138 @@
+STUDY HUB — CYBERSECURITY WEEK 8 FOUNDATION CAPSTONE
+Use fictional data or a permitted read-only own-lab review.
+Do not record real credentials, private backup contents or other people's data.
+This is a learning workbook, not a certification or permission to test a target.
+
+1. SCOPE AND PERMISSION
+Title:
+Purpose / intended learning outcome:
+Fictional model or permitted own-lab review:
+Assets/data allowed:
+Evidence-reading methods allowed:
+Actions explicitly excluded:
+Responsible roles / decision owner:
+Observation cutoff and timezone:
+Stopping/escalation condition:
+Where permitted originals are protected:
+
+2. ASSETS, DEPENDENCIES AND REQUEST DIAGRAM
+Draw browser/device -> network -> named service -> identity/app -> data store.
+For an offline page, describe its actual local architecture separately.
+For each asset write purpose, owner, intended readers/writers, dependency.
+Asset | requirement | possible harm | relevant weakness | control | evidence gap
+
+3. PERSONAL / LAB CONTROL REVIEW
+Expected and observed states must remain separate.
+Task | requirement | observation/source/time | match/mismatch/unknown | owner | next step
+Account/authentication dependencies (no secret values):
+Recovery / fallback access:
+Update installed/active state:
+Ordinary privileges / resource permission:
+Data sharing / publication boundary:
+Backup point and actual restore result:
+
+4. SIX-FUNCTION OUTCOME MAP
+The functions interact; mapping is not proof of achievement.
+Govern: accountable roles/policy/risk decision and relevant evidence:
+Identify: assets/dependencies/concerns and relevant evidence:
+Protect: safeguards and relevant evidence:
+Detect: collection health/detection and relevant evidence:
+Respond: assessed/authorised actions and relevant evidence:
+Recover: useful restoration and relevant evidence:
+One task supporting several functions, with reasons:
+One mapped outcome not yet demonstrated:
+
+5. REQUEST / INPUT TEST MATRIX
+Use Week5's offline request model for fictional cases.
+Do not claim that the browser model is a real authenticated backend or SQL test.
+Case | caller | note/action | input/intent category | expected result | observed result | state before/after | scope limit
+Owner read:
+Guest read:
+Non-owner edit:
+Owner edit with required pretend intent:
+Missing/wrong pretend intent or unexpected origin:
+Blank / over-limit text:
+Literal markup-like text / legitimate punctuation:
+One real implementation mechanism the simulation does not verify:
+
+6. CONNECTED EVIDENCE REVIEW
+Use Week7's prepared sample, not actual device or service logs.
+Source / cutoff / identity rule:
+Raw delivery count:
+Distinct source-event count:
+Distinct failed-login count and window:
+Duplicate reference:
+Late-arrival reference and event/receipt difference:
+Known-time event order:
+Unknown-time row and why it stays unresolved:
+Supported account/application facts:
+Network and endpoint evidence limits:
+Hypothesis A / discriminating evidence:
+Hypothesis B / discriminating evidence:
+Bounded summary with raw references:
+No performed action should be claimed where only proposed.
+
+7. FINDINGS (MAKE AT LEAST TWO)
+Finding ID / title:
+Asset / requirement:
+Observed evidence / source / time:
+Confirmed fact and uncertainty:
+Potential consequence / exposure / control context:
+Source severity if actually applicable (do not invent a CVSS value):
+Local priority reason / confidence:
+Owner and proposed action:
+Remediation versus mitigation versus exception:
+Target/review trigger:
+Verification / closure criteria:
+Current status (planned/tested/unknown/etc.):
+Residual risk / limitation:
+
+8. RESPONSE AND RECOVERY PLAN
+Who receives the observation and who decides actions:
+Initial facts / gaps / scope:
+Authorised containment decision and urgency/operations/evidence trade-off:
+Preserved raw source / separate working artefacts:
+Communication summary / next update condition:
+Cause-removal task and evidence still required:
+RPO (tolerated recent loss):
+RTO (target useful recovery time):
+Actual usable capture point / evidence:
+Required access, keys, software and restore destination:
+Planned or performed fictional restore:
+Expected records and permitted read/write tasks:
+Elapsed recovery and limitations if actually tested:
+Collection-health checks after recovery:
+Lessons learned | owner | action | verification:
+
+9. AUTOMATION CONTRACT (PLAIN ENGLISH)
+Goal / permitted records:
+Input schema, identity and time assumptions:
+Raw-preservation rule:
+Required outputs and their supported claims:
+Unknown/unreadable/invalid handling:
+Secret/personal-data redaction:
+One known-good fixture check:
+One missing-offset fixture check:
+One duplicate or unreadable-input fixture check:
+Decisions remaining with a human/owner:
+Related Python lessons to revise before implementation:
+
+10. PORTFOLIO AND READINESS
+Glossary with relationships/counterexamples:
+Network/request diagram:
+Reader / responsibility map:
+Test matrix:
+Timeline / evidence summary:
+Findings report:
+Response/recovery checklist:
+Two skills explained and demonstrated with evidence:
+Two weak skills / exact lesson to revisit / changed example / recheck trigger:
+One small next goal / prerequisites / authorised scope / expected evidence:
+Public sanitised version contains no real secrets or private incident material:
+
+FINAL REVIEW
+Attempt Week8 Day7's20 checks closed-notes, with reasons.
+Correct contradictions in counts, scope, times, observed versus expected state.
+Keep model evidence, planned tests and real authorised observations labelled.
+No automatic Week9 or external-target testing is implied by this workbook.
+

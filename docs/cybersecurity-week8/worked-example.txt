@@ -1,0 +1,107 @@
+WORKED FICTIONAL ASSESSMENT — LEARNING EVIDENCE ONLY
+Attempt the workbook first. This example is not an audit of your website/device.
+
+SCOPE
+Purpose: connect request controls, maintenance and evidence to a bounded report.
+Assets: Week5 in-memory request model and Week7 prepared records; two invented
+own-lab observation rows supplied below.
+No external requests, credential collection, live settings changes or actual
+incident containment occurred in this example. All roles/conditions are fictional.
+Cutoff for the prepared log case: 2026-10-01T00:08:30Z.
+
+REQUIREMENT MAP
+Public lessons have an intended public audience.
+Private model notes have owner-read/edit rules.
+A valid session does not replace resource/action permission.
+Permitted edit data stays text; the model neither executes SQL nor authenticates
+real people. An allowed simulation result must not be reported as a real API audit.
+Recovery requires usable data/access/functions, not merely an archive filename.
+
+SIMULATION CASES (EXPECTED MODEL BEHAVIOUR, NOT A REAL BACKEND TEST)
+Maya / Read N1:200 and unchanged model records.
+Guest / Read N1:401 and unchanged model records.
+Ravi / Edit N1:403 at owner permission, no model write.
+Maya / Edit N1 / valid pretend intent / ordinary text:200, only N1 changes.
+Maya / Edit N1 / missing intent:403, no write.
+Maya / Edit N1 / blank or >200 code points:400, no write.
+Literal <b>Study</b> or O'Brien remains ordinary model text.
+Actual observed results must be recorded after your own run; this reference is
+not a claim that your particular browser execution has already been tested.
+
+CONNECTED PREPARED RECORDS
+12 deliveries;11 distinct source events;10 offset-bearing events;1 unknown
+source-event timezone (X01).
+Source-event identity: source + event_id. L03/L04 repeat auth A03.
+Unique failures in [00:00,00:03) UTC: A01,A02,A04,A03 (4).
+Known-time order: A01,A02,A04,A03,A10,N01,P01,P02,E01,Z01.
+Earlier alert Z01 saw3 failures; late A04 had not reached the collector yet.
+P01 reports N2 owner-check refusal/no write. P02 reports N1 persistence.
+Independent relevant state evidence is not supplied.
+C-7 is a public non-credential label, not a human identity or a usable session.
+N01 adds network context; E01 adds heartbeat context, not complete host coverage.
+No confirmed takeover, exfiltration, human actor or successful unauthorised N2
+write is established. A stale class job is a hypothesis requiring evidence.
+
+FICTIONAL INVENTORY / RECOVERY INPUTS
+INV-A: an approved reader update downloaded; active build/restart not verified.
+REC-A: an invented archive exists; no restore result is supplied.
+These are teaching conditions, not actual observations of any person's device.
+
+FINDING F-01 — RECOVERY NOT DEMONSTRATED
+Requirement: recover useful invented notes within the agreed loss/time targets.
+Evidence: REC-A says an archive exists, with no usable restore result.
+Conclusion: a recovery evidence gap; corruption is not established.
+Confidence: supplied gap confirmed; actual archive usability unknown.
+Priority reason: essential recovery evidence is missing for valued study work.
+Owner: fictional learner/lab administrator.
+Action: obtain a usable capture point/access/key record and test invented notes
+in a separate destination. Keep the source and real learning progress untouched.
+Status: planned, not verified resolved.
+Closure: expected notes/read-write work, dependency access and measured recovery
+meet the agreed RPO/RTO; record any residual gap.
+
+FINDING F-02 — UPDATE ACTIVATION UNKNOWN
+Requirement: relevant supported update is active under the approved baseline.
+Evidence: INV-A reports download but no verified active-state/restart evidence.
+Conclusion: activation not demonstrated; no real CVE or exploit claim is made.
+Owner: fictional device administrator.
+Action: inspect current applicable package/build and restart guidance through
+the authorised maintenance process; preserve ordinary task functionality.
+Status: needs evidence/pending verification.
+Closure: current active-state evidence satisfies the requirement and intended
+reading/update operations remain useful. Do not substitute download success.
+
+SIX-FUNCTION MAP (ORGANISATION OF OUTCOMES, NOT PROOF OF ACHIEVEMENT)
+Govern: assign owners, permission scope and tolerated recovery loss/time.
+Identify: describe relevant assets/dependencies and evidence gaps.
+Protect: owner policy, safe text/data boundaries and controlled maintenance.
+Detect: source-aware event review with collection/cutoff limits.
+Respond: proposed lead-led triage and any proportionate authorised action.
+Recover: planned usable restore and measured criteria.
+These functions interact; a mapped label is not a completed test/certification.
+
+RESPONSE / RECOVERY PROPOSAL
+No live response occurred. A designated lead reviews facts/hypotheses/gaps,
+requests allowed job/user/state context and balances urgency/evidence/operations.
+Raw Week7 deliveries stay intact; normalised summaries are separate artefacts.
+Choose containment only under that lead's actual authority and case evidence.
+Record proposed, approved and performed states separately.
+Recovery uses a known acceptable point, available keys/access, expected records,
+representative functions and healthy source collection. RPO/RTO are requirements;
+no performed restoration or measured recovery time is invented here.
+
+AUTOMATION CONTRACT
+Input: approved fictional inventory records, exact teaching-file bytes and logs.
+Output: match/mismatch/unknown rows, digest comparison and documented timeline.
+Keep identity, source, raw values, normalised time and limitations.
+Unknown timezone stays unknown; failed reads/parses are flagged, not omitted.
+Never print real credentials or automatically apply settings changes.
+Owner risk acceptance/attribution decisions remain outside the script's guesses.
+
+READINESS
+Evidence strength: model reasoning and prepared-record counts can be checked.
+Remaining gaps: performed recovery and real update activation are unverified.
+Next small goal: verify a fictional restore separately and recheck its expected
+data/functions before choosing a broader authorised practical project.
+Public portfolio uses only this fictional/sanitised material and honest status.
+
