@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Planner{% endblock %}
+{% block content %}
+<p class="eyebrow">POST → REDIRECT → GET</p><h1>{{ session['demo_name'] }}'s practice planner</h1>
+<div class="two-columns">
+<section class="card">
+  <h2>Write a short practice note</h2>
+  <p>Use fictional text. These notes live in server memory until restart and are shared by demo visitors in this process.</p>
+  <form method="post" action="{{ url_for('add_note') }}" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="body">What clicked today?</label>
+    <textarea id="body" name="body" rows="5" maxlength="200" required>{{ draft }}</textarea>
+    {% if error %}<p class="notice error" role="alert">{{ error }}</p>{% endif %}
+    <button>Add temporary note</button>
+  </form>
+</section>
+<section class="card"><h2>Small next steps</h2><ul>{% for lesson in lessons %}<li><a href="{{ url_for('lesson_detail', lesson_id=lesson.id) }}">{{ lesson.title }}</a></li>{% endfor %}</ul></section>
+</div>
+<section class="card"><h2>Temporary notes ({{ notes|length }}/20)</h2>
+{% for note in notes %}<article class="note"><strong>{{ note.author }}</strong><p>{{ note.body }}</p></article>{% else %}<p>No practice notes yet.</p>{% endfor %}
+<form method="post" action="{{ url_for('clear_notes') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button class="secondary">Clear all temporary demo notes</button>
+</form></section>
+{% endblock %}

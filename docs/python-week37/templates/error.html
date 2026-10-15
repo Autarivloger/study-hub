@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Request {{ code }}{% endblock %}
+{% block content %}
+<p class="eyebrow">A RESPONSE, NOT A CRASH</p><h1>Request {{ code }}</h1>
+<section class="card"><p>{{ message }}</p><a class="button secondary" href="{{ url_for('home') }}">Back to home</a></section>
+{% endblock %}

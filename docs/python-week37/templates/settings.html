@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<p class="eyebrow">A SMALL SIGNED-COOKIE PREFERENCE</p><h1>Demo display</h1>
+<form method="post" action="{{ url_for('settings') }}" class="card stack">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label for="theme">Theme for this demo browser</label>
+  <select id="theme" name="theme">{% for value in ['light','dark'] %}<option value="{{ value }}" {% if session.get('theme','light')==value %}selected{% endif %}>{{ value|title }}</option>{% endfor %}</select>
+  {% if error %}<p class="notice error" role="alert">{{ error }}</p>{% endif %}
+  <button>Save demo preference</button>
+</form>
+<p>The cookie is signed, not encrypted. Do not place secrets in session values.</p>
+{% endblock %}

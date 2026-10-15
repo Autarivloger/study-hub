@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" data-theme="{{ session.get('theme', 'light') }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}My learning desk{% endblock %} · Flask practice</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <a class="brand" href="{{ url_for('home') }}">My learning desk <span>Week 37 / local Flask lab</span></a>
+  <nav aria-label="Main">
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('lessons') }}">Lessons</a>
+    <a href="{{ url_for('planner') }}">Planner</a>
+    <a href="{{ url_for('settings') }}">Settings</a>
+    <a href="{{ url_for('about') }}">About</a>
+  </nav>
+  {% if session.get('demo_name') %}
+  <form method="post" action="{{ url_for('leave') }}" class="leave-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <span>{{ session['demo_name'] }}</span><button class="secondary">Leave demo</button>
+  </form>
+  {% else %}
+  <a class="button secondary" href="{{ url_for('enter') }}">Open demo space</a>
+  {% endif %}
+</header>
+<main id="main" class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <p class="notice {{ category }}" role="status">{{ message }}</p>
+    {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="container footer">Fictional local practice. Notes are memory-only and shared within this running process.
+  This is separate from Study Hub and does not save or sync its progress.</footer>
+</body>
+</html>

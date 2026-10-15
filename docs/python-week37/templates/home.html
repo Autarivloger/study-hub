@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">FROM PYTHON TO A BROWSER</p>
+  <h1>A small desk for focused learning.</h1>
+  <p>Follow a route, render a template, validate a form. This local dashboard connects the pieces.</p>
+  <a class="button" href="{{ url_for('lessons') }}">Explore the sample lessons</a>
+</section>
+<section class="stats" aria-label="Practice facts">
+  <article class="card"><span class="big">{{ lessons|length }}</span><p>fictional lesson cards</p></article>
+  <article class="card"><span class="big">{{ visits }}</span><p>home loads in this browser session</p></article>
+  <article class="card"><span class="big">Local</span><p>no CDN, account or network API</p></article>
+</section>
+<section class="card"><h2>Today's practice</h2><p>Use the lesson search, open a detail page, then enter the demo planner and write a short practice note. Check how GET, POST and redirects appear in Network tools.</p></section>
+{% endblock %}

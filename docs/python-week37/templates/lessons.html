@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Lessons{% endblock %}
+{% block content %}
+<p class="eyebrow">A QUERY STRING, NOT A WRITE</p>
+<h1>Find a sample lesson</h1>
+<form method="get" action="{{ url_for('lessons') }}" class="card search">
+  <label for="q">Title or topic</label>
+  <input id="q" name="q" value="{{ q }}" maxlength="80" placeholder="Try HTTP or forms">
+  <button>Search</button>
+</form>
+{% if error %}<p class="notice error" role="alert">{{ error }}</p>{% endif %}
+<p>{{ lessons|length }} result(s). Search does not change stored lessons.</p>
+<div class="grid">
+{% for lesson in lessons %}
+  <article class="card"><p class="eyebrow">{{ lesson.topic }}</p><h2><a href="{{ url_for('lesson_detail', lesson_id=lesson.id) }}">{{ lesson.title }}</a></h2><p>{{ lesson.minutes }} minutes of suggested practice</p></article>
+{% else %}
+  <section class="card"><h2>No matching lessons</h2><p>Try a broader word or clear the search.</p></section>
+{% endfor %}
+</div>
+{% endblock %}

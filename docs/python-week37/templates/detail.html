@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }}{% endblock %}
+{% block content %}
+<p class="eyebrow">{{ lesson.topic }}</p>
+<h1>{{ lesson.title }}</h1>
+<section class="card"><h2>Practice, then explain</h2><p>This is a fictional dashboard card, not a replacement for the full Study Hub course.</p><ol><li>State the idea in your own words.</li><li>Run its example in a new practice folder.</li><li>Change one input and predict the result.</li></ol><p>Suggested time: {{ lesson.minutes }} minutes. Take longer when needed.</p></section>
+<a class="button secondary" href="{{ url_for('lessons') }}">Back to lessons</a>
+{% endblock %}
