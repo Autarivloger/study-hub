@@ -1,0 +1,57 @@
+/* Online Safety: imported teaching content; existing progress/note maps are reused. */
+function safetyProgressKey(number, kind){ return "cyber:online-safety:"+number+":"+kind; }
+function renderCyberSafety(body){
+  const lessons=CYBER_ONLINE_SAFETY;
+  const openLesson=cyberPage.mode==="safety-lesson";
+  const lesson=lessons.find(function(l){return l.number===cyberPage.lesson;})||lessons[0];
+  const readCount=lessons.filter(function(l){return !!DB.lessonsDone[safetyProgressKey(l.number,"read")];}).length;
+  const practiceCount=lessons.filter(function(l){return !!DB.lessonsDone[safetyProgressKey(l.number,"exercise")];}).length;
+  let content='<button type="button" class="back-link" data-safety-home>← Cybersecurity</button>';
+  if(!openLesson){
+    content+='<div class="week-header"><div class="wh-eyebrow">Lesson folder · Beginner</div><h1>Online Safety</h1>'+
+      '<p class="wh-goal">Practical account and online safety · About 20 minutes per lesson</p></div>'+
+      '<p class="ls-p">Read the explanation, try one small exercise, then reveal its self-check. Reading and exercise completion are tracked separately.</p>'+
+      '<div class="ls-box ls-tip"><b>About your imported material</b>Lessons 2–7 come from your supplied transcript. Lesson 1 is an added introduction because its complete text was missing. References to previous chat progress in the imported text are historical; nothing is marked complete automatically.</div>'+
+      '<p class="ls-p" aria-live="polite">'+readCount+' of '+lessons.length+' read · '+practiceCount+' '+(practiceCount===1?'exercise':'exercises')+' completed</p>'+
+      progressBar(readCount,lessons.length,true)+'<div class="day-list">'+lessons.map(function(l){
+        const read=!!DB.lessonsDone[safetyProgressKey(l.number,"read")],done=!!DB.lessonsDone[safetyProgressKey(l.number,"exercise")];
+        return '<div class="day-row"><button type="button" class="day-open" data-safety-lesson="'+l.number+'"><div class="dr-title">Lesson '+l.number+'</div>'+
+          '<div class="dr-meta">'+escapeHtml(l.title)+'</div><div class="dr-meta">'+(read?'Read':'Not marked read')+' · '+(done?'Exercise complete':'Exercise not marked complete')+'</div></button></div>';
+      }).join('')+'</div>';
+  }else{
+    const context="cyber:online-safety:"+lesson.number;
+    content+='<button type="button" class="back-link" data-safety-folder>← Online Safety</button>'+
+      '<div class="week-header"><div class="wh-eyebrow">Lesson '+lesson.number+' of '+lessons.length+' · About 20 minutes · '+escapeHtml(lesson.origin)+'</div>'+
+      '<h1>'+escapeHtml(lesson.title)+'</h1></div><article class="cyber-teaching safety-teaching">'+
+      '<div class="ls-obj"><div class="ls-obj-lab">Today’s goal</div><div class="ls-obj-text">'+escapeHtml(lesson.objective)+'</div></div>'+
+      renderSections(lesson.sections,context)+
+      '<section class="safety-exercise" aria-label="One small exercise"><h2 class="ls-h">'+escapeHtml(lesson.exerciseTitle)+'</h2>'+renderSections(lesson.exercise)+'</section>'+
+      '<details class="safety-self-check"><summary>Show self-check / success criteria · 3 minutes</summary>'+renderSections(lesson.selfCheck)+'</details>'+
+      '<section aria-label="Lesson recap"><h2 class="ls-h">Recap — Lesson '+lesson.number+'</h2>'+renderSections(lesson.recap)+'<p class="ls-p">'+escapeHtml(lesson.next)+'</p></section></article>'+
+      '<section class="cyber-day-notes" id="safetyNotes" aria-label="Lesson notes">'+renderSections([{t:"h",v:"Lesson Notes",noteKey:context+"|lesson-notes"},{t:"p",v:"Write your reasoning or questions. Do not record passwords, verification codes, recovery keys or sensitive account details."}],context)+'</section>'+
+      '<div class="cyber-day-navigation safety-progress">'+["read","exercise"].map(function(kind){
+        const done=!!DB.lessonsDone[safetyProgressKey(lesson.number,kind)];
+        return '<button type="button" class="btn '+(done?'secondary':'')+'" data-safety-complete="'+kind+'" aria-pressed="'+done+'">'+
+          (kind==="read"?(done?'Read ✓ · Undo':'Mark as read'):(done?'Exercise complete ✓ · Undo':'I completed the exercise'))+'</button>';
+      }).join('')+'</div><div class="cyber-day-navigation"><button type="button" class="btn secondary" data-safety-step="-1"'+(lesson.number===1?' disabled':'')+'>← Previous lesson</button>'+
+      '<button type="button" class="btn" data-safety-step="1"'+(lesson.number===lessons.length?' disabled':'')+'>Next lesson →</button></div>';
+  }
+  content+='<p class="cyber-references safety-references">Optional reference: <a href="https://consumer.ftc.gov/articles/how-recognize-avoid-phishing-scams" target="_blank" rel="noopener noreferrer">FTC: phishing and independent verification</a> · <a href="https://fidoalliance.org/passkeys/" target="_blank" rel="noopener noreferrer">FIDO: passkeys</a></p>';
+  body.innerHTML=content;
+  wireHeadNotes(body);
+  function update(scroll){renderCybersecurityRoadmap();if(scroll)body.scrollIntoView({block:"start"});}
+  body.querySelectorAll("[data-safety-home]").forEach(function(b){b.onclick=function(){cyberPage.mode="overview";update(true);};});
+  body.querySelectorAll("[data-safety-folder]").forEach(function(b){b.onclick=function(){cyberPage.mode="safety-folder";update(true);};});
+  body.querySelectorAll("[data-safety-lesson]").forEach(function(b){b.onclick=function(){cyberPage.mode="safety-lesson";cyberPage.lesson=Number(b.dataset.safetyLesson);update(true);};});
+  body.querySelectorAll("[data-safety-step]").forEach(function(b){b.onclick=function(){const n=lesson.number+Number(b.dataset.safetyStep);if(n<1||n>lessons.length)return;cyberPage.lesson=n;update(true);};});
+  body.querySelectorAll("[data-safety-complete]").forEach(function(b){b.onclick=function(){
+    const key=safetyProgressKey(lesson.number,b.dataset.safetyComplete);
+    if(DB.lessonsDone[key])delete DB.lessonsDone[key];else DB.lessonsDone[key]=nowISO();
+    save();
+    // Update this control in place, preserving open answers, text selection and unsaved note input.
+    const done=!!DB.lessonsDone[key];b.setAttribute("aria-pressed",String(done));b.classList.toggle("secondary",done);
+    b.textContent=b.dataset.safetyComplete==="read"?(done?'Read ✓ · Undo':'Mark as read'):(done?'Exercise complete ✓ · Undo':'I completed the exercise');
+  };});
+  const notes=body.querySelector("#safetyNotes");
+  if(notes){const input=notes.querySelector("textarea");input.setAttribute("aria-label","Notes for Online Safety Lesson "+lesson.number);}
+}

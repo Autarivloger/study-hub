@@ -1,0 +1,1050 @@
+[
+  {
+    "number": 1,
+    "title": "Email and account safety: protect your reset hub",
+    "origin": "Added introduction",
+    "objective": "Explain why your main email matters and choose a trusted route to an account’s security settings.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Review · 2 minutes"
+      },
+      {
+        "t": "p",
+        "v": "This is the starting lesson. Your supplied transcript begins at Lesson 2 and refers back to email safety, so this introduction fills that gap. There is no earlier exercise to report. Read the goal and think about the accounts you use, without listing passwords or private account details here."
+      },
+      {
+        "t": "h",
+        "v": "Learn · 10 minutes"
+      },
+      {
+        "t": "p",
+        "v": "An account is your identity inside a service: email, shopping, social media or a learning platform. Signing in proves that you may use that account. Account security means reducing unwanted access and knowing how to regain control when something goes wrong."
+      },
+      {
+        "t": "h",
+        "v": "Why your inbox is a useful starting point"
+      },
+      {
+        "t": "p",
+        "v": "Many services send password-reset links or security notices to your email. Someone who controls that inbox may be able to reset connected accounts, although recovery rules differ by service. Think of your main inbox as a hub with several paths leading to it. Protecting the hub helps protect the connected accounts."
+      },
+      {
+        "t": "p",
+        "v": "For example, Mira uses an email address for shopping and a photo service. The photo service sends a reset link to that inbox. Mira should protect both accounts, but her inbox deserves early attention because it receives recovery messages. This does not mean every account can always be recovered through email."
+      },
+      {
+        "t": "h",
+        "v": "Use a route you opened yourself"
+      },
+      {
+        "t": "p",
+        "v": "If an unexpected message says your account is at risk, pause before using its button, QR code or phone number. Open the usual app or a known website address independently and find account security there. A familiar logo or urgent deadline is not proof of who sent the message."
+      },
+      {
+        "t": "h",
+        "v": "Build layers gradually"
+      },
+      {
+        "t": "p",
+        "v": "A unique password limits damage from reuse. A password manager can help store independent passwords. Additional sign-in checks and passkeys provide other protections where supported. Recovery planning helps when a device or credential becomes unavailable. The next lessons explain these one at a time; you do not need to change settings today."
+      },
+      {
+        "t": "h",
+        "v": "Common mistakes, explained simply"
+      },
+      {
+        "t": "p",
+        "v": "“I never send important messages, so my email does not matter.” Your inbox may still receive reset messages for important services.\n“A security message must be genuine because it knows my name.” Names and logos can be copied. Reach the service independently.\n“I must share a code to prove I am learning.” Never put passwords, one-time codes, recovery keys or sensitive account details in lesson notes or chat."
+      }
+    ],
+    "exerciseTitle": "One exercise: map a fictional reset hub · 5 minutes",
+    "exercise": [
+      {
+        "t": "p",
+        "v": "Mira’s shopping account and photo account both send password-reset emails to her main inbox. A text message now claims the inbox will be closed unless she follows its sign-in link. Write a short answer explaining which account deserves early protection, why the other accounts depend on it, and how she could check the warning safely. Use only this fictional situation; no real sign-in, settings change or account information is needed."
+      }
+    ],
+    "selfCheck": [
+      {
+        "t": "p",
+        "v": "A successful answer identifies the main inbox as an early priority because it receives recovery messages, explains the connection to the shopping/photo accounts, and says Mira should open her usual email app or a known website independently rather than use the text’s link. If you chose to trust the message because it sounded urgent, revise that step: urgency is a reason to pause, not proof of identity."
+      }
+    ],
+    "recap": [
+      {
+        "t": "p",
+        "v": "Your main inbox can connect to recovery for other accounts.\nReach security settings through an app or website you opened independently.\nBuild protections step by step and keep credentials out of learning notes."
+      }
+    ],
+    "next": "Next lesson: Unique passwords—protect one account at a time."
+  },
+  {
+    "number": 2,
+    "title": "Unique passwords: protect one account at a time",
+    "origin": "From your supplied transcript",
+    "objective": "understand why reusing passwords creates risk and how a password manager can make unique passwords easier.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Review · 2 minutes"
+      },
+      {
+        "t": "p",
+        "v": "Yesterday, you learned that your email often receives password reset messages for other accounts. Protecting your inbox helps protect those connected accounts."
+      },
+      {
+        "t": "p",
+        "v": "Lesson 1 was delivered, but you haven’t reported completing its exercise. That’s fine—we’ll continue at beginner level."
+      },
+      {
+        "t": "h",
+        "v": "Learn · 10 minutes"
+      },
+      {
+        "t": "p",
+        "v": "Imagine using the same key for your home, bicycle lock, and storage locker. If someone gets that key, several places become accessible."
+      },
+      {
+        "t": "p",
+        "v": "Reusing a password creates a similar problem. Suppose Alex uses one password for a hobby forum and email. If the forum’s password is exposed, someone may try the same email address and password on other services. Alex’s email can be at risk even if the email provider itself wasn’t breached."
+      },
+      {
+        "t": "p",
+        "v": "A unique password limits that connection. If the forum and email have different passwords, knowing the forum password doesn’t directly reveal the email password. Uniqueness doesn’t prevent every attack, but it reduces the harm that password reuse can cause."
+      },
+      {
+        "t": "h",
+        "v": "Small variations are predictable."
+      },
+      {
+        "t": "p",
+        "v": "Adding a website name, changing the final number, or replacing a letter with a symbol may feel like creating a new password. But someone who knows one version may be able to guess the pattern."
+      },
+      {
+        "t": "p",
+        "v": "A useful goal is a password that is:"
+      },
+      {
+        "t": "p",
+        "v": "Unique: used for only one account.\nLong: with enough characters to make guessing harder.\nUnpredictable: without personal details or a recognizable pattern.\nA password manager helps you meet those goals. It stores passwords in a protected vault and can generate a different random password for each account. You remember how to unlock the vault instead of memorizing every account password."
+      },
+      {
+        "t": "p",
+        "v": "Because the vault is important, its own password should be long, unique, and carefully protected. Enable multifactor authentication when available. We’ll cover safeguards and recovery in later lessons."
+      },
+      {
+        "t": "h",
+        "v": "What a normal password change looks like"
+      },
+      {
+        "t": "p",
+        "v": "Open the service through its app or a known website address. Find its account security settings, generate a new password with your manager, save it for the correct account, and confirm you can sign in."
+      },
+      {
+        "t": "p",
+        "v": "Avoid starting from an unexpected message’s “change your password” link. As you learned yesterday, you can reach the service independently."
+      },
+      {
+        "t": "p",
+        "v": "You don’t need to replace every password in one sitting. Prioritize your main email, your password manager if you use one, and important financial accounts—especially where passwords are reused."
+      },
+      {
+        "t": "h",
+        "v": "Common mistakes, explained simply"
+      },
+      {
+        "t": "p",
+        "v": "“My password has symbols, so I can reuse it.”\nSymbols don’t solve reuse. Once someone knows the password, they don’t need to guess it."
+      },
+      {
+        "t": "p",
+        "v": "“I’ll change one character for each website.”\nThat creates a pattern. Independently generated passwords avoid that connection."
+      },
+      {
+        "t": "p",
+        "v": "“I should change every password regularly, even when nothing is wrong.”\nFocus on replacing reused, weak, or exposed passwords. Arbitrary repeated changes can encourage predictable variations."
+      }
+    ],
+    "exerciseTitle": "One exercise: make a private password-reuse map · 5 minutes",
+    "exercise": [
+      {
+        "t": "p",
+        "v": "On paper or in a private note, list five account categories you use—for example, email, banking, shopping, social media, and entertainment."
+      },
+      {
+        "t": "p",
+        "v": "Beside each category, write only:"
+      },
+      {
+        "t": "p",
+        "v": "Unique\nReused\nUnsure\nThen circle one account to prioritize. Choose your main email if its password is reused or uncertain; otherwise, choose another important account marked “Reused” or “Unsure.”"
+      },
+      {
+        "t": "p",
+        "v": "Do not write the passwords themselves. Today’s exercise is identifying a priority; you don’t need to change settings yet."
+      }
+    ],
+    "selfCheck": [
+      {
+        "t": "p",
+        "v": "You’ve completed the exercise if you classified five accounts and chose one priority."
+      },
+      {
+        "t": "p",
+        "v": "“Unsure” is a valid answer. It identifies something to investigate without guessing. If every account uses a unique password, you’re already applying today’s main habit."
+      },
+      {
+        "t": "p",
+        "v": "If you marked several accounts “Reused,” start with the circled account. This is a manageable problem to improve step by step."
+      }
+    ],
+    "recap": [
+      {
+        "t": "p",
+        "v": "A password exposed on one service can threaten other accounts that reuse it.\nSmall variations create predictable patterns.\nA password manager can generate and store independent passwords."
+      }
+    ],
+    "next": "Next lesson: Password managers—using a vault safely and planning how to recover access."
+  },
+  {
+    "number": 3,
+    "title": "Password managers: using your vault safely",
+    "origin": "From your supplied transcript",
+    "objective": "understand how a password manager works and how to avoid losing access to it.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Review · 2 minutes"
+      },
+      {
+        "t": "p",
+        "v": "In Lesson 2, you learned that each account needs its own password. Small changes to one reused password can create a predictable pattern."
+      },
+      {
+        "t": "p",
+        "v": "A password manager helps you store different passwords without memorizing them all. Today, we’ll focus on using it carefully. No exercise results have been reported yet, so we’ll keep the pace beginner-friendly."
+      },
+      {
+        "t": "h",
+        "v": "Learn · 10 minutes"
+      },
+      {
+        "t": "p",
+        "v": "Think of a password manager as a protected vault. Each entry usually contains a website address, username, and password. It can also generate a random password when you create or update an account."
+      },
+      {
+        "t": "p",
+        "v": "Some managers are built into browsers or devices; others are separate apps. Features and recovery options vary. The important habits are similar."
+      },
+      {
+        "t": "h",
+        "v": "Protect the vault’s entrance"
+      },
+      {
+        "t": "p",
+        "v": "If your manager uses a main or “master” password, make it long and unique. Don’t reuse your email password."
+      },
+      {
+        "t": "p",
+        "v": "A long passphrase made from randomly selected, unrelated words can be easier to remember than a short jumble of characters. A familiar quotation or personal story is more predictable. Never use a password example published in a lesson as your real password."
+      },
+      {
+        "t": "p",
+        "v": "If available, add multifactor authentication—an additional sign-in requirement. We’ll explore that next time."
+      },
+      {
+        "t": "h",
+        "v": "Understand what unlocking means"
+      },
+      {
+        "t": "p",
+        "v": "A fingerprint or face scan may let you unlock the vault conveniently on your device. Depending on the manager, you may still need the main password after restarting, on a new device, or during recovery."
+      },
+      {
+        "t": "p",
+        "v": "For example, Sam unlocks a vault with a fingerprint every day. Months later, Sam replaces the phone and discovers that the fingerprint alone cannot restore access. Convenience doesn’t remove the need to understand the manager’s recovery process."
+      },
+      {
+        "t": "h",
+        "v": "Let the manager help you check the website"
+      },
+      {
+        "t": "p",
+        "v": "Password managers commonly associate saved passwords with particular website addresses. If your manager unexpectedly refuses to offer a saved login, pause and check the address."
+      },
+      {
+        "t": "p",
+        "v": "That can be a useful clue that you’re on the wrong website, although missing autofill can also have ordinary causes. Don’t immediately copy the password into an unfamiliar page to get around it."
+      },
+      {
+        "t": "p",
+        "v": "Open the service through its usual app or a known address and try there."
+      },
+      {
+        "t": "h",
+        "v": "Plan recovery before you need it"
+      },
+      {
+        "t": "p",
+        "v": "There are two different problems:"
+      },
+      {
+        "t": "p",
+        "v": "A lost device: you may still know the main password and have access to another authentication method.\nA forgotten main password: recovery may be limited or unavailable, depending on the manager.\nCheck the provider’s official recovery instructions. Don’t assume customer support can unlock your vault."
+      },
+      {
+        "t": "p",
+        "v": "If the manager provides a recovery code or emergency kit, store it somewhere protected that you can reach without opening the vault. A securely stored paper copy may be appropriate. Keeping your only recovery information inside the locked vault creates a circular problem."
+      },
+      {
+        "t": "h",
+        "v": "Use a careful save-and-confirm routine"
+      },
+      {
+        "t": "p",
+        "v": "When changing an account password, make sure the new password is saved under the correct account and website. Confirm the change succeeded before ending your existing session. For important accounts, check that you can sign in with the saved entry."
+      },
+      {
+        "t": "p",
+        "v": "This helps prevent a simple mix-up: saving a generated password that the website never accepted."
+      },
+      {
+        "t": "h",
+        "v": "Common mistakes, explained simply"
+      },
+      {
+        "t": "p",
+        "v": "“My fingerprint means I’ll never need the main password.”\nA fingerprint may unlock one device. It isn’t necessarily a recovery method."
+      },
+      {
+        "t": "p",
+        "v": "“I’ll keep my only recovery code inside the vault.”\nYou may need that code precisely when you can’t open the vault."
+      },
+      {
+        "t": "p",
+        "v": "“Autofill failed, so I’ll paste the password anyway.”\nPause first. A different website address could be the reason."
+      }
+    ],
+    "exerciseTitle": "One exercise: write a vault-access plan · 5 minutes",
+    "exercise": [
+      {
+        "t": "p",
+        "v": "In a private note, complete these three lines—without writing any passwords or codes:"
+      },
+      {
+        "t": "p",
+        "v": "“The password manager I use is ___,” or “I haven’t chosen one.”\n“If I lose my phone, my next step to access the vault would be ___.”\n“If I forget the main password, I would check ___; any recovery material would be stored ___.”\nIf you already use a manager, consult its official help page to fill in gaps. If you haven’t chosen one, write “check the provider’s official recovery instructions” and identify a protected place for recovery material outside the vault. No installation or settings changes are needed today."
+      }
+    ],
+    "selfCheck": [
+      {
+        "t": "p",
+        "v": "You’ve completed the exercise if your plan distinguishes losing a device from forgetting the main password, and avoids keeping the only recovery material inside the vault."
+      },
+      {
+        "t": "p",
+        "v": "“Recovery method unknown—I need to check” is a useful finding. Don’t invent a recovery route. Some managers cannot recover a forgotten main password unless you prepared a supported method beforehand."
+      }
+    ],
+    "recap": [
+      {
+        "t": "p",
+        "v": "Protect the vault with a unique main password and additional authentication when available.\nUnexpected missing autofill is a reason to pause and check the website.\nUnderstand recovery and keep necessary recovery material accessible outside the vault."
+      }
+    ],
+    "next": "Next lesson: Multifactor authentication—what the extra sign-in step protects, and why unexpected approval prompts matter."
+  },
+  {
+    "number": 4,
+    "title": "Multifactor authentication: an extra lock",
+    "origin": "From your supplied transcript",
+    "objective": "understand the extra sign-in step and know what to do when an approval request arrives unexpectedly.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Review · 2 minutes"
+      },
+      {
+        "t": "p",
+        "v": "So far, you’ve learned why email matters, why passwords should be unique, and how a password manager helps. The last lesson also covered keeping recovery material accessible outside your vault."
+      },
+      {
+        "t": "p",
+        "v": "A unique password is one layer of protection. Today, we’ll add another. Your exercises haven’t been confirmed yet, so we’ll continue at beginner level."
+      },
+      {
+        "t": "h",
+        "v": "Learn · 10 minutes"
+      },
+      {
+        "t": "p",
+        "v": "Multifactor authentication, usually shortened to MFA, asks for more than one kind of proof that you’re allowed to sign in. You may also see “two-factor authentication” or “2FA.”"
+      },
+      {
+        "t": "p",
+        "v": "For example, a service might require:"
+      },
+      {
+        "t": "p",
+        "v": "Your password—something you know.\nA code from an authenticator app on your phone—evidence of something you have.\nTwo passwords don’t provide two different kinds of proof. They’re both things you know."
+      },
+      {
+        "t": "p",
+        "v": "Imagine someone discovers Lina’s email password. With password-only sign-in, that might be enough to enter her account. With MFA, the person would also need to get past the additional requirement. That makes a stolen password less useful, although MFA doesn’t prevent every attack."
+      },
+      {
+        "t": "h",
+        "v": "Recognize the common methods"
+      },
+      {
+        "t": "p",
+        "v": "Method — What you do — What to remember"
+      },
+      {
+        "t": "p",
+        "v": "Text message code — Enter a code sent to your phone — Keep it private; phone-number attacks can undermine this method."
+      },
+      {
+        "t": "p",
+        "v": "Authenticator app — Enter a short-lived code generated by an app — A fake sign-in page can still trick you into entering it."
+      },
+      {
+        "t": "p",
+        "v": "Approval notification — Approve a request on a device — Approve only a sign-in you initiated and recognize."
+      },
+      {
+        "t": "p",
+        "v": "Security key — Use a physical key with a supported service — Keep a backup or another supported recovery method."
+      },
+      {
+        "t": "p",
+        "v": "The options vary by service. We’ll cover passkeys and their protection against fake sign-in sites in the next lesson."
+      },
+      {
+        "t": "h",
+        "v": "A code is a temporary key"
+      },
+      {
+        "t": "p",
+        "v": "A short-lived code may look harmless because it expires soon. But someone could use it immediately."
+      },
+      {
+        "t": "p",
+        "v": "Suppose you receive a call: “We’re account support. Read us the code we just sent so we can stop a hacker.”"
+      },
+      {
+        "t": "p",
+        "v": "Don’t give the caller the code. End the conversation and check the account through its usual app or a known website address. A person’s claim to be support doesn’t establish their identity."
+      },
+      {
+        "t": "p",
+        "v": "Enter sign-in codes only into the legitimate service during a sign-in you initiated. Don’t send them in messages or read them to someone."
+      },
+      {
+        "t": "h",
+        "v": "Unexpected approval requests deserve a pause"
+      },
+      {
+        "t": "p",
+        "v": "If your phone asks, “Approve this sign-in?” while you’re doing something unrelated, deny it. Don’t approve just to make repeated notifications stop."
+      },
+      {
+        "t": "p",
+        "v": "Repeated requests may be an attempt to wear you down. Open the service independently, review its security activity, and change the password if you suspect it has been exposed. Follow the provider’s official guidance for securing the account."
+      },
+      {
+        "t": "p",
+        "v": "Even when you did initiate a sign-in, check that the prompt belongs to that attempt. Location labels can be approximate, so location alone isn’t reliable proof."
+      },
+      {
+        "t": "h",
+        "v": "Prepare for a lost phone"
+      },
+      {
+        "t": "p",
+        "v": "Before relying on MFA, understand the service’s recovery options. These might include backup codes, a second security key, or another supported method."
+      },
+      {
+        "t": "p",
+        "v": "Backup codes can grant access, so protect them like passwords. Keep necessary recovery material somewhere you can reach if your usual device is unavailable. Never assume you can switch phones without transferring your authenticator access."
+      },
+      {
+        "t": "h",
+        "v": "Common mistakes, explained simply"
+      },
+      {
+        "t": "p",
+        "v": "“I’ll approve it so the notifications stop.”\nApproval could let someone into your account. Deny a request you didn’t initiate."
+      },
+      {
+        "t": "p",
+        "v": "“The code expires, so sharing it is safe.”\nSomeone may use it before it expires."
+      },
+      {
+        "t": "p",
+        "v": "“MFA means my password can be reused.”\nKeep passwords unique. The layers work together, and some attacks can get past an additional sign-in step."
+      }
+    ],
+    "exerciseTitle": "One exercise: respond to an unexpected sign-in · 5 minutes",
+    "exercise": [
+      {
+        "t": "p",
+        "v": "Consider this fictional situation:"
+      },
+      {
+        "t": "p",
+        "v": "You’re watching a video. Your phone receives three requests to approve an email sign-in. You haven’t tried to sign in. Then someone claiming to be support calls and tells you to approve the next request to “cancel the attack.”"
+      },
+      {
+        "t": "p",
+        "v": "Write a short response describing:"
+      },
+      {
+        "t": "p",
+        "v": "What you would do with the approval requests.\nWhat you would do about the call.\nHow you would check your account safely.\nNo real account changes are needed for this exercise. Try answering before reading below."
+      }
+    ],
+    "selfCheck": [
+      {
+        "t": "p",
+        "v": "A safe response would be:"
+      },
+      {
+        "t": "p",
+        "v": "“I would deny the requests and end the call. I would open my email provider’s usual app or known website, review security activity, and follow its account-security guidance. I wouldn’t share codes or approve a request I didn’t initiate.”"
+      },
+      {
+        "t": "p",
+        "v": "If you chose to approve, the key correction is simple: an approval authorizes a sign-in; it doesn’t cancel one. The caller used a reassuring explanation to make a risky action sound helpful."
+      }
+    ],
+    "recap": [
+      {
+        "t": "p",
+        "v": "MFA adds another kind of proof beyond your password.\nKeep sign-in codes private and deny unexpected approval requests.\nPrepare a recovery method before losing access to your usual device."
+      }
+    ],
+    "next": "Next lesson: Passkeys—how signing in can work without typing a password."
+  },
+  {
+    "number": 5,
+    "title": "Passkeys: signing in without a password",
+    "origin": "From your supplied transcript",
+    "objective": "understand what a passkey does, why it helps against fake sign-in pages, and how to prepare for a lost device.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Review · 2 minutes"
+      },
+      {
+        "t": "p",
+        "v": "Last time, you learned that multifactor authentication adds another kind of proof beyond a password. You also learned to deny unexpected sign-in requests and keep verification codes private."
+      },
+      {
+        "t": "p",
+        "v": "Passkeys offer another way to sign in. Lessons 1–4 have been delivered; you haven’t reported exercise results, so we’ll keep building at beginner level."
+      },
+      {
+        "t": "h",
+        "v": "Learn · 10 minutes"
+      },
+      {
+        "t": "p",
+        "v": "A passkey is a digital sign-in credential. Your phone, computer, password manager, or security key holds it. When you sign in, you may unlock its use with your fingerprint, face, or device PIN."
+      },
+      {
+        "t": "p",
+        "v": "You don’t need to memorize or type the passkey. Your device proves to the service that you hold the right credential. Your fingerprint or face stays on your device rather than being sent to the website. FIDO Alliance’s passkey guide"
+      },
+      {
+        "t": "p",
+        "v": "Think of this as two separate steps:"
+      },
+      {
+        "t": "p",
+        "v": "You unlock permission on your device using its supported unlock method.\nThe device proves your identity to the service using the passkey.\nYour device PIN isn’t a password to send to customer support or type into an ordinary website form."
+      },
+      {
+        "t": "h",
+        "v": "Why passkeys help against fake websites"
+      },
+      {
+        "t": "p",
+        "v": "A password can be typed into a convincing copy of a real sign-in page. Someone operating that page can capture it."
+      },
+      {
+        "t": "p",
+        "v": "A passkey is tied to the service it belongs to. A lookalike website on a different address cannot simply collect and reuse that service’s passkey. This is called phishing resistance. FIDO Alliance"
+      },
+      {
+        "t": "p",
+        "v": "For example, imagine Nao follows a message to a fake shopping website. With a password, Nao could accidentally hand the secret to the impostor. The genuine shopping service’s passkey won’t authenticate to that unrelated site."
+      },
+      {
+        "t": "p",
+        "v": "Still, keep your earlier habits. A scammer could ask you to pay money, install software, or reveal personal information without stealing a passkey. Safer sign-in doesn’t make every request trustworthy."
+      },
+      {
+        "t": "h",
+        "v": "Where your passkey lives matters"
+      },
+      {
+        "t": "p",
+        "v": "There are two broad arrangements:"
+      },
+      {
+        "t": "p",
+        "v": "Synced passkeys can be available across compatible devices through a passkey provider.\nDevice-bound passkeys remain on a particular device or security key.\nBoth provide phishing-resistant sign-in. Their backup and recovery arrangements differ. Don’t assume a passkey stored on one device will automatically appear everywhere. FIDO Alliance"
+      },
+      {
+        "t": "p",
+        "v": "A password manager might store both passwords and passkeys. The password manager’s own security and recovery plan therefore remain important."
+      },
+      {
+        "t": "h",
+        "v": "What happens if you lose your phone?"
+      },
+      {
+        "t": "p",
+        "v": "The answer depends on where the passkey is stored and the service’s recovery options. You might use another synced device, a separately registered security key, or the service’s account recovery process."
+      },
+      {
+        "t": "p",
+        "v": "Before changing sign-in methods, establish:"
+      },
+      {
+        "t": "p",
+        "v": "Which provider or device stores the passkey.\nWhether another device or credential can sign you in.\nHow you would recover access if your usual device became unavailable.\nUse the service’s and provider’s official instructions. Keep an existing supported recovery route until you understand and have verified the new arrangement."
+      },
+      {
+        "t": "h",
+        "v": "Only create passkeys on devices you control"
+      },
+      {
+        "t": "p",
+        "v": "Creating a passkey gives that device or provider a way to authenticate to your account. Avoid saving one on a shared public computer or someone else’s device."
+      },
+      {
+        "t": "p",
+        "v": "When a setup prompt asks where to save it, pause long enough to recognize the destination. “Saved successfully” is useful only if you know where it was saved."
+      },
+      {
+        "t": "h",
+        "v": "Common mistakes, explained simply"
+      },
+      {
+        "t": "p",
+        "v": "“My face is now my website password.”\nYour face usually unlocks the credential locally. The website receives a digital proof."
+      },
+      {
+        "t": "p",
+        "v": "“I have a passkey, so any message about my account is safe.”\nPasskeys protect sign-in. They don’t verify every message, purchase, or download."
+      },
+      {
+        "t": "p",
+        "v": "“I can delete all other sign-in methods immediately.”\nFirst verify that the passkey works and that you understand recovery. Removing access routes prematurely can lock you out."
+      }
+    ],
+    "exerciseTitle": "One exercise: assess a passkey setup · 5 minutes",
+    "exercise": [
+      {
+        "t": "p",
+        "v": "Read this fictional situation:"
+      },
+      {
+        "t": "p",
+        "v": "Emi creates a passkey for an important account on a personal phone. Emi doesn’t check where it is stored, assumes it will work on any replacement phone, and immediately removes every other sign-in and recovery option."
+      },
+      {
+        "t": "p",
+        "v": "Write three things Emi should check before removing existing access routes. Spend the remaining time explaining why each check matters. No real settings changes are required."
+      }
+    ],
+    "selfCheck": [
+      {
+        "t": "p",
+        "v": "A successful answer identifies these three checks:"
+      },
+      {
+        "t": "p",
+        "v": "Storage: Which device or provider holds the passkey?\nAnother way in: Can Emi sign in using another compatible device or separately registered credential?\nRecovery: What do the official instructions say about losing the phone or access to the provider?\nIf you answered “remember the fingerprint,” the correction is that a fingerprint alone doesn’t restore a missing passkey. Emi needs access to the stored credential or a supported recovery route."
+      }
+    ],
+    "recap": [
+      {
+        "t": "p",
+        "v": "A passkey lets your device prove your identity without typing a password.\nPasskeys resist fake-site credential theft, while other scams still require care.\nKnow where your passkey is stored and how you’ll regain access."
+      }
+    ],
+    "next": "Next lesson: Phishing—how to handle urgent messages and verify requests safely."
+  },
+  {
+    "number": 6,
+    "title": "Phishing: pause, verify, then act",
+    "origin": "From your supplied transcript",
+    "objective": "handle an unexpected message safely—even when you can’t tell whether it’s genuine.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Review · 2 minutes"
+      },
+      {
+        "t": "p",
+        "v": "You’ve learned how unique passwords, password managers, MFA, and passkeys protect sign-ins. But someone can also trick you into sending money, revealing information, or installing software."
+      },
+      {
+        "t": "p",
+        "v": "Today we’ll practice verifying a request before acting. Lessons 1–5 have been delivered; exercise completion hasn’t been reported."
+      },
+      {
+        "t": "h",
+        "v": "Learn · 10 minutes"
+      },
+      {
+        "t": "p",
+        "v": "Phishing is an attempt to trick you by pretending to be someone trustworthy. It can arrive by email, text, social message, or phone call. A QR code can also lead to a deceptive page."
+      },
+      {
+        "t": "p",
+        "v": "The request might sound ordinary:"
+      },
+      {
+        "t": "p",
+        "v": "“Your delivery address is incomplete. Pay a small fee to release your parcel.”"
+      },
+      {
+        "t": "p",
+        "v": "Or frightening:"
+      },
+      {
+        "t": "p",
+        "v": "“Someone accessed your account. Sign in immediately to prevent suspension.”"
+      },
+      {
+        "t": "p",
+        "v": "The attacker wants you to take an action before checking the story."
+      },
+      {
+        "t": "h",
+        "v": "Look at the requested action"
+      },
+      {
+        "t": "p",
+        "v": "Instead of focusing only on whether a message looks suspicious, notice what it asks you to do:"
+      },
+      {
+        "t": "p",
+        "v": "Enter a password or verification code.\nSend money or payment details.\nOpen an attachment or install an app.\nApprove a sign-in or give someone remote access.\nKeep the request secret or act immediately.\nThese actions can have consequences. An unexpected request for one of them deserves independent verification."
+      },
+      {
+        "t": "p",
+        "v": "For example, Aki is expecting a parcel, so a delivery text feels plausible. That coincidence doesn’t prove the text came from the courier. Aki can check the order through the shopping app or courier’s known website instead."
+      },
+      {
+        "t": "h",
+        "v": "Use a route the message didn’t supply"
+      },
+      {
+        "t": "p",
+        "v": "A reliable routine is:"
+      },
+      {
+        "t": "p",
+        "v": "Pause. Give yourself time. Urgency is a reason to check carefully."
+      },
+      {
+        "t": "p",
+        "v": "Open independently. Use the service’s usual app, a trusted bookmark, or an address you already know. For a call, use a number from a trusted source, such as your bank card—not the message."
+      },
+      {
+        "t": "p",
+        "v": "Verify the claim. Check the order, account alert, or request there. If necessary, contact the organization through that independent route."
+      },
+      {
+        "t": "p",
+        "v": "You don’t have to prove the message is fake. You only need a safer way to decide whether action is needed."
+      },
+      {
+        "t": "h",
+        "v": "Appearance provides clues, not proof"
+      },
+      {
+        "t": "p",
+        "v": "A logo can be copied. A sender’s display name can be misleading. Good spelling doesn’t establish authenticity. Even a message from a real friend’s account could come from someone who took over that account."
+      },
+      {
+        "t": "p",
+        "v": "A browser padlock or HTTPS means the connection is encrypted; it doesn’t establish that the website’s operator is honest."
+      },
+      {
+        "t": "p",
+        "v": "For a surprising request from someone you know, contact them through a separate, familiar channel. A message asking you to use a “new number” shouldn’t be its own verification."
+      },
+      {
+        "t": "h",
+        "v": "If you already clicked, respond to what happened"
+      },
+      {
+        "t": "p",
+        "v": "Clicking a link doesn’t automatically mean an account was compromised. Close the page and avoid entering information or opening downloads."
+      },
+      {
+        "t": "p",
+        "v": "If you entered a password, open the real service independently, change it, and change it anywhere else you reused it. Review account activity and follow the provider’s security guidance."
+      },
+      {
+        "t": "p",
+        "v": "If you shared a verification code or approved a sign-in, treat that as possible account access and use the service’s account-security process promptly."
+      },
+      {
+        "t": "p",
+        "v": "Mistakes are easier to address when you stop and describe the action accurately. Shame can delay useful steps."
+      },
+      {
+        "t": "h",
+        "v": "Common mistakes, explained simply"
+      },
+      {
+        "t": "p",
+        "v": "“The fee is tiny, so the risk is tiny.”\nThe page may be collecting payment details, not just the fee."
+      },
+      {
+        "t": "p",
+        "v": "“I’ll reply and ask whether it’s real.”\nThat lets the same sender reassure you. Verify through a separate route."
+      },
+      {
+        "t": "p",
+        "v": "“I’m expecting this delivery, so the text must be genuine.”\nA believable story still needs verification before you provide information or pay."
+      }
+    ],
+    "exerciseTitle": "One exercise: handle a delivery message · 5 minutes",
+    "exercise": [
+      {
+        "t": "p",
+        "v": "Read this fictional text:"
+      },
+      {
+        "t": "p",
+        "v": "“DELIVERY NOTICE: Your parcel is held because your address is incomplete. Scan the attached QR code and pay ¥180 within 30 minutes or it will be returned.”"
+      },
+      {
+        "t": "p",
+        "v": "You are expecting a parcel."
+      },
+      {
+        "t": "p",
+        "v": "Write a short response covering:"
+      },
+      {
+        "t": "p",
+        "v": "Which parts of the request deserve caution.\nWhat you would avoid doing immediately.\nHow you would check whether the delivery problem is real.\nSpend five minutes thinking through your response before reading the answer. You don’t need to scan anything or visit a website."
+      }
+    ],
+    "selfCheck": [
+      {
+        "t": "p",
+        "v": "A safe answer would be:"
+      },
+      {
+        "t": "p",
+        "v": "“The deadline, payment request, and QR code deserve caution. I wouldn’t scan the code or enter payment details. I would open my shopping app to check the order and use the courier’s known website or trusted contact details to verify any problem.”"
+      },
+      {
+        "t": "p",
+        "v": "If you focused only on spelling or the sender’s name, broaden your approach: the requested action and your verification route matter more than appearance."
+      },
+      {
+        "t": "p",
+        "v": "If you chose to ignore the message forever, consider checking the order independently. That lets you handle a genuine delivery issue safely."
+      }
+    ],
+    "recap": [
+      {
+        "t": "p",
+        "v": "Unexpected requests for secrets, money, downloads, or access deserve a pause.\nVerify through an app, website, or contact method you obtained independently.\nIf you acted, identify what you shared or approved and take the matching recovery steps."
+      }
+    ],
+    "next": "Next lesson: Software updates—how they close security gaps and how to recognize fake update prompts."
+  },
+  {
+    "number": 7,
+    "title": "Software updates: closing security gaps",
+    "origin": "From your supplied transcript",
+    "objective": "understand why updates matter and check for them through a trusted route.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Review · 2 minutes"
+      },
+      {
+        "t": "p",
+        "v": "Last time, you learned to pause before acting on unexpected messages and verify requests independently. That habit also helps with updates: a webpage saying “Update now!” isn’t enough reason to install something."
+      },
+      {
+        "t": "p",
+        "v": "Lessons 1–6 have been delivered. Exercise completion hasn’t been reported, so we’ll continue at beginner level."
+      },
+      {
+        "t": "h",
+        "v": "Learn · 10 minutes"
+      },
+      {
+        "t": "p",
+        "v": "Software can contain mistakes that let someone access information or make a device behave in unintended ways. These security weaknesses are called vulnerabilities."
+      },
+      {
+        "t": "p",
+        "v": "An update can repair a weakness. That repair is often called a security patch."
+      },
+      {
+        "t": "p",
+        "v": "Imagine a window latch that doesn’t close properly. Repairing it helps prevent someone from using that opening. Software updates serve a similar purpose—even if you never noticed anything wrong."
+      },
+      {
+        "t": "h",
+        "v": "“It works fine” doesn’t mean it’s secure"
+      },
+      {
+        "t": "p",
+        "v": "A phone or browser can appear to work normally while containing a known security weakness. Updates may fix problems you can’t see, alongside ordinary bugs and new features."
+      },
+      {
+        "t": "p",
+        "v": "You don’t need to understand every technical detail in an update notice. The practical habit is to check through the software’s trusted update mechanism and install security updates promptly."
+      },
+      {
+        "t": "h",
+        "v": "Several parts of your device need updates"
+      },
+      {
+        "t": "p",
+        "v": "Part — What it includes — Usual trusted route"
+      },
+      {
+        "t": "p",
+        "v": "Operating system — The software running your phone or computer — Device Settings"
+      },
+      {
+        "t": "p",
+        "v": "Browser — The app you use to visit websites — Browser’s own menu or official app store"
+      },
+      {
+        "t": "p",
+        "v": "Apps — Messaging, shopping, document tools, and others — Official app store or app’s built-in updater"
+      },
+      {
+        "t": "p",
+        "v": "Updating the operating system doesn’t necessarily update every app. Some updates also require a restart before they take effect."
+      },
+      {
+        "t": "h",
+        "v": "Treat unexpected update prompts like other unexpected requests"
+      },
+      {
+        "t": "p",
+        "v": "Suppose Ren visits a recipe website. A large message appears:"
+      },
+      {
+        "t": "p",
+        "v": "“Your browser is dangerously outdated. Download this security update.”"
+      },
+      {
+        "t": "p",
+        "v": "Ren should close the page and check the browser’s own update settings. The recipe website doesn’t need to supply a browser installer."
+      },
+      {
+        "t": "p",
+        "v": "A trusted update route is one you open yourself: device Settings, an official app store, the app’s built-in updater, or an independently reached official vendor website when necessary."
+      },
+      {
+        "t": "p",
+        "v": "A request to disable security protection or paste commands to “finish an update” is a reason to stop and verify."
+      },
+      {
+        "t": "h",
+        "v": "Make updates manageable"
+      },
+      {
+        "t": "p",
+        "v": "Automatic updates reduce how much you have to remember. Where available, they can download or install updates for you, although some still require your approval or a restart."
+      },
+      {
+        "t": "p",
+        "v": "For a personal device:"
+      },
+      {
+        "t": "p",
+        "v": "Save your work before restarting.\nAllow enough time and power for the update.\nFollow the device’s instructions and avoid interrupting installation.\nKeeping important files backed up is also useful; we’ll cover backups later."
+      },
+      {
+        "t": "p",
+        "v": "If you need to postpone a restart briefly, choose a specific convenient time. Repeatedly dismissing the same update can leave the repair unapplied."
+      },
+      {
+        "t": "p",
+        "v": "For a work or school device, follow its administrator’s update process."
+      },
+      {
+        "t": "h",
+        "v": "Support eventually ends"
+      },
+      {
+        "t": "p",
+        "v": "An older device can still function after its software stops receiving security fixes. “No updates available” can therefore mean either “up to date” or “no longer supported.”"
+      },
+      {
+        "t": "p",
+        "v": "If you’re unsure, check the manufacturer’s official support information for the device or software. Support status depends on the particular product and version."
+      },
+      {
+        "t": "h",
+        "v": "Common mistakes, explained simply"
+      },
+      {
+        "t": "p",
+        "v": "“Updates only change the appearance.”\nSome do add features, but others repair security weaknesses."
+      },
+      {
+        "t": "p",
+        "v": "“I downloaded the update, so I’m finished.”\nInstallation or a restart may still be pending. Read the status shown in the trusted update settings."
+      },
+      {
+        "t": "p",
+        "v": "“The warning looks urgent, so I should use its download button.”\nOpen the legitimate update controls yourself. Urgency doesn’t establish authenticity."
+      }
+    ],
+    "exerciseTitle": "One exercise: check one device’s update status · 5 minutes",
+    "exercise": [
+      {
+        "t": "p",
+        "v": "On one personal phone or computer:"
+      },
+      {
+        "t": "p",
+        "v": "Open Settings yourself.\nFind its system or software update section. You can search within Settings for “update.”\nRead the status without following a link from a message or webpage.\nPrivately note one result: up to date, update available, restart required, or unclear.\nIf an update or restart is pending, note a convenient time to handle it. Today’s exercise is checking the status; you don’t need to start an installation during the lesson."
+      }
+    ],
+    "selfCheck": [
+      {
+        "t": "p",
+        "v": "You’ve completed the exercise if you reached the device’s own update controls and identified its status."
+      },
+      {
+        "t": "p",
+        "v": "If the status is unclear, record that honestly. A useful next step is the manufacturer’s official help page—not an unfamiliar “update helper” download."
+      },
+      {
+        "t": "p",
+        "v": "If it says “restart required,” the correction is simple: the update process still has a step remaining."
+      }
+    ],
+    "recap": [
+      {
+        "t": "p",
+        "v": "Security updates repair weaknesses that may be invisible during normal use.\nCheck updates through device Settings, official stores, or built-in update controls.\nComplete required restarts and investigate whether older software still receives support."
+      }
+    ],
+    "next": "Next lesson: Device locks—protecting accounts and messages when your phone or computer is unattended."
+  }
+]
