@@ -1,0 +1,7 @@
+class LocalConfig:
+    SQLALCHEMY_DATABASE_URI="sqlite:///journal.sqlite"
+    SQLALCHEMY_TRACK_MODIFICATIONS=False
+    MAX_CONTENT_LENGTH=32*1024
+    SESSION_COOKIE_HTTPONLY=True
+    SESSION_COOKIE_SAMESITE="Lax"
+    SESSION_COOKIE_SECURE=False # Local loopback HTTP; HTTPS deployment needs True.

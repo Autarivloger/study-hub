@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block title %}{{ 'Register' if mode=='register' else 'Sign in' }}{% endblock %}
+{% block content %}
+<p class="eyebrow">LOCAL PRACTICE ACCOUNTS</p><h1>{{ 'Create a practice account' if mode=='register' else 'Sign in to your journal' }}</h1>
+<p>Use a fictional username and a new practice-only passphrase. Never reuse a real account password.</p>
+<form method="post" class="card stack">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label for="username">Username</label><input id="username" name="username" value="{{ username }}" minlength="3" maxlength="32" pattern="[A-Za-z0-9_]{3,32}" required autocomplete="username">
+<label for="password">Practice passphrase (12–128 characters)</label><input id="password" name="password" type="password" minlength="12" maxlength="128" required autocomplete="{{ 'new-password' if mode=='register' else 'current-password' }}">
+{% if error %}<p class="notice error" role="alert">{{ error }}</p>{% endif %}
+<button>{{ 'Register' if mode=='register' else 'Sign in' }}</button>
+</form>
+{% endblock %}

@@ -1,0 +1,7 @@
+instance/
+**/__pycache__/
+.env
+.env.*
+*.sqlite
+*.sqlite-*
+*.key

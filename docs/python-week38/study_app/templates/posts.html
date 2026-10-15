@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block title %}My posts{% endblock %}
+{% block content %}
+<p class="eyebrow">ONLY YOUR RECORDS</p><h1>My learning posts</h1>
+<form method="get" action="{{ url_for('posts.index') }}" class="card search"><label for="q">Literal title search</label><input id="q" name="q" maxlength="80" value="{{ q }}"><button>Search</button></form>
+<p>{{ page.total }} matching post(s). <a href="{{ url_for('posts.create') }}">Write a new post</a></p>
+<section class="grid">
+{% for post in page.items %}<article class="card"><h2><a href="{{ url_for('posts.detail',post_id=post.id) }}">{{ post.title }}</a></h2><p>{{ post.body[:140] }}{% if post.body|length>140 %}…{% endif %}</p><div class="tags">{% for tag in post.tags %}<span class="tag">{{ tag.name }}</span>{% endfor %}</div></article>
+{% else %}<article class="card"><h2>No matching posts</h2><p>Write your first post or try a broader search.</p></article>{% endfor %}
+</section>
+<nav aria-label="Post pages">{% if page.has_prev %}<a href="{{ url_for('posts.index',page=page.prev_num,q=q) }}">Previous</a>{% endif %}<span>Page {{ page.page }}</span>{% if page.has_next %}<a href="{{ url_for('posts.index',page=page.next_num,q=q) }}">Next</a>{% endif %}</nav>
+{% endblock %}

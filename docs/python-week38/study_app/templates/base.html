@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Local journal{% endblock %} · Week 38</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <a class="brand" href="{{ url_for('home') }}">Learning journal <span>Week 38 / local database & accounts</span></a>
+  <nav aria-label="Main"><a href="{{ url_for('home') }}">Home</a>
+  {% if g.user %}<a href="{{ url_for('posts.index') }}">My posts</a><a href="{{ url_for('posts.create') }}">New post</a>
+  {% else %}<a href="{{ url_for('auth.register') }}">Register</a><a href="{{ url_for('auth.login') }}">Sign in</a>{% endif %}</nav>
+  {% if g.user %}<form method="post" action="{{ url_for('auth.logout') }}" class="leave-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><span>{{ g.user.username }}</span><button class="secondary">Sign out</button></form>{% endif %}
+</header>
+<main id="main" class="container">
+{% for category,message in get_flashed_messages(with_categories=true) %}<p class="notice {{ category }}" role="status">{{ message }}</p>{% endfor %}
+{% block content %}{% endblock %}
+</main><footer class="container footer">Local learning project. Use fictional practice accounts. Posts persist in this local SQLite database. This is separate from Study Hub progress and sync.</footer>
+</body></html>

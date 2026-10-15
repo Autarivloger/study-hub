@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero"><p class="eyebrow">DATA, IDENTITY AND OWNERSHIP</p><h1>Your learning notes, connected.</h1><p>Move from a temporary session gate to local accounts, password hashes and database-backed posts.</p>
+{% if g.user %}<a class="button" href="{{ url_for('posts.index') }}">Open my posts</a>{% else %}<a class="button" href="{{ url_for('auth.register') }}">Create a practice account</a>{% endif %}</section>
+<section class="grid"><article class="card"><h2>Durable local data</h2><p>Posts live in SQLite and survive a server restart.</p></article><article class="card"><h2>Owner-scoped access</h2><p>Read, edit and delete queries are restricted to the signed-in user.</p></article><article class="card"><h2>Small reusable modules</h2><p>Auth and post blueprints share one app factory and extension.</p></article></section>
+<section class="card"><h2>Practice scope</h2><p>Run on your computer with fictional accounts. There is no email verification, password reset, MFA, sign-in throttling or internet production deployment in this teaching project.</p></section>
+{% endblock %}

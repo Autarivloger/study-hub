@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<p class="eyebrow">MY POST / {{ post.id }}</p><h1>{{ post.title }}</h1>
+<article class="card"><p class="post-body">{{ post.body }}</p><div class="tags">{% for tag in post.tags %}<span class="tag">{{ tag.name }}</span>{% endfor %}</div></article>
+<div class="actions"><a class="button" href="{{ url_for('posts.edit',post_id=post.id) }}">Edit my post</a><a class="button secondary" href="{{ url_for('posts.index') }}">All my posts</a></div>
+<details class="card"><summary>Delete this post permanently</summary><p>This removes this local post and its tag links. Tags themselves remain.</p><form method="post" action="{{ url_for('posts.delete',post_id=post.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="secondary">Delete this post</button></form></details>
+{% endblock %}

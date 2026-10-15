@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block title %}{{ 'Edit post' if post else 'New post' }}{% endblock %}
+{% block content %}
+<p class="eyebrow">VALIDATE → COMMIT → REDIRECT</p><h1>{{ 'Edit your post' if post else 'Write a learning post' }}</h1>
+<form method="post" class="card stack">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label for="title">Title</label><input id="title" name="title" value="{{ title }}" maxlength="100" required>
+<label for="body">What did you learn?</label><textarea id="body" name="body" rows="7" maxlength="2000" required>{{ body }}</textarea>
+<fieldset><legend>Optional tags</legend>{% for tag in tags %}<label class="check"><input type="checkbox" name="tags" value="{{ tag.name }}" {% if tag.name in selected %}checked{% endif %}>{{ tag.name }}</label>{% endfor %}</fieldset>
+{% if error %}<p class="notice error" role="alert">{{ error }}</p>{% endif %}
+<button>{{ 'Save changes' if post else 'Create post' }}</button>
+</form>
+<a href="{{ url_for('posts.index') }}">Back to my posts</a>
+{% endblock %}
