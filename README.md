@@ -7,6 +7,19 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
+## Chess
+
+Choose **Chess** at the top of the site. Play two players on the same device,
+play an offline computer opponent, or practise **10,000 checkmate puzzles**:
+4,000 mate in one, 4,000 mate in two, and 2,000 mate in three. The board supports
+legal move highlights, castling, en passant, all four promotions, undo, flipping,
+automatic game saving and PGN download. Puzzles have rating filters, hints,
+solutions and separate independent/assisted completion tracking.
+
+Chess works inside the same self-contained HTML, including when opened directly
+from disk. Its saved game and puzzle progress use the existing backup/import and
+optional sync. [Data provenance, licenses and authoring notes](data/chess/README.md).
+
 ---
 
 ## Running it
