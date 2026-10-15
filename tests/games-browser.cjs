@@ -16,7 +16,7 @@ async function main(){
   for(let i=0;i<100;i++){if(await evaluate('Boolean(window.__studyHubBooted)'))break;await sleep(100);}assert(await evaluate('window.__studyHubBooted'));
   await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});
   await run(function(){closeModal();DB=applyDefaults({headNotes:{legacy:'Keep all notes'},course:{done:{'1.0':'2026-01-01'}},chess:{game:{at:'2026-01-01',mode:'local',side:'w',level:'club',moves:['e2e4']},solved:{abcde:{solvedAt:'2026-01-01'}}},japanese:{done:{'1.1':'2026-01-01'}}});save();document.getElementById('chessHeadBtn').click();});
-  assert(await evaluate('document.getElementById("view-games").classList.contains("active")&&document.querySelectorAll(".gm-card").length===2'),'Games folder/header');
+  assert(await evaluate('document.getElementById("view-games").classList.contains("active")&&document.querySelectorAll(".gm-card").length===3'),'Games folder/header');
   await evaluate('document.querySelector("#gamesBody [data-view=sudoku]").click()');
   assert.equal(await evaluate('document.querySelectorAll("[data-su-cell]").length'),81);
   await run(function(){

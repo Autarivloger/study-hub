@@ -7,7 +7,7 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
-## Games: Chess and Sudoku
+## Games: Chess, Sudoku and Sokoban
 
 Choose **Games** at the top of the site, then **Chess**. Play two players on the same device,
 play an offline computer opponent, or practise **10,000 checkmate puzzles**:
@@ -24,6 +24,11 @@ optional sync. [Data provenance, licenses and authoring notes](data/chess/README
 auto notes, undo, hints, answer checking and automatic saving. Its 200 original
 layouts create fresh offline variations. Both boards fit the available screen
 height; **Focus view** gives them more room. [Sudoku authoring notes](data/sudoku/README.md).
+
+**Sokoban** adds 40 original warehouse levels, keyboard/touch/swipe controls,
+undo after reopening, restart, offline hints, and saved completion/best results.
+Its Focus view keeps the board and large movement buttons together, including
+on landscape phones. [Sokoban authoring notes](data/sokoban/README.md).
 
 ---
 

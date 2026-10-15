@@ -5,6 +5,10 @@ function renderGames(){
   const sudokuSolved=Object.values(DB.sudoku.completed).filter(x=>x&&!x.assisted).length;
   document.getElementById('gamesBody').innerHTML='<div class="gm-home"><div class="gm-hero"><span class="gm-eyebrow">YOUR PLAY ROOM · READY OFFLINE</span><h2>Your next good move.</h2><p>Pick a board and keep going from where you left off.</p></div><div class="gm-cards"><article class="gm-card gm-chess"><div class="gm-preview gm-chess-preview" aria-hidden="true"><span>♞</span><span>♔</span><span>♟</span></div><div class="gm-card-copy"><span class="gm-eyebrow">STRATEGY &amp; TACTICS</span><h3>Chess</h3><p>Play a friend on this device, take on the computer, or spot the quickest checkmate.</p><div class="gm-chips"><span>2 players</span><span>3 bot levels</span><span>10,000 puzzles</span></div><div class="gm-progress">'+chessSolved.toLocaleString()+' checkmate puzzles solved'+(DB.chess.game&&DB.chess.game.moves.length?' · Saved game ready':'')+'</div><div class="gm-card-actions"><button type="button" class="btn" data-view="chess">'+(DB.chess.game&&DB.chess.game.moves.length?'Continue Chess':'Play Chess')+' <span aria-hidden="true">↗</span></button><button type="button" class="btn secondary" id="gmPuzzles">Puzzles</button></div></div></article><article class="gm-card gm-sudoku"><div class="gm-preview gm-sudoku-preview" aria-hidden="true">'+[5,'',9,'',3,'',8,'',2].map(n=>'<span>'+n+'</span>').join('')+'</div><div class="gm-card-copy"><span class="gm-eyebrow">LOGIC &amp; PATIENCE</span><h3>Sudoku</h3><p>Find the pattern, make pencil notes, and work your way from Easy to Expert.</p><div class="gm-chips"><span>Easy → Expert</span><span>Pencil notes</span><span>Fresh variations</span></div><div class="gm-progress">'+sudokuSolved.toLocaleString()+' puzzles solved independently'+(DB.sudoku.game?' · Saved puzzle ready':'')+'</div><div class="gm-card-actions"><button type="button" class="btn" data-view="sudoku">'+(DB.sudoku.game?'Continue Sudoku':'Play Sudoku')+' <span aria-hidden="true">↗</span></button></div></div></article></div><p class="gm-foot">Your place is saved automatically. Use your usual Study Hub backup or sync to take it with you.</p></div>';
   document.getElementById('gmPuzzles').onclick=()=>{switchView('chess');chessSetMode('puzzles');};
+  const delivered=Object.keys(DB.sokoban.completed).filter(id=>sokoLevels().some(l=>l.id===id)).length;
+  const card=document.createElement('article');card.className='gm-card gm-sokoban';
+  card.innerHTML='<div class="gm-preview gm-sokoban-preview" aria-hidden="true"><span class="sk-crate"></span><span class="sk-preview-goal">✓</span></div><div class="gm-card-copy"><span class="gm-eyebrow">SPACE &amp; STRATEGY</span><h3>Sokoban</h3><p>Find a route through the warehouse. Push every crate home, one thoughtful move at a time.</p><div class="gm-chips"><span>40 levels</span><span>Undo &amp; hints</span><span>Keyboard &amp; touch</span></div><div class="gm-progress">'+delivered+' / 40 warehouses completed'+(DB.sokoban.game?' · Saved route ready':'')+'</div><div class="gm-card-actions"><button type="button" class="btn" data-view="sokoban">'+(DB.sokoban.game?'Continue Sokoban':'Play Sokoban')+' <span aria-hidden="true">↗</span></button></div></div>';
+  document.querySelector('#gamesBody .gm-cards').appendChild(card);
 }
 function gamesFocus(){
   document.body.classList.toggle('games-focus');gamesSyncFocusButtons();gamesScheduleFit();
@@ -15,8 +19,8 @@ function gamesSyncFocusButtons(){
   document.querySelectorAll('[data-game-focus]').forEach(b=>{b.textContent=focused?'Exit focus ↙':'Focus view ↗';b.setAttribute('aria-pressed',String(focused));});
 }
 function gamesNavigate(name){
-  if(!['chess','sudoku'].includes(name))document.body.classList.remove('games-focus');
-  if(['games','chess','sudoku'].includes(name))window.scrollTo(0,0);
+  if(!['chess','sudoku','sokoban'].includes(name))document.body.classList.remove('games-focus');
+  if(['games','chess','sudoku','sokoban'].includes(name))window.scrollTo(0,0);
   gamesSyncFocusButtons();
 }
 function gamesScheduleFit(){
@@ -24,6 +28,7 @@ function gamesScheduleFit(){
   gamesFitFrame=requestAnimationFrame(()=>{gamesFitBoards();gamesFitFrame=requestAnimationFrame(gamesFitBoards);});
 }
 function gamesFitBoards(){
+  if(document.getElementById('view-sokoban').classList.contains('active')){sokoFitBoard();return;}
   const view=document.querySelector('.view.active');if(!view||!['view-chess','view-sudoku'].includes(view.id))return;
   const board=view.querySelector('.ch-board,.su-board'),main=view.querySelector('.ch-main,.su-main'),wrap=view.querySelector('.ch-wrap,.su-wrap');
   if(!board||!main||!wrap)return;
