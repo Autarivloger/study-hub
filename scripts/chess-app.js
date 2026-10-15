@@ -121,6 +121,7 @@ function renderChess(){
   if(s.promotion)chessRenderPromotion();
   const list=body.querySelector('.ch-history');if(list)list.scrollTop=list.scrollHeight;
   if(!puzzleMode)chessScheduleBot();
+  if(typeof gamesScheduleFit==='function')gamesScheduleFit();
 }
 function chessBoardKey(event){
   const buttons=[...document.querySelectorAll('[data-ch-square]')],idx=buttons.indexOf(event.currentTarget);

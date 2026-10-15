@@ -21,7 +21,7 @@ async function main(){
   assert(await evaluate('window.__studyHubBooted'),'App boot');
   // Disconnect the browser before Chess is opened: no CDN or runtime fetch is allowed.
   await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});
-  await run(function(){closeModal();DB=applyDefaults({headNotes:{legacy:'Keep notes'},course:{done:{'1.0':'2026-01-01'},notes:{'1.0':'Keep lesson'}},japanese:{done:{'1.1':'2026-01-01'}}});save();document.getElementById('chessHeadBtn').click();chessSetMode('local');});
+  await run(function(){closeModal();DB=applyDefaults({headNotes:{legacy:'Keep notes'},course:{done:{'1.0':'2026-01-01'},notes:{'1.0':'Keep lesson'}},japanese:{done:{'1.1':'2026-01-01'}}});save();document.getElementById('chessHeadBtn').click();document.querySelector('#gamesBody [data-view="chess"]').click();chessSetMode('local');});
   assert.equal(await evaluate('document.querySelectorAll("[data-ch-square]").length'),64);
   await run(function(){document.querySelector('[data-ch-square="e2"]').click();document.querySelector('[data-ch-square="e4"]').click();document.querySelector('[data-ch-square="e7"]').click();document.querySelector('[data-ch-square="e5"]').click();});
   assert(await evaluate('chessState.game.history().join(" ")==="e4 e5"&&DB.chess.game.moves.join(" ")==="e2e4 e7e5"'),'Local game/persistence');

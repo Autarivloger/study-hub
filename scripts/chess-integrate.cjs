@@ -52,5 +52,9 @@ for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)){
   if(/application\/json/.test(match[1]))continue;
   new (require('vm').Script)(match[2]);scripts++;
 }
-fs.writeFileSync(target+'.tmp',html,'utf8');fs.renameSync(target+'.tmp',target);
+fs.writeFileSync(target+'.tmp',html,'utf8');
+for(let attempt=0;;attempt++){
+  try{fs.renameSync(target+'.tmp',target);break;}
+  catch(error){if(error.code!=='EPERM'||attempt>=8)throw error;Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,150);}
+}
 console.log('Validated and embedded '+puzzles.length+' unique mate puzzles '+JSON.stringify(counts)+'; '+scripts+' scripts parsed.');

@@ -7,9 +7,9 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
-## Chess
+## Games: Chess and Sudoku
 
-Choose **Chess** at the top of the site. Play two players on the same device,
+Choose **Games** at the top of the site, then **Chess**. Play two players on the same device,
 play an offline computer opponent, or practise **10,000 checkmate puzzles**:
 4,000 mate in one, 4,000 mate in two, and 2,000 mate in three. The board supports
 legal move highlights, castling, en passant, all four promotions, undo, flipping,
@@ -19,6 +19,11 @@ solutions and separate independent/assisted completion tracking.
 Chess works inside the same self-contained HTML, including when opened directly
 from disk. Its saved game and puzzle progress use the existing backup/import and
 optional sync. [Data provenance, licenses and authoring notes](data/chess/README.md).
+
+**Sudoku** offers Easy, Medium, Hard and Expert puzzles with pencil notes,
+auto notes, undo, hints, answer checking and automatic saving. Its 200 original
+layouts create fresh offline variations. Both boards fit the available screen
+height; **Focus view** gives them more room. [Sudoku authoring notes](data/sudoku/README.md).
 
 ---
 
