@@ -1,0 +1,14 @@
+instance/
+__pycache__/
+*.pyc
+.venv/
+.env
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+junit.xml
+.secrets/
+backups/
+.venv/
