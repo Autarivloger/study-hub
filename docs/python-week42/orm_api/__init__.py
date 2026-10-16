@@ -260,7 +260,7 @@ def create_app(instance_path=None, *, settings=None, log_stream=None):
     ):
         predicate = (
             Note.owner_id == user.id,
-            func.instr(func.lower(Note.title), func.lower(q)) > 0,
+            func.lower(Note.title).contains(q.lower(), autoescape=True),
         )
         total = db.scalar(select(func.count()).select_from(Note).where(*predicate))
         rows = db.scalars(

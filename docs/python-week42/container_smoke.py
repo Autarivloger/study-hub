@@ -48,6 +48,12 @@ def wait_ready(expected=200):
     raise AssertionError("Readiness did not reach expected status")
 
 
+def note_count(token, query=""):
+    status, page = request("/v1/notes" + query, token=token)
+    assert status == 200, f"Authenticated listing returned status {status}"
+    return page["total"]
+
+
 def main():
     wait_ready()
     assert request("/health")[0] == 200
@@ -65,13 +71,16 @@ def main():
         request(
             "/v1/notes",
             "POST",
-            {"title": "Container persistence", "body": "Fictional CI fixture"},
+            {"title": "Container persistence 100%", "body": "Fictional CI fixture"},
             token,
         )[0]
         == 201
     )
     assert request("/v1/notes")[0] == 401
-    assert request("/v1/notes", token=token)[1]["total"] == 1
+    assert note_count(token) == 1
+    assert note_count(token, "?" + urlencode({"q": "%"})) == 1
+    assert note_count(token, "?" + urlencode({"q": "_"})) == 0
+    assert note_count(token, "?" + urlencode({"q": "PERSISTENCE"})) == 1
     assert command("exec", "-T", "api", "id", "-u") == "10001"
     role = command(
         "exec",
@@ -110,13 +119,13 @@ def main():
     assert contents == "False"
     command("up", "-d", "--no-deps", "--force-recreate", "api")
     wait_ready()
-    assert request("/v1/notes", token=token)[1]["total"] == 1
+    assert note_count(token) == 1
     command("stop", "db")
     wait_ready(503)
     assert request("/health")[0] == 200
     command("start", "db")
     wait_ready()
-    assert request("/v1/notes", token=token)[1]["total"] == 1
+    assert note_count(token) == 1
     command(
         "exec",
         "-T",
