@@ -7,6 +7,15 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
+## Python Week 42 — Docker & deployment
+
+Open **Course → Week 42** for six days with 36 teaching parts, 72 practice
+prompts, 72 explained quiz questions and 108 executed Python examples/solutions.
+The separate [Week 42 practice project](docs/python-week42/README.md) includes
+Docker packaging, PostgreSQL/Compose, restricted database roles, persistence
+and backup/restore checks. Public hosting is an ordered manual staging exercise;
+the learning website itself remains self-contained and readable offline.
+
 ## Games: Chess, Sudoku and Sokoban
 
 Choose **Games** at the top of the site, then **Chess**. Play two players on the same device,
