@@ -52,7 +52,7 @@ The secret sources are `owner_db_password`, `runtime_db_password`, `migration_db
 
 * `db`: PostgreSQL 17 on the private backend network, durable `pg_data` volume, no published host port.
 * `migrate`: same API image, different restricted credentials, runs `python manage.py upgrade` and exits. API startup waits for successful completion.
-* `api`: non-root UID/GID 10001, read-only root, writable temporary `/tmp`, one Uvicorn worker, container port 8002 mapped to **host loopback** 8042.
+* `api`: non-root UID/GID 10001, read-only root, writable temporary `/tmp`, one Uvicorn worker, container port 8002 mapped to **host loopback** 8042. It joins a normal `frontend` bridge for published HTTP access and the internal `backend` for database access. The database and migration service join only the backend; the database has no published port.
 
 The browser uses host port 8042. API-to-database traffic uses `db:5432`. `EXPOSE` is documentation; it does not publish a port. Your phone's localhost is your phone, so the local loopback URL is not the public-host exercise.
 

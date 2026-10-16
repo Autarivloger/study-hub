@@ -54,7 +54,7 @@ services:
       db: {condition: service_healthy}
       migrate: {condition: service_completed_successfully}
     ports: ['127.0.0.1:8042:8002']
-    networks: [backend]
+    networks: [frontend, backend]
     init: true
     read_only: true
     tmpfs: [/tmp]
@@ -64,6 +64,7 @@ services:
 volumes:
   pg_data:
 networks:
+  frontend: {}
   backend:
     internal: true
 secrets:

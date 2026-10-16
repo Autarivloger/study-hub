@@ -93,6 +93,10 @@ def test_compose_boundaries():
     assert migrate["environment"]["DB_USER"] == "studyhub_migrator"
     assert "owner_db_password" not in api["secrets"]
     assert api["read_only"] and api["cap_drop"] == ["ALL"]
+    assert api["networks"] == ["frontend", "backend"]
+    assert db["networks"] == migrate["networks"] == ["backend"]
+    assert config["networks"]["backend"]["internal"] is True
+    assert not config["networks"]["frontend"].get("internal", False)
 
 
 def test_image_has_explicit_runtime_surface():
