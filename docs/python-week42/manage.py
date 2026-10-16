@@ -8,9 +8,7 @@ from orm_api.settings import Settings
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("action", choices=["current", "upgrade", "downgrade"])
-    parser.add_argument(
-        "--instance", type=Path, default=None
-    )
+    parser.add_argument("--instance", type=Path, default=None)
     parser.add_argument("--allow-destructive", action="store_true")
     args = parser.parse_args()
     settings = Settings.from_env()
