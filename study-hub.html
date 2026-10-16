@@ -101468,7 +101468,7 @@ const DAY_TEACH = {
         },
         {
           "t": "p",
-          "v": "A database URL changes transport and dialect, but it cannot make every SQL assumption portable. This project has a separate PostgreSQL engine path, uses boolean defaults/constraints valid for both supported databases and verifies a known migration head before the API starts."
+          "v": "A database URL changes transport and dialect, but it cannot make every SQL assumption portable. This project has a separate PostgreSQL engine path, uses boolean defaults/constraints valid for both supported databases and verifies a known migration head before the API starts. SQLite instr() is not a PostgreSQL function. The lab uses SQLAlchemy lower(title).contains(q.lower(), autoescape=True) for dialect-aware literal substring search. autoescape keeps % and _ as ordinary search characters; case behaviour still follows each database’s lower/collation rules."
         },
         {
           "t": "p",
