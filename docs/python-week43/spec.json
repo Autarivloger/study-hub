@@ -1,0 +1,17 @@
+{
+  "name": "Study Notes",
+  "goal": "A learner can privately capture, find and revisit learning notes.",
+  "entities": ["users", "notes", "tags", "note_tags", "token_sessions"],
+  "stories": [
+    {"id": "S1", "story": "As a learner I can register and sign in.", "accept": "Valid credentials open my workspace; duplicate usernames give a useful error."},
+    {"id": "S2", "story": "As an owner I can create, edit, complete and delete my notes.", "accept": "Saved data survives reload; a different account cannot read or change it."},
+    {"id": "S3", "story": "As a learner I can search titles and filter completion.", "accept": "Percent and underscore are literal; pages and filters never include another owner."},
+    {"id": "S4", "story": "As a learner I can assign known tags.", "accept": "Only python, api and database are accepted; duplicates and unknown names are rejected."},
+    {"id": "S5", "story": "As a learner I get recoverable failure feedback.", "accept": "Invalid input, failed requests, expired sessions and partial tag saves have explicit behaviour."},
+    {"id": "S6", "story": "As a reviewer I can run and verify the application.", "accept": "README, tests, source, container checks and a separate public-host checklist are supplied."}
+  ],
+  "out_of_scope": ["shared notes", "file uploads", "rich HTML", "password recovery", "refresh tokens", "offline write queue", "simultaneous edit conflict detection"],
+  "write_policy": "Server confirmed writes; note and tags are separate transactions; edits currently use last successful write wins.",
+  "auth_policy": "Fifteen-minute bearer sessions in tab memory; explicit server logout revokes one login.",
+  "definition_of_done": ["contract tests", "two-owner denial tests", "real browser workflows", "mobile and keyboard checks", "container persistence and restore", "deployment evidence recorded honestly"]
+}

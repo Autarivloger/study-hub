@@ -1,0 +1,74 @@
+name: studyhub-week43
+x-api-environment: &api-environment
+  APP_ENV: production
+  API_JWT_SECRET_FILE: /run/secrets/jwt_secret
+  API_LOG_LEVEL: INFO
+  DB_HOST: db
+  DB_NAME: studyhub
+  DB_SSLMODE: disable # isolated local Compose network only; hosted DB needs verified TLS
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: studyhub_owner
+      POSTGRES_DB: studyhub
+      POSTGRES_PASSWORD_FILE: /run/secrets/owner_db_password
+    secrets: [owner_db_password, runtime_db_password, migration_db_password]
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./postgres/init-db.sh:/docker-entrypoint-initdb.d/01-studyhub.sh:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U studyhub_owner -d studyhub"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    networks: [backend]
+    restart: unless-stopped
+  migrate:
+    image: studyhub-week43-api:local
+    build: .
+    command: [python, manage.py, upgrade]
+    environment:
+      <<: *api-environment
+      DB_USER: studyhub_migrator
+      DB_PASSWORD_FILE: /run/secrets/migration_db_password
+    secrets: [migration_db_password, jwt_secret]
+    depends_on:
+      db: {condition: service_healthy}
+    networks: [backend]
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck: {disable: true}
+    restart: 'no'
+  api:
+    image: studyhub-week43-api:local
+    build: .
+    environment:
+      <<: *api-environment
+      DB_USER: studyhub_runtime
+      DB_PASSWORD_FILE: /run/secrets/runtime_db_password
+    secrets: [runtime_db_password, jwt_secret]
+    depends_on:
+      db: {condition: service_healthy}
+      migrate: {condition: service_completed_successfully}
+    ports: ['127.0.0.1:8043:8002']
+    networks: [frontend, backend]
+    init: true
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    restart: unless-stopped
+volumes:
+  pg_data:
+networks:
+  frontend: {}
+  backend:
+    internal: true
+secrets:
+  owner_db_password: {file: ./.secrets/owner_db_password}
+  runtime_db_password: {file: ./.secrets/runtime_db_password}
+  migration_db_password: {file: ./.secrets/migration_db_password}
+  jwt_secret: {file: ./.secrets/jwt_secret}

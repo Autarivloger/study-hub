@@ -1,0 +1,14 @@
+**
+!requirements.txt
+!Dockerfile
+!.dockerignore
+!orm_api/
+!orm_api/**
+!migrations/
+!migrations/**
+!alembic.ini
+!manage.py
+!server.py
+!healthcheck.py
+**/__pycache__/
+**/*.pyc
