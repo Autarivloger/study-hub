@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..'),target=path.join(root,'study-hub.html');
 const read=p=>fs.readFileSync(path.join(root,p),'utf8').replace(/\r\n/g,'\n');
 let html=read('study-hub.html');
 function once(before,after){assert.equal(html.split(before).length,2,'Expected one Games integration target: '+before.slice(0,90));html=html.replace(before,()=>after);}
-const css='/* STUDY HUB GAMES CSS START */\n'+['scripts/games.css','scripts/sokoban.css','scripts/games-focus.css'].map(read).join('\n')+'\n/* STUDY HUB GAMES CSS END */';
+const css='/* STUDY HUB GAMES CSS START */\n'+['scripts/games.css','scripts/sokoban.css','scripts/sudoku-saved.css','scripts/games-focus.css'].map(read).join('\n')+'\n/* STUDY HUB GAMES CSS END */';
 const app='/* STUDY HUB GAMES APP START */\n'+['scripts/sudoku-core.js','scripts/games-app.js','scripts/sudoku-app.js','scripts/sokoban-app.js'].map(read).join('\n')+'\n/* STUDY HUB GAMES APP END */';
 const data='<!-- STUDY HUB SUDOKU DATA START -->\n<script id="sudokuPuzzleData" type="application/json">'+read('data/sudoku/puzzles.json')+'</script>\n<!-- STUDY HUB SUDOKU DATA END -->';
 if(!html.includes('/* STUDY HUB GAMES APP START */')){

@@ -1,0 +1,31 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),cp=require('child_process');
+const {sudokuTransform}=require('../scripts/sudoku-core.js');
+const bank=JSON.parse(fs.readFileSync('data/sudoku/puzzles.json','utf8')).puzzles;
+function fixture(index,seed){const p=bank[index],t=sudokuTransform(p[2],p[3],seed);return {id:p[0]+'-'+seed,level:p[1],givens:t.givens.join(''),solution:t.solution.join(''),values:t.givens.slice(),notes:Array(81).fill(0),at:'2026-01-01T00:00:00.000Z',assisted:true,hints:1};}
+const original=fixture(0,123),blank=original.givens.indexOf('0');original.values[blank]=Number(original.solution[blank]);original.notes[original.givens.indexOf('0',blank+1)]=3;
+const legacy=fixture(170,456),ctx=vm.createContext({console,document:{getElementById:()=>({textContent:JSON.stringify({puzzles:bank})})},save:()=>{},toast:()=>{}});
+const initial={game:original,completed:{[legacy.id]:{level:legacy.level,at:legacy.at,assisted:false}}};
+vm.runInContext('var DB,clock=0;function nowISO(){return new Date(Date.UTC(2026,9,17)+1000*clock++).toISOString();}\nconst early=sudokuDefaults('+JSON.stringify(initial)+');\n'+fs.readFileSync('scripts/sudoku-core.js','utf8')+'\n'+fs.readFileSync('scripts/sudoku-app.js','utf8')+'\nDB={sudoku:early};renderSudoku=()=>sudokuEnsure();sudokuFocusCell=()=>{};',ctx);
+const run=code=>vm.runInContext(code,ctx),value=code=>JSON.parse(JSON.stringify(run(code)));
+assert.deepEqual(value('DB.sudoku.game'),original,'Old game changed on defaults');
+assert.deepEqual(value('DB.sudoku.saved[DB.sudoku.game.id]'),original,'Old active game not added');
+run('DB.sudoku.game.values['+blank+']=0');assert.equal(run('DB.sudoku.saved[DB.sudoku.game.id].values['+blank+']'),original.values[blank],'Snapshot aliases active arrays');
+run('DB.sudoku.game.values['+blank+']='+original.values[blank]+';sudokuStart("medium");sudokuEnsure();var second=sudokuCopyGame(DB.sudoku.game);');
+assert.deepEqual(value('DB.sudoku.saved['+JSON.stringify(original.id)+']'),original,'Switch lost first puzzle');
+run('sudokuOpenSaved('+JSON.stringify(original.id)+')');assert.deepEqual(value('DB.sudoku.game.values'),original.values);assert.deepEqual(value('DB.sudoku.game.notes'),original.notes);assert(run('!!DB.sudoku.saved[second.id]'),'Resume discarded second puzzle');
+run('DB.sudoku.completed[DB.sudoku.game.id]={at:nowISO(),level:DB.sudoku.game.level,assisted:false};sudokuOpenSaved(DB.sudoku.game.id,true)');
+assert.deepEqual(value('DB.sudoku.game.values'),original.givens.split('').map(Number));assert(run('DB.sudoku.game.notes.every(n=>n===0)&&DB.sudoku.game.hints===0&&!DB.sudoku.game.assisted'));assert.equal(run('DB.sudoku.game.id'),original.id);assert(!run('DB.sudoku.completed[DB.sudoku.game.id].assisted'),'Replay changed best completion');
+const reconstructed=value('sudokuGetSaved('+JSON.stringify(legacy.id)+')');assert.equal(reconstructed.givens,legacy.givens);assert.equal(reconstructed.solution,legacy.solution,'Legacy replay changed exact grid');
+assert.equal(run('sudokuGetSaved("sh999-1")'),null);assert.equal(run('sudokuGetSaved("sh001-4294967296")'),null);
+run('var prior=JSON.parse(JSON.stringify(DB.sudoku));var newer=sudokuCopyGame(second);newer.at="2099-01-01T00:00:00.000Z";newer.notes[newer.givens.indexOf("0")]=7;sudokuMerge({saved:{[newer.id]:newer},completed:{}})');
+assert.equal(run('DB.sudoku.saved[second.id].notes[second.givens.indexOf("0")]'),7);assert(run('!!DB.sudoku.saved['+JSON.stringify(original.id)+']'),'Merge deleted local puzzle');
+run('var incoming=sudokuCopyGame(second);incoming.at="2000-01-01";sudokuMerge({saved:{[incoming.id]:incoming}})');assert.equal(run('DB.sudoku.saved[second.id].notes[second.givens.indexOf("0")]'),7,'Older merge overwrote recent archive');
+run('sudokuMerge({completed:{}})');assert(run('Object.keys(DB.sudoku.saved).length>=2'),'Old backup erased archive');
+run('sudokuOpenSaved(second.id);DB.sudoku.game.notes[DB.sudoku.game.givens.indexOf("0")]=9;sudokuSave()');
+assert.equal(run('DB.sudoku.saved[second.id].notes[second.givens.indexOf("0")]'),9,'Clock-skewed restore prevented saving later edits');
+assert.deepEqual(value('sudokuDefaults(JSON.parse(JSON.stringify(DB.sudoku))).saved'),value('DB.sudoku.saved'),'JSON/default round trip changed saved snapshots');
+assert.deepEqual(value('sudokuDefaults({saved:{bad:{},"sh001-123":{id:"wrong"}}}).saved'),{},'Malformed snapshots accepted');
+const html=fs.readFileSync('study-hub.html','utf8'),old=cp.execFileSync('git',['show','c2aed45:study-hub.html'],{encoding:'utf8',maxBuffer:45e6});
+function unrelated(s){for(const block of ['GAMES CSS','GAMES APP']){const start='/* STUDY HUB '+block+' START */',end='/* STUDY HUB '+block+' END */',a=s.indexOf(start),b=s.indexOf(end,a);assert(a>=0&&b>a);s=s.slice(0,a)+s.slice(b+end.length);}return s.replace(/\r\n/g,'\n');}
+assert.equal(unrelated(html),unrelated(old),'Course content, common storage, other games or banks changed');
+console.log('PASS: early legacy load, independent snapshots, switching/resume/replay, exact legacy reconstruction, retained best completions, archive merge/old backups/JSON validation; unrelated application source unchanged.');

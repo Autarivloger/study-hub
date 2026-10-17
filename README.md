@@ -43,6 +43,13 @@ auto notes, undo, hints, answer checking and automatic saving. Its 200 original
 layouts create fresh offline variations. Both boards fit the available screen
 height; **Focus view** gives them more room. [Sudoku authoring notes](data/sudoku/README.md).
 
+Sudoku also has **Save puzzle**, a **Saved puzzles** library and **Play again**.
+Starting another puzzle keeps the previous board, entered numbers and pencil
+notes. **Continue** restores that progress; **Play again** resets the exact same
+clues for a fresh attempt while retaining completion records. Earlier completed
+puzzles can be reconstructed from their saved layout/seed. The additive
+`sudoku.saved` map is included in the existing backup/import and optional sync.
+
 **Sokoban** adds 40 original warehouse levels, keyboard/touch/swipe controls,
 undo after reopening, restart, offline hints, and saved completion/best results.
 Its Focus view keeps the board and large movement buttons together, including

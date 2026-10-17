@@ -93,7 +93,7 @@ function gamesPrepareFocusLayout(){
   }else if(kind==='sudoku'){
     move(view.querySelector('.su-pad'),tools);move(view.querySelector('.su-board-meta'),tools);move(view.querySelector('.su-status'),tools);move(view.querySelector('.su-aside'),extras);
     const more=document.createElement('div');more.className='gm-focus-actions';extras.prepend(more);
-    for(const id of ['suCheck','suAutoNotes','suNew'])move(view.querySelector('#'+id),more);
+    for(const id of ['suReplay','suSave','suCheck','suAutoNotes','suNew'])move(view.querySelector('#'+id),more);
   }else{
     move(view.querySelector('.sk-dpad'),tools);move(view.querySelector('.sk-hud'),tools);move(view.querySelector('.sk-status'),tools);move(view.querySelector('.sk-aside'),extras);
   }

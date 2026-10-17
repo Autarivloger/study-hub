@@ -1,0 +1,15 @@
+/* Saved Sudoku library uses the existing card/button design in both views. */
+.su-save-actions,.su-saved-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.su-save-actions .btn,.su-saved-actions .btn{font-size:12px;min-height:40px;padding:8px 6px;white-space:normal}
+.su-saved-title,.su-saved-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.su-saved-title h3{margin:0}.su-saved-title>span{font-size:12px;font-weight:700;color:var(--text-dim)}
+.su-saved-list{margin-top:14px;display:grid;gap:10px}
+.su-saved-row{min-width:0;border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--bg)}
+.su-saved-heading strong{font-size:13px}.su-saved-heading .gm-tag{font-size:9px;padding:3px 7px}
+.su-saved-row p{font-size:11px;margin:7px 0 3px;line-height:1.5}.su-saved-row small{font-size:10px;color:var(--text-dim);overflow-wrap:anywhere}
+.su-saved-actions{margin-top:10px}.su-saved-actions>.btn:only-child{grid-column:1/-1}
+.su-saved-pager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;font-size:11px}
+.su-saved-pager .btn{font-size:11px;padding:7px;min-width:0}
+.su-saved button:disabled{opacity:.55;cursor:default}
+body:not(.games-focus) .su-saved{scroll-margin-top:140px}
+body.games-focus .su-save-actions:empty{display:none}
