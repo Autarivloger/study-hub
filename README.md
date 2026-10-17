@@ -7,6 +7,17 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
+## Python Week 44 — Machine learning foundations
+
+Open **Course → Week 44** for six days with 36 teaching parts, 72 exercises,
+72 explained quiz questions, 108 executed Python examples/solutions and three
+embedded charts. Learn problem framing, the estimator interface, honest splits,
+overfitting, leakage, missing values, scaling, encoding and pipelines.
+The independent [offline Iris lab](docs/python-week44/README.md) includes a fixed
+train/validation/test workflow, a majority baseline, checked prediction inputs,
+inspectable JSON/CSV reports and tests. Installation needs internet once; bundled
+data and the installed lab run offline. No learner progress is used as model data.
+
 ## Python Week 43 — Full-stack project sprint
 
 Open **Course → Week 43** for six days and 36 parts taking a scoped product from
