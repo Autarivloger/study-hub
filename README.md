@@ -7,6 +7,17 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
+## Python Week 45 — Regression & prediction
+
+Open **Course → Week 45** for six days with 36 teaching parts, 72 exercises,
+72 explained quiz questions, 108 executed examples/solutions and six embedded
+charts. Study linear coefficients, MAE/MSE/RMSE/R-squared, polynomial complexity,
+Ridge/Lasso, feature ablation, tree ensembles and training-only cross-validation.
+The separate [offline demand lab](docs/python-week45/README.md) compares four
+predeclared pipelines with a median baseline and exports traceable JSON/CSV
+results. Its independent events are explicitly simulated; scores are educational
+evidence, not measurements of real customer forecasting performance.
+
 ## Python Week 44 — Machine learning foundations
 
 Open **Course → Week 44** for six days with 36 teaching parts, 72 exercises,
