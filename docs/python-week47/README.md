@@ -20,7 +20,7 @@ python -m venv .venv
 Open `http://127.0.0.1:8047/docs` to send a local prediction. Installation needs
 internet once. Data generation, model fitting, explanation, export and local
 serving then work offline. No account, GPU or remote dataset is required.
-Starlette is pinned with FastAPI to retain the verified HTTPX TestClient contract;
+Starlette and AnyIO are pinned with FastAPI to retain the verified HTTPX TestClient contract;
 a fresh install must not silently switch to a newer incompatible test-client API.
 Study Hub's text, outputs and six charts are embedded and readable without Python.
 The project never reads your browser progress or other app instances.
