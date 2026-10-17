@@ -7,6 +7,15 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
+## Python Week 43 — Full-stack project sprint
+
+Open **Course → Week 43** for six days and 36 parts taking a scoped product from
+requirements through backend, authentication, frontend, testing and release.
+The [Study Notes practice app](docs/python-week43/README.md) supplies a real
+dashboard and Python API with private notes, tags, search, completion filters and
+pages, plus reproducible browser/container checks. Its data is separate from
+Study Hub progress. Public API hosting is a documented manual exercise.
+
 ## Python Week 42 — Docker & deployment
 
 Open **Course → Week 42** for six days with 36 teaching parts, 72 practice

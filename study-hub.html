@@ -104013,6 +104013,4202 @@ const DAY_TEACH = {
     }
   ]
 },
+"43.0": {
+  "parts": [
+    {
+      "title": "1. Start with a learner problem, not a pile of features",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Start with a learner problem, not a pile of features"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Turn a real need into a small full-stack product you can demonstrate."
+        },
+        {
+          "t": "tip",
+          "v": "Use docs/python-week43 as a fresh independent practice folder. The supplied lesson_support.practice helper creates disposable local accounts and data for each Python example; it never reads your own instance or Study Hub progress. Python code/output blocks were executed against that project. Browser JavaScript and HTML patterns in syntax boxes run in the supplied dashboard, not in Python. Real browser and Docker tests provide separate evidence. Terminal deployment steps require the stated tools, host and private configuration."
+        },
+        {
+          "t": "new",
+          "v": "Full-stack vertical slice",
+          "note": "A usable journey crossing browser, HTTP, server rules and storage. One working create-and-retrieve flow is stronger evidence than four disconnected layers."
+        },
+        {
+          "t": "new",
+          "v": "User story",
+          "note": "A short statement of who needs an action and why. Acceptance criteria supply the observable evidence; the story alone is not a test."
+        },
+        {
+          "t": "p",
+          "v": "Our learner captures something, explains it in their own words and returns later. Study Notes supports that small loop. It is a separate practice app, not a replacement for this learning platform. The browser supplies a convenient workspace; Python owns the rules and persistence. We extend the known Notes API so attention can shift to integration and delivery instead of changing every tool."
+        },
+        {
+          "t": "p",
+          "v": "Open spec.json before touching the UI. Read S1 through S6 and describe one person completing each journey. Avoid vague goals such as “make a professional app”. A reviewer should be able to create a fictional account, save a note, refresh, sign in and retrieve it. That is a visible outcome with a clear boundary."
+        },
+        {
+          "t": "syn",
+          "v": "learner need -> story -> acceptance criteria -> vertical slice -> evidence",
+          "note": "Read this pattern before the worked example."
+        },
+        {
+          "t": "code",
+          "v": "import json\nfrom pathlib import Path\nspec=json.loads(Path(\"spec.json\").read_text())\nprint(spec[\"name\"])\nprint(spec[\"goal\"])\nprint(\"Stories:\",len(spec[\"stories\"]))\n"
+        },
+        {
+          "t": "out",
+          "v": "Study Notes\nA learner can privately capture, find and revisit learning notes.\nStories: 6"
+        },
+        {
+          "t": "p",
+          "v": "A clear problem keeps both the design and the tests focused."
+        },
+        {
+          "t": "mis",
+          "wrong": "Build every possible screen before deciding the learner outcome.",
+          "right": "Choose one small journey and prove it through the actual system.",
+          "why": "A clear problem keeps both the design and the tests focused."
+        },
+        {
+          "t": "ex",
+          "v": "Extract the story identifiers from the supplied specification.",
+          "practiceId": "43.0.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "import json\nfrom pathlib import Path\ns=json.loads(Path(\"spec.json\").read_text())\nprint([story[\"id\"] for story in s[\"stories\"]])\n",
+          "out": "['S1', 'S2', 'S3', 'S4', 'S5', 'S6']",
+          "why": "A clear problem keeps both the design and the tests focused."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Write a tiny vertical slice rather than an unrelated list of technical layers.",
+          "practiceId": "43.0.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "journey=[\"write a thought\",\"submit owned note\",\"commit to database\",\"retrieve it after sign-in\"]\nprint(\" -> \".join(journey))\n",
+          "out": "write a thought -> submit owned note -> commit to database -> retrieve it after sign-in",
+          "why": "A clear problem keeps both the design and the tests focused."
+        },
+        {
+          "t": "try",
+          "q": "What proves a vertical slice?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "A real journey through all required layers",
+          "why": "Follow one user outcome end to end."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.0.0",
+            "quiz": [
+              {
+                "q": "What proves a vertical slice?",
+                "options": [
+                  "A real journey through all required layers",
+                  "A beautiful empty page",
+                  "An unconnected database"
+                ],
+                "correct": 0,
+                "why": "Follow one user outcome end to end."
+              },
+              {
+                "q": "Does Study Notes replace Study Hub progress?",
+                "options": [
+                  "Only after registration",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "The teaching project uses independent storage."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Turn a real need into a small full-stack product you can demonstrate."
+        }
+      ]
+    },
+    {
+      "title": "2. Make acceptance criteria observable",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Make acceptance criteria observable"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Describe success and rejection before implementation."
+        },
+        {
+          "t": "new",
+          "v": "Acceptance criteria; Given / When / Then",
+          "note": "A concrete starting condition, action and observable result. Include persisted data and denied actions, not just an animation."
+        },
+        {
+          "t": "new",
+          "v": "Negative acceptance case",
+          "note": "A requirement about what the system must reject or preserve when a request is invalid or belongs to somebody else."
+        },
+        {
+          "t": "p",
+          "v": "“Notes work” is too broad. Given Asha has signed in, when she submits a valid title and body, then the API returns201 and a later authenticated read returns the same saved content. Given Ben signs in, reading Asha’s note returns404. The second case protects the central product promise, not an optional polish detail."
+        },
+        {
+          "t": "p",
+          "v": "Keep UI and HTTP evidence distinct. A Python TestClient can prove the response contract without opening Chrome; it cannot prove the user can find the Save button. A browser check can prove that workflow but still needs targeted backend tests for boundary values. Decide what evidence each requirement needs, then use that distinction throughout the sprint."
+        },
+        {
+          "t": "syn",
+          "v": "Verify server response, persisted result and the relevant rejection path.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice(seed=False) as (app,c,h):\n    response=c.get(\"/v1/notes\")\n    print(\"Anonymous status:\",response.status_code)\n    print(\"Bearer challenge:\",response.headers[\"www-authenticate\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "Anonymous status: 401\nBearer challenge: Bearer"
+        },
+        {
+          "t": "p",
+          "v": "Acceptance criteria connect the user promise to evidence."
+        },
+        {
+          "t": "mis",
+          "wrong": "Accept the story because the submit button changes colour.",
+          "right": "Verify server response, persisted result and the relevant rejection path.",
+          "why": "Acceptance criteria connect the user promise to evidence."
+        },
+        {
+          "t": "ex",
+          "v": "Check that a valid signed-in note creates an observable resource.",
+          "practiceId": "43.0.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    r=c.post(\"/v1/notes\",headers=h,json={\"title\":\"One outcome\",\"body\":\"Explain it\"})\n    print(\"Created:\",r.status_code)\n    print(\"Read back:\",c.get(r.headers[\"Location\"],headers=h).json()[\"title\"])\n",
+          "out": "Created: 201\nRead back: One outcome",
+          "why": "Acceptance criteria connect the user promise to evidence."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Write one positive and one denied-case checklist item.",
+          "practiceId": "43.0.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "checks={\"owner can read saved note\":True,\"anonymous access rejected\":True}\nprint(\"Required checks:\",len(checks))\nprint(\"All observed:\",all(checks.values()))\n",
+          "out": "Required checks: 2\nAll observed: True",
+          "why": "Acceptance criteria connect the user promise to evidence."
+        },
+        {
+          "t": "try",
+          "q": "Which is testable acceptance?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "A different account receives404 for my note",
+          "why": "An observable outcome supplies a clear verdict."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.0.1",
+            "quiz": [
+              {
+                "q": "Which is testable acceptance?",
+                "options": [
+                  "Use a modern framework",
+                  "A different account receives404 for my note",
+                  "The app feels complete"
+                ],
+                "correct": 1,
+                "why": "An observable outcome supplies a clear verdict."
+              },
+              {
+                "q": "Can TestClient alone verify mouse and keyboard usability?",
+                "options": [
+                  "Always",
+                  "Only with JSON",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Real browser evidence covers different behaviour."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Describe success and rejection before implementation."
+        }
+      ]
+    },
+    {
+      "title": "3. Cut scope without cutting the learning",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Cut scope without cutting the learning"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Separate the essential product from valuable future work."
+        },
+        {
+          "t": "new",
+          "v": "Scope boundary",
+          "note": "A deliberate statement of what this release includes and excludes. Deferring a feature is different from quietly implying it exists."
+        },
+        {
+          "t": "new",
+          "v": "Non-goal",
+          "note": "A named capability outside the current release, such as sharing notes or recovering forgotten passwords. State the consequence for users."
+        },
+        {
+          "t": "p",
+          "v": "This sprint includes private plain-text notes, known tags, completion, literal title search, pages and session logout. It excludes uploads, rich text, collaboration, password recovery and offline writes. Each exclusion reduces an entire family of storage, permissions, security and UX decisions. Keep the excluded list visible while building."
+        },
+        {
+          "t": "p",
+          "v": "Depth means understanding the chosen slice completely. It does not require adding every idea this week. For example, memory-only tokens make refresh require sign-in, and the product explicitly explains that behaviour. Simultaneous edits currently use last successful write wins; no conflict detection is claimed. Those are honest design choices to improve later after the core product has reproducible evidence."
+        },
+        {
+          "t": "syn",
+          "v": "Name the implemented scope and the concrete missing behaviours.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "import json\nfrom pathlib import Path\ns=json.loads(Path(\"spec.json\").read_text())\nprint(\"Shared notes deferred:\",\"shared notes\" in s[\"out_of_scope\"])\nprint(\"Write policy:\",s[\"write_policy\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "Shared notes deferred: True\nWrite policy: Server confirmed writes; note and tags are separate transactions; edits currently use last successful write wins."
+        },
+        {
+          "t": "p",
+          "v": "A trustworthy small release is easier to learn from and review."
+        },
+        {
+          "t": "mis",
+          "wrong": "Advertise collaboration and offline writes because they are future ideas.",
+          "right": "Name the implemented scope and the concrete missing behaviours.",
+          "why": "A trustworthy small release is easier to learn from and review."
+        },
+        {
+          "t": "ex",
+          "v": "Separate a small release scope from future candidates.",
+          "practiceId": "43.0.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "must={\"owned CRUD\",\"search\",\"sign out\"};later={\"uploads\",\"shared editing\"}\nprint(\"Current features:\",sorted(must))\nprint(\"No overlap:\",must.isdisjoint(later))\n",
+          "out": "Current features: ['owned CRUD', 'search', 'sign out']\nNo overlap: True",
+          "why": "A trustworthy small release is easier to learn from and review."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Find the documented offline-write boundary rather than assuming a queue exists.",
+          "practiceId": "43.0.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import json\nfrom pathlib import Path\ns=json.loads(Path(\"spec.json\").read_text())\nprint(\"Offline write queue deferred:\",\"offline write queue\" in s[\"out_of_scope\"])\n",
+          "out": "Offline write queue deferred: True",
+          "why": "A trustworthy small release is easier to learn from and review."
+        },
+        {
+          "t": "try",
+          "q": "Does a smaller scope require shallow explanations?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Study the selected workflow deeply and name deferred work."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.0.2",
+            "quiz": [
+              {
+                "q": "Does a smaller scope require shallow explanations?",
+                "options": [
+                  "Yes",
+                  "Only for frontend",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Study the selected workflow deeply and name deferred work."
+              },
+              {
+                "q": "Is a deferred password-recovery flow already available?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only for existing accounts"
+                ],
+                "correct": 0,
+                "why": "Document the actual product boundary."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Separate the essential product from valuable future work."
+        }
+      ]
+    },
+    {
+      "title": "4. Model ownership and relationships before screens",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Model ownership and relationships before screens"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Explain why identity, notes, tags and sessions have separate storage roles."
+        },
+        {
+          "t": "new",
+          "v": "Entity and invariant",
+          "note": "An entity has identity and stored attributes. An invariant is a rule that must remain true, such as every note referencing a real owner."
+        },
+        {
+          "t": "new",
+          "v": "Association table",
+          "note": "note_tags connects many notes to many shared tag entries. Deleting a note removes its links, not the shared tag catalog."
+        },
+        {
+          "t": "p",
+          "v": "The supplied schema has users, notes, tags, note_tags and token_sessions. A note points to its owner using a foreign key; the signed-in identity supplies that owner. Tag names form a tiny shared catalog, while the selected links belong to individual notes. Login-session rows allow one bearer session to be revoked independently."
+        },
+        {
+          "t": "p",
+          "v": "Sketch these arrows before designing forms. The editor may request title, body and completed, but it must not accept an arbitrary owner_id. A username label in the header does not establish identity. Authentication establishes the principal; scoped queries enforce ownership. Database constraints preserve structure underneath both correct and mistaken application code."
+        },
+        {
+          "t": "syn",
+          "v": "Reject unexpected owner fields and derive ownership on the server.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from orm_api.models import Base,Note\nprint(\"Entities:\",sorted(Base.metadata.tables))\nprint(\"Owner foreign key:\",sorted(str(f.column) for f in Note.__table__.c.owner_id.foreign_keys))\n"
+        },
+        {
+          "t": "out",
+          "v": "Entities: ['note_tags', 'notes', 'tags', 'token_sessions', 'users']\nOwner foreign key: ['users.id']"
+        },
+        {
+          "t": "p",
+          "v": "Browser inputs are requests; server invariants are the authority."
+        },
+        {
+          "t": "mis",
+          "wrong": "Trust a hidden owner_id field because users cannot normally see it.",
+          "right": "Reject unexpected owner fields and derive ownership on the server.",
+          "why": "Browser inputs are requests; server invariants are the authority."
+        },
+        {
+          "t": "ex",
+          "v": "Identify the two columns that define a note-to-tag link.",
+          "practiceId": "43.0.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "from orm_api.models import note_tags\nprint(\"Link identity:\",[c.name for c in note_tags.primary_key.columns])\n",
+          "out": "Link identity: ['note_id', 'tag_id']",
+          "why": "Browser inputs are requests; server invariants are the authority."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Check whether an ownership field is writable through the create contract.",
+          "practiceId": "43.0.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from orm_api.schemas import NoteCreate\nprint(\"Writable fields:\",list(NoteCreate.model_fields))\nprint(\"Client chooses owner:\",\"owner_id\" in NoteCreate.model_fields)\n",
+          "out": "Writable fields: ['title', 'body', 'completed']\nClient chooses owner: False",
+          "why": "Browser inputs are requests; server invariants are the authority."
+        },
+        {
+          "t": "try",
+          "q": "Who supplies the owner for a new note?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "The authenticated server principal",
+          "why": "Identity must come from verified authentication."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.0.3",
+            "quiz": [
+              {
+                "q": "Who supplies the owner for a new note?",
+                "options": [
+                  "The authenticated server principal",
+                  "A hidden browser input",
+                  "The public URL alone"
+                ],
+                "correct": 0,
+                "why": "Identity must come from verified authentication."
+              },
+              {
+                "q": "Should deleting one note delete the shared python tag?",
+                "options": [
+                  "Only on logout",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Delete the association, not the shared catalog."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Explain why identity, notes, tags and sessions have separate storage roles."
+        }
+      ]
+    },
+    {
+      "title": "5. Map screens to an explicit HTTP contract",
+      "sections": [
+        {
+          "t": "h",
+          "v": "5. Map screens to an explicit HTTP contract"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Connect a UI action to method, path, payload and expected result."
+        },
+        {
+          "t": "new",
+          "v": "API surface",
+          "note": "The public methods, paths, schemas, authentication and statuses a client can rely on."
+        },
+        {
+          "t": "new",
+          "v": "Screen-to-contract map",
+          "note": "A description of which server operations support each visible workflow. One button can involve more than one transaction."
+        },
+        {
+          "t": "p",
+          "v": "The workspace is not a second database implementation. It sends requests to the existing account and note API. Sign-in submits form data; note writes submit JSON; collection reads encode query parameters. A successful delete returns204 with no JSON body. These differences matter when writing one request helper."
+        },
+        {
+          "t": "p",
+          "v": "Draw the path for Save: POST or PATCH a note, then PUT its selected tags, then refresh the current collection. The two writes are separate transactions, so one can succeed while the other fails. Naming that boundary now avoids claiming atomic behaviour later. Use generated OpenAPI to confirm the route and input contracts rather than guessing from a button label."
+        },
+        {
+          "t": "syn",
+          "v": "Follow each endpoint’s input and response contract.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice(seed=False) as (app,c,h):\n    schema=c.get(\"/openapi.json\").json()\n    print(\"Create:\",\"post\" in schema[\"paths\"][\"/v1/notes\"])\n    print(\"Completion query:\",[p[\"name\"] for p in schema[\"paths\"][\"/v1/notes\"][\"get\"][\"parameters\"]])\n"
+        },
+        {
+          "t": "out",
+          "v": "Create: True\nCompletion query: ['limit', 'offset', 'q', 'completed']"
+        },
+        {
+          "t": "p",
+          "v": "The browser integrates existing promises rather than inventing new ones."
+        },
+        {
+          "t": "mis",
+          "wrong": "Send every request in the same format and parse every success as JSON.",
+          "right": "Follow each endpoint’s input and response contract.",
+          "why": "The browser integrates existing promises rather than inventing new ones."
+        },
+        {
+          "t": "ex",
+          "v": "Verify the successful delete contract on a fresh owned resource.",
+          "practiceId": "43.0.4.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    r=c.post(\"/v1/notes\",headers=h,json={\"title\":\"Disposable\",\"body\":\"Owned fixture\"})\n    deleted=c.delete(r.headers[\"Location\"],headers=h)\n    print(\"Status:\",deleted.status_code)\n    print(\"Body bytes:\",len(deleted.content))\n",
+          "out": "Status: 204\nBody bytes: 0",
+          "why": "The browser integrates existing promises rather than inventing new ones."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Write the transport choice for the login and note workflows.",
+          "practiceId": "43.0.4.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "transport={\"login\":\"form encoded\",\"note write\":\"JSON\",\"list filter\":\"URL query\"}\nfor action,kind in transport.items():print(action+\":\",kind)\n",
+          "out": "login: form encoded\nnote write: JSON\nlist filter: URL query",
+          "why": "The browser integrates existing promises rather than inventing new ones."
+        },
+        {
+          "t": "try",
+          "q": "Does204 promise a JSON response body?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Handle the empty successful response explicitly."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.0.4",
+            "quiz": [
+              {
+                "q": "Does204 promise a JSON response body?",
+                "options": [
+                  "Only for DELETE",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Handle the empty successful response explicitly."
+              },
+              {
+                "q": "Is saving a note and its tags currently one transaction?",
+                "options": [
+                  "Yes",
+                  "Only from the dashboard",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "The client must handle partial success honestly."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Connect a UI action to method, path, payload and expected result."
+        }
+      ]
+    },
+    {
+      "title": "6. Plan the sprint as evidence-producing slices",
+      "sections": [
+        {
+          "t": "h",
+          "v": "6. Plan the sprint as evidence-producing slices"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Sequence work and define completion without relying on a calendar."
+        },
+        {
+          "t": "new",
+          "v": "Definition of done",
+          "note": "A checklist of required evidence, not a feeling or a percentage. Include permission failures, browser usability, documentation and deployment boundaries."
+        },
+        {
+          "t": "new",
+          "v": "Traceability",
+          "note": "A connection from a user story to implementation and to a check that proves its acceptance criteria."
+        },
+        {
+          "t": "p",
+          "v": "Build the backend contract first, then connect one browser journey and expand it. Keep a small task list: implement, verify, record. A blocker discovered in a denied or interrupted flow is real product work, not a distraction from polishing the happy path. Split the day into parts whenever understanding needs more time."
+        },
+        {
+          "t": "p",
+          "v": "For this project, code checks, real browser checks and actual container checks are separate evidence. A public HTTPS flow from another device is another stage. Publishing source to GitHub does not execute Python on GitHub Pages. Keep an unfinished external verification pending in the release record instead of marking the whole milestone complete because a local screenshot looks good."
+        },
+        {
+          "t": "syn",
+          "v": "Finish the learning and record actual verification at each boundary.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "import json\nfrom pathlib import Path\ns=json.loads(Path(\"spec.json\").read_text())\nfor check in s[\"definition_of_done\"]:print(check)\n"
+        },
+        {
+          "t": "out",
+          "v": "contract tests\ntwo-owner denial tests\nreal browser workflows\nmobile and keyboard checks\ncontainer persistence and restore\ndeployment evidence recorded honestly"
+        },
+        {
+          "t": "p",
+          "v": "A sprint is a delivery method, not permission to skip understanding."
+        },
+        {
+          "t": "mis",
+          "wrong": "Move every task to done when the calendar day ends.",
+          "right": "Finish the learning and record actual verification at each boundary.",
+          "why": "A sprint is a delivery method, not permission to skip understanding."
+        },
+        {
+          "t": "ex",
+          "v": "Map a story to more than a file name.",
+          "practiceId": "43.0.5.build"
+        },
+        {
+          "t": "sol",
+          "code": "trace={\"story\":\"S2\",\"implementation\":\"owned note routes + dashboard\",\"evidence\":[\"CRUD test\",\"two-owner denial\",\"browser save flow\"]}\nprint(trace[\"story\"],\"checks:\",len(trace[\"evidence\"]))\n",
+          "out": "S2 checks: 3",
+          "why": "A sprint is a delivery method, not permission to skip understanding."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Keep an unperformed deployment check visibly pending.",
+          "practiceId": "43.0.5.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "evidence={\"local tests\":\"passed\",\"public phone flow\":\"pending\"}\nprint(\"Fully released:\",all(v==\"passed\" for v in evidence.values()))\n",
+          "out": "Fully released: False",
+          "why": "A sprint is a delivery method, not permission to skip understanding."
+        },
+        {
+          "t": "try",
+          "q": "Does GitHub Pages publication run the Python API?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Static publication and an API runtime are separate."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.0.5",
+            "quiz": [
+              {
+                "q": "Does GitHub Pages publication run the Python API?",
+                "options": [
+                  "Yes",
+                  "Only with a Dockerfile",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Static publication and an API runtime are separate."
+              },
+              {
+                "q": "What should an unperformed check say?",
+                "options": [
+                  "Pending",
+                  "Passed",
+                  "Probably fine"
+                ],
+                "correct": 0,
+                "why": "The record should describe observed evidence."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Sequence work and define completion without relying on a calendar."
+        }
+      ]
+    }
+  ]
+},
+"43.1": {
+  "parts": [
+    {
+      "title": "1. Establish a project boundary and an application factory",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Establish a project boundary and an application factory"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Run a fresh app without borrowing older runtime data."
+        },
+        {
+          "t": "new",
+          "v": "Composition root",
+          "note": "The point that connects configuration, database/session lifetime, routes and middleware. create_app constructs an independent application."
+        },
+        {
+          "t": "new",
+          "v": "Test fixture boundary",
+          "note": "A helper owns the temporary app, logs, accounts and files for one check. It must not read a learner’s actual instance."
+        },
+        {
+          "t": "p",
+          "v": "Work in docs/python-week43. Its public source continues the familiar API, but its w43 migration lineage and runtime store are independent. The application factory lets tests provide a temporary instance path while normal startup reads validated settings. This makes the same routes usable in different controlled environments."
+        },
+        {
+          "t": "p",
+          "v": "Follow startup deliberately: choose settings, construct the app, enter its lifespan, initialise or verify the schema and signing material, then serve requests. A Python import alone does not prove the server is ready. The provided practice context enters the real TestClient lifespan and cleans its owned temporary folder afterward. Never solve a test failure by pointing it at an existing personal database."
+        },
+        {
+          "t": "syn",
+          "v": "Create a fresh project store and disposable fixtures.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "sh",
+          "v": "python -m pip install -r requirements-dev.txt\npython -m pytest -q\npython app.py\n# Open http://127.0.0.1:8002/"
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice(seed=False) as (app,c,h):\n    print(\"App:\",app.title)\n    print(\"Live:\",c.get(\"/health\").status_code)\n    print(\"Ready:\",c.get(\"/health/ready\").status_code)\n"
+        },
+        {
+          "t": "out",
+          "v": "App: Week 43 SQLAlchemy Notes API\nLive: 200\nReady: 200"
+        },
+        {
+          "t": "p",
+          "v": "Known initial conditions make failures reproducible."
+        },
+        {
+          "t": "mis",
+          "wrong": "Copy a previous week’s instance directory to get a quick test login.",
+          "right": "Create a fresh project store and disposable fixtures.",
+          "why": "Known initial conditions make failures reproducible."
+        },
+        {
+          "t": "ex",
+          "v": "Inspect the independent schema head without opening any stored user data.",
+          "practiceId": "43.1.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "from orm_api.database import HEAD\nprint(\"Week43 head:\",HEAD)\n",
+          "out": "Week43 head: w43_003",
+          "why": "Known initial conditions make failures reproducible."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Confirm the dashboard and API explorer have different entry pages.",
+          "practiceId": "43.1.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice(seed=False) as (app,c,h):\n    print(\"Dashboard:\",\"Study Notes\" in c.get(\"/\").text)\n    print(\"Explorer:\",\"Local Notes API\" in c.get(\"/docs\").text)\n",
+          "out": "Dashboard: True\nExplorer: True",
+          "why": "Known initial conditions make failures reproducible."
+        },
+        {
+          "t": "try",
+          "q": "What makes repeated app tests independent?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "Owned temporary configuration and storage",
+          "why": "Isolation belongs in the fixture and application lifecycle."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.1.0",
+            "quiz": [
+              {
+                "q": "What makes repeated app tests independent?",
+                "options": [
+                  "Owned temporary configuration and storage",
+                  "Using the same personal database",
+                  "Changing only the page title"
+                ],
+                "correct": 0,
+                "why": "Isolation belongs in the fixture and application lifecycle."
+              },
+              {
+                "q": "Does importing create_app itself perform every startup check?",
+                "options": [
+                  "Only with SQLite",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Startup/lifespan and import are distinct."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Run a fresh app without borrowing older runtime data."
+        }
+      ]
+    },
+    {
+      "title": "2. Treat the schema and migrations as reviewed code",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Treat the schema and migrations as reviewed code"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Explain fresh creation, expected revision and preservation on mismatch."
+        },
+        {
+          "t": "new",
+          "v": "Migration lineage",
+          "note": "An ordered history of schema changes. Week43 uses w43_001 through w43_003 and does not pretend another week’s database has that history."
+        },
+        {
+          "t": "new",
+          "v": "Schema readiness gate",
+          "note": "The API verifies a recognised schema and expected head before serving useful work. Unknown history is preserved for investigation."
+        },
+        {
+          "t": "p",
+          "v": "Models describe the application mapping, while reviewed Alembic revisions describe how the database reaches it. This project creates a fresh local schema when it owns a new empty file. Known older files require an explicit controlled upgrade; unfamiliar tables/history are rejected. PostgreSQL startup uses a separate migration job before runtime workers begin."
+        },
+        {
+          "t": "p",
+          "v": "Trace the required tables and constraints. Foreign keys prevent orphaned owners and tag links; title/body checks complement request validation; indexes serve common owner-scoped access. Do not call create_all on every production request or reset a mismatched database to make a demo green. A migration is an operational change with compatibility and recovery consequences."
+        },
+        {
+          "t": "syn",
+          "v": "Recognise the current state and apply reviewed changes with recovery evidence.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nfrom orm_api.database import revision\nwith practice(seed=False) as (app,c,h):\n    print(\"Database revision:\",revision(app.state.engine))\n"
+        },
+        {
+          "t": "out",
+          "v": "Database revision: w43_003"
+        },
+        {
+          "t": "p",
+          "v": "Preserving data is part of backend correctness."
+        },
+        {
+          "t": "mis",
+          "wrong": "Reset the database whenever the expected schema is missing.",
+          "right": "Recognise the current state and apply reviewed changes with recovery evidence.",
+          "why": "Preserving data is part of backend correctness."
+        },
+        {
+          "t": "ex",
+          "v": "Read the note check-constraint names from the actual mapping.",
+          "practiceId": "43.1.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "from orm_api.models import Note\nfrom sqlalchemy import CheckConstraint\nprint(sorted(c.name for c in Note.__table__.constraints if isinstance(c,CheckConstraint)))\n",
+          "out": "['ck_notes_body_length', 'ck_notes_completed_boolean', 'ck_notes_title_length']",
+          "why": "Preserving data is part of backend correctness."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Confirm which revisions belong to this project.",
+          "practiceId": "43.1.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from orm_api.database import REVISIONS\nprint(sorted(REVISIONS))\n",
+          "out": "['w43_001', 'w43_002', 'w43_003']",
+          "why": "Preserving data is part of backend correctness."
+        },
+        {
+          "t": "try",
+          "q": "Should an unfamiliar database be deleted automatically?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Preserve unknown state and review a migration."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.1.1",
+            "quiz": [
+              {
+                "q": "Should an unfamiliar database be deleted automatically?",
+                "options": [
+                  "Only in development",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Preserve unknown state and review a migration."
+              },
+              {
+                "q": "Does an ORM model replace migration history?",
+                "options": [
+                  "Yes",
+                  "Only on PostgreSQL",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Mapping and controlled schema evolution serve different jobs."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Explain fresh creation, expected revision and preservation on mismatch."
+        }
+      ]
+    },
+    {
+      "title": "3. Create an owned note inside an explicit transaction",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Create an owned note inside an explicit transaction"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Follow validated input through identity, flush, commit and response."
+        },
+        {
+          "t": "new",
+          "v": "Flush versus commit",
+          "note": "Flush sends pending SQL and obtains generated values inside the transaction. Commit makes the transaction durable; a flush alone is not a completed save."
+        },
+        {
+          "t": "new",
+          "v": "Server-owned field",
+          "note": "A field such as owner_id or created_at is assigned by server rules, rather than copied from untrusted JSON."
+        },
+        {
+          "t": "p",
+          "v": "The create route validates title, body and completed, derives the owner from current_user, assigns a timestamp and adds the ORM row. Flush supplies the generated id for the result and Location header; the atomic context commits before the route returns success. If database work fails, the context rolls back."
+        },
+        {
+          "t": "p",
+          "v": "Read this as one contract, not isolated keywords. A201 response should mean the operation has passed the save boundary. A malicious owner_id in the JSON is rejected instead of silently changing ownership. The response exposes only the public note fields; password hashes and internal owner assignments are absent. Test both the persisted result and the rejected extra field."
+        },
+        {
+          "t": "syn",
+          "v": "Complete the transaction before returning a successful save contract.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    r=c.post(\"/v1/notes\",headers=h,json={\"title\":\"  A thought  \",\"body\":\"  Explain why  \"})\n    print(\"Created:\",r.status_code)\n    print(\"Clean title:\",r.json()[\"title\"])\n    print(\"Retrieved:\",c.get(r.headers[\"Location\"],headers=h).json()[\"body\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "Created: 201\nClean title: A thought\nRetrieved: Explain why"
+        },
+        {
+          "t": "p",
+          "v": "The caller relies on a meaningful success boundary."
+        },
+        {
+          "t": "mis",
+          "wrong": "Return success after adding an object without confirming the commit.",
+          "right": "Complete the transaction before returning a successful save contract.",
+          "why": "The caller relies on a meaningful success boundary."
+        },
+        {
+          "t": "ex",
+          "v": "Attempt to choose another owner and check the status.",
+          "practiceId": "43.1.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    r=c.post(\"/v1/notes\",headers=h,json={\"title\":\"No transfer\",\"body\":\"Fixture\",\"owner_id\":2})\n    print(\"Rejected:\",r.status_code)\n",
+          "out": "Rejected: 422",
+          "why": "The caller relies on a meaningful success boundary."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Show that the response is a public contract rather than a raw ORM dump.",
+          "practiceId": "43.1.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    r=c.post(\"/v1/notes\",headers=h,json={\"title\":\"Public shape\",\"body\":\"Fixture\"}).json()\n    print(\"Owner exposed:\",\"owner_id\" in r)\n    print(\"Password exposed:\",\"password_hash\" in r)\n",
+          "out": "Owner exposed: False\nPassword exposed: False",
+          "why": "The caller relies on a meaningful success boundary."
+        },
+        {
+          "t": "try",
+          "q": "Does flush guarantee the transaction is committed?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Commit is a separate transaction boundary."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.1.2",
+            "quiz": [
+              {
+                "q": "Does flush guarantee the transaction is committed?",
+                "options": [
+                  "Always",
+                  "Only for inserts",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Commit is a separate transaction boundary."
+              },
+              {
+                "q": "Should create copy owner_id from JSON?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only when hidden"
+                ],
+                "correct": 0,
+                "why": "The authenticated principal determines ownership."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Follow validated input through identity, flush, commit and response."
+        }
+      ]
+    },
+    {
+      "title": "4. Search, filter and paginate one owned collection",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Search, filter and paginate one owned collection"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Combine predicates before counting and selecting page rows."
+        },
+        {
+          "t": "new",
+          "v": "Filter composition",
+          "note": "Owner, literal search and optional completed predicates must apply to both the count and the selected rows."
+        },
+        {
+          "t": "new",
+          "v": "Stable pagination",
+          "note": "A deterministic order plus bounded limit/offset. Reset the offset when changing filters and recover when deletion removes the last page."
+        },
+        {
+          "t": "p",
+          "v": "Start every collection query with the signed-in owner. Add a literal case-lowered title search and, only when completed is not None, an explicit boolean predicate. False is a real filter value; testing if completed would accidentally ignore it. Count the filtered collection before applying page offset and limit."
+        },
+        {
+          "t": "p",
+          "v": "The endpoint orders by note id to make ordinary pagination predictable. It bounds requests, but offset pagination is not a snapshot while other clients insert or delete. SQLAlchemy contains with autoescape treats % and _ as characters rather than wildcard commands. Search uses each database’s lower/collation rules, so this is not a promise of every language’s full-text search semantics."
+        },
+        {
+          "t": "syn",
+          "v": "predicate = (Note.owner_id == user.id, search_predicate)\nif completed is not None:\n    predicate += (Note.completed == completed,)",
+          "note": "Read this pattern before the worked example."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    r=c.get(\"/v1/notes\",headers=h,params={\"q\":\"%\",\"completed\":\"false\",\"limit\":1})\n    print(\"Total:\",r.json()[\"total\"])\n    print(\"Title:\",r.json()[\"items\"][0][\"title\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "Total: 1\nTitle: 100% practice"
+        },
+        {
+          "t": "p",
+          "v": "Count and page contents must describe the same collection."
+        },
+        {
+          "t": "mis",
+          "wrong": "Use if completed and count all users before filtering page rows.",
+          "right": "Test completed is not None and reuse the same owned predicates.",
+          "why": "Count and page contents must describe the same collection."
+        },
+        {
+          "t": "ex",
+          "v": "Prove that false and true select different collections.",
+          "practiceId": "43.1.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    for value in [\"false\",\"true\"]:\n        r=c.get(\"/v1/notes\",headers=h,params={\"completed\":value})\n        print(value,r.json()[\"total\"])\n",
+          "out": "false 3\ntrue 0",
+          "why": "Count and page contents must describe the same collection."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Read the second one-item page and retain the filtered total.",
+          "practiceId": "43.1.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    p=c.get(\"/v1/notes?limit=1&offset=1\",headers=h).json()\n    print(\"Total:\",p[\"total\"])\n    print(\"Page rows:\",len(p[\"items\"]))\n    print(\"Title:\",p[\"items\"][0][\"title\"])\n",
+          "out": "Total: 3\nPage rows: 1\nTitle: Validation",
+          "why": "Count and page contents must describe the same collection."
+        },
+        {
+          "t": "try",
+          "q": "How should an optional boolean filter distinguish omitted from false?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "Compare with None",
+          "why": "False is a valid requested value."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.1.3",
+            "quiz": [
+              {
+                "q": "How should an optional boolean filter distinguish omitted from false?",
+                "options": [
+                  "Compare with None",
+                  "Use if completed",
+                  "Convert false to missing"
+                ],
+                "correct": 0,
+                "why": "False is a valid requested value."
+              },
+              {
+                "q": "Should total count include notes from another owner?",
+                "options": [
+                  "Only when search is empty",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Every collection operation stays owner-scoped."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Combine predicates before counting and selecting page rows."
+        }
+      ]
+    },
+    {
+      "title": "5. Update and delete without losing false or ownership",
+      "sections": [
+        {
+          "t": "h",
+          "v": "5. Update and delete without losing false or ownership"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Distinguish partial changes, replacement and confirmed deletion."
+        },
+        {
+          "t": "new",
+          "v": "PATCH contract",
+          "note": "Only explicitly supplied writable fields change. exclude_unset distinguishes an omitted field from a supplied false value."
+        },
+        {
+          "t": "new",
+          "v": "Deletion boundary",
+          "note": "A confirmed204 means the owned note was deleted. The UI must not remove a row merely because the user clicked a button."
+        },
+        {
+          "t": "p",
+          "v": "An update begins by retrieving the owned note. The patch model rejects empty objects, explicit nulls, unknown fields and wrong boolean types. It then applies supplied fields inside a transaction. A complete replacement has its own required fields. These rules prevent a convenient frontend from becoming the only data validator."
+        },
+        {
+          "t": "p",
+          "v": "Delete also scopes the row to its owner and commits before returning204. Afterward, an authenticated read returns404. A second client may have removed the note first, so the UI needs a useful unavailable-state response. Concurrent editing currently uses last successful write wins; proper version checks or conditional requests are a separate future improvement."
+        },
+        {
+          "t": "syn",
+          "v": "Wait for server confirmation and handle missing or failed results explicitly.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    url=\"/v1/notes/1\"\n    c.patch(url,headers=h,json={\"completed\":True})\n    r=c.patch(url,headers=h,json={\"completed\":False})\n    print(\"False retained:\",r.json()[\"completed\"] is False)\n    print(\"Unchanged title:\",r.json()[\"title\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "False retained: True\nUnchanged title: HTTP"
+        },
+        {
+          "t": "p",
+          "v": "The UI should represent the known saved state."
+        },
+        {
+          "t": "mis",
+          "wrong": "Remove a row immediately and assume a failed delete probably worked.",
+          "right": "Wait for server confirmation and handle missing or failed results explicitly.",
+          "why": "The UI should represent the known saved state."
+        },
+        {
+          "t": "ex",
+          "v": "Verify an invalid patch preserves the stored note.",
+          "practiceId": "43.1.4.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    before=c.get(\"/v1/notes/1\",headers=h).json()\n    print(\"Empty patch:\",c.patch(\"/v1/notes/1\",headers=h,json={}).status_code)\n    print(\"Preserved:\",c.get(\"/v1/notes/1\",headers=h).json()==before)\n",
+          "out": "Empty patch: 422\nPreserved: True",
+          "why": "The UI should represent the known saved state."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Check the result after a successful owned deletion.",
+          "practiceId": "43.1.4.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    print(\"Delete:\",c.delete(\"/v1/notes/1\",headers=h).status_code)\n    print(\"Later read:\",c.get(\"/v1/notes/1\",headers=h).status_code)\n",
+          "out": "Delete: 204\nLater read: 404",
+          "why": "The UI should represent the known saved state."
+        },
+        {
+          "t": "try",
+          "q": "Should a supplied false be discarded as missing?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Omission and false are different inputs."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.1.4",
+            "quiz": [
+              {
+                "q": "Should a supplied false be discarded as missing?",
+                "options": [
+                  "Only for PATCH",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Omission and false are different inputs."
+              },
+              {
+                "q": "Does the current project detect simultaneous edit conflicts?",
+                "options": [
+                  "Yes",
+                  "Only from the same browser",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Document last-write-wins until version checking is implemented."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Distinguish partial changes, replacement and confirmed deletion."
+        }
+      ]
+    },
+    {
+      "title": "6. Complete the tag relationship contract",
+      "sections": [
+        {
+          "t": "h",
+          "v": "6. Complete the tag relationship contract"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Keep shared catalog values separate from owned note links."
+        },
+        {
+          "t": "new",
+          "v": "Catalog validation",
+          "note": "The project accepts only unique names from python, api and database. Known names are deliberately a small scope choice."
+        },
+        {
+          "t": "new",
+          "v": "Partial success across requests",
+          "note": "Saving a note and then its tags can leave a saved note with unchanged tags if the second request fails. A browser retry needs the saved note id."
+        },
+        {
+          "t": "p",
+          "v": "The tag update checks ownership, resolves requested catalog rows and replaces the note’s links in one database transaction. Duplicate or unknown names are invalid. An empty list intentionally clears the links. Deleting a note cascades its association links while leaving the shared tag catalog available."
+        },
+        {
+          "t": "p",
+          "v": "Do not confuse that single tag transaction with the full browser Save workflow. The note write and tag write are separate calls. The dashboard changes its editor state to the returned note id immediately after the first succeeds; if tags fail it retries an update, not another create. We will test that interrupted path in a real browser rather than claiming two requests are atomic."
+        },
+        {
+          "t": "syn",
+          "v": "Retain the confirmed resource id and retry its remaining update.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    r=c.put(\"/v1/notes/1/tags\",headers=h,json={\"names\":[\"python\",\"api\"]})\n    print(\"Saved tags:\",r.json())\n    print(\"Read tags:\",c.get(\"/v1/notes/1/tags\",headers=h).json())\n"
+        },
+        {
+          "t": "out",
+          "v": "Saved tags: ['api', 'python']\nRead tags: ['api', 'python']"
+        },
+        {
+          "t": "p",
+          "v": "Partial success needs an explicit recovery path."
+        },
+        {
+          "t": "mis",
+          "wrong": "Repeat POST after every tag error because the overall Save did not finish.",
+          "right": "Retain the confirmed resource id and retry its remaining update.",
+          "why": "Partial success needs an explicit recovery path."
+        },
+        {
+          "t": "ex",
+          "v": "Check duplicates and unknown names without changing the catalog.",
+          "practiceId": "43.1.5.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    for names in [[\"api\",\"api\"],[\"missing\"]]:\n        print(c.put(\"/v1/notes/1/tags\",headers=h,json={\"names\":names}).status_code)\n",
+          "out": "422\n422",
+          "why": "Partial success needs an explicit recovery path."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Clear one note’s links and prove the catalog remains.",
+          "practiceId": "43.1.5.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    print(\"Cleared:\",c.put(\"/v1/notes/1/tags\",headers=h,json={\"names\":[]}).json())\n    print(\"Catalog:\",c.get(\"/v1/tags\",headers=h).json())\n",
+          "out": "Cleared: []\nCatalog: ['api', 'database', 'python']",
+          "why": "Partial success needs an explicit recovery path."
+        },
+        {
+          "t": "try",
+          "q": "What should a retry retain after the note saved but tags failed?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "The saved note id",
+          "why": "Retry the existing resource rather than duplicating it."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.1.5",
+            "quiz": [
+              {
+                "q": "What should a retry retain after the note saved but tags failed?",
+                "options": [
+                  "Only an empty form",
+                  "A second create command",
+                  "The saved note id"
+                ],
+                "correct": 2,
+                "why": "Retry the existing resource rather than duplicating it."
+              },
+              {
+                "q": "Does clearing selected tags delete the shared catalog?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only when empty"
+                ],
+                "correct": 0,
+                "why": "Links and catalog entities are different."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Keep shared catalog values separate from owned note links."
+        }
+      ]
+    }
+  ]
+},
+"43.2": {
+  "parts": [
+    {
+      "title": "1. Register without storing a plain password",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Register without storing a plain password"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Follow canonical identity, password hashing and duplicate handling."
+        },
+        {
+          "t": "new",
+          "v": "Password hash verification",
+          "note": "Store a slow password hash, then use its matching verification function. The hash is not a value to show in a response or log."
+        },
+        {
+          "t": "new",
+          "v": "Canonical username",
+          "note": "The server trims and lowercases supported ASCII usernames so duplicate identity checks have a consistent meaning."
+        },
+        {
+          "t": "p",
+          "v": "Registration validates the account contract and hashes the secret before inserting the user. A unique database constraint protects identity even if two requests race. A duplicate returns409 with a generic useful message. The public response exposes id and username, not a hash or the original password."
+        },
+        {
+          "t": "p",
+          "v": "Treat the browser’s length hints as help, not the rule’s authority. Requests can bypass HTML entirely. The server repeats the actual contract and strips secret input values from validation responses. This project deliberately has no password-recovery flow; use fictional accounts, and document what a forgotten practice passphrase means rather than pretending recovery exists."
+        },
+        {
+          "t": "syn",
+          "v": "Use explicit public response fields and never echo password material.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice,PRACTICE_PASSWORD\nfrom sqlalchemy import select\nfrom werkzeug.security import check_password_hash\nfrom orm_api.models import User\nwith practice() as (app,c,h):\n    with app.state.sessions() as db:\n        stored=db.scalar(select(User.password_hash).where(User.username==\"asha\"))\n        print(\"Plain password stored:\",stored==PRACTICE_PASSWORD)\n        print(\"Verifies:\",check_password_hash(stored,PRACTICE_PASSWORD))\n"
+        },
+        {
+          "t": "out",
+          "v": "Plain password stored: False\nVerifies: True"
+        },
+        {
+          "t": "p",
+          "v": "Identity handling combines validation, storage constraints and controlled output."
+        },
+        {
+          "t": "mis",
+          "wrong": "Return the stored user object with every internal column.",
+          "right": "Use explicit public response fields and never echo password material.",
+          "why": "Identity handling combines validation, storage constraints and controlled output."
+        },
+        {
+          "t": "ex",
+          "v": "Verify that a repeated supported username does not create a second account.",
+          "practiceId": "43.2.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice,PRACTICE_PASSWORD\nwith practice() as (app,c,h):\n    r=c.post(\"/v1/users\",json={\"username\":\"ASHA\",\"password\":PRACTICE_PASSWORD})\n    print(\"Conflict:\",r.status_code)\n    print(\"Useful message:\",r.json()[\"detail\"])\n",
+          "out": "Conflict: 409\nUseful message: Username unavailable",
+          "why": "Identity handling combines validation, storage constraints and controlled output."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Inspect the public registration shape for a fresh fictional account.",
+          "practiceId": "43.2.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice,PRACTICE_PASSWORD\nwith practice(seed=False) as (app,c,h):\n    r=c.post(\"/v1/users\",json={\"username\":\"learner\",\"password\":PRACTICE_PASSWORD})\n    print(\"Public fields:\",sorted(r.json()))\n",
+          "out": "Public fields: ['id', 'username']",
+          "why": "Identity handling combines validation, storage constraints and controlled output."
+        },
+        {
+          "t": "try",
+          "q": "What belongs in the password storage column?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "A suitable password hash",
+          "why": "Hash and verify using the password-hashing scheme."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.2.0",
+            "quiz": [
+              {
+                "q": "What belongs in the password storage column?",
+                "options": [
+                  "A suitable password hash",
+                  "The plain password",
+                  "The bearer token"
+                ],
+                "correct": 0,
+                "why": "Hash and verify using the password-hashing scheme."
+              },
+              {
+                "q": "Can HTML validation replace server validation?",
+                "options": [
+                  "Only on the same origin",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Clients can send arbitrary HTTP requests."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Follow canonical identity, password hashing and duplicate handling."
+        }
+      ]
+    },
+    {
+      "title": "2. Sign in and understand the session boundary",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Sign in and understand the session boundary"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Separate a signed token, verified claims and a revocable login record."
+        },
+        {
+          "t": "new",
+          "v": "Bearer session",
+          "note": "Possession of the token authorises requests within its accepted scope and expiry. This UI keeps it only in tab memory; saved notes remain server-side."
+        },
+        {
+          "t": "new",
+          "v": "Verified claims and revocation",
+          "note": "The API checks signature, algorithm, issuer, audience, required claim types and an unexpired stored login. A signature alone does not prove the session is still allowed."
+        },
+        {
+          "t": "p",
+          "v": "The login route receives form-encoded username and password, verifies credentials and creates an individual session identifier. The response includes a signed access token with a fifteen-minute lifetime. Later requests send it in Authorization, not in a URL query. The server also checks the session row so a logout can revoke that single login."
+        },
+        {
+          "t": "p",
+          "v": "The example decodes using the actual temporary app key, expected issuer and audience; it never prints the token or key. Reading unverified JSON is not authentication. Memory-only storage reduces persistent credential exposure but makes refresh require sign-in and does not prevent malicious scripts from abusing an active page. Combine this choice with safe rendering and server boundaries."
+        },
+        {
+          "t": "syn",
+          "v": "Send the credential in the header and verify the complete session policy.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "import jwt\nfrom lesson_support import practice\nfrom orm_api import ISSUER,AUDIENCE\nwith practice() as (app,c,h):\n    token=h[\"Authorization\"].removeprefix(\"Bearer \")\n    claims=jwt.decode(token,app.state.key,algorithms=[\"HS256\"],issuer=ISSUER,audience=AUDIENCE)\n    print(\"Lifetime:\",claims[\"exp\"]-claims[\"iat\"])\n    print(\"Session id present:\",bool(claims[\"jti\"]))\n"
+        },
+        {
+          "t": "out",
+          "v": "Lifetime: 900\nSession id present: True"
+        },
+        {
+          "t": "p",
+          "v": "A convenient client must preserve the server’s identity boundary."
+        },
+        {
+          "t": "mis",
+          "wrong": "Put a bearer token in a shareable URL and trust its decoded username.",
+          "right": "Send the credential in the header and verify the complete session policy.",
+          "why": "A convenient client must preserve the server’s identity boundary."
+        },
+        {
+          "t": "ex",
+          "v": "Verify a signed-in identity without inspecting secret values.",
+          "practiceId": "43.2.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    print(\"Me:\",c.get(\"/v1/me\",headers=h).json()[\"username\"])\n",
+          "out": "Me: asha",
+          "why": "A convenient client must preserve the server’s identity boundary."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Compare a missing token with an invalid token.",
+          "practiceId": "43.2.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice(seed=False) as (app,c,h):\n    print(\"Missing:\",c.get(\"/v1/me\").status_code)\n    print(\"Invalid:\",c.get(\"/v1/me\",headers={\"Authorization\":\"Bearer fictional-invalid\"}).status_code)\n",
+          "out": "Missing: 401\nInvalid: 401",
+          "why": "A convenient client must preserve the server’s identity boundary."
+        },
+        {
+          "t": "try",
+          "q": "Does decoding token JSON without verification authenticate a user?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Trust requires the complete verification policy."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.2.1",
+            "quiz": [
+              {
+                "q": "Does decoding token JSON without verification authenticate a user?",
+                "options": [
+                  "Only with an expiry field",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Trust requires the complete verification policy."
+              },
+              {
+                "q": "Where does this dashboard keep the token?",
+                "options": [
+                  "A committed JavaScript constant",
+                  "Study Hub backups",
+                  "Tab memory"
+                ],
+                "correct": 2,
+                "why": "Refresh intentionally clears the login credential."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Separate a signed token, verified claims and a revocable login record."
+        }
+      ]
+    },
+    {
+      "title": "3. Prove authorisation with two accounts",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Prove authorisation with two accounts"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Apply ownership to collection, detail, mutation and relationship operations."
+        },
+        {
+          "t": "new",
+          "v": "Authentication versus authorisation",
+          "note": "Authentication establishes the caller. Authorisation decides which resources that caller may access. A successful login does not grant every note."
+        },
+        {
+          "t": "new",
+          "v": "Consistent not-found boundary",
+          "note": "The project uses404 for another owner’s note and for a missing note. This avoids offering a separate resource-existence signal through those routes."
+        },
+        {
+          "t": "p",
+          "v": "Run the Asha and Ben story before adding cosmetic polish. Asha creates a note. Ben’s collection stays empty, his direct read and delete return404, and his attempt to change its tags is also denied. Returning an owned collection is not enough if detail or relationship routes forget the predicate."
+        },
+        {
+          "t": "p",
+          "v": "The server determines the principal from the verified session. It then scopes each resource query by both id and owner_id. Do not expose all notes and ask the browser to filter them. Do not accept an owner change simply because the editor has no visible control for it. The tests deliberately bypass the UI to prove those boundaries."
+        },
+        {
+          "t": "syn",
+          "v": "Scope every owned resource query to the verified caller.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice,login\nwith practice() as (app,c,h):\n    other=login(c,\"ben\")\n    print(\"Other collection:\",c.get(\"/v1/notes\",headers=other).json()[\"total\"])\n    print(\"Other read:\",c.get(\"/v1/notes/1\",headers=other).status_code)\n"
+        },
+        {
+          "t": "out",
+          "v": "Other collection: 0\nOther read: 404"
+        },
+        {
+          "t": "p",
+          "v": "An identifier is a locator, not permission."
+        },
+        {
+          "t": "mis",
+          "wrong": "Protect only the list route and rely on hard-to-guess ids elsewhere.",
+          "right": "Scope every owned resource query to the verified caller.",
+          "why": "An identifier is a locator, not permission."
+        },
+        {
+          "t": "ex",
+          "v": "Try the relationship route as the other owner.",
+          "practiceId": "43.2.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice,login\nwith practice() as (app,c,h):\n    r=c.put(\"/v1/notes/1/tags\",headers=login(c,\"ben\"),json={\"names\":[\"api\"]})\n    print(\"Tag change denied:\",r.status_code)\n",
+          "out": "Tag change denied: 404",
+          "why": "An identifier is a locator, not permission."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Prove a rejected foreign delete leaves the owner’s note available.",
+          "practiceId": "43.2.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice,login\nwith practice() as (app,c,h):\n    print(\"Foreign delete:\",c.delete(\"/v1/notes/1\",headers=login(c,\"ben\")).status_code)\n    print(\"Owner read:\",c.get(\"/v1/notes/1\",headers=h).status_code)\n",
+          "out": "Foreign delete: 404\nOwner read: 200",
+          "why": "An identifier is a locator, not permission."
+        },
+        {
+          "t": "try",
+          "q": "Is hiding the Delete button an authorisation boundary?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "The server must reject a direct HTTP attempt."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.2.2",
+            "quiz": [
+              {
+                "q": "Is hiding the Delete button an authorisation boundary?",
+                "options": [
+                  "Yes",
+                  "Only on mobile",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "The server must reject a direct HTTP attempt."
+              },
+              {
+                "q": "Which routes need ownership checks?",
+                "options": [
+                  "Every owned resource operation",
+                  "Only collection listing",
+                  "Only DELETE"
+                ],
+                "correct": 0,
+                "why": "Detail and relationship routes need the same boundary."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Apply ownership to collection, detail, mutation and relationship operations."
+        }
+      ]
+    },
+    {
+      "title": "4. Validate every writable boundary",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Validate every writable boundary"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Reject wrong shapes and preserve the original data on invalid changes."
+        },
+        {
+          "t": "new",
+          "v": "Strict input contract",
+          "note": "Extra fields, wrong JSON types, blank text, excessive lengths and forbidden nulls are rejected before applying writes."
+        },
+        {
+          "t": "new",
+          "v": "Boundary-value check",
+          "note": "Test values at and around a limit, rather than only one ordinary value. Include both acceptance and unchanged-state evidence on rejection."
+        },
+        {
+          "t": "p",
+          "v": "The note contract requires meaningful title/body text and a real boolean. A string saying false is not the JSON value false. Patch additionally distinguishes omission from an explicit null and rejects an empty change. Search/page parameters have their own limits to avoid treating an unbounded browser request as normal."
+        },
+        {
+          "t": "p",
+          "v": "Show a clear field hint, but keep the server contract authoritative. For a failure, check more than422: retrieve the original and verify it was preserved. Do not echo invalid submitted secrets in errors. These small rules make the app predictable when users paste spaces, double-click, use an old client or send deliberately malformed input."
+        },
+        {
+          "t": "syn",
+          "v": "Validate the server contract and test its boundaries.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    for change in [{\"completed\":\"false\"},{\"body\":\"   \"},{\"title\":None}]:\n        print(\"Rejected:\",c.patch(\"/v1/notes/1\",headers=h,json=change).status_code)\n"
+        },
+        {
+          "t": "out",
+          "v": "Rejected: 422\nRejected: 422\nRejected: 422"
+        },
+        {
+          "t": "p",
+          "v": "Predictable rejection is part of a usable API."
+        },
+        {
+          "t": "mis",
+          "wrong": "Coerce arbitrary values silently and rely on the browser to send good JSON.",
+          "right": "Validate the server contract and test its boundaries.",
+          "why": "Predictable rejection is part of a usable API."
+        },
+        {
+          "t": "ex",
+          "v": "Test the title boundary on both sides.",
+          "practiceId": "43.2.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    for size in [100,101]:\n        r=c.post(\"/v1/notes\",headers=h,json={\"title\":\"x\"*size,\"body\":\"Valid\"})\n        print(size,r.status_code)\n",
+          "out": "100 201\n101 422",
+          "why": "Predictable rejection is part of a usable API."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify a malformed completion query is rejected without writing anything.",
+          "practiceId": "43.2.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    print(\"Invalid filter:\",c.get(\"/v1/notes?completed=banana\",headers=h).status_code)\n    print(\"Still stored:\",c.get(\"/v1/notes\",headers=h).json()[\"total\"])\n",
+          "out": "Invalid filter: 422\nStill stored: 3",
+          "why": "Predictable rejection is part of a usable API."
+        },
+        {
+          "t": "try",
+          "q": "Is the JSON string \"false\" the same as false in a strict model?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Type and value are separate parts of the contract."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.2.3",
+            "quiz": [
+              {
+                "q": "Is the JSON string \"false\" the same as false in a strict model?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only in PATCH"
+                ],
+                "correct": 0,
+                "why": "Type and value are separate parts of the contract."
+              },
+              {
+                "q": "What else should an invalid-write test check?",
+                "options": [
+                  "Only response timing",
+                  "Original data remains unchanged",
+                  "Only button colour"
+                ],
+                "correct": 1,
+                "why": "A rejection must preserve the stored invariant."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Reject wrong shapes and preserve the original data on invalid changes."
+        }
+      ]
+    },
+    {
+      "title": "5. Design errors a client can recover from",
+      "sections": [
+        {
+          "t": "h",
+          "v": "5. Design errors a client can recover from"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Expose safe statuses and request correlation without leaking inputs."
+        },
+        {
+          "t": "new",
+          "v": "Error contract",
+          "note": "A meaningful status and controlled response shape. The client maps it to a useful action instead of displaying a raw exception."
+        },
+        {
+          "t": "new",
+          "v": "Request correlation id",
+          "note": "An identifier connecting a response with redacted server telemetry. It helps diagnose a failure without logging passwords, bearer values or note content."
+        },
+        {
+          "t": "p",
+          "v": "Different failures need different next actions.401 means the session or credentials are not accepted;404 means this note is unavailable;409 covers a conflicting username;422 identifies an invalid request. A network failure has no reliable HTTP status at all. The browser handles these categories explicitly and keeps an ordinary failed-write draft."
+        },
+        {
+          "t": "p",
+          "v": "Unexpected server exceptions produce a generic public response with a request id. Telemetry records method, route template, status and duration, not request bodies or credentials. A useful error system still needs real operational ownership when deployed. A request id is not a substitute for monitoring or a promise that every request succeeded."
+        },
+        {
+          "t": "syn",
+          "v": "Map controlled failures to useful actions and keep secret inputs out.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    r=c.get(\"/v1/notes/999\",headers=h)\n    print(\"Status:\",r.status_code)\n    print(\"Message:\",r.json()[\"detail\"])\n    print(\"Correlation header:\",bool(r.headers.get(\"x-request-id\")))\n"
+        },
+        {
+          "t": "out",
+          "v": "Status: 404\nMessage: Note not found\nCorrelation header: True"
+        },
+        {
+          "t": "p",
+          "v": "Error handling should improve recovery without exposing private state."
+        },
+        {
+          "t": "mis",
+          "wrong": "Show the raw exception to make every failure look informative.",
+          "right": "Map controlled failures to useful actions and keep secret inputs out.",
+          "why": "Error handling should improve recovery without exposing private state."
+        },
+        {
+          "t": "ex",
+          "v": "Check that invalid account input does not echo the submitted password.",
+          "practiceId": "43.2.4.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice(seed=False) as (app,c,h):\n    secret=\"fictional-too-short\"\n    r=c.post(\"/v1/users\",json={\"username\":\"!\",\"password\":secret})\n    print(\"Invalid:\",r.status_code)\n    print(\"Secret echoed:\",secret in r.text)\n",
+          "out": "Invalid: 422\nSecret echoed: False",
+          "why": "Error handling should improve recovery without exposing private state."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Confirm health response correlation is present without printing its random value.",
+          "practiceId": "43.2.4.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice(seed=False) as (app,c,h):\n    r=c.get(\"/health\")\n    print(\"Has request id:\",len(r.headers[\"x-request-id\"])>0)\n",
+          "out": "Has request id: True",
+          "why": "Error handling should improve recovery without exposing private state."
+        },
+        {
+          "t": "try",
+          "q": "Should a public error include a raw traceback and password input?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Provide safe feedback and redacted diagnostic correlation."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.2.4",
+            "quiz": [
+              {
+                "q": "Should a public error include a raw traceback and password input?",
+                "options": [
+                  "Only on a small app",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Provide safe feedback and redacted diagnostic correlation."
+              },
+              {
+                "q": "Does a disconnected request always have an HTTP status?",
+                "options": [
+                  "Always",
+                  "Only on localhost",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Transport failure and an HTTP error response differ."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Expose safe statuses and request correlation without leaking inputs."
+        }
+      ]
+    },
+    {
+      "title": "6. Finish the session and security checklist",
+      "sections": [
+        {
+          "t": "h",
+          "v": "6. Finish the session and security checklist"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Verify logout revocation and state the remaining product limits."
+        },
+        {
+          "t": "new",
+          "v": "Individual session revocation",
+          "note": "The logout route removes the current stored login; replaying that token fails while another valid session can remain active."
+        },
+        {
+          "t": "new",
+          "v": "Layered controls",
+          "note": "Ownership, HTTPS, validation, safe rendering, secret handling and abuse controls address different risks. No one checkbox makes the app fully production-ready."
+        },
+        {
+          "t": "p",
+          "v": "Signing out successfully calls the server revocation route and then forgets the tab credential and private workspace. Merely clearing a JavaScript variable would not revoke a copied token. If the request fails, the UI still clears this tab but warns that server revocation was not confirmed; expiry remains a separate limit."
+        },
+        {
+          "t": "p",
+          "v": "Read the public-use limits before real personal use. There is no password recovery, login rate limiting, refresh-token flow or simultaneous-edit conflict detection in this learning scope. Public HTTPS and deployment settings also need platform verification. Learn those boundaries explicitly rather than upgrading the word “demo” to “secure product” after one successful login."
+        },
+        {
+          "t": "syn",
+          "v": "Revoke the session, clear local private state and explain unconfirmed remote logout.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    print(\"Before:\",c.get(\"/v1/me\",headers=h).status_code)\n    print(\"Logout:\",c.post(\"/v1/logout\",headers=h).status_code)\n    print(\"Replay:\",c.get(\"/v1/me\",headers=h).status_code)\n"
+        },
+        {
+          "t": "out",
+          "v": "Before: 200\nLogout: 204\nReplay: 401"
+        },
+        {
+          "t": "p",
+          "v": "A clear session lifecycle is both security and user experience."
+        },
+        {
+          "t": "mis",
+          "wrong": "Call logout complete after hiding the username while the server session remains valid.",
+          "right": "Revoke the session, clear local private state and explain unconfirmed remote logout.",
+          "why": "A clear session lifecycle is both security and user experience."
+        },
+        {
+          "t": "ex",
+          "v": "Check that revoking one login does not require destroying the account.",
+          "practiceId": "43.2.5.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice,login\nwith practice() as (app,c,h):\n    other_session=login(c)\n    c.post(\"/v1/logout\",headers=h)\n    print(\"Other valid session:\",c.get(\"/v1/me\",headers=other_session).status_code)\n",
+          "out": "Other valid session: 200",
+          "why": "A clear session lifecycle is both security and user experience."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: List explicitly deferred identity features from the specification.",
+          "practiceId": "43.2.5.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import json\nfrom pathlib import Path\ns=json.loads(Path(\"spec.json\").read_text())\nprint([v for v in s[\"out_of_scope\"] if v in {\"password recovery\",\"refresh tokens\"}])\n",
+          "out": "['password recovery', 'refresh tokens']",
+          "why": "A clear session lifecycle is both security and user experience."
+        },
+        {
+          "t": "try",
+          "q": "Does clearing the browser variable alone revoke a copied token?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Server revocation and local forgetting are distinct."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.2.5",
+            "quiz": [
+              {
+                "q": "Does clearing the browser variable alone revoke a copied token?",
+                "options": [
+                  "Yes",
+                  "Only after refresh",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Server revocation and local forgetting are distinct."
+              },
+              {
+                "q": "Does HTTPS replace note ownership checks?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only on a managed host"
+                ],
+                "correct": 0,
+                "why": "Transport protection and authorisation solve different problems."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Verify logout revocation and state the remaining product limits."
+        }
+      ]
+    }
+  ]
+},
+"43.3": {
+  "parts": [
+    {
+      "title": "1. Serve a simple frontend on the same origin",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Serve a simple frontend on the same origin"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Trace HTML, CSS and JavaScript from the Python server to the API."
+        },
+        {
+          "t": "new",
+          "v": "Origin",
+          "note": "A scheme, hostname and port combination. Relative fetch URLs keep this client on the same origin as its API."
+        },
+        {
+          "t": "new",
+          "v": "Static assets versus application data",
+          "note": "HTML/CSS/JavaScript describe the interface. Private notes arrive through authenticated API calls, not hard-coded source or a frontend build secret."
+        },
+        {
+          "t": "p",
+          "v": "Open the app through python app.py, then visit the loopback URL. The root route serves dashboard.html, which loads local dashboard.css and dashboard.js. The API lives on that same host and port, so the client can fetch relative /v1 paths without adding a cross-origin architecture. The optional explorer remains at /docs."
+        },
+        {
+          "t": "p",
+          "v": "The syntax box below is browser HTML, not Python. Use the supplied static files while the Python example verifies the real server response. No external fonts, analytics or script packages are needed by this dashboard. That does not make server writes available without the server: an offline learning page and a database-backed app have different runtime needs."
+        },
+        {
+          "t": "syn",
+          "v": "<!-- Browser HTML in dashboard.html -->\n<link rel=\"stylesheet\" href=\"/assets/dashboard.css\">\n<script src=\"/assets/dashboard.js\" defer><\/script>",
+          "note": "Read this pattern before the worked example."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice(seed=False) as (app,c,h):\n    page=c.get(\"/\")\n    print(\"HTML status:\",page.status_code)\n    print(\"Local script:\",\"/assets/dashboard.js\" in page.text)\n    print(\"Local stylesheet:\",\"/assets/dashboard.css\" in page.text)\n"
+        },
+        {
+          "t": "out",
+          "v": "HTML status: 200\nLocal script: True\nLocal stylesheet: True"
+        },
+        {
+          "t": "p",
+          "v": "The browser UI is one client of the running application."
+        },
+        {
+          "t": "mis",
+          "wrong": "Open the HTML directly and assume relative API URLs now execute Python.",
+          "right": "Run the app and load its same-origin dashboard.",
+          "why": "The browser UI is one client of the running application."
+        },
+        {
+          "t": "ex",
+          "v": "Confirm both local frontend assets can be retrieved.",
+          "practiceId": "43.3.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice(seed=False) as (app,c,h):\n    for path in [\"/assets/dashboard.js\",\"/assets/dashboard.css\"]:\n        print(path,c.get(path).status_code)\n",
+          "out": "/assets/dashboard.js 200\n/assets/dashboard.css 200",
+          "why": "The browser UI is one client of the running application."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Describe which layer owns each state.",
+          "practiceId": "43.3.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "owner={\"page layout\":\"static frontend\",\"saved notes\":\"server database\",\"current editor\":\"tab memory\"}\nfor name,layer in owner.items():print(name+\":\",layer)\n",
+          "out": "page layout: static frontend\nsaved notes: server database\ncurrent editor: tab memory",
+          "why": "The browser UI is one client of the running application."
+        },
+        {
+          "t": "try",
+          "q": "Can opening dashboard.html as a file run the Python routes?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Use the running server for the full-stack workflow."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.3.0",
+            "quiz": [
+              {
+                "q": "Can opening dashboard.html as a file run the Python routes?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only on Windows"
+                ],
+                "correct": 0,
+                "why": "Use the running server for the full-stack workflow."
+              },
+              {
+                "q": "Where do saved private notes belong?",
+                "options": [
+                  "A GitHub Pages source file",
+                  "Authenticated server storage",
+                  "A public script constant"
+                ],
+                "correct": 1,
+                "why": "Frontend source is not a private database."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Trace HTML, CSS and JavaScript from the Python server to the API."
+        }
+      ]
+    },
+    {
+      "title": "2. Build forms and a small explicit client state",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Build forms and a small explicit client state"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Give each input a label and separate draft state from saved state."
+        },
+        {
+          "t": "new",
+          "v": "DOM; labelled form",
+          "note": "The browser’s document object model exposes controls and events. A label connected to an input helps people and assistive technology understand its purpose."
+        },
+        {
+          "t": "new",
+          "v": "Client state and submit event",
+          "note": "The closure stores the current token, editor id, filters and page. preventDefault lets the handler send the intended API request rather than navigating away with a normal form submission."
+        },
+        {
+          "t": "p",
+          "v": "Read the actual authForm and noteForm elements. Required fields, maximum lengths and password input types help the learner before a request. The JavaScript still trims note text and relies on server validation. A draft in the textarea is not yet a saved note; it changes state only after the response confirms a write."
+        },
+        {
+          "t": "p",
+          "v": "The browser syntax below belongs in dashboard.js. Use a submit handler so keyboard submission and button submission share one path. The mutation guard disables controls and rejects a second action while a write is in flight. This prevents an ordinary duplicate click, but it does not create server-side idempotency for a request whose response was lost."
+        },
+        {
+          "t": "syn",
+          "v": "// Browser JavaScript\nnoteForm.addEventListener(\"submit\", event => {\n  event.preventDefault();\n  // validate draft, await API, then show confirmed result\n});",
+          "note": "Read this pattern before the worked example."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice(seed=False) as (app,c,h):\n    html=c.get(\"/\").text\n    print(\"Editor form:\",'id=\"noteForm\"' in html)\n    print(\"Label linked:\",'for=\"noteTitle\"' in html)\n    print(\"Title control:\",'id=\"noteTitle\"' in html)\n"
+        },
+        {
+          "t": "out",
+          "v": "Editor form: True\nLabel linked: True\nTitle control: True"
+        },
+        {
+          "t": "p",
+          "v": "Accessible interaction and honest saved state share the same event flow."
+        },
+        {
+          "t": "mis",
+          "wrong": "Handle only mouse clicks and call the draft saved before the request finishes.",
+          "right": "Use form submission and explicit confirmed state.",
+          "why": "Accessible interaction and honest saved state share the same event flow."
+        },
+        {
+          "t": "ex",
+          "v": "Confirm that the server still rejects a blank form payload.",
+          "practiceId": "43.3.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    print(\"Server rejects spaces:\",c.post(\"/v1/notes\",headers=h,json={\"title\":\" \",\"body\":\" \"}).status_code)\n",
+          "out": "Server rejects spaces: 422",
+          "why": "Accessible interaction and honest saved state share the same event flow."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Separate local draft and confirmed save in a small state sketch.",
+          "practiceId": "43.3.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "state={\"draft\":\"A thought\",\"saved_id\":None}\nprint(\"Saved:\",state[\"saved_id\"] is not None)\nstate[\"saved_id\"]=7\nprint(\"Saved after confirmation:\",state[\"saved_id\"] is not None)\n",
+          "out": "Saved: False\nSaved after confirmation: True",
+          "why": "Accessible interaction and honest saved state share the same event flow."
+        },
+        {
+          "t": "try",
+          "q": "Does a textarea value prove a committed save?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "The server response establishes the save boundary."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.3.1",
+            "quiz": [
+              {
+                "q": "Does a textarea value prove a committed save?",
+                "options": [
+                  "Only after typing stops",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "The server response establishes the save boundary."
+              },
+              {
+                "q": "Does a disabled button implement server idempotency?",
+                "options": [
+                  "Always",
+                  "Only for POST",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "It stops ordinary duplicate UI submissions, not uncertain remote writes."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Give each input a label and separate draft state from saved state."
+        }
+      ]
+    },
+    {
+      "title": "3. Make fetch handle success, HTTP errors and transport errors",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Make fetch handle success, HTTP errors and transport errors"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Read the response contract instead of treating every resolved promise as success."
+        },
+        {
+          "t": "new",
+          "v": "fetch; Promise; async / await",
+          "note": "fetch starts an HTTP request and returns a Promise. await waits for its result inside an async function; the UI can remain responsive."
+        },
+        {
+          "t": "new",
+          "v": "response.ok; empty204; timeout",
+          "note": "HTTP4xx/5xx responses normally resolve fetch, so check ok. A204 has no JSON body. A rejected or timed-out request is a transport outcome, not a known server status."
+        },
+        {
+          "t": "p",
+          "v": "Read api() in dashboard.js before writing individual button handlers. It prepares headers and the appropriate JSON or form body, applies a bounded timeout, checks response.ok and handles204 without parsing JSON. It maps expected statuses to controlled messages and treats session expiry as a private-state boundary."
+        },
+        {
+          "t": "p",
+          "v": "Do not display an arbitrary HTML error body as trusted markup. Do not automatically repeat every failed POST: if the server committed but the response disappeared, the write outcome is uncertain. The project preserves ordinary failed-write drafts, but it does not claim an idempotency-key implementation. This Python example verifies the relevant server contracts; the real browser suite verifies the request helper’s behaviour."
+        },
+        {
+          "t": "syn",
+          "v": "// Browser JavaScript pattern\nconst response = await fetch(\"/v1/notes\", options);\nif (!response.ok) throw new Error(\"Request was not accepted\");\nreturn response.status === 204 ? null : response.json();",
+          "note": "Read this pattern before the worked example."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    print(\"Read success:\",c.get(\"/v1/notes\",headers=h).is_success)\n    print(\"Invalid HTTP response:\",c.patch(\"/v1/notes/1\",headers=h,json={}).status_code)\n    deleted=c.delete(\"/v1/notes/1\",headers=h)\n    print(\"Empty successful body:\",deleted.content==b\"\")\n"
+        },
+        {
+          "t": "out",
+          "v": "Read success: True\nInvalid HTTP response: 422\nEmpty successful body: True"
+        },
+        {
+          "t": "p",
+          "v": "A shared request helper makes every workflow follow the same contract."
+        },
+        {
+          "t": "mis",
+          "wrong": "Assume await fetch means success and always call response.json().",
+          "right": "Check ok, handle204 and distinguish transport uncertainty.",
+          "why": "A shared request helper makes every workflow follow the same contract."
+        },
+        {
+          "t": "ex",
+          "v": "Map HTTP categories to useful next actions.",
+          "practiceId": "43.3.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "actions={401:\"sign in again\",404:\"refresh unavailable note\",422:\"fix request values\",503:\"retry after checking service\"}\nfor status,action in actions.items():print(status,action)\n",
+          "out": "401 sign in again\n404 refresh unavailable note\n422 fix request values\n503 retry after checking service",
+          "why": "A shared request helper makes every workflow follow the same contract."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Recognise that missing confirmation is a distinct outcome.",
+          "practiceId": "43.3.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "outcome={\"request_sent\":True,\"confirmation_received\":False}\nprint(\"Can assert committed:\",outcome[\"confirmation_received\"])\nprint(\"Inspect before blindly retrying:\",not outcome[\"confirmation_received\"])\n",
+          "out": "Can assert committed: False\nInspect before blindly retrying: True",
+          "why": "A shared request helper makes every workflow follow the same contract."
+        },
+        {
+          "t": "try",
+          "q": "Does fetch reject merely because the server returned422?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Check the HTTP response status explicitly."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.3.2",
+            "quiz": [
+              {
+                "q": "Does fetch reject merely because the server returned422?",
+                "options": [
+                  "Always",
+                  "Only for POST",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Check the HTTP response status explicitly."
+              },
+              {
+                "q": "Should a204 response always be parsed as JSON?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only after DELETE"
+                ],
+                "correct": 0,
+                "why": "It intentionally has an empty response body."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Read the response contract instead of treating every resolved promise as success."
+        }
+      ]
+    },
+    {
+      "title": "4. Render user text without executing it",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Render user text without executing it"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Use DOM text nodes and keep private credentials out of persistent browser storage."
+        },
+        {
+          "t": "new",
+          "v": "textContent; createElement",
+          "note": "createElement makes a DOM node. textContent inserts text rather than parsing it as HTML; notes remain ordinary learner-authored strings."
+        },
+        {
+          "t": "new",
+          "v": "Stored script injection boundary",
+          "note": "A string saved in the database can still attack a page if later interpreted as executable markup. Safe insertion belongs at the rendering boundary."
+        },
+        {
+          "t": "p",
+          "v": "A note may contain angle brackets because someone is studying HTML or because they are probing the renderer. Store the intended plain text under the server contract, then render it with textContent. The dashboard creates each card and button through DOM methods; it does not concatenate a note title into innerHTML."
+        },
+        {
+          "t": "p",
+          "v": "The server preserving a string is not evidence that the browser handles it safely. The Python example below confirms preservation only. The real browser test separately saves an injection-shaped body and confirms it did not execute. Memory-only tokens are not a substitute for safe rendering: malicious same-page code could still act with a current session."
+        },
+        {
+          "t": "syn",
+          "v": "// Browser JavaScript\nconst paragraph = document.createElement(\"p\");\nparagraph.textContent = note.body;\ncard.append(paragraph);",
+          "note": "Read this pattern before the worked example."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    text=\"<img src=x onerror=fictional()>\"\n    r=c.post(\"/v1/notes\",headers=h,json={\"title\":\"Markup study\",\"body\":text})\n    print(\"Text preserved:\",r.json()[\"body\"]==text)\n    print(\"Browser execution tested here:\",False)\n"
+        },
+        {
+          "t": "out",
+          "v": "Text preserved: True\nBrowser execution tested here: False"
+        },
+        {
+          "t": "p",
+          "v": "Stored data is still untrusted at the browser interpretation boundary."
+        },
+        {
+          "t": "mis",
+          "wrong": "Use innerHTML because the text came back from your own database.",
+          "right": "Create nodes and assign learner strings through textContent.",
+          "why": "Stored data is still untrusted at the browser interpretation boundary."
+        },
+        {
+          "t": "ex",
+          "v": "Check the shipped rendering mechanism without claiming that source inspection is a browser test.",
+          "practiceId": "43.3.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "from pathlib import Path\ns=Path(\"orm_api/static/dashboard.js\").read_text()\nprint(\"Text insertion used:\",\"node.textContent=text\" in s)\nprint(\"Markup insertion used:\",\"innerHTML\" in s)\n",
+          "out": "Text insertion used: True\nMarkup insertion used: False",
+          "why": "Stored data is still untrusted at the browser interpretation boundary."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: List frontend states that should not be copied into course backups.",
+          "practiceId": "43.3.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "private=[\"bearer credential\",\"password input\",\"temporary session\"]\nprint(\"Keep out of public source:\",\", \".join(private))\n",
+          "out": "Keep out of public source: bearer credential, password input, temporary session",
+          "why": "Stored data is still untrusted at the browser interpretation boundary."
+        },
+        {
+          "t": "try",
+          "q": "Which insertion fits plain learner notes?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "textContent",
+          "why": "Treat learner strings as data, not executable code."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.3.3",
+            "quiz": [
+              {
+                "q": "Which insertion fits plain learner notes?",
+                "options": [
+                  "textContent",
+                  "Unescaped innerHTML",
+                  "eval(note.body)"
+                ],
+                "correct": 0,
+                "why": "Treat learner strings as data, not executable code."
+              },
+              {
+                "q": "Does a server text-preservation test prove browser non-execution?",
+                "options": [
+                  "Only on localhost",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Verify the rendering boundary in an actual browser."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Use DOM text nodes and keep private credentials out of persistent browser storage."
+        }
+      ]
+    },
+    {
+      "title": "5. Make an interrupted Save recoverable",
+      "sections": [
+        {
+          "t": "h",
+          "v": "5. Make an interrupted Save recoverable"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Retain the saved note identity when the later tag request fails."
+        },
+        {
+          "t": "new",
+          "v": "Partial-save state",
+          "note": "The client records which part the server confirmed. After a note write succeeds, editing becomes that note id even if its tag update fails."
+        },
+        {
+          "t": "new",
+          "v": "Recoverable retry versus atomicity",
+          "note": "A retry that updates the known resource avoids a duplicate after confirmed partial success. It does not turn two independent requests into one database transaction."
+        },
+        {
+          "t": "p",
+          "v": "Follow noteForm.onsubmit in the supplied source line by line. Validate the draft, await POST or PATCH, retain the returned id, then update tag links. Only after both confirmations does the editor clear. If tags fail, the saved note is visible and the editor remains attached to it with a specific message."
+        },
+        {
+          "t": "p",
+          "v": "There is another boundary: losing the first write’s response leaves no confirmed id. This sample does not solve that with an idempotency key. Inspect/refetch before retrying an uncertain create. Likewise, a later read failure can occur after both writes succeeded; preserve the known save facts rather than claiming the write was rolled back. Learn to describe those stages accurately."
+        },
+        {
+          "t": "syn",
+          "v": "// Browser JavaScript sequence\nconst note = await api(path, writeOptions);\nstate.editing = note.id;\nawait api(`/v1/notes/${note.id}/tags`, tagOptions);\nresetEditor();",
+          "note": "Read this pattern before the worked example."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    r=c.post(\"/v1/notes\",headers=h,json={\"title\":\"Partial example\",\"body\":\"Saved first\"})\n    url=r.headers[\"Location\"]\n    print(\"Note saved:\",r.status_code)\n    print(\"Invalid tags:\",c.put(url+\"/tags\",headers=h,json={\"names\":[\"unknown\"]}).status_code)\n    print(\"Note remains:\",c.get(url,headers=h).status_code)\n"
+        },
+        {
+          "t": "out",
+          "v": "Note saved: 201\nInvalid tags: 422\nNote remains: 200"
+        },
+        {
+          "t": "p",
+          "v": "Recovery depends on knowing what actually crossed the save boundary."
+        },
+        {
+          "t": "mis",
+          "wrong": "Clear the editor on the first response or blindly create again after every failure.",
+          "right": "Track confirmed stages and retry the known resource appropriately.",
+          "why": "Recovery depends on knowing what actually crossed the save boundary."
+        },
+        {
+          "t": "ex",
+          "v": "Retry the second stage on the confirmed note instead of creating another.",
+          "practiceId": "43.3.4.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    r=c.post(\"/v1/notes\",headers=h,json={\"title\":\"One identity\",\"body\":\"Fixture\"})\n    print(\"Tag retry:\",c.put(r.headers[\"Location\"]+\"/tags\",headers=h,json={\"names\":[\"api\"]}).status_code)\n    print(\"Total after retry:\",c.get(\"/v1/notes\",headers=h).json()[\"total\"])\n",
+          "out": "Tag retry: 200\nTotal after retry: 4",
+          "why": "Recovery depends on knowing what actually crossed the save boundary."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Write the minimal state needed for a confirmed partial retry.",
+          "practiceId": "43.3.4.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "editor={\"saved_note_id\":12,\"tags_confirmed\":False}\nprint(\"Next action:\",\"update tags\" if editor[\"saved_note_id\"] else \"create note\")\n",
+          "out": "Next action: update tags",
+          "why": "Recovery depends on knowing what actually crossed the save boundary."
+        },
+        {
+          "t": "try",
+          "q": "What is confirmed when POST succeeds but PUT tags fails?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "The note exists; tag change is unconfirmed",
+          "why": "Respect each request’s transaction boundary."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.3.4",
+            "quiz": [
+              {
+                "q": "What is confirmed when POST succeeds but PUT tags fails?",
+                "options": [
+                  "The entire operation was atomic",
+                  "The note exists; tag change is unconfirmed",
+                  "Nothing could have saved"
+                ],
+                "correct": 1,
+                "why": "Respect each request’s transaction boundary."
+              },
+              {
+                "q": "Does the project solve a lost first POST response with idempotency keys?",
+                "options": [
+                  "Yes",
+                  "Only for tags",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "That uncertain-write capability remains outside this sample."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Retain the saved note identity when the later tag request fails."
+        }
+      ]
+    },
+    {
+      "title": "6. Keep filters, pages and asynchronous reads consistent",
+      "sections": [
+        {
+          "t": "h",
+          "v": "6. Keep filters, pages and asynchronous reads consistent"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Prevent an old response from replacing a newer session or search result."
+        },
+        {
+          "t": "new",
+          "v": "Request generation counter",
+          "note": "Each list request receives a newer ticket. A result is applied only if its ticket and session token still match current state."
+        },
+        {
+          "t": "new",
+          "v": "Last-page recovery",
+          "note": "After filtering or deleting, calculate the valid last offset. If the current offset exceeds it, load that valid page instead of leaving a false empty page."
+        },
+        {
+          "t": "p",
+          "v": "HTTP results can arrive out of order. A slow search started before logout may finish afterward. The client increments readVersion when starting a read and when clearing the session, then checks both ticket and token before rendering. The check protects the state application boundary; it does not undo a server operation."
+        },
+        {
+          "t": "p",
+          "v": "Changing filters resets offset. Deleting the last row on the last page triggers a valid earlier page. Count and items always come from the same server query. The source also captures the request token before sending, so an old401 does not clear a different newer login. The browser suite deliberately delays a real list response across logout to verify the private UI stays empty."
+        },
+        {
+          "t": "syn",
+          "v": "// Browser JavaScript pattern\nconst ticket = ++state.readVersion;\nconst token = state.token;\nconst page = await api(url);\nif (ticket !== state.readVersion || token !== state.token) return;",
+          "note": "Read this pattern before the worked example."
+        },
+        {
+          "t": "code",
+          "v": "current_version=4;request_ticket=3\nprint(\"Apply old result:\",request_ticket==current_version)\nrequest_ticket=4\nprint(\"Apply current result:\",request_ticket==current_version)\n"
+        },
+        {
+          "t": "out",
+          "v": "Apply old result: False\nApply current result: True"
+        },
+        {
+          "t": "p",
+          "v": "Asynchronous correctness is part of a trustworthy interface."
+        },
+        {
+          "t": "mis",
+          "wrong": "Render every response in arrival order without checking the current session.",
+          "right": "Validate request generation and identity before applying read results.",
+          "why": "Asynchronous correctness is part of a trustworthy interface."
+        },
+        {
+          "t": "ex",
+          "v": "Calculate the valid last offset for five-row pages.",
+          "practiceId": "43.3.5.build"
+        },
+        {
+          "t": "sol",
+          "code": "limit=5\nfor total in [0,1,5,6,10]:\n    last=max(0,((total-1)//limit)*limit)\n    print(total,last)\n",
+          "out": "0 0\n1 0\n5 0\n6 5\n10 5",
+          "why": "Asynchronous correctness is part of a trustworthy interface."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Use the real API to observe an offset beyond the final page.",
+          "practiceId": "43.3.5.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    p=c.get(\"/v1/notes?limit=5&offset=20\",headers=h).json()\n    print(\"Total:\",p[\"total\"])\n    print(\"Rows at old offset:\",len(p[\"items\"]))\n",
+          "out": "Total: 3\nRows at old offset: 0",
+          "why": "Asynchronous correctness is part of a trustworthy interface."
+        },
+        {
+          "t": "try",
+          "q": "Should a slow pre-logout response repopulate private cards?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Apply results only to the matching current state."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.3.5",
+            "quiz": [
+              {
+                "q": "Should a slow pre-logout response repopulate private cards?",
+                "options": [
+                  "Yes",
+                  "Only if200",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Apply results only to the matching current state."
+              },
+              {
+                "q": "What should happen to offset when changing filters?",
+                "options": [
+                  "Reset it",
+                  "Keep every old offset",
+                  "Multiply it by total"
+                ],
+                "correct": 0,
+                "why": "The previous page position may not exist in the new collection."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Prevent an old response from replacing a newer session or search result."
+        }
+      ]
+    }
+  ]
+},
+"43.4": {
+  "parts": [
+    {
+      "title": "1. Build a test strategy around the product promises",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Build a test strategy around the product promises"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Choose pure, API, browser and container checks for the risks they can observe."
+        },
+        {
+          "t": "new",
+          "v": "Test layers",
+          "note": "Pure logic/config checks, real temporary-database API checks, browser journeys and actual container integration each reveal different failures."
+        },
+        {
+          "t": "new",
+          "v": "Risk-based coverage",
+          "note": "Prioritise broken ownership, lost work, invalid writes, session leaks and recovery. Counting checks is useful inventory, not proof of complete behaviour."
+        },
+        {
+          "t": "p",
+          "v": "Start with the six stories and their failure consequences. A private-note leak matters even if every button looks correct. A failed save that clears a draft matters even if backend CRUD tests pass. A Docker image that cannot reach its database matters even if the in-process client works. Choose evidence at the boundary where each risk becomes visible."
+        },
+        {
+          "t": "p",
+          "v": "The project’s tests own their data and fictional identities. API tests deny accidental live HTTP transport. The browser suite runs a real loopback server and deliberately simulates specific failures through request interception; its normal flows still use the real API. Container checks use actual PostgreSQL. Keep these distinctions in your test report instead of calling all of them unit tests."
+        },
+        {
+          "t": "syn",
+          "v": "Connect each important failure to a check at the right boundary.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import run_checks\nr=run_checks(\"def test_page_math():\\n    assert max(0, ((6-1)//5)*5) == 5\\n\")\nprint(\"Passed:\",r[\"passed\"])\nprint(\"Failed:\",r[\"failed\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "Passed: 1\nFailed: 0"
+        },
+        {
+          "t": "p",
+          "v": "The evidence should match the promise being made."
+        },
+        {
+          "t": "mis",
+          "wrong": "Choose tests only by what is easiest to count.",
+          "right": "Connect each important failure to a check at the right boundary.",
+          "why": "The evidence should match the promise being made."
+        },
+        {
+          "t": "ex",
+          "v": "Map two risks to the layer that can actually observe them.",
+          "practiceId": "43.4.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "matrix={\"foreign note read\":\"API two-account test\",\"draft after failed click\":\"real browser test\",\"PostgreSQL restore\":\"container integration\"}\nfor risk,layer in matrix.items():print(risk+\":\",layer)\n",
+          "out": "foreign note read: API two-account test\ndraft after failed click: real browser test\nPostgreSQL restore: container integration",
+          "why": "The evidence should match the promise being made."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Read the documented evidence categories rather than inferring them from filenames.",
+          "practiceId": "43.4.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "import json\nfrom pathlib import Path\ns=json.loads(Path(\"spec.json\").read_text())\nprint(\"Done evidence categories:\",len(s[\"definition_of_done\"]))\n",
+          "out": "Done evidence categories: 6",
+          "why": "The evidence should match the promise being made."
+        },
+        {
+          "t": "try",
+          "q": "Can API tests alone prove a failed browser save preserves a textarea?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Observe the actual browser interaction boundary."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.4.0",
+            "quiz": [
+              {
+                "q": "Can API tests alone prove a failed browser save preserves a textarea?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only on localhost"
+                ],
+                "correct": 0,
+                "why": "Observe the actual browser interaction boundary."
+              },
+              {
+                "q": "Is a large test count the same as complete risk coverage?",
+                "options": [
+                  "Only with containers",
+                  "No",
+                  "Always"
+                ],
+                "correct": 1,
+                "why": "Check relevance and untested failure consequences."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Choose pure, API, browser and container checks for the risks they can observe."
+        }
+      ]
+    },
+    {
+      "title": "2. Test boundaries and unchanged-state invariants",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Test boundaries and unchanged-state invariants"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Verify acceptance, rejection and persistence with independent observations."
+        },
+        {
+          "t": "new",
+          "v": "Arrange / Act / Assert",
+          "note": "Prepare known state, perform one meaningful action and inspect the observable result. Avoid tests that merely repeat the implementation’s formula."
+        },
+        {
+          "t": "new",
+          "v": "Unchanged-state invariant",
+          "note": "A rejected request must leave valid stored state intact. Read it back independently after the action."
+        },
+        {
+          "t": "p",
+          "v": "An invalid request status is one assertion, not the whole behaviour. Start with a saved valid note, submit a malformed change and retrieve it again. Compare public content and verify the expected state remains. Use boundaries for title/body/page limits and cases for omitted, false, null and wrong-type inputs."
+        },
+        {
+          "t": "p",
+          "v": "Prefer independent expectations. If a page calculation is the thing under test, hard-code a few reviewed expected offsets instead of computing both sides with the same expression. If the query contract is under test, inspect actual rows and total. The supplied project’s API suite also verifies literal percent and underscore searches, ownership and session replay."
+        },
+        {
+          "t": "syn",
+          "v": "Assert the specific contract and its stored consequences.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    before=c.get(\"/v1/notes/1\",headers=h).json()\n    r=c.patch(\"/v1/notes/1\",headers=h,json={\"body\":\"   \"})\n    after=c.get(\"/v1/notes/1\",headers=h).json()\n    print(\"Rejected:\",r.status_code==422)\n    print(\"Unchanged:\",after==before)\n"
+        },
+        {
+          "t": "out",
+          "v": "Rejected: True\nUnchanged: True"
+        },
+        {
+          "t": "p",
+          "v": "A meaningful test can tell you which promise broke."
+        },
+        {
+          "t": "mis",
+          "wrong": "Assert only that a function returned something truthy.",
+          "right": "Assert the specific contract and its stored consequences.",
+          "why": "A meaningful test can tell you which promise broke."
+        },
+        {
+          "t": "ex",
+          "v": "Check both the smallest supported page size and an invalid size.",
+          "practiceId": "43.4.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    for limit in [1,0]:\n        print(limit,c.get(\"/v1/notes\",headers=h,params={\"limit\":limit}).status_code)\n",
+          "out": "1 200\n0 422",
+          "why": "A meaningful test can tell you which promise broke."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify one filtered row by content rather than only total.",
+          "practiceId": "43.4.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    page=c.get(\"/v1/notes\",headers=h,params={\"q\":\"Validation\"}).json()\n    print(\"Total:\",page[\"total\"])\n    print(\"Actual titles:\",[n[\"title\"] for n in page[\"items\"]])\n",
+          "out": "Total: 1\nActual titles: ['Validation']",
+          "why": "A meaningful test can tell you which promise broke."
+        },
+        {
+          "t": "try",
+          "q": "What strengthens an invalid-write test?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "A later independent read shows unchanged data",
+          "why": "Inspect the persisted result after the attempted change."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.4.1",
+            "quiz": [
+              {
+                "q": "What strengthens an invalid-write test?",
+                "options": [
+                  "Reading the old Python variable",
+                  "A later independent read shows unchanged data",
+                  "Repeating only422"
+                ],
+                "correct": 1,
+                "why": "Inspect the persisted result after the attempted change."
+              },
+              {
+                "q": "Should expected values always be calculated with the same formula as the implementation?",
+                "options": [
+                  "Yes",
+                  "Only for pagination",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Independent reviewed expectations can catch the shared mistake."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Verify acceptance, rejection and persistence with independent observations."
+        }
+      ]
+    },
+    {
+      "title": "3. Test hostile inputs without confusing them with executable instructions",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Test hostile inputs without confusing them with executable instructions"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Check ownership and literal interpretation through the actual contract."
+        },
+        {
+          "t": "new",
+          "v": "Adversarial input case",
+          "note": "A deliberately awkward or malicious-looking request sent only to an owned test application to verify rejection or literal treatment."
+        },
+        {
+          "t": "new",
+          "v": "Parameter binding and interpretation boundary",
+          "note": "SQL values remain parameters; browser strings remain text. Correct SQL binding does not automatically solve browser script interpretation."
+        },
+        {
+          "t": "p",
+          "v": "Use only the owned temporary app and fictional notes. Send a SQL-shaped search string and expect a literal search with no leaked rows. Send an attempted owner_id field and expect rejection. Try Ben’s token on Asha’s resource and verify denial. These tests exercise the application’s own boundaries rather than exploring somebody else’s system."
+        },
+        {
+          "t": "p",
+          "v": "Keep SQL and browser risks separate. Bound SQL prevents query values from becoming SQL syntax. textContent prevents a displayed string from becoming parsed HTML in this plain-text interface. A stored string can pass one layer safely and still need correct treatment at the next. The tests should say exactly which boundary they observed."
+        },
+        {
+          "t": "syn",
+          "v": "Test the independent SQL, permission and browser boundaries.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    page=c.get(\"/v1/notes\",headers=h,params={\"q\":\"' OR 1=1 --\"}).json()\n    print(\"Literal matches:\",page[\"total\"])\n    print(\"Owner total still:\",c.get(\"/v1/notes\",headers=h).json()[\"total\"])\n"
+        },
+        {
+          "t": "out",
+          "v": "Literal matches: 0\nOwner total still: 3"
+        },
+        {
+          "t": "p",
+          "v": "Security properties need evidence where interpretation occurs."
+        },
+        {
+          "t": "mis",
+          "wrong": "Assume one safe layer makes every later interpretation safe.",
+          "right": "Test the independent SQL, permission and browser boundaries.",
+          "why": "Security properties need evidence where interpretation occurs."
+        },
+        {
+          "t": "ex",
+          "v": "Check a foreign patch and then retrieve the unchanged owner title.",
+          "practiceId": "43.4.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice,login\nwith practice() as (app,c,h):\n    r=c.patch(\"/v1/notes/1\",headers=login(c,\"ben\"),json={\"title\":\"Not allowed\"})\n    print(\"Foreign patch:\",r.status_code)\n    print(\"Owner title:\",c.get(\"/v1/notes/1\",headers=h).json()[\"title\"])\n",
+          "out": "Foreign patch: 404\nOwner title: HTTP",
+          "why": "Security properties need evidence where interpretation occurs."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Verify literal underscore does not act as an all-matching wildcard.",
+          "practiceId": "43.4.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    print(\"Underscore matches:\",c.get(\"/v1/notes\",headers=h,params={\"q\":\"_\"}).json()[\"total\"])\n",
+          "out": "Underscore matches: 0",
+          "why": "Security properties need evidence where interpretation occurs."
+        },
+        {
+          "t": "try",
+          "q": "Does SQL parameter binding prove browser text cannot execute?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "SQL interpretation and HTML interpretation are separate."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.4.2",
+            "quiz": [
+              {
+                "q": "Does SQL parameter binding prove browser text cannot execute?",
+                "options": [
+                  "Yes",
+                  "Only with an ORM",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "SQL interpretation and HTML interpretation are separate."
+              },
+              {
+                "q": "Where should these adversarial cases run?",
+                "options": [
+                  "Your owned disposable app",
+                  "An unrelated public service",
+                  "A stranger’s account"
+                ],
+                "correct": 0,
+                "why": "Keep verification within the authorised test boundary."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Check ownership and literal interpretation through the actual contract."
+        }
+      ]
+    },
+    {
+      "title": "4. Exercise failures in the real browser",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Exercise failures in the real browser"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Verify draft preservation, partial-save retry and late-response isolation."
+        },
+        {
+          "t": "new",
+          "v": "Browser interception",
+          "note": "The test controls a stated HTTP response or delay to reproduce a failure deterministically. Name the simulated part instead of claiming a real outage occurred."
+        },
+        {
+          "t": "new",
+          "v": "State-transition test",
+          "note": "Verify what was visible before, during and after an action, including disabled controls and the preserved editor or cleared session."
+        },
+        {
+          "t": "p",
+          "v": "Run browser_smoke.cjs with Node and Chrome. It starts a real loopback Python server and a fresh profile. Ordinary registration, note/tag writes, search, filters and pages hit the real database. For one failed write and one failed tag update it supplies a controlled503; for the logout race it holds an old read response and releases it afterward."
+        },
+        {
+          "t": "p",
+          "v": "Read the assertions: a failed ordinary write keeps the editor; a confirmed note plus failed tags retries the same identity; an old private response cannot repopulate signed-out cards. It also checks two accounts, text injection, paging recovery, refresh credentials and mobile themes. These are reproducible product checks, not evidence that a public host has been deployed."
+        },
+        {
+          "t": "syn",
+          "v": "Reproduce failures and assert the exact state transitions.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "sh",
+          "v": "python -m pytest -q\n# With Node24 and Chrome installed:\nnode browser_smoke.cjs"
+        },
+        {
+          "t": "code",
+          "v": "from pathlib import Path\ns=Path(\"browser_smoke.cjs\").read_text()\nfor case in [\"Failed write lost draft\",\"Retry duplicated note\",\"Old response repopulated signed-out UI\"]:\n    print(case+\":\",case in s)\n"
+        },
+        {
+          "t": "out",
+          "v": "Failed write lost draft: True\nRetry duplicated note: True\nOld response repopulated signed-out UI: True"
+        },
+        {
+          "t": "p",
+          "v": "Reliability is most visible when an ordinary operation is interrupted."
+        },
+        {
+          "t": "mis",
+          "wrong": "Test only the happy path and infer every interrupted flow works.",
+          "right": "Reproduce failures and assert the exact state transitions.",
+          "why": "Reliability is most visible when an ordinary operation is interrupted."
+        },
+        {
+          "t": "ex",
+          "v": "Describe the distinction between a simulated error and a real normal flow.",
+          "practiceId": "43.4.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "evidence={\"normal CRUD\":\"real loopback API\",\"one503\":\"controlled response\",\"public HTTPS\":\"not checked here\"}\nfor name,kind in evidence.items():print(name+\":\",kind)\n",
+          "out": "normal CRUD: real loopback API\none503: controlled response\npublic HTTPS: not checked here",
+          "why": "Reliability is most visible when an ordinary operation is interrupted."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Write independent expected results for the three failure transitions.",
+          "practiceId": "43.4.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "expected=[\"ordinary failed write retains draft\",\"confirmed partial retry keeps note id\",\"logout leaves no private cards\"]\nfor item in expected:print(item)\n",
+          "out": "ordinary failed write retains draft\nconfirmed partial retry keeps note id\nlogout leaves no private cards",
+          "why": "Reliability is most visible when an ordinary operation is interrupted."
+        },
+        {
+          "t": "try",
+          "q": "Does a controlled503 prove an actual provider outage happened?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "It proves the client response to that stated failure."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.4.3",
+            "quiz": [
+              {
+                "q": "Does a controlled503 prove an actual provider outage happened?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only in Chrome"
+                ],
+                "correct": 0,
+                "why": "It proves the client response to that stated failure."
+              },
+              {
+                "q": "What should a delayed pre-logout read do after logout?",
+                "options": [
+                  "Automatically sign in again",
+                  "Leave private UI empty",
+                  "Restore old notes"
+                ],
+                "correct": 1,
+                "why": "The response belongs to an obsolete session state."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Verify draft preservation, partial-save retry and late-response isolation."
+        }
+      ]
+    },
+    {
+      "title": "5. Polish accessibility and awkward interaction paths",
+      "sections": [
+        {
+          "t": "h",
+          "v": "5. Polish accessibility and awkward interaction paths"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Make labels, focus, confirmation and feedback usable together."
+        },
+        {
+          "t": "new",
+          "v": "Live region and visible feedback",
+          "note": "A role=status region announces changing outcomes politely. Text feedback complements colour and remains visible for review."
+        },
+        {
+          "t": "new",
+          "v": "Native dialog and keyboard focus",
+          "note": "A labelled modal confirmation supports browser focus handling. Put initial focus on the safe cancel option; return focus to a useful control after the action."
+        },
+        {
+          "t": "p",
+          "v": "A good interface helps the learner recover. Label each input, retain visible keyboard focus and avoid using colour as the only result indicator. The dashboard uses a native delete dialog with a safe Keep note option. Form submission handles keyboard use as well as clicks. Buttons have useful touch sizes and controls wrap instead of forcing horizontal scrolling."
+        },
+        {
+          "t": "p",
+          "v": "Check375px width in both themes, zoom and normal keyboard order. A headless no-overflow assertion is useful but does not certify all accessibility. Manually test a screen reader, high zoom, long content and the target phone too. A helpful error message should say what is known and what the user can do next, not merely “something happened”."
+        },
+        {
+          "t": "syn",
+          "v": "Use labelled controls, readable messages and visible keyboard focus.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice(seed=False) as (app,c,h):\n    html=c.get(\"/\").text\n    print(\"Status region:\",'role=\"status\"' in html)\n    print(\"Named delete dialog:\",'aria-labelledby=\"deleteTitle\"' in html)\n    print(\"Skip link:\",\"Skip to workspace\" in html)\n"
+        },
+        {
+          "t": "out",
+          "v": "Status region: True\nNamed delete dialog: True\nSkip link: True"
+        },
+        {
+          "t": "p",
+          "v": "Polish should reduce user uncertainty and effort."
+        },
+        {
+          "t": "mis",
+          "wrong": "Communicate errors only with a red border and remove focus outlines.",
+          "right": "Use labelled controls, readable messages and visible keyboard focus.",
+          "why": "Polish should reduce user uncertainty and effort."
+        },
+        {
+          "t": "ex",
+          "v": "Confirm the layout declares visible focus and a mobile breakpoint.",
+          "practiceId": "43.4.4.build"
+        },
+        {
+          "t": "sol",
+          "code": "from pathlib import Path\ncss=Path(\"orm_api/static/dashboard.css\").read_text()\nprint(\"Focus rule:\",\":focus-visible\" in css)\nprint(\"Mobile rule:\",\"max-width:720px\" in css)\n",
+          "out": "Focus rule: True\nMobile rule: True",
+          "why": "Polish should reduce user uncertainty and effort."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Create a manual accessibility checklist that complements automation.",
+          "practiceId": "43.4.4.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "checks=[\"Tab through form and dialog\",\"read errors without relying on colour\",\"test high zoom and long text\",\"check target screen reader\"]\nprint(\"Manual checks:\",len(checks))\n",
+          "out": "Manual checks: 4",
+          "why": "Polish should reduce user uncertainty and effort."
+        },
+        {
+          "t": "try",
+          "q": "Does no horizontal overflow certify all accessibility?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "It verifies one layout property, not every access need."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.4.4",
+            "quiz": [
+              {
+                "q": "Does no horizontal overflow certify all accessibility?",
+                "options": [
+                  "Only on mobile",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "It verifies one layout property, not every access need."
+              },
+              {
+                "q": "Which delete-dialog action should initially receive safe focus?",
+                "options": [
+                  "Irreversible delete",
+                  "A hidden input",
+                  "Keep note"
+                ],
+                "correct": 2,
+                "why": "Make the non-destructive choice easy to select."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Make labels, focus, confirmation and feedback usable together."
+        }
+      ]
+    },
+    {
+      "title": "6. Turn test results into a release gate",
+      "sections": [
+        {
+          "t": "h",
+          "v": "6. Turn test results into a release gate"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Review failed checks and known limitations before calling the build ready."
+        },
+        {
+          "t": "new",
+          "v": "Release gate",
+          "note": "A required check whose failure stops promotion. Keep tests, formatting and actual runtime evidence explicit rather than ignoring failing steps."
+        },
+        {
+          "t": "new",
+          "v": "Coverage interpretation",
+          "note": "Coverage reports execution, not whether assertions are good or every requirement was considered. Pair a coverage view with a risk checklist."
+        },
+        {
+          "t": "p",
+          "v": "Run the supplied tests and inspect any failure before changing expected values. The project workflow runs isolated Python checks, lint/format, real browser journeys and actual Docker/PostgreSQL integration. It verifies the packaged frontend, ownership-related server behaviour, persistent data across API recreation and a backup restored into a separate database."
+        },
+        {
+          "t": "p",
+          "v": "Record results for the source/artifact being reviewed. A green run from another version is not proof of new changes. Avoid a claim of “full test coverage” without a defined measure and its limitations. Public deployment and another-device HTTPS verification are still separate gates; the workflow does not buy a host or configure your domain."
+        },
+        {
+          "t": "syn",
+          "v": "Review required evidence for the actual candidate and keep missing checks pending.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import run_checks\nr=run_checks(\"def test_known_boundary():\\n    assert 0 < 1 <= 50\\ndef test_failure_is_reported():\\n    assert False\\n\")\nprint(\"Passed:\",r[\"passed\"])\nprint(\"Failed:\",r[\"failed\"])\nprint(\"Gate open:\",r[\"exit_code\"]==0)\n"
+        },
+        {
+          "t": "out",
+          "v": "Passed: 1\nFailed: 1\nGate open: False"
+        },
+        {
+          "t": "p",
+          "v": "A release gate is a decision backed by specific evidence."
+        },
+        {
+          "t": "mis",
+          "wrong": "Mark the release ready because most checks passed on an older commit.",
+          "right": "Review required evidence for the actual candidate and keep missing checks pending.",
+          "why": "A release gate is a decision backed by specific evidence."
+        },
+        {
+          "t": "ex",
+          "v": "Decide whether a release is eligible from explicit observed gates.",
+          "practiceId": "43.4.5.build"
+        },
+        {
+          "t": "sol",
+          "code": "gates={\"API\":True,\"browser\":True,\"containers\":False}\nprint(\"Promote:\",all(gates.values()))\nprint(\"Investigate:\",[k for k,v in gates.items() if not v])\n",
+          "out": "Promote: False\nInvestigate: ['containers']",
+          "why": "A release gate is a decision backed by specific evidence."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Keep a coverage percentage separate from unmet product evidence.",
+          "practiceId": "43.4.5.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "report={\"line_coverage\":92,\"screen_reader_checked\":False}\nprint(\"Coverage:\",report[\"line_coverage\"])\nprint(\"All access needs proven:\",report[\"screen_reader_checked\"])\n",
+          "out": "Coverage: 92\nAll access needs proven: False",
+          "why": "A release gate is a decision backed by specific evidence."
+        },
+        {
+          "t": "try",
+          "q": "Does high line coverage prove every requirement works?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Executed lines and meaningful behavioural evidence differ."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.4.5",
+            "quiz": [
+              {
+                "q": "Does high line coverage prove every requirement works?",
+                "options": [
+                  "Always",
+                  "Only at100%",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Executed lines and meaningful behavioural evidence differ."
+              },
+              {
+                "q": "Should a failed required check be ignored to finish the day?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only for a demo"
+                ],
+                "correct": 0,
+                "why": "Investigate the failure or state the blocker honestly."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Review failed checks and known limitations before calling the build ready."
+        }
+      ]
+    }
+  ]
+},
+"43.5": {
+  "parts": [
+    {
+      "title": "1. Make a fresh setup reproducible",
+      "sections": [
+        {
+          "t": "h",
+          "v": "1. Make a fresh setup reproducible"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Write instructions another learner can follow without your local state."
+        },
+        {
+          "t": "new",
+          "v": "Reproducible handoff",
+          "note": "A clean folder, pinned dependencies, explicit commands, known startup URL and stated runtime assumptions."
+        },
+        {
+          "t": "new",
+          "v": "Environment-specific secret",
+          "note": "Configuration supplied privately to a selected runtime, not committed source. Fictional example values are not a credential-provisioning strategy."
+        },
+        {
+          "t": "p",
+          "v": "Begin with the README, not with your current terminal history. Create an environment, install the pinned tools, run tests and start python app.py. Visit the root dashboard and the optional /docs explorer. The local teaching server uses loopback and its own SQLite instance; it is not a public service merely because it runs."
+        },
+        {
+          "t": "p",
+          "v": "Explain where commands run and how to stop the server. On Windows, the README uses separate PowerShell lines; activation is a convenience, so the environment’s Python executable can be called directly when activation is unavailable. Installing packages initially needs network access. Reading the Study Hub lessons afterward remains offline; running this separate database app needs its own server."
+        },
+        {
+          "t": "syn",
+          "v": "Document exact setup, entry URLs, assumptions and fresh practice data.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "sh",
+          "v": "python -m venv .venv\n# Activate the environment or call its Python directly.\npython -m pip install -r requirements-dev.txt\npython -m pytest -q\npython app.py\n# Open http://127.0.0.1:8002/"
+        },
+        {
+          "t": "code",
+          "v": "from pathlib import Path\nrequired=[\"README.md\",\"spec.json\",\"requirements-dev.txt\",\"app.py\",\"server.py\",\"browser_smoke.cjs\"]\nprint(\"Handoff files:\",all(Path(name).is_file() for name in required))\n"
+        },
+        {
+          "t": "out",
+          "v": "Handoff files: True"
+        },
+        {
+          "t": "p",
+          "v": "A reproducible project can be reviewed independently."
+        },
+        {
+          "t": "mis",
+          "wrong": "Write “run it normally” and rely on your cached tools and accounts.",
+          "right": "Document exact setup, entry URLs, assumptions and fresh practice data.",
+          "why": "A reproducible project can be reviewed independently."
+        },
+        {
+          "t": "ex",
+          "v": "Confirm the entry pages are documented rather than assumed.",
+          "practiceId": "43.5.0.build"
+        },
+        {
+          "t": "sol",
+          "code": "from pathlib import Path\ns=Path(\"README.md\").read_text()\nprint(\"Local dashboard URL:\",\"http://127.0.0.1:8002/\" in s)\nprint(\"API explorer route:\",\"/docs\" in s)\n",
+          "out": "Local dashboard URL: True\nAPI explorer route: True",
+          "why": "A reproducible project can be reviewed independently."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Reject a missing production signing configuration through the actual settings contract.",
+          "practiceId": "43.5.0.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from orm_api.settings import Settings\ntry:\n    Settings.from_env({\"APP_ENV\":\"production\"})\nexcept ValueError:\n    print(\"Missing production signing secret rejected\")\n",
+          "out": "Missing production signing secret rejected",
+          "why": "A reproducible project can be reviewed independently."
+        },
+        {
+          "t": "try",
+          "q": "Does a clean handoff depend on your private instance directory?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Provide setup and fresh storage instead of personal runtime state."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.5.0",
+            "quiz": [
+              {
+                "q": "Does a clean handoff depend on your private instance directory?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only for login"
+                ],
+                "correct": 0,
+                "why": "Provide setup and fresh storage instead of personal runtime state."
+              },
+              {
+                "q": "Does running on loopback create a public deployment?",
+                "options": [
+                  "Only with FastAPI",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "An external runtime and routing are separate."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Write instructions another learner can follow without your local state."
+        }
+      ]
+    },
+    {
+      "title": "2. Package the same product with Docker and PostgreSQL",
+      "sections": [
+        {
+          "t": "h",
+          "v": "2. Package the same product with Docker and PostgreSQL"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Verify that the real frontend ships with the runtime, not only the Python routes."
+        },
+        {
+          "t": "new",
+          "v": "Artifact completeness",
+          "note": "The image must include the actual HTML, CSS and JavaScript as well as the Python API, migrations and runtime dependencies."
+        },
+        {
+          "t": "new",
+          "v": "Runtime parity check",
+          "note": "Exercise the important contract on the packaged target database. A successful local SQLite request alone does not verify PostgreSQL portability or container networking."
+        },
+        {
+          "t": "p",
+          "v": "The supplied Dockerfile copies orm_api, including the dashboard assets, into a non-root runtime. Compose starts PostgreSQL, one migration job and the API. The API joins a normal frontend bridge for its loopback-published HTTP port and an internal backend for database access; the database has no published host port."
+        },
+        {
+          "t": "p",
+          "v": "Run the container check only on a fresh disposable stack because it creates fixed fictional data and a restore database. It verifies the packaged page/assets, actual PostgreSQL auth/CRUD/search/filter, restricted runtime authority, API recreation persistence, outage recovery and a separate restore. Ordinary stopping keeps your own volume; removal is restricted to disposable owned test state."
+        },
+        {
+          "t": "syn",
+          "v": "Build and test the complete artifact on its target database/runtime.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "sh",
+          "v": "python ops.py init-secrets\ndocker compose config --quiet\ndocker compose up --build -d --wait api\n# Open http://127.0.0.1:8043/\n# Fresh disposable stack only: python container_smoke.py"
+        },
+        {
+          "t": "code",
+          "v": "from pathlib import Path\nimport yaml\nc=yaml.safe_load(Path(\"compose.yaml\").read_text())\nprint(\"Project:\",c[\"name\"])\nprint(\"Published:\",c[\"services\"][\"api\"][\"ports\"])\nprint(\"DB host publication:\",c[\"services\"][\"db\"].get(\"ports\",[]))\n"
+        },
+        {
+          "t": "out",
+          "v": "Project: studyhub-week43\nPublished: ['127.0.0.1:8043:8002']\nDB host publication: []"
+        },
+        {
+          "t": "p",
+          "v": "Packaging is part of the full-stack user journey."
+        },
+        {
+          "t": "mis",
+          "wrong": "Ship the Python API but forget the actual interface files.",
+          "right": "Build and test the complete artifact on its target database/runtime.",
+          "why": "Packaging is part of the full-stack user journey."
+        },
+        {
+          "t": "ex",
+          "v": "Check that the Docker copy includes the directory holding all three dashboard files.",
+          "practiceId": "43.5.1.build"
+        },
+        {
+          "t": "sol",
+          "code": "from pathlib import Path\nprint(\"Runtime package copied:\",\"COPY orm_api ./orm_api\" in Path(\"Dockerfile\").read_text())\nprint(\"Assets present:\",all((Path(\"orm_api/static\")/name).exists() for name in [\"dashboard.html\",\"dashboard.css\",\"dashboard.js\"]))\n",
+          "out": "Runtime package copied: True\nAssets present: True",
+          "why": "Packaging is part of the full-stack user journey."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Confirm migration and runtime identities differ in the actual Compose source.",
+          "practiceId": "43.5.1.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from pathlib import Path\nimport yaml\ns=yaml.safe_load(Path(\"compose.yaml\").read_text())[\"services\"]\nprint(\"Different roles:\",s[\"api\"][\"environment\"][\"DB_USER\"]!=s[\"migrate\"][\"environment\"][\"DB_USER\"])\n",
+          "out": "Different roles: True",
+          "why": "Packaging is part of the full-stack user journey."
+        },
+        {
+          "t": "try",
+          "q": "Can a green SQLite check alone prove the container/PostgreSQL workflow?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Verify the actual packaged runtime boundary."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.5.1",
+            "quiz": [
+              {
+                "q": "Can a green SQLite check alone prove the container/PostgreSQL workflow?",
+                "options": [
+                  "Only with SQLAlchemy",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Verify the actual packaged runtime boundary."
+              },
+              {
+                "q": "Should a runtime image omit the new dashboard assets?",
+                "options": [
+                  "Yes",
+                  "Only behind a proxy",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "The complete user workflow depends on those files."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Verify that the real frontend ships with the runtime, not only the Python routes."
+        }
+      ]
+    },
+    {
+      "title": "3. Plan a public release and verify it from another device",
+      "sections": [
+        {
+          "t": "h",
+          "v": "3. Plan a public release and verify it from another device"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Separate repository publication, server deployment and external HTTPS evidence."
+        },
+        {
+          "t": "new",
+          "v": "Release record",
+          "note": "The chosen source revision, artifact identity, schema head, configuration version, checks and recovery plan for a deployment candidate."
+        },
+        {
+          "t": "new",
+          "v": "External smoke verification",
+          "note": "A short real workflow through the actual HTTPS hostname from another network/device, including denied actions and persistence."
+        },
+        {
+          "t": "p",
+          "v": "Follow the README’s ordered checklist on a provider account and budget you choose. Configure a Docker web service rooted at docs/python-week43 and a fresh managed PostgreSQL database. Supply runtime secrets privately, use verified database TLS, run one controlled migration with migration credentials, then start the API with its restricted role."
+        },
+        {
+          "t": "p",
+          "v": "Verify the provider hostname and certificate before custom DNS. Check the actual dashboard, register/login, save and retrieve notes, and prove another account cannot access them. Do this from your phone or another network. A local address on a screenshot does not establish public reachability. Keep unperformed external checks pending and avoid creating resources merely to make the milestone look finished."
+        },
+        {
+          "t": "syn",
+          "v": "Verify the actual runtime, HTTPS route and external user flow.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "release={\"source_revision\":\"record exact commit\",\"schema\":\"w43_003\",\"local_checks\":\"record result\",\"public_https_phone_flow\":\"pending\"}\nfor name,value in release.items():print(name+\":\",value)\n"
+        },
+        {
+          "t": "out",
+          "v": "source_revision: record exact commit\nschema: w43_003\nlocal_checks: record result\npublic_https_phone_flow: pending"
+        },
+        {
+          "t": "p",
+          "v": "Deployment claims should name what was really observed."
+        },
+        {
+          "t": "mis",
+          "wrong": "Call a source-code publication a deployed full-stack service.",
+          "right": "Verify the actual runtime, HTTPS route and external user flow.",
+          "why": "Deployment claims should name what was really observed."
+        },
+        {
+          "t": "ex",
+          "v": "Gate public promotion on the complete stated evidence.",
+          "practiceId": "43.5.2.build"
+        },
+        {
+          "t": "sol",
+          "code": "checks={\"HTTPS verified\":True,\"owner flow\":True,\"other owner denied\":True,\"restore rehearsed\":False}\nprint(\"Promote:\",all(checks.values()))\n",
+          "out": "Promote: False",
+          "why": "Deployment claims should name what was really observed."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Confirm the provider-port precedence in the real configuration class.",
+          "practiceId": "43.5.2.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from orm_api.settings import Settings\ns=Settings.from_env({\"PORT\":\"9080\",\"API_PORT\":\"8002\"})\nprint(\"Selected listening port:\",s.port)\n",
+          "out": "Selected listening port: 9080",
+          "why": "Deployment claims should name what was really observed."
+        },
+        {
+          "t": "try",
+          "q": "Does publishing the repository deploy its Python process?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Source hosting and an application runtime are different."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.5.2",
+            "quiz": [
+              {
+                "q": "Does publishing the repository deploy its Python process?",
+                "options": [
+                  "Always",
+                  "Only with Pages",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Source hosting and an application runtime are different."
+              },
+              {
+                "q": "When can the public phone flow be marked passed?",
+                "options": [
+                  "After observing it at the real HTTPS hostname",
+                  "After local TestClient passes",
+                  "After writing a checklist"
+                ],
+                "correct": 0,
+                "why": "The evidence must cross the stated external boundary."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Separate repository publication, server deployment and external HTTPS evidence."
+        }
+      ]
+    },
+    {
+      "title": "4. Document architecture and capture honest portfolio evidence",
+      "sections": [
+        {
+          "t": "h",
+          "v": "4. Document architecture and capture honest portfolio evidence"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Explain decisions and provide usable setup, screenshots and limitations."
+        },
+        {
+          "t": "new",
+          "v": "Architecture overview",
+          "note": "A concise map of components, state ownership, trust boundaries and transaction flow. It should explain why the parts exist."
+        },
+        {
+          "t": "new",
+          "v": "Portfolio case study",
+          "note": "A problem, scoped solution, decisions, evidence and limitations. Screenshots support the story but do not replace runnable source or tests."
+        },
+        {
+          "t": "p",
+          "v": "Write the story for another learner: what problem Study Notes solves, how to run it, what a saved note crosses and where identity is enforced. Include a plain architecture sketch and explain the two-stage note/tag save and memory-only session. Those decisions are more useful than a long list of technology names."
+        },
+        {
+          "t": "p",
+          "v": "Capture real fictional-data screenshots without tokens or passwords. The browser suite saves desktop/mobile images to the operating system’s temporary folder; public staging screenshots are another stage. Record the current source and observed tests. List the simultaneous-edit, idempotency, recovery and operational gaps rather than hiding them behind a polished hero image."
+        },
+        {
+          "t": "syn",
+          "v": "Explain the actual problem, architecture, evidence and remaining work.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "import json\nfrom pathlib import Path\ns=json.loads(Path(\"spec.json\").read_text())\nprint(\"Case study name:\",s[\"name\"])\nprint(\"Known deferred capabilities:\",len(s[\"out_of_scope\"]))\n"
+        },
+        {
+          "t": "out",
+          "v": "Case study name: Study Notes\nKnown deferred capabilities: 7"
+        },
+        {
+          "t": "p",
+          "v": "A strong portfolio piece can be understood and reproduced."
+        },
+        {
+          "t": "mis",
+          "wrong": "List framework names and claim every feature is production-ready.",
+          "right": "Explain the actual problem, architecture, evidence and remaining work.",
+          "why": "A strong portfolio piece can be understood and reproduced."
+        },
+        {
+          "t": "ex",
+          "v": "Trace the state owners in an architecture summary.",
+          "practiceId": "43.5.3.build"
+        },
+        {
+          "t": "sol",
+          "code": "flow=[(\"editor\",\"browser memory\"),(\"owned note\",\"database\"),(\"schema history\",\"Alembic\"),(\"runtime secret\",\"private environment\")]\nfor item,owner in flow:print(item+\":\",owner)\n",
+          "out": "editor: browser memory\nowned note: database\nschema history: Alembic\nruntime secret: private environment",
+          "why": "A strong portfolio piece can be understood and reproduced."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Find the README sections someone reviewing the project needs.",
+          "practiceId": "43.5.3.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "from pathlib import Path\ns=Path(\"README.md\").read_text()\nfor heading in [\"## Run locally\",\"## Architecture\",\"## Portfolio evidence\"]:\n    print(heading,heading in s)\n",
+          "out": "## Run locally True\n## Architecture True\n## Portfolio evidence True",
+          "why": "A strong portfolio piece can be understood and reproduced."
+        },
+        {
+          "t": "try",
+          "q": "Can a screenshot replace a reproducible setup?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Provide commands, source and the actual evidence boundaries."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.5.3",
+            "quiz": [
+              {
+                "q": "Can a screenshot replace a reproducible setup?",
+                "options": [
+                  "No",
+                  "Always",
+                  "Only for a portfolio"
+                ],
+                "correct": 0,
+                "why": "Provide commands, source and the actual evidence boundaries."
+              },
+              {
+                "q": "Should the case study hide known partial-write behaviour?",
+                "options": [
+                  "Only for reviewers",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Explaining trade-offs shows understanding and protects users."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Explain decisions and provide usable setup, screenshots and limitations."
+        }
+      ]
+    },
+    {
+      "title": "5. Prepare recovery, cost and incident ownership",
+      "sections": [
+        {
+          "t": "h",
+          "v": "5. Prepare recovery, cost and incident ownership"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Keep the data source intact while rehearsing a separate restore."
+        },
+        {
+          "t": "new",
+          "v": "Recovery rehearsal",
+          "note": "Restore a protected backup into a different owned target and verify representative data, schema and permissions. File existence alone is not recovery evidence."
+        },
+        {
+          "t": "new",
+          "v": "Operational owner and budget policy",
+          "note": "Someone must respond to failures, verify alerts, maintain secrets/dependencies and review total resource costs. An alert is not automatically a hard spending cap."
+        },
+        {
+          "t": "p",
+          "v": "Use the Week43 backup commands against only this lab’s database. The dump is made inside the container and copied as a file, avoiding older PowerShell binary redirection pitfalls. Restore into a separate owned database and validate counts and schema. If that name already exists, choose another instead of dropping unknown data."
+        },
+        {
+          "t": "p",
+          "v": "Database recovery is separate from returning to an older application image. Check schema compatibility, retain a previous artifact and keep a reviewed incident path. Protect backup copies independently with appropriate access, encryption and retention. For a public service, configure real external uptime/alert delivery and a clear owner; the project does not create a monitoring subscription for you."
+        },
+        {
+          "t": "syn",
+          "v": "Rehearse on a separate owned target and preserve the source.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "code",
+          "v": "from pathlib import Path\ns=Path(\"container_smoke.py\").read_text()\nprint(\"Separate restore target used:\",\"studyhub_restore\" in s)\nprint(\"Correct schema checked:\",\"w43_003\" in s)\nprint(\"Drops source database:\",\"DROP DATABASE\" in s)\n"
+        },
+        {
+          "t": "out",
+          "v": "Separate restore target used: True\nCorrect schema checked: True\nDrops source database: False"
+        },
+        {
+          "t": "p",
+          "v": "Recovery should reduce uncertainty without creating avoidable data loss."
+        },
+        {
+          "t": "mis",
+          "wrong": "Restore over the only source database before validating the backup.",
+          "right": "Rehearse on a separate owned target and preserve the source.",
+          "why": "Recovery should reduce uncertainty without creating avoidable data loss."
+        },
+        {
+          "t": "ex",
+          "v": "Distinguish code rollback from restoring application data.",
+          "practiceId": "43.5.4.build"
+        },
+        {
+          "t": "sol",
+          "code": "recovery={\"code\":\"compatible previous artifact\",\"data\":\"verified separate restore\",\"configuration\":\"private recovery procedure\"}\nfor part,plan in recovery.items():print(part+\":\",plan)\n",
+          "out": "code: compatible previous artifact\ndata: verified separate restore\nconfiguration: private recovery procedure",
+          "why": "Recovery should reduce uncertainty without creating avoidable data loss."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Record an unresolved operations gate explicitly.",
+          "practiceId": "43.5.4.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "operations={\"alert owner chosen\":True,\"notification tested\":False,\"budget policy verified\":False}\nprint(\"Still required:\",[name for name,done in operations.items() if not done])\n",
+          "out": "Still required: ['notification tested', 'budget policy verified']",
+          "why": "Recovery should reduce uncertainty without creating avoidable data loss."
+        },
+        {
+          "t": "try",
+          "q": "Does the presence of a dump prove it can restore?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "No",
+          "why": "Restore and validate it independently."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.5.4",
+            "quiz": [
+              {
+                "q": "Does the presence of a dump prove it can restore?",
+                "options": [
+                  "Only with PostgreSQL",
+                  "No",
+                  "Yes"
+                ],
+                "correct": 1,
+                "why": "Restore and validate it independently."
+              },
+              {
+                "q": "Can replacing the app image alone undo every schema/data change?",
+                "options": [
+                  "Always",
+                  "Only on a managed host",
+                  "No"
+                ],
+                "correct": 2,
+                "why": "Code compatibility and data recovery require separate plans."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Keep the data source intact while rehearsing a separate restore."
+        }
+      ]
+    },
+    {
+      "title": "6. Milestone: a complete and explainable Study Notes app",
+      "sections": [
+        {
+          "t": "h",
+          "v": "6. Milestone: a complete and explainable Study Notes app"
+        },
+        {
+          "t": "key",
+          "v": "Learning objective: Demonstrate the finished learning slice and state the remaining external release work."
+        },
+        {
+          "t": "new",
+          "v": "Milestone demonstration",
+          "note": "Show requirements through backend rules, browser journeys, tests, runtime persistence and documentation. Explain each major boundary in your own words."
+        },
+        {
+          "t": "new",
+          "v": "Honest completion record",
+          "note": "Local, browser, container and public-host outcomes are separate facts. A complete lesson package can still leave your chosen public deployment exercise pending."
+        },
+        {
+          "t": "p",
+          "v": "Run the app and demonstrate the six stories. Register a fictional account, create/tag/edit a note, search/filter/page, complete it, cancel and confirm deletion, refresh and sign in again. Show another account’s denial. Explain what happens when a write fails, when tags fail after a confirmed save and when an old search finishes after logout."
+        },
+        {
+          "t": "p",
+          "v": "Then run the supplied checks and read the README’s release and recovery plan. If you choose to host publicly, complete the separate HTTPS/phone, monitoring and budget gates and record actual evidence. Do not rush ahead because this is called a one-week sprint. The goal is a product you can operate, explain, test and improve, while the rest of Study Hub and your earlier progress remain independent."
+        },
+        {
+          "t": "syn",
+          "v": "Demonstrate the whole scoped workflow and record real evidence at each boundary.",
+          "note": "The corrected pattern used in this part."
+        },
+        {
+          "t": "sh",
+          "v": "python -m pytest -q\npython -m ruff check .\npython -m ruff format --check .\nnode browser_smoke.cjs\npython app.py\n# Dashboard: http://127.0.0.1:8002/\n# Follow README for the separate Docker/public-host exercises."
+        },
+        {
+          "t": "code",
+          "v": "from lesson_support import practice\nwith practice() as (app,c,h):\n    print(\"Dashboard:\",c.get(\"/\").status_code)\n    print(\"Owner notes:\",c.get(\"/v1/notes\",headers=h).json()[\"total\"])\n    print(\"Anonymous denied:\",c.get(\"/v1/notes\").status_code)\n    print(\"Ready:\",c.get(\"/health/ready\").status_code)\n"
+        },
+        {
+          "t": "out",
+          "v": "Dashboard: 200\nOwner notes: 3\nAnonymous denied: 401\nReady: 200"
+        },
+        {
+          "t": "p",
+          "v": "A useful full-stack project is understandable, testable and honest about its limits."
+        },
+        {
+          "t": "mis",
+          "wrong": "Call the sprint complete because the first happy-path screenshot looks finished.",
+          "right": "Demonstrate the whole scoped workflow and record real evidence at each boundary.",
+          "why": "A useful full-stack project is understandable, testable and honest about its limits."
+        },
+        {
+          "t": "ex",
+          "v": "Demonstrate a complete owned create/read/complete/delete lifecycle.",
+          "practiceId": "43.5.5.build"
+        },
+        {
+          "t": "sol",
+          "code": "from lesson_support import practice\nwith practice() as (app,c,h):\n    r=c.post(\"/v1/notes\",headers=h,json={\"title\":\"My explanation\",\"body\":\"I can trace the whole flow\"})\n    url=r.headers[\"Location\"]\n    print(\"Created:\",r.status_code)\n    print(\"Completed:\",c.patch(url,headers=h,json={\"completed\":True}).json()[\"completed\"])\n    print(\"Deleted:\",c.delete(url,headers=h).status_code)\n",
+          "out": "Created: 201\nCompleted: True\nDeleted: 204",
+          "why": "A useful full-stack project is understandable, testable and honest about its limits."
+        },
+        {
+          "t": "ex",
+          "v": "Mini challenge: Write a truthful final evidence record for your own run.",
+          "practiceId": "43.5.5.challenge"
+        },
+        {
+          "t": "sol",
+          "code": "evidence={\"I ran the app\":\"record result\",\"I explained ownership\":\"record result\",\"I verified public phone HTTPS\":\"pending until performed\"}\nfor check,result in evidence.items():print(check+\":\",result)\n",
+          "out": "I ran the app: record result\nI explained ownership: record result\nI verified public phone HTTPS: pending until performed",
+          "why": "A useful full-stack project is understandable, testable and honest about its limits."
+        },
+        {
+          "t": "try",
+          "q": "What is the sprint’s learning goal?",
+          "code": "# Explain your reasoning before revealing.",
+          "a": "An app you can explain, verify and operate",
+          "why": "The complete journey matters more than a technology list."
+        },
+        {
+          "t": "checkpoint",
+          "lesson": {
+            "id": "course:43.5.5",
+            "quiz": [
+              {
+                "q": "What is the sprint’s learning goal?",
+                "options": [
+                  "A screenshot alone",
+                  "As many tools as possible",
+                  "An app you can explain, verify and operate"
+                ],
+                "correct": 2,
+                "why": "The complete journey matters more than a technology list."
+              },
+              {
+                "q": "Should you skip unfinished understanding to fit six calendar days?",
+                "options": [
+                  "No",
+                  "Yes",
+                  "Only before deployment"
+                ],
+                "correct": 0,
+                "why": "Split the work into more study sessions when needed."
+              }
+            ]
+          }
+        },
+        {
+          "t": "key",
+          "v": "Demonstrate the finished learning slice and state the remaining external release work."
+        },
+        {
+          "t": "p",
+          "v": "Practice project: docs/python-week43. Read README.md, install requirements-dev.txt and run python app.py. Open http://127.0.0.1:8002/ for Study Notes and /docs for the API explorer. Docker uses http://127.0.0.1:8043/. Local app data is independent of your course progress; use fictional practice accounts. Public API hosting requires the separate README checklist and your selected provider account."
+        },
+        {
+          "t": "p",
+          "v": "Primary references: https://fastapi.tiangolo.com/tutorial/static-files/ · https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch · https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent · https://www.w3.org/WAI/tutorials/forms/notifications/ · https://docs.docker.com/compose/how-tos/startup-order/ . Original lesson explanations remain embedded for offline reading; these links are optional further reading."
+        }
+      ]
+    }
+  ]
+},
 };
 
 const REST_DAY = ["Review & rest",
