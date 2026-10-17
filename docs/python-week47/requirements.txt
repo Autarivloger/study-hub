@@ -10,6 +10,7 @@ cloudpickle==3.1.2
 shap==0.54.1
 optuna==5.0.0
 fastapi==0.143.1
+starlette==0.52.1
 pydantic==2.14.0
 uvicorn==0.54.0
 httpx==0.28.1
