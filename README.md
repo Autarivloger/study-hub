@@ -48,6 +48,13 @@ undo after reopening, restart, offline hints, and saved completion/best results.
 Its Focus view keeps the board and large movement buttons together, including
 on landscape phones. [Sokoban authoring notes](data/sokoban/README.md).
 
+**Focus view** requests browser fullscreen for all three games. The board fills
+the available area, with the original Back/Undo/Hint and other controls arranged
+beside it on larger screens or below it on portrait phones. Action labels use
+15px text and movement/number controls use 20px text. Exit focus, Escape or Back
+returns to the normal layout. If a browser blocks fullscreen, the same Focus
+layout remains available with an on-screen explanation.
+
 ---
 
 ## Running it

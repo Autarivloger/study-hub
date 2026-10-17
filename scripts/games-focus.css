@@ -1,0 +1,57 @@
+/* Fullscreen game workspace. Every rule is scoped to Focus; normal views keep
+   their existing layout. Original controls are moved, not copied/reimplemented. */
+body.games-focus{overflow:hidden;padding-bottom:0}
+body.games-focus .ch-wrap,body.games-focus .su-wrap,body.games-focus .sk-wrap{display:none}
+body.games-focus .gm-focus-screen{position:fixed;inset:0;z-index:40;display:grid;grid-template-columns:minmax(0,1fr) clamp(240px,28vw,340px);gap:14px;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:var(--bg);height:100dvh;min-height:0;overflow:hidden}
+body.games-focus .gm-focus-arena{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;overflow:hidden}
+body.games-focus .gm-focus-arena>.ch-board,body.games-focus .gm-focus-arena>.su-board,body.games-focus .gm-focus-arena>.sk-stage{width:var(--focus-board-size,90px);max-width:100%;flex-shrink:0}
+body.games-focus .gm-focus-arena .sk-board{width:100%}
+body.games-focus .gm-focus-arena .ch-piece{font-size:clamp(14px,10cqw,92px)}
+body.games-focus .gm-focus-arena .su-digit{font-size:clamp(12px,5.7cqw,48px)}
+body.games-focus .gm-focus-arena .su-notes{font-size:clamp(6px,2cqw,16px)}
+body.games-focus .gm-focus-toolbar{min-width:0;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;border:1px solid var(--border);border-radius:14px;background:var(--bg-elev);padding:12px;display:flex;flex-direction:column;gap:12px}
+body.games-focus .gm-focus-toolbar .gm-header{padding:0 0 12px;margin:0;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:8px;position:static}
+body.games-focus .gm-focus-toolbar .gm-header h1{font:700 18px/1.3 var(--font-ui);grid-column:1/-1;grid-row:1;margin:0 0 4px}
+body.games-focus .gm-focus-toolbar button.btn,body.games-focus .gm-focus-toolbar .gm-header .btn{font-size:15px!important;line-height:1.3;min-height:42px;min-width:0;padding:9px 10px;white-space:normal;margin:0}
+body.games-focus .gm-focus-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+body.games-focus .gm-focus-actions>button{width:100%}
+body.games-focus .gm-focus-toolbar .ch-tabs{display:grid;grid-template-columns:1fr;gap:7px;margin:0}
+body.games-focus .gm-focus-toolbar .ch-card,body.games-focus .gm-focus-toolbar .su-card,body.games-focus .gm-focus-toolbar .sk-card{padding:12px;margin:0 0 10px;border-radius:10px}
+body.games-focus .gm-focus-toolbar h2,body.games-focus .gm-focus-toolbar h3{font-size:16px;line-height:1.4;margin:0 0 8px}
+body.games-focus .gm-focus-toolbar p,body.games-focus .gm-focus-toolbar .ch-meta{font-size:12px;line-height:1.6}
+body.games-focus .gm-focus-toolbar .ch-turn{font-size:16px;min-height:0;margin:0 0 6px}
+body.games-focus .gm-focus-toolbar .ch-message,body.games-focus .gm-focus-toolbar .su-status,body.games-focus .gm-focus-toolbar .sk-status{font-size:13px;line-height:1.5;min-height:0;margin:0;overflow-wrap:anywhere}
+body.games-focus .gm-focus-toolbar .ch-aside,body.games-focus .gm-focus-toolbar .su-aside,body.games-focus .gm-focus-toolbar .sk-aside{display:block;max-height:none;overflow:visible;padding:0}
+body.games-focus .gm-focus-toolbar .ch-actions:empty,body.games-focus .gm-focus-toolbar .su-tool-grid:empty{display:none}
+body.games-focus .gm-focus-toolbar .ch-controls{gap:8px}
+body.games-focus .gm-focus-toolbar select{font-size:15px;min-height:42px;max-width:100%}
+body.games-focus .gm-focus-toolbar .ch-controls label{min-width:80px}
+body.games-focus .gm-focus-toolbar .su-pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0;order:0}
+body.games-focus .gm-focus-toolbar .su-pad button{font-size:20px;min-height:44px;padding:6px}
+body.games-focus .gm-focus-toolbar .su-pad strong{font-size:20px}
+body.games-focus .gm-focus-toolbar .su-pad small{font-size:9px;display:block}
+body.games-focus .gm-focus-toolbar .su-board-meta{margin:0;font-size:13px}
+body.games-focus .gm-focus-toolbar .sk-dpad{width:156px;align-self:center;grid-template-rows:repeat(3,44px);gap:5px}
+body.games-focus .gm-focus-toolbar .sk-dpad button{font-size:20px;min-height:44px}
+body.games-focus .gm-focus-toolbar .sk-hud{margin:0;padding:0;gap:8px}
+body.games-focus .gm-focus-toolbar .sk-hud strong{font-size:20px}
+body.games-focus .gm-focus-toolbar .sk-overview{display:block}
+body.games-focus .gm-focus-notice{font-size:12px;line-height:1.5;border-left:3px solid var(--warn);padding:7px 10px;background:var(--bg-soft);margin:0}
+body.games-focus .gm-focus-extras>.gm-focus-actions{margin-bottom:12px}
+body.games-focus .gm-focus-toolbar>#chPromotion:empty{display:none}
+@media(max-height:500px){body.games-focus .gm-focus-toolbar .gm-header h1{display:none}}
+@media(max-width:600px) and (orientation:portrait){
+  body.games-focus .gm-focus-screen{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) clamp(220px,36dvh,300px);gap:8px;padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+  body.games-focus .gm-focus-toolbar{display:grid;grid-template-columns:1fr 1fr;align-content:start;gap:10px;padding:10px;border-radius:12px}
+  body.games-focus .gm-focus-toolbar .gm-header,body.games-focus .gm-focus-toolbar>.gm-focus-notice,body.games-focus .gm-focus-toolbar>.gm-focus-extras,body.games-focus .gm-focus-toolbar>.ch-card,body.games-focus .gm-focus-toolbar>#chPromotion,body.games-focus .gm-focus-toolbar>.su-board-meta,body.games-focus .gm-focus-toolbar>.su-status,body.games-focus .gm-focus-toolbar>.sk-hud,body.games-focus .gm-focus-toolbar>.sk-status{grid-column:1/-1}
+  body.games-focus .gm-focus-toolbar .gm-header{grid-template-columns:1fr 1fr;position:sticky;top:-10px;z-index:3;background:var(--bg-elev);padding:6px 0 10px}
+  body.games-focus .gm-focus-toolbar .gm-header h1{display:none}
+  body.games-focus .gm-focus-toolbar>.gm-focus-actions{grid-column:2;grid-row:2;align-self:start;gap:6px}
+  body.games-focus .gm-focus-toolbar>.ch-tabs,body.games-focus .gm-focus-toolbar>.su-pad,body.games-focus .gm-focus-toolbar>.sk-dpad{grid-column:1;grid-row:2;align-self:start}
+  body.games-focus .gm-focus-toolbar .sk-dpad{width:100%;max-width:156px;justify-self:center}
+  body.games-focus .gm-focus-toolbar .su-pad button{min-height:44px}
+  body.games-focus .gm-focus-toolbar .su-pad small{display:none}
+  body.games-focus .gm-focus-toolbar button.btn,body.games-focus .gm-focus-toolbar .gm-header .btn{padding:8px 5px;min-height:44px}
+  body.games-focus .gm-focus-screen[data-game=chess] .gm-focus-toolbar>.gm-focus-actions{grid-column:1/-1;grid-template-columns:repeat(3,minmax(0,1fr))}
+  body.games-focus .gm-focus-screen[data-game=chess] .gm-focus-toolbar>.ch-tabs{grid-column:1/-1;grid-row:3;grid-template-columns:repeat(3,minmax(0,1fr))}
+}

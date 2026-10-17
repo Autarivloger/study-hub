@@ -79,6 +79,7 @@ function chessBoardHTML(){
   return html;
 }
 function renderChess(){
+  if(typeof gamesRestoreFocusLayout==='function')gamesRestoreFocusLayout();
   chessEnsure();const s=chessState,puzzleMode=s.mode==='puzzles',counts=chessCount();
   const body=document.getElementById('chessBody');
   const tabs=[['local','Two players'],['bot','Play computer'],['puzzles','Checkmate puzzles']].map(([mode,label])=>'<button class="btn secondary" type="button" data-ch-mode="'+mode+'" aria-pressed="'+(mode===s.mode)+'">'+label+'</button>').join('');
@@ -118,6 +119,7 @@ function renderChess(){
     body.querySelector('#chUndo').onclick=chessUndo;
     body.querySelector('#chPgn').onclick=chessDownload;
   }
+  if(typeof gamesPrepareFocusLayout==='function')gamesPrepareFocusLayout();
   if(s.promotion)chessRenderPromotion();
   const list=body.querySelector('.ch-history');if(list)list.scrollTop=list.scrollHeight;
   if(!puzzleMode)chessScheduleBot();
@@ -169,6 +171,7 @@ function chessRenderPromotion(){
   holder.querySelectorAll('[data-ch-promote]').forEach(b=>b.onclick=()=>{const m=chessState.promotion;chessState.promotion=null;chessPlay({...m,promotion:b.dataset.chPromote});});
   holder.querySelector('#chCancelPromo').onclick=()=>{chessState.promotion=null;renderChess();};
   holder.querySelector('button').focus({preventScroll:true});
+  if(document.body.classList.contains('games-focus'))holder.scrollIntoView({block:'nearest',inline:'nearest'});
 }
 function chessPlay(move){
   const s=chessState,g=s.game;let played;

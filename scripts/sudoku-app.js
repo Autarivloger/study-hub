@@ -92,6 +92,7 @@ function sudokuNewPrompt(){
   }else start();
 }
 function renderSudoku(){
+  gamesRestoreFocusLayout();
   sudokuEnsure();const s=sudokuState,g=DB.sudoku.game,index=s.selected,selected=g.values[index],peers=new Set(sudokuPeers(index)),conflicts=sudokuConflicts(g.values);
   const filled=g.values.filter(Boolean).length,finished=g.values.join('')===g.solution,completed=Object.values(DB.sudoku.completed);
   let cells='';for(let i=0;i<81;i++){
@@ -109,5 +110,5 @@ function renderSudoku(){
   body.querySelector('#suUndo').onclick=()=>{const prev=s.undo.pop();if(!prev)return;g.values=prev.values;g.notes=prev.notes;s.wrong=[];s.message='Last step undone.';sudokuSave();renderSudoku();};
   body.querySelector('#suCheck').onclick=sudokuCheck;body.querySelector('#suHint').onclick=sudokuHint;body.querySelector('#suAutoNotes').onclick=sudokuAutoNotes;
   body.querySelector('#suLevel').onchange=e=>{s.level=e.target.value;};body.querySelector('#suNew').onclick=sudokuNewPrompt;
-  gamesScheduleFit();
+  gamesPrepareFocusLayout();gamesScheduleFit();
 }

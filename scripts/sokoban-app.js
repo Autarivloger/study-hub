@@ -95,10 +95,11 @@ function sokoHint(){
 function sokoUpdateStatus(){
   const node=document.getElementById('skStatus');if(node){node.textContent=sokoState.message;node.dataset.tone=sokoState.tone;}
   const hint=document.getElementById('skHint');if(hint){hint.disabled=sokoState.busy;hint.textContent=sokoState.busy?'Thinking…':'One hint';}
-  gamesScheduleFit();
+  gamesPrepareFocusLayout();gamesScheduleFit();
 }
 function sokoWorkerArt(){return '<svg class="sk-worker" viewBox="0 0 60 60" aria-hidden="true"><ellipse cx="30" cy="52" rx="17" ry="4" fill="#183f3b" opacity=".16"/><path d="M12 49q1-18 18-18t18 18" fill="#17645a"/><rect x="19" y="17" width="22" height="22" rx="10" fill="#f3ce99"/><path d="M16 23q-2-16 14-16t14 16z" fill="#f4b84c"/><path d="M13 23h34" stroke="#cf9131" stroke-width="4" stroke-linecap="round"/><path d="M30 9v10" stroke="#ffe09a" stroke-width="4" stroke-linecap="round"/><circle cx="25" cy="28" r="1.6" fill="#284338"/><circle cx="35" cy="28" r="1.6" fill="#284338"/><path d="M27 33q3 2 6 0" fill="none" stroke="#9f6a41" stroke-width="1.4" stroke-linecap="round"/></svg>';}
 function renderSokoban(){
+  gamesRestoreFocusLayout();
   sokoEnsure();const s=sokoState,b=s.board,p=s.position,g=DB.sokoban.game,levels=sokoLevels(),index=levels.indexOf(s.level),won=sokoWon(b,p),best=DB.sokoban.completed[g.level];
   const delivered=p.boxes.filter(i=>b.goals.has(i)).length,boxes=new Set(p.boxes),hint=s.hint?sokoNeighbour(b,p.player,s.hint):-1;
   let tiles='';for(let i=0;i<b.width*b.height;i++){
