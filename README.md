@@ -7,6 +7,17 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
+## Python Week 46 — Classification
+
+Open **Course → Week 46** for six days with 36 teaching parts, 72 exercises,
+72 explained quiz questions, 108 executed examples/solutions and six embedded
+charts. Study logistic coefficients, confusion counts, precision/recall/F1,
+ROC/PR curves, thresholds, class imbalance and tree ensembles including CPU
+XGBoost. The [offline classification lab](docs/python-week46/README.md) separates
+training, validation selection and final reporting, with traceable JSON/CSV
+artifacts. Simulated cancellation outcomes are clearly identified; the observed
+failure to improve final decision cost is preserved and explained.
+
 ## Python Week 45 — Regression & prediction
 
 Open **Course → Week 45** for six days with 36 teaching parts, 72 exercises,
