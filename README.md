@@ -7,6 +7,18 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
+## Python Week 47 — Model evaluation, tuning & pipelines
+
+Open **Course → Week 47** for six days with 36 teaching parts, 72 exercises,
+72 explained quiz questions, 108 executed examples/solutions and six embedded
+charts. Study task-appropriate cross-validation, grid/random/TPE search, complete
+pipelines, actual SHAP explanations, learning curves and error diagnosis.
+The [offline evaluation and inference lab](docs/python-week47/README.md) evaluates
+the complete parameter-and-threshold procedure, exports a validated numeric model
+and verifies a local FastAPI service over real loopback HTTP. Simulation results
+and local serving are explicitly distinguished from real customer performance
+and public deployment. Existing course content and progress storage are preserved.
+
 ## Python Week 46 — Classification
 
 Open **Course → Week 46** for six days with 36 teaching parts, 72 exercises,
