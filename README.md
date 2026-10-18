@@ -7,6 +7,17 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
+## Python Week 48 — Unsupervised learning & deep learning intro
+
+Open **Course → Week 48** for six days, 36 parts, 72 exercises, 72 explained
+quiz questions, 108 executed examples/solutions and eight embedded charts.
+Study K-means, hierarchical clustering, DBSCAN, PCA, actual t-SNE/UMAP,
+calibrated anomaly screening, a gradient-checked NumPy network and CPU PyTorch.
+The [offline segmentation and neural lab](docs/python-week48/README.md) preserves
+fitting/development/audit boundaries, original-unit profiles, paired predictions
+and explicit evidence limits. The neural exercise includes a simple logistic
+baseline, validation-selected checkpoints and tested saved inference.
+
 ## Python Week 47 — Model evaluation, tuning & pipelines
 
 Open **Course → Week 47** for six days with 36 teaching parts, 72 exercises,

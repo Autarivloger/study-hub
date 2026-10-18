@@ -1,0 +1,14 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+numpy==2.3.5
+scipy==1.18.1
+pandas==3.0.1
+matplotlib==3.10.9
+scikit-learn==1.9.1
+joblib==1.6.0
+threadpoolctl==3.7.0
+narwhals==2.27.1
+torch==2.14.1+cpu
+umap-learn==0.5.12
+numba==0.68.0
+llvmlite==0.50.0
+pynndescent==0.6.0

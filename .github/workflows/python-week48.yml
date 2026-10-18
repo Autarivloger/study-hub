@@ -1,0 +1,46 @@
+name: Python Week 48 unsupervised and neural learning lab
+on:
+  push:
+    paths: ['docs/python-week48/**', '.github/workflows/python-week48.yml']
+  pull_request:
+    paths: ['docs/python-week48/**', '.github/workflows/python-week48.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: week48-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  offline-ml-lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python: ['3.12', '3.13']
+    defaults:
+      run:
+        working-directory: docs/python-week48
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      MPLBACKEND: Agg
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      NUMBA_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: docs/python-week48/requirements*.txt
+      - name: Install practice dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Verify offline data, split boundaries, predictions and artifacts
+        run: |
+          python -m pytest -q
+          python -m ruff check .
+          python -m ruff format --check .
+          python lab.py --output artifacts
