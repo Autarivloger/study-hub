@@ -60,7 +60,7 @@ async function main(){
     await sleep(100);
   }
   assert(await evalJs("window.__studyHubBooted"),"App did not boot: "+errors.join("; "));
-  assert(await evalJs("document.querySelectorAll('#tabnav [data-view]').length === 12"),"Navigation lost a tab");
+  assert(await evalJs("['games','course','lessons','journal','wisdom','liked','typing','japanese','reviews','timer','flashcards','todo','quiz'].every(view=>document.querySelectorAll('#tabnav [data-view='+view+']').length===1)"),"Navigation lost or duplicated a tab");
 
   await evalJs("document.querySelector('#sidebar [data-view=japanese]').click();document.querySelector('[data-jp-week=\"29\"]').click();document.querySelector('[data-jp-lesson=\"29.1\"]').click()");
   if(await evalJs("localStorage.getItem('studyHubJapaneseFurigana')!=='1'"))await evalJs("document.querySelector('[data-jp-furigana]').click()");

@@ -7,6 +7,16 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
+## Workspace design
+
+The offline interface uses a calm green palette, grouped navigation, a clear
+resume/progress dashboard, readable lesson typography and matching light/dark
+themes. Search and the theme switch stay in the header. The **three-dot Workspace
+tools** menu contains sync, export/import, device transfer and diagnostics.
+All styling and icons are embedded in the HTML; no fonts or UI libraries are
+downloaded. Editable presentation sources live in `scripts/premium-theme.css`
+and `scripts/premium-shell.js`. Curriculum and learner storage are unchanged.
+
 ## Python Week 50 — Concurrency & parallelism
 
 Open **Course → Week 50** for six days, 36 parts, 72 exercises, 72 explained
