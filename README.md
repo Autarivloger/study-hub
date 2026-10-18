@@ -7,6 +7,17 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
+## Python Week 50 — Concurrency & parallelism
+
+Open **Course → Week 50** for six days, 36 parts, 72 exercises, 72 explained
+quiz questions and 108 executed examples/solutions. Learn threads, locks, queues,
+spawn processes, futures, asyncio, bounded HTTP collection and cancellation.
+Five original diagrams and a measured collector timing chart are embedded offline.
+The [local concurrency lab](docs/python-week50/README.md) combines actual loopback
+HTTP requests with CPU workers, explicit errors, progress and bounded queues.
+Its measurements require equal complete results and retain startup/cleanup costs;
+observed speedups are workload-specific, and slower results remain in the report.
+
 ## Python Week 49 — Advanced Python: the language deeply
 
 Open **Course → Week 49** for six days, 36 parts, 72 exercises, 72 explained
