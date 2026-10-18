@@ -7,6 +7,17 @@ timer, and a Life Lessons journal.
 
 No build step. No dependencies. No server required.
 
+## Python Week 49 — Advanced Python: the language deeply
+
+Open **Course → Week 49** for six days, 36 parts, 72 exercises, 72 explained
+quiz questions and 108 executed examples/solutions. Study iteration protocols,
+lazy generators, context ownership, parameterized decorators, descriptors,
+class-creation hooks/metaclasses and Python memory behavior. Five original
+protocol diagrams and a measured one-million-object layout chart are embedded.
+The [standard-library streaming project](docs/python-week49/README.md) combines
+strict incremental CSV parsing, validated slotted records, preserved metadata,
+resource cleanup, per-file output replacement and reconstructable reports.
+
 ## Python Week 48 — Unsupervised learning & deep learning intro
 
 Open **Course → Week 48** for six days, 36 parts, 72 exercises, 72 explained
