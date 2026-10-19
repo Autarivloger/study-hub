@@ -38,6 +38,21 @@ the original 100/30 pairs remain unchanged. Per-pair timestamps merge edits acro
 the existing backup/sync system. Search, CSV downloads and future flashcard
 additions use the edited list; previously studied cards retain their own history.
 
+## Exercise log
+
+Open **To-Do → Exercise → Add exercise** to save your own exercise names and
+usual units/sets. Use **Log activity** or an exercise's **Log** button to record
+the date, amount per set, unit, sets and optional notes. Units include reps,
+seconds, minutes, rounds and total sets. Multiple activities can be recorded on
+the same day. Pencil menus edit or remove records; removed records can be restored.
+Monthly history follows the chosen date. Renaming/removing an exercise preserves
+the names and amounts already recorded in history.
+
+The additive `exerciseTracker` store participates in existing backup/import and
+Gist sync. Per-record timestamps merge changes; deletion records prevent stale
+backups from resurrecting removed entries. Habits and Tasks keep their own stores.
+The entire feature is embedded in the HTML and works offline.
+
 ## Cybersecurity — foundations to defensive Python
 
 Open **Cybersecurity → Week 9** for seven complete English lessons: a scoped
