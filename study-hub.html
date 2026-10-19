@@ -2007,7 +2007,7 @@ body:not(.games-focus) .learning-resume .btn{background:linear-gradient(145deg,#
   #view-japanese .jp-route-hero .btn{border:1px solid ButtonText;}
 }
 /* Compact paired-word lists. Lesson vocabulary keeps its existing cards. */
-#view-japanese .jp-meaning-pair{grid-template-columns:22px minmax(0,1fr) minmax(0,1fr);align-items:start;gap:3px 10px;padding:8px 10px;margin:7px 0;border-radius:10px;}
+#view-japanese .jp-meaning-pair{grid-template-columns:22px minmax(0,1fr) minmax(0,1fr) 28px;align-items:start;gap:3px 10px;padding:8px 10px;margin:7px 0;border-radius:10px;}
 #view-japanese .jp-pair-number{font-size:11px;font-variant-numeric:tabular-nums;color:var(--text-dim);line-height:40px;text-align:center;}
 #view-japanese .jp-meaning-pair .jp-pair-word{display:flex;align-items:flex-start;gap:4px;padding:0;background:transparent;border:0;border-radius:0;}
 #view-japanese .jp-pair-word .jp-study-reveal{flex:1;min-width:0;margin:0;}
@@ -2022,15 +2022,41 @@ body:not(.games-focus) .learning-resume .btn{background:linear-gradient(145deg,#
 #view-japanese .jp-pair-reading{color:var(--accent);font-size:12px;margin-bottom:3px;}
 #view-japanese .jp-pair-word .jp-hard-btn{flex-shrink:0;width:28px;min-height:40px;padding:3px;margin:0;font-size:17px;border-color:transparent;background:transparent;}
 #view-japanese .jp-pair-word .jp-hard-btn:hover,#view-japanese .jp-pair-word .jp-hard-btn.is-hard{background:var(--accent-soft);color:var(--accent);}
-#view-japanese .jp-meaning-pair>.jp-meaning-context{grid-column:2/-1;border:0;padding:0;margin:0;}
+#view-japanese .jp-meaning-pair>.jp-meaning-context{grid-column:2/-2;border:0;padding:0;margin:0;}
 #view-japanese .jp-meaning-pair>.jp-meaning-context>summary{font-size:10px;line-height:1.7;padding:2px 4px;font-weight:500;}
 #view-japanese .jp-meaning-pair>.jp-meaning-context>p{font-size:13px;line-height:1.85;margin:6px 4px;}
 @media(max-width:480px){
-  #view-japanese .jp-meaning-pair{grid-template-columns:18px minmax(0,1fr) minmax(0,1fr);gap:3px 5px;padding:7px 6px;}
+  #view-japanese .jp-meaning-pair{grid-template-columns:18px minmax(0,1fr) minmax(0,1fr) 28px;gap:3px 5px;padding:7px 6px;}
   #view-japanese .jp-pair-word .jp-study-reveal>summary{min-height:44px;padding:3px 2px;}
   #view-japanese .jp-pair-word .jp-study-reveal>summary b{font-size:17px;}
   #view-japanese .jp-pair-word .jp-hard-btn{width:26px;min-height:44px;}
   #view-japanese .jp-pair-number{line-height:44px;}
+}
+#view-japanese .jp-pair-edit{display:grid;place-items:center;width:28px;min-height:40px;padding:4px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--text-dim);cursor:pointer;}
+#view-japanese .jp-pair-edit svg{width:16px;height:16px;pointer-events:none;}
+#view-japanese .jp-pair-edit:hover,#view-japanese .jp-pair-edit:focus-visible{background:var(--accent-soft);color:var(--accent);outline:2px solid var(--accent);outline-offset:1px;}
+#view-japanese .jp-meaning-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:20px 0 14px;}
+#view-japanese .jp-meaning-heading h2{font-size:24px;line-height:1.4;margin:0;}
+#view-japanese .jp-meaning-tools{padding:15px 18px;margin:12px 0;}
+#view-japanese .jp-meaning-tools>label{font-size:12px;color:var(--text-dim);}
+#view-japanese #jpMeaningSearch{min-height:44px;padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:var(--bg-soft);color:var(--text);font:inherit;font-size:14px;}
+#view-japanese #jpMeaningSearch:focus{outline:2px solid var(--accent);outline-offset:1px;}
+#view-japanese .jp-meaning-tools .jp-actions{margin:8px 0 0;}
+#view-japanese .jp-csv-help{font-size:12px;min-width:0;}
+#view-japanese .jp-csv-help summary{color:var(--text-dim);padding:8px;}
+#view-japanese .jp-csv-help[open]{flex-basis:100%;}
+#view-japanese .jp-csv-help p{max-width:70ch;}
+#jpPairForm .jp-pair-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+#jpPairForm fieldset{min-width:0;margin:0 0 14px;padding:12px 14px 0;border:1px solid var(--border);border-radius:11px;}
+#jpPairForm legend{font-size:13px;font-weight:650;padding:0 5px;}
+#jpPairForm textarea{min-height:85px;width:100%;}
+#jpPairForm .jp-muted{font-size:12px;line-height:1.7;color:var(--text-dim);}
+#jpPairForm .jp-pair-error{font-size:13px;color:var(--danger);}
+@media(max-width:480px){
+  #view-japanese .jp-pair-edit{min-height:44px;}
+  #view-japanese .jp-meaning-heading h2{font-size:21px;}
+  #view-japanese .jp-meaning-heading>.btn{flex-shrink:0;}
+  #jpPairForm .jp-pair-form-grid{grid-template-columns:minmax(0,1fr);gap:0;}
 }
 /* JAPANESE STUDY DESIGN END */
 
@@ -5860,6 +5886,7 @@ function applyDefaults(d){
   d.japanese.quizScores = d.japanese.quizScores || {};
   d.japanese.notes = d.japanese.notes || {};
   d.japanese.checks = d.japanese.checks || {};
+  if(!d.japanese.meaningPairs || typeof d.japanese.meaningPairs!=="object" || Array.isArray(d.japanese.meaningPairs)) d.japanese.meaningPairs={};
   /* Additive store: existing completion maps stay untouched. Each review item
      owns its schedule and history, so course progress never pretends to be
      memory strength. */
@@ -5946,6 +5973,17 @@ function mergeIntoDB(incoming){
         if(theirs && typeof theirs === "object" && (!mine || (theirs.at || "") > (mine.at || ""))) DB.japanese.checks[k]=theirs;
       }else if(DB.japanese[key][k] === undefined) DB.japanese[key][k] = incoming.japanese[key][k];
     });
+  });
+
+  // Pair edits/additions share the existing backup and sync payload. Newer edits
+  // win per pair; a deterministic tie-breaker makes simultaneous edits converge.
+  Object.entries(incoming.japanese.meaningPairs).forEach(function([key,theirs]){
+    if(!jpMeaningPairValid(key,theirs))return;
+    const mine=DB.japanese.meaningPairs[key];
+    if(!jpMeaningPairValid(key,mine) || Date.parse(theirs.updatedAt)>Date.parse(mine.updatedAt) ||
+       (Date.parse(theirs.updatedAt)===Date.parse(mine.updatedAt) && JSON.stringify(theirs.pair)>JSON.stringify(mine.pair))){
+      DB.japanese.meaningPairs[key]=theirs;
+    }
   });
 
   /* Review sync is conflict-safe. The most recently changed schedule wins,
@@ -7790,14 +7828,14 @@ function jpHardItems(){
     return k.startsWith("hard:") && v && v.hard;
   }).map(function(k){ return DB.japanese.checks[k]; });
 }
-function jpStudyItemHtml(type, item, compact){
+function jpStudyItemHtml(type, item, compact, showMeaning){
   if(type==='k') item=[item[0],jpKanjiReadingWithOnKun(item[0],item[1]),item[2]];
   const word=item[0], saved=DB.japanese.checks[jpHardKey(type,word)];
   const marked=!!(saved && saved.hard);
   const wordHtml=jpFuriganaOn && type==='v' ? '<ruby>' + escapeHtml(word) + '<rt>' + escapeHtml(item[1]) + '</rt></ruby>' : escapeHtml(word);
   const kanjiReading=jpFuriganaOn && type==='k' ? '<small class="jp-kanji-readings">' + escapeHtml(item[1]) + '</small>' : '';
   const content=compact
-    ? '<details class="jp-study-reveal"><summary title="Show or hide reading and meaning" aria-label="'+escapeAttr(word+': show or hide reading and meaning')+'"><b lang="ja">'+wordHtml+'</b></summary><small><span class="jp-pair-reading" lang="ja">'+escapeHtml(item[1])+'</span><span class="jp-pair-meaning">'+escapeHtml(item[2])+'</span></small></details>'
+    ? '<details class="jp-study-reveal"'+(showMeaning?' open':'')+'><summary title="Show or hide reading and meaning" aria-label="'+escapeAttr(word+': show or hide reading and meaning')+'"><b lang="ja">'+wordHtml+'</b></summary><small><span class="jp-pair-reading" lang="ja">'+escapeHtml(item[1])+'</span><span class="jp-pair-meaning">'+escapeHtml(item[2])+'</span></small></details>'
     : '<b lang="ja">' + wordHtml + '</b>' + kanjiReading +
       '<details class="jp-study-reveal"><summary>' + (type==='k' ? 'Show On/Kun &amp; meaning' : 'Show reading &amp; meaning') + '</summary><small>' + escapeHtml(item[1]) + ' · ' + escapeHtml(item[2]) + '</small></details>';
   return '<div class="jp-study-item'+(compact?' jp-pair-word':'')+'">'+content+
@@ -7887,8 +7925,48 @@ function jpFuriganaHtml(value,lesson){
 }
 const JP_MEANING_DATA = {"opposites":[["大きい","おおきい","big · ठूलो","小さい","ちいさい","small · सानो","Size: 大きい家／小さい家。"],["長い","ながい","long · लामो","短い","みじかい","short · छोटो","Length or duration。"],["高い","たかい","high/tall · अग्लो","低い","ひくい","low · होचो","Height: 高い山／低い山。"],["高い","たかい","expensive · महँगो","安い","やすい","cheap · सस्तो","Price: 高い服／安い服。 Height को opposite 低い हो।"],["暑い","あつい","hot weather · गर्मी","寒い","さむい","cold weather · जाडो","Weather/air temperature; object तापमा 熱い／冷たい。"],["熱い","あつい","hot to touch · तातो","冷たい","つめたい","cold to touch · चिसो","熱いお茶／冷たいお茶。"],["暖かい","あたたかい","warm weather · न्यानो","涼しい","すずしい","cool weather · शीतल","Comfortable air/weather temperatures。"],["厚い","あつい","thick · बाक्लो","薄い","うすい","thin · पातलो","Thickness: 厚い本／薄い本。"],["重い","おもい","heavy · गह्रौँ","軽い","かるい","light · हल्का","Weight or burden。"],["強い","つよい","strong · बलियो","弱い","よわい","weak · कमजोर","Strength: 強い風／弱い風。"],["広い","ひろい","spacious · फराकिलो","狭い","せまい","narrow · साँघुरो","Area/space。"],["深い","ふかい","deep · गहिरो","浅い","あさい","shallow · उथलो","Depth: 深い川／浅い川。"],["明るい","あかるい","bright · उज्यालो","暗い","くらい","dark · अँध्यारो","Light; also personality depending on context。"],["新しい","あたらしい","new · नयाँ","古い","ふるい","old · पुरानो","Objects/information, not people's age。"],["若い","わかい","young · जवान","年を取った","としをとった","older/aged · उमेर पुगेको","People's age; polite descriptions depend on situation。"],["近い","ちかい","near · नजिक","遠い","とおい","far · टाढा","Distance。"],["早い","はやい","early · चाँडो","遅い","おそい","late · ढिलो","Time: 早い時間／遅い時間。"],["速い","はやい","fast · छिटो","遅い","おそい","slow · सुस्त","Speed: 速い車／遅い車。 早い refers to early timing。"],["多い","おおい","many · धेरै","少ない","すくない","few · थोरै","人が多い／人が少ない; not 多い人 for many people。"],["良い","よい","good · राम्रो","悪い","わるい","bad · नराम्रो","良い also often read いい。"],["難しい","むずかしい","difficult · कठिन","易しい","やさしい","easy · सजिलो","易しい easy; 優しい same reading means kind。"],["忙しい","いそがしい","busy · व्यस्त","暇","ひま","free time · फुर्सद","忙しいです／暇です; adjective types differ。"],["静か","しずか","quiet · शान्त","騒がしい","さわがしい","noisy · हल्लामय","静かな場所／騒がしい場所。"],["きれい","きれい","clean · सफा","汚い","きたない","dirty · फोहोर","Cleanliness sense; きれい can also mean beautiful。"],["好き","すき","like · मन पर्ने","嫌い","きらい","dislike · मन नपर्ने","日本語が好きです; use が for preference target。"],["上手","じょうず","skillful · सिपालु","下手","へた","unskillful · कम सिपालु","Performance, not moral worth。"],["便利","べんり","convenient · सुविधाजनक","不便","ふべん","inconvenient · असुविधाजनक","便利な道具／不便な場所。"],["安全","あんぜん","safe · सुरक्षित","危険","きけん","dangerous · खतरनाक","安全な場所／危険な場所。"],["丈夫","じょうぶ","sturdy · टिकाउ","弱い","よわい","fragile/weak · कमजोर","Construction/durability context。"],["健康","けんこう","healthy · स्वस्थ","不健康","ふけんこう","unhealthy · अस्वस्थ","健康な生活／不健康な生活。"],["甘い","あまい","sweet · गुलियो","苦い","にがい","bitter · तीतो","Taste contrast; 甘い also lenient in other contexts。"],["柔らかい","やわらかい","soft · नरम","硬い","かたい","hard · कडा","Material texture。"],["賢い","かしこい","wise · बुद्धिमान","愚か","おろか","foolish · मूर्खतापूर्ण","Describe judgments carefully; personal labels can sound harsh。"],["正しい","ただしい","correct · सही","間違った","まちがった","wrong · गलत","正しい答え／間違った答え。"],["美しい","うつくしい","beautiful · सुन्दर","醜い","みにくい","ugly · कुरूप","Appearance description; insulting toward people。"],["豊か","ゆたか","rich/abundant · सम्पन्न","貧しい","まずしい","poor · गरिब","Resources/living conditions。"],["上品","じょうひん","refined · सभ्य/सुशोभित","下品","げひん","vulgar · असभ्य","Manners/style; evaluate situation, not identity。"],["自由","じゆう","free · स्वतन्त्र","不自由","ふじゆう","restricted · अस्वतन्त्र","Choice/movement; context matters。"],["丁寧","ていねい","careful/polite · विनम्र/सावधान","乱暴","らんぼう","rough · रुखो","Manner of handling or speaking。"],["親切","しんせつ","kind/helpful · सहयोगी","不親切","ふしんせつ","unhelpful · असहयोगी","Behavior toward someone。"],["上","うえ","above · माथि","下","した","below · तल","Spatial positions。"],["左","ひだり","left · बायाँ","右","みぎ","right · दायाँ","Directions。"],["前","まえ","front/before · अगाडि","後ろ","うしろ","behind · पछाडि","Spatial front/back; time before/after often 前／後。"],["中","なか","inside · भित्र","外","そと","outside · बाहिर","Spatial location。"],["北","きた","north · उत्तर","南","みなみ","south · दक्षिण","Compass directions。"],["東","ひがし","east · पूर्व","西","にし","west · पश्चिम","Compass directions。"],["朝","あさ","morning · बिहान","夕方","ゆうがた","evening · साँझ","Contrasting parts of day, not logical negations。"],["昼","ひる","daytime · दिन","夜","よる","night · रात","Day/night contrast。"],["昨日","きのう","yesterday · हिजो","明日","あした","tomorrow · भोलि","Past/future relative to today。"],["過去","かこ","past · विगत","未来","みらい","future · भविष्य","Timeline contrast。"],["以前","いぜん","before/formerly · पहिले","以後","いご","afterward · त्यसपछि","以前/以後 can include the reference point; context decides。"],["最初","さいしょ","first · पहिलो","最後","さいご","last · अन्तिम","Order。"],["始まり","はじまり","beginning · सुरुवात","終わり","おわり","end · अन्त्य","Stages of an event。"],["入り口","いりぐち","entrance · प्रवेशद्वार","出口","でぐち","exit · बाहिरिने द्वार","Also written 入口。"],["出発","しゅっぱつ","departure · प्रस्थान","到着","とうちゃく","arrival · आगमन","Travel stages。"],["開始","かいし","start · सुरुवात","終了","しゅうりょう","finish · समाप्ति","Formal event/operation terms。"],["成功","せいこう","success · सफलता","失敗","しっぱい","failure · असफलता","Outcome。"],["勝利","しょうり","victory · विजय","敗北","はいぼく","defeat · पराजय","Competition outcome。"],["賛成","さんせい","agreement · समर्थन","反対","はんたい","opposition · विरोध","案に賛成／案に反対。"],["許可","きょか","permission · अनुमति","禁止","きんし","prohibition · निषेध","Not permitted does not always mean a stated prohibition; read rules。"],["増加","ぞうか","increase · वृद्धि","減少","げんしょう","decrease · कमी","Quantity changes。"],["拡大","かくだい","expansion · विस्तार","縮小","しゅくしょう","reduction · संकुचन","Scale/size changes。"],["上昇","じょうしょう","rise · उकालो","下降","かこう","fall · ओरालो","Movement or trends。"],["生","せい","life · जीवन","死","し","death · मृत्यु","Abstract life/death, 生 has other readings in compounds。"],["出席","しゅっせき","attendance · उपस्थिति","欠席","けっせき","absence · अनुपस्थिति","Event/class attendance。"],["可能","かのう","possible · सम्भव","不可能","ふかのう","impossible · असम्भव","Feasibility。"],["必要","ひつよう","necessary · आवश्यक","不要","ふよう","unnecessary · अनावश्यक","What is required; scope matters。"],["有料","ゆうりょう","paid · शुल्क लाग्ने","無料","むりょう","free of charge · निःशुल्क","Fee, not reservation requirement。"],["有効","ゆうこう","valid/effective · मान्य/प्रभावकारी","無効","むこう","invalid · अमान्य","Validity/effectiveness。"],["利益","りえき","profit/benefit · लाभ","損失","そんしつ","loss · घाटा","Business/outcome contrast。"],["長所","ちょうしょ","strength · राम्रो पक्ष","短所","たんしょ","weakness · कमजोर पक्ष","Characteristics, not length。"],["貸す","かす","lend · उधारो दिनु","借りる","かりる","borrow · उधारो लिनु","Same transaction from opposite viewpoints; not strict negations。"],["売る","うる","sell · बेच्नु","買う","かう","buy · किन्नु","Opposite roles in a transaction。"],["教える","おしえる","teach · सिकाउनु","習う","ならう","learn from someone · सिक्नु","Teacher/learner direction; 学ぶ is broader learning。"],["与える","あたえる","give · दिनु","受け取る","うけとる","receive · प्राप्त गर्नु","Giving/receiving direction。"],["送信","そうしん","sending · पठाउनु","受信","じゅしん","receiving · प्राप्त गर्नु","Messages/signals。"],["開ける","あける","open something · खोल्नु","閉める","しめる","close something · बन्द गर्नु","Transitive: ドアを開ける／閉める。"],["開く","あく","open · खुल्नु","閉まる","しまる","close · बन्द हुनु","Intransitive: ドアが開く／閉まる。"],["入る","はいる","enter · पस्नु","出る","でる","leave · निस्कनु","Place movement。"],["立つ","たつ","stand · उभिनु","座る","すわる","sit · बस्नु","Posture contrast。"],["起きる","おきる","wake/get up · उठ्नु","寝る","ねる","go to bed · सुत्नु","Daily routine contrast; 起きる can also mean happen。"],["進む","すすむ","advance · अघि बढ्नु","戻る","もどる","return/go back · फर्कनु","Direction; 戻る implies going back。"],["上がる","あがる","go up · माथि जानु","下がる","さがる","go down · तल जानु","Height, values, position。"],["押す","おす","push · धकेल्नु","引く","ひく","pull · तान्नु","Door instructions。"],["つける","つける","turn on · बाल्नु","消す","けす","turn off · निभाउनु","Light/appliance: 電気をつける／消す。"],["増やす","ふやす","increase something · बढाउनु","減らす","へらす","decrease something · घटाउनु","Transitive: 人数を増やす／減らす。"],["笑う","わらう","laugh · हाँस्नु","泣く","なく","cry · रुनु","Contrasting reactions; can coexist in real emotions。"],["喜ぶ","よろこぶ","be pleased · खुशी हुनु","悲しむ","かなしむ","grieve · दुःखी हुनु","Emotional contrast。"],["覚える","おぼえる","remember/learn · सम्झनु","忘れる","わすれる","forget · बिर्सनु","Memory。"],["肯定","こうてい","affirmation · स्वीकार","否定","ひてい","negation · अस्वीकार","Statements/judgments。"],["攻撃","こうげき","attack · आक्रमण","防御","ぼうぎょ","defense · रक्षा","Contrasting roles/actions。"],["集合","しゅうごう","gather · भेला","解散","かいさん","disperse · छुट्टिनु","Event stages。"],["加入","かにゅう","join · सदस्य बन्नु","脱退","だったい","withdraw · सदस्यता छाड्नु","Group membership。"],["合格","ごうかく","pass · उत्तीर्ण","不合格","ふごうかく","fail · अनुत्तीर्ण","Exam/selection result。"],["合法","ごうほう","lawful · कानुनी","違法","いほう","unlawful · गैरकानुनी","Vocabulary contrast; actual legality depends on applicable rules。"],["公的","こうてき","public/official · सार्वजनिक","私的","してき","private/personal · निजी","Domain/purpose。"],["普通","ふつう","ordinary · सामान्य","特別","とくべつ","special · विशेष","Status/context。"],["満足","まんぞく","satisfaction · सन्तुष्टि","不満","ふまん","dissatisfaction · असन्तुष्टि","Feelings about a result。"],["積極的","せっきょくてき","active/proactive · सक्रिय","消極的","しょうきょくてき","passive/reluctant · निष्क्रिय","Attitude toward action。"],["楽観的","らっかんてき","optimistic · आशावादी","悲観的","ひかんてき","pessimistic · निराशावादी","Expectation/outlook。"]],"synonyms":[["易しい","やさしい","easy · सजिलो","簡単","かんたん","simple/easy · सरल","易しい問題／簡単な問題; adjective grammar differs。"],["難しい","むずかしい","difficult · कठिन","困難","こんなん","difficult/hardship · कठिनाइ","難しい仕事／困難な仕事; 困難 sounds more formal。"],["嬉しい","うれしい","happy/glad · खुशी","喜ばしい","よろこばしい","pleasing · खुशी लाग्ने","喜ばしい news is pleasing; not always your personal feeling。"],["楽しい","たのしい","enjoyable · रमाइलो","愉快","ゆかい","pleasant/amusing · रमाइलो","楽しい時間／愉快な話; grammar and nuance differ。"],["きれい","きれい","beautiful · सुन्दर","美しい","うつくしい","beautiful · सुन्दर","Appearance context. きれい also clean; 美しい does not replace clean in every sentence。"],["汚い","きたない","dirty · फोहोर","不潔","ふけつ","unclean/unhygienic · अस्वच्छ","不潔 focuses on hygiene; 汚い has broader senses。"],["怖い","こわい","scary · डर लाग्दो","恐ろしい","おそろしい","terrifying · भयङ्कर","恐ろしい can be stronger and more literary。"],["大切","たいせつ","important/precious · महत्त्वपूर्ण","重要","じゅうよう","important · महत्त्वपूर्ण","大切 also emotionally precious; 重要 stresses significance。"],["必要","ひつよう","necessary · आवश्यक","要る","いる","need · चाहिनु","必要です versus お金が要ります; adjective/noun and verb differ。"],["十分","じゅうぶん","enough · पर्याप्त","足りる","たりる","be sufficient · पुग्नु","十分です／足ります; verb structure differs。 Not 十分（じゅっぷん）ten minutes。"],["すぐ","すぐ","soon/right away · तुरुन्त","直ちに","ただちに","immediately · तत्काल","直ちに is formal and stresses immediate action。"],["たくさん","たくさん","a lot · धेरै","多く","おおく","many/much · धेरै","たくさんの人／多くの人; sentence grammar matters。"],["少し","すこし","a little · अलिकति","ちょっと","ちょっと","a little · अलिकति","ちょっと also softens refusals; not always literal small amount。"],["だいたい","だいたい","roughly · लगभग","およそ","およそ","approximately · लगभग","Approximation of numbers; だいたい also generally/mostly。"],["とても","とても","very · धेरै","非常に","ひじょうに","very/extremely · अत्यन्त","非常に is more formal; negative とてもできない means cannot possibly。"],["いつも","いつも","always/usually · सधैँ","常に","つねに","constantly/always · सधैँ","常に sounds formal/continuous; いつも often habitual。"],["たぶん","たぶん","probably · सायद","おそらく","おそらく","probably · सम्भवतः","Both express likelihood; おそらく is more formal。"],["しかし","しかし","however · तर","でも","でも","but · तर","Connect sentences; でも is conversational and has other grammatical uses。"],["なぜ","なぜ","why · किन","どうして","どうして","why · किन","どうして conversational; can also ask how something happened。"],["方法","ほうほう","method · तरिका","やり方","やりかた","way of doing · गर्ने तरिका","方法 is neutral/formal; やり方 common in conversation。"],["理由","りゆう","reason · कारण","わけ","わけ","reason/circumstance · कारण","Reason sense only; わけ has separate grammar constructions。"],["返事","へんじ","reply · जवाफ","返信","へんしん","reply message · जवाफी सन्देश","返信 typically written/digital; 返事 includes spoken answers。"],["質問","しつもん","question · प्रश्न","問い","とい","question/inquiry · प्रश्न","問い often literary, analytical or test wording。"],["手伝う","てつだう","help with work · सघाउनु","助ける","たすける","help/save · मद्दत/बचाउनु","手伝う assists a task; 助ける includes rescue, not interchangeable everywhere。"],["直す","なおす","fix · सच्याउनु","修正する","しゅうせいする","revise/correct · सुधार्नु","Writing/error context; machine repair is often 修理する。"],["見る","みる","look/see · हेर्नु","眺める","ながめる","gaze at · नियाल्नु","眺める leisurely gaze; 見る much broader, including checking/watching。"],["話す","はなす","speak/talk · बोल्नु","しゃべる","しゃべる","chat/talk · गफ गर्नु","しゃべる is casual; not best for every formal context。"],["始める","はじめる","begin something · सुरु गर्नु","開始する","かいしする","commence · प्रारम्भ गर्नु","活動を始める／開始する; 開始する is formal。"],["終える","おえる","finish something · सक्नु","終了する","しゅうりょうする","finish/terminate · समाप्त गर्नु","作業を終える／終了する; 終える takes an object。"],["知らせる","しらせる","inform · खबर दिनु","通知する","つうちする","notify · सूचना दिनु","通知する formal notices; 知らせる everyday informing。"]]};
 const JP_MEANING_STATE={tab:'home',query:'',deckId:''};
+function jpMeaningPairValid(key,item){
+  if(typeof key!=='string' || !/^(opposites|synonyms):(b:(0|[1-9][0-9]{0,3})|u:[a-zA-Z0-9_-]{1,100})$/.test(key))return false;
+  const parts=key.split(':');
+  return !!item && item.type===parts[0] && (parts[1]==='b' ? item.baseIndex===Number(parts[2]) : item.baseIndex===null) &&
+    typeof item.updatedAt==='string' && item.updatedAt.length<=40 && Number.isFinite(Date.parse(item.updatedAt)) &&
+    Array.isArray(item.pair) && item.pair.length===7 && item.pair.every(function(value,i){
+      return typeof value==='string' && value.length<=[200,200,1000,200,200,1000,2000][i] &&
+        (i===6 || value.trim().length>0) && !/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(value);
+    });
+}
+function jpMeaningPairs(type){
+  const saved=DB.japanese.meaningPairs,base=JP_MEANING_DATA[type]||[];
+  const pairs=base.map(function(pair,index){
+    const key=type+':b:'+index,edit=saved[key];
+    return {key:key,type:type,baseIndex:index,pair:jpMeaningPairValid(key,edit)?edit.pair:pair};
+  });
+  Object.entries(saved).filter(function([key,item]){return key.startsWith(type+':u:')&&jpMeaningPairValid(key,item);})
+    .sort(function(a,b){return a[0].localeCompare(b[0]);}).forEach(function([key,item]){
+      pairs.push({key:key,type:type,baseIndex:null,pair:item.pair});
+    });
+  return pairs;
+}
+function jpMeaningEdit(type,key){
+  if(!['opposites','synonyms'].includes(type))return;
+  const existing=key?jpMeaningPairs(type).find(function(item){return item.key===key;}):null;
+  if(key&&!existing){toast('That pair is not available.');return;}
+  const pair=existing?existing.pair:['','','','','','',''],label=type==='opposites'?'opposite':'near-synonym';
+  const field=function(i,title,max){return '<div class="form-row"><label for="mpField'+i+'">'+title+'</label><input type="text" id="mpField'+i+'" required maxlength="'+max+'" value="'+escapeAttr(pair[i])+'"></div>';};
+  openModal('<h2>'+(existing?'Edit ':'Add ')+label+' pair</h2><form id="jpPairForm"><div class="jp-pair-form-grid"><fieldset><legend>First word</legend>'+field(0,'Japanese word',200)+field(1,'Reading (Hiragana / Kana)',200)+field(2,'Meaning (Nepali / English)',1000)+'</fieldset><fieldset><legend>'+(type==='opposites'?'Opposite word':'Near synonym')+'</legend>'+field(3,'Japanese word',200)+field(4,'Reading (Hiragana / Kana)',200)+field(5,'Meaning (Nepali / English)',1000)+'</fieldset></div><div class="form-row"><label for="mpField6">Usage / difference (optional)</label><textarea id="mpField6" maxlength="2000">'+escapeHtml(pair[6])+'</textarea></div><p class="jp-muted">Saved to your Meaning Folder and included in backup/sync. Existing flashcards keep their study history.</p><p class="jp-pair-error" id="jpPairError" role="alert"></p><div class="modal-actions"><button type="button" class="btn secondary" id="jpPairCancel">Cancel</button><button type="submit" class="btn">Save pair</button></div></form>',true);
+  document.getElementById('jpPairCancel').onclick=closeModal;
+  document.getElementById('jpPairForm').onsubmit=function(event){
+    event.preventDefault();
+    const values=Array.from({length:7},function(_,i){return document.getElementById('mpField'+i).value.trim();});
+    const id=existing?existing.key:type+':u:'+uid(),record={type:type,baseIndex:existing?existing.baseIndex:null,pair:values,updatedAt:nowISO()};
+    if(!jpMeaningPairValid(id,record)){document.getElementById('jpPairError').textContent='Enter both words, readings and meanings within the field limits.';return;}
+    DB.japanese.meaningPairs[id]=record;
+    save();closeModal();JP_MEANING_STATE.tab=type;JP_MEANING_STATE.query='';renderJapanese();toast(existing?'Pair updated.':'Pair added.');
+  };
+  document.getElementById('mpField0').focus();
+}
 function jpMeaningCards(type){
-  return JP_MEANING_DATA[type].map(function(p){return {front:p[0],back:p[1]+' · '+p[2]+'\n'+(type==='opposites'?'Opposite: ':'Near synonym: ')+p[3]+'（'+p[4]+'） · '+p[5]+'\nUsage: '+p[6]};});
+  return jpMeaningPairs(type).map(function(item){const p=item.pair;return {front:p[0],back:p[1]+' · '+p[2]+'\n'+(type==='opposites'?'Opposite: ':'Near synonym: ')+p[3]+'（'+p[4]+'） · '+p[5]+'\nUsage: '+p[6]};});
 }
 function jpMeaningCsv(cards){
   const field=function(x){return '"'+String(x).replace(/"/g,'""')+'"';};
@@ -7908,7 +7986,8 @@ function jpMeaningImport(){
   }});
 }
 function jpMeaningAddCards(type){
-  const result=importFlashcardRows('Japanese · Meanings · '+(type==='opposites'?'100 Opposites':'30 Near Synonyms'),jpMeaningCards(type));
+  const existing=DB.decks.find(function(d){return d.jpMeaningFolder===type;});
+  const result=importFlashcardRows(existing?existing.name:'Japanese · Meanings · '+(type==='opposites'?'Opposites':'Near Synonyms'),jpMeaningCards(type));
   const deck=DB.decks.find(function(d){return d.id===result.deckId;});if(deck){deck.jpMeaningFolder=type;save();}
   toast(result.added+' cards added'+(result.skipped?' · '+result.skipped+' already saved':''));
 }
@@ -7917,26 +7996,28 @@ function jpMeaningListHtml(){
   if(state.tab==='uploads'){
     const decks=DB.decks.filter(function(d){return d.jpMeaningFolder==='uploaded'&&DB.cards.some(function(c){return c.deckId===d.id;});});
     const chosen=decks.find(function(d){return d.id===state.deckId;});
-    let html='<div class="jp-grid">'+decks.map(function(d){const count=DB.cards.filter(function(c){return c.deckId===d.id;}).length;return '<button type="button" class="jp-week-card" data-jp-meaning-deck="'+escapeHtml(d.id)+'"><strong>'+escapeHtml(d.name)+'</strong><small>'+count+' words</small></button>';}).join('')+'</div>';
     if(!decks.length)return '<div class="jp-panel"><p>No uploaded words yet. Use Upload CSV to add your own list. Files are read on this device; saved words are included in your existing backup and configured sync.</p></div>';
-    if(!chosen)return html+'<div class="jp-panel"><p>Choose an uploaded folder above.</p></div>';
+    if(!chosen)return '<div class="jp-grid">'+decks.map(function(d){const count=DB.cards.filter(function(c){return c.deckId===d.id;}).length;return '<button type="button" class="jp-week-card" data-jp-meaning-deck="'+escapeAttr(d.id)+'"><strong>'+escapeHtml(d.name)+'</strong><small>'+count+' words</small></button>';}).join('')+'</div><div class="jp-panel"><p>Choose an uploaded folder above.</p></div>';
     const cards=DB.cards.filter(function(c){return c.deckId===chosen.id&&(c.front+' '+c.back).toLocaleLowerCase().includes(query);});
-    html+='<div class="jp-actions"><button class="btn secondary" type="button" data-jp-meaning-study="'+escapeHtml(chosen.id)+'">Study flashcards</button><button class="btn secondary" type="button" data-jp-meaning-manage="'+escapeHtml(chosen.id)+'">Manage words</button></div><p>'+cards.length+' words shown</p>';
-    return html+cards.map(function(c){return '<article class="jp-panel jp-meaning-upload"><b lang="ja">'+escapeHtml(c.front)+'</b><details><summary>Show reading &amp; meaning</summary><p class="jp-meaning-back">'+escapeHtml(c.back)+'</p></details></article>';}).join('');
+    let html='<div class="jp-actions"><button class="btn secondary" type="button" data-jp-meaning-study="'+escapeAttr(chosen.id)+'">Study flashcards</button><button class="btn secondary" type="button" data-jp-meaning-manage="'+escapeAttr(chosen.id)+'">Manage / edit words</button></div><p>'+cards.length+' words shown</p>';
+    return html+cards.map(function(c){return '<article class="jp-panel jp-meaning-upload"><b lang="ja">'+escapeHtml(c.front)+'</b><details open><summary>Reading &amp; meaning</summary><p class="jp-meaning-back">'+escapeHtml(c.back)+'</p></details></article>';}).join('');
   }
-  const pairs=JP_MEANING_DATA[state.tab]||[];
-  const filtered=pairs.map(function(p,i){return {p:p,index:i+1};}).filter(function(x){return x.p.join(' ').toLocaleLowerCase().includes(query);});
-  return '<p role="status">'+filtered.length+' / '+pairs.length+' pairs</p>'+filtered.map(function(x){const p=x.p;return '<article class="jp-panel jp-meaning-pair" aria-label="Pair '+x.index+'"><span class="jp-pair-number">'+x.index+'</span>'+jpStudyItemHtml('v',p.slice(0,3),true)+jpStudyItemHtml('v',p.slice(3,6),true)+'<details class="jp-meaning-context"><summary>Usage and difference</summary><p>'+escapeHtml(p[6])+'</p></details></article>';}).join('')+(filtered.length?'':'<div class="jp-panel"><p>No matches. Search Kanji, Hiragana, English or Nepali.</p></div>');
+  const pairs=jpMeaningPairs(state.tab);
+  const filtered=pairs.map(function(item,i){return {item:item,p:item.pair,index:i+1};}).filter(function(x){return x.p.join(' ').toLocaleLowerCase().includes(query);});
+  return '<p role="status">'+filtered.length+' / '+pairs.length+' pairs</p>'+filtered.map(function(x){const p=x.p;return '<article class="jp-panel jp-meaning-pair" aria-label="Pair '+x.index+'"><span class="jp-pair-number">'+x.index+'</span>'+jpStudyItemHtml('v',p.slice(0,3),true,true)+jpStudyItemHtml('v',p.slice(3,6),true,true)+'<button type="button" class="jp-pair-edit" data-jp-pair-edit="'+escapeAttr(x.item.key)+'" aria-label="Edit pair '+x.index+'" title="Edit pair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 5 5M4 20l4-1L21 6a2.1 2.1 0 0 0-3-3L5 16l-1 4Z"/></svg></button><details class="jp-meaning-context"><summary>Usage and difference</summary><p>'+escapeHtml(p[6])+'</p></details></article>';}).join('')+(filtered.length?'':'<div class="jp-panel"><p>No matches. Search Kanji, Hiragana, English or Nepali.</p></div>');
 }
 function jpRenderMeanings(){
-  const state=JP_MEANING_STATE;
-  let html='<div class="jp-actions"><button class="btn secondary" type="button" data-jp-home="1">← Japanese home</button><button class="btn secondary" type="button" data-jp-meanings="home">Meaning Folder</button><button class="btn secondary" type="button" data-jp-furigana="1" aria-pressed="'+jpFuriganaOn+'">あ Furigana '+(jpFuriganaOn?'ON':'OFF')+'</button></div><div class="jp-hero"><h2>Meaning Folder</h2><p>पहिले Japanese word पढेर paired word सम्झ। Reading र meaning reveal गरेर जाँच। Opposite words मा contrast को context र synonyms मा फरक प्रयोग ध्यान देऊ।</p></div>';
-  html+='<div class="jp-grid"><button class="jp-week-card" type="button" data-jp-meanings="opposites"><strong>100 Opposite pairs</strong><small>反対語 · everyday contrasts and opposing roles</small></button><button class="jp-week-card" type="button" data-jp-meanings="synonyms"><strong>30 Near-synonym pairs</strong><small>類義語 · similar meanings with usage notes</small></button><button class="jp-week-card" type="button" data-jp-meanings="uploads"><strong>CSV Uploads</strong><small>Your own meaning folders</small></button></div>';
-  if(state.tab==='home')return html+'<div class="jp-panel"><h3>How to study</h3><p>दिनमा 10 pairs: Japanese पढ, अर्थ र अर्को word भन, अनि एउटा sentence बनाऊ। ☆ Hard ले गाह्रो word existing review folder मा राख्छ। Synonyms हरेक sentence मा interchangeable हुँदैनन्।</p><button class="btn secondary" type="button" data-jp-meaning-import="1">Upload CSV</button></div>';
-  const title=state.tab==='opposites'?'100 Opposite pairs':state.tab==='synonyms'?'30 Near-synonym pairs':'CSV Uploads';
-  html+='<h2 class="jp-section-title">'+title+'</h2><div class="jp-panel"><label for="jpMeaningSearch">Search words, readings or meanings</label><input id="jpMeaningSearch" type="search" value="'+escapeHtml(state.query)+'" placeholder="例: 高い / たかい / expensive / महँगो"><div class="jp-actions">';
-  if(state.tab!=='uploads')html+='<button class="btn secondary" type="button" data-jp-meaning-add="'+state.tab+'">Add pairs to Flashcards</button><button class="btn secondary" type="button" data-jp-meaning-download="'+state.tab+'">Download this list as CSV</button>';
-  html+='<button class="btn secondary" type="button" data-jp-meaning-import="1">Upload CSV</button><button class="btn secondary" type="button" data-jp-meaning-download="template">Download CSV template</button></div><p class="jp-muted">CSV: front, back. Put Japanese on the front; Hiragana, meaning and opposite/synonym on the back. UTF-8 CSV/TSV, maximum 5 MB. Preview before import. Saved lists also appear in Flashcards.</p></div><div id="jpMeaningResults">'+jpMeaningListHtml()+'</div>';
+  const state=JP_MEANING_STATE,home=state.tab==='home',uploads=state.tab==='uploads';
+  const selected=uploads&&DB.decks.find(function(d){return d.id===state.deckId&&d.jpMeaningFolder==='uploaded'&&DB.cards.some(function(c){return c.deckId===d.id;});});
+  let html='<div class="jp-actions"><button class="btn secondary" type="button" '+(home?'data-jp-home="1"':'data-jp-meanings="'+(selected?'uploads':'home')+'"')+'>'+(home?'← Japanese home':selected?'← CSV folders':'← Back to Meaning Folder')+'</button><button class="btn secondary" type="button" data-jp-furigana="1" aria-pressed="'+jpFuriganaOn+'">あ Furigana '+(jpFuriganaOn?'ON':'OFF')+'</button></div>';
+  if(home){
+    return html+'<div class="jp-hero"><h2>Meaning Folder</h2><p>Folder खोल्दा सबै शब्द र अर्थ देखिन्छन्। आफैँ सम्झन चाहँदा शब्दमा click गरेर meaning लुकाउन/देखाउन मिल्छ।</p></div><div class="jp-grid"><button class="jp-week-card" type="button" data-jp-meanings="opposites"><strong>'+jpMeaningPairs('opposites').length+' Opposite pairs</strong><small>反対語 · everyday contrasts and opposing roles</small></button><button class="jp-week-card" type="button" data-jp-meanings="synonyms"><strong>'+jpMeaningPairs('synonyms').length+' Near-synonym pairs</strong><small>類義語 · similar meanings with usage notes</small></button><button class="jp-week-card" type="button" data-jp-meanings="uploads"><strong>CSV Uploads</strong><small>Your own meaning folders</small></button></div><div class="jp-panel"><h3>How to study</h3><p>दिनमा 10 pairs: Japanese पढ, अर्थ र अर्को word भन, अनि एउटा sentence बनाऊ। ☆ Hard ले गाह्रो word existing review folder मा राख्छ। Synonyms हरेक sentence मा interchangeable हुँदैनन्।</p><button class="btn secondary" type="button" data-jp-meaning-import="1">Upload CSV</button></div>';
+  }
+  const title=selected?selected.name:uploads?'CSV Uploads':state.tab==='opposites'?'Opposite pairs':'Near-synonym pairs';
+  html+='<div class="jp-meaning-heading"><h2>'+escapeHtml(title)+'</h2>'+(!uploads?'<button class="btn" type="button" data-jp-pair-add="'+state.tab+'">+ Add pair</button>':'')+'</div>';
+  html+='<div class="jp-panel jp-meaning-tools"><label for="jpMeaningSearch">Search words, readings or meanings</label><input id="jpMeaningSearch" type="search" value="'+escapeAttr(state.query)+'" placeholder="例: 高い / たかい / expensive / महँगो"><div class="jp-actions">';
+  if(!uploads)html+='<button class="btn secondary" type="button" data-jp-meaning-add="'+state.tab+'">Add pairs to Flashcards</button><button class="btn secondary" type="button" data-jp-meaning-download="'+state.tab+'">Download this list as CSV</button>';
+  html+='<button class="btn secondary" type="button" data-jp-meaning-import="1">Upload CSV</button><details class="jp-csv-help"><summary>CSV options</summary><button class="btn secondary" type="button" data-jp-meaning-download="template">Download CSV template</button><p class="jp-muted">CSV: front, back. Put Japanese on the front; Hiragana, meaning and opposite/synonym on the back. UTF-8 CSV/TSV, maximum 5 MB. Preview before import. Saved lists also appear in Flashcards.</p></details></div></div><div id="jpMeaningResults">'+jpMeaningListHtml()+'</div>';
   return html;
 }
 
@@ -8181,6 +8262,8 @@ function renderJapanese(){
       const el = ev.target.closest("button");
       if(!el || !body.contains(el)) return;
       if(el.dataset.jpMeanings){JP_MEANING_STATE.tab=el.dataset.jpMeanings;JP_MEANING_STATE.query='';JP_MEANING_STATE.deckId='';jpPage.mode='meanings';renderJapanese();window.scrollTo(0,0);return;}
+      if(el.dataset.jpPairAdd){jpMeaningEdit(el.dataset.jpPairAdd);return;}
+      if(el.dataset.jpPairEdit){jpMeaningEdit(JP_MEANING_STATE.tab,el.dataset.jpPairEdit);return;}
       if(el.dataset.jpMeaningImport){jpMeaningImport();return;}
       if(el.dataset.jpMeaningDownload){jpDownloadMeanings(el.dataset.jpMeaningDownload);return;}
       if(el.dataset.jpMeaningAdd){jpMeaningAddCards(el.dataset.jpMeaningAdd);return;}

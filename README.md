@@ -30,6 +30,14 @@ The daily random review stays immediately available; Continue, Meaning Folder,
 Hard words and all 36 weeks remain accessible. The Japanese theme is scoped to
 that view and preserves the curriculum, existing progress keys and storage logic.
 
+Meaning Folder opens one list at a time; Back returns to its folders. Opposite,
+near-synonym and uploaded-word meanings start visible and can be hidden by
+clicking the word. Opposite/synonym lists have Add pair and pencil Edit controls.
+Personal entries and overrides live in the additive `japanese.meaningPairs` map;
+the original 100/30 pairs remain unchanged. Per-pair timestamps merge edits across
+the existing backup/sync system. Search, CSV downloads and future flashcard
+additions use the edited list; previously studied cards retain their own history.
+
 ## Cybersecurity — foundations to defensive Python
 
 Open **Cybersecurity → Week 9** for seven complete English lessons: a scoped

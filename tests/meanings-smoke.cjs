@@ -17,7 +17,8 @@ async function main(){
   let seq=0;const pending=new Map(),errors=[];
   ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.method==="Runtime.exceptionThrown"){const d=m.params.exceptionDetails;errors.push((d.exception&&d.exception.description)||d.text);}if(m.id&&pending.has(m.id)){const p=pending.get(m.id);pending.delete(m.id);m.error?p.reject(Error(JSON.stringify(m.error))):p.resolve(m.result);}};
   const send=(method,params={})=>new Promise((res,rej)=>{const id=++seq;pending.set(id,{resolve:res,reject:rej});ws.send(JSON.stringify({id,method,params}));});
-  const evalJs=async expression=>{const r=await send("Runtime.evaluate",{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error((r.exceptionDetails.exception&&r.exceptionDetails.exception.description)||r.exceptionDetails.text);return r.result.value;};
+  const folderHelper=`window.__openMeaningFolder=function(type){for(let step=0;step<4;step++){const target=document.querySelector('[data-jp-meanings="'+type+'"]');if(target){target.click();return;}const back=document.querySelector('[data-jp-meanings="home"]')||document.querySelector('[data-jp-meanings="uploads"]');if(!back)throw Error('No folder back button');back.click();}throw Error('Folder unavailable: '+type);};`;
+  const evalJs=async expression=>{const r=await send("Runtime.evaluate",{expression:folderHelper+'\n'+expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error((r.exceptionDetails.exception&&r.exceptionDetails.exception.description)||r.exceptionDetails.text);return r.result.value;};
   const assert=(v,m)=>{if(!v)throw Error(m);};
   await send("Runtime.enable");await send("Page.enable");
   for(let i=0;i<50;i++){if(await evalJs("Boolean(window.__studyHubBooted)"))break;await sleep(100);}
@@ -26,17 +27,17 @@ async function main(){
   await evalJs(`localStorage.studyHubData_v1=JSON.stringify({notes:[{id:'old',title:'Preserve',body:'original'}],japanese:{done:{'1.1':'2026-01-01'},notes:{'1.1':'saved lesson note'},checks:{},quizScores:{}}})`);
   await send('Page.reload',{ignoreCache:true});
   for(let i=0;i<50;i++){if(await evalJs('Boolean(window.__studyHubBooted)'))break;await sleep(100);}
-  await evalJs(`document.querySelector('#sidebar [data-view=japanese]').click();document.querySelector('[data-jp-meanings=home]').click()`);
-  assert(await evalJs(`document.querySelector('.jp-hero h2').textContent==='Meaning Folder'&&document.querySelectorAll('[data-jp-meanings]').length===4`),'Meaning folder navigation missing');
-  await evalJs(`document.querySelector('[data-jp-meanings=opposites]').click()`);
+  await evalJs(`document.querySelector('#sidebar [data-view=japanese]').click();window.__openMeaningFolder('home')`);
+  assert(await evalJs(`document.querySelector('.jp-hero h2').textContent==='Meaning Folder'&&document.querySelectorAll('[data-jp-meanings]').length===3`),'Meaning folder navigation missing');
+  await evalJs(`window.__openMeaningFolder('opposites')`);
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair').length===100&&document.querySelectorAll('.jp-meaning-pair .jp-study-item').length===200`),'Opposites count incorrect');
   assert(await evalJs(`![...document.querySelectorAll('.jp-meaning-pair')].some(p=>p.querySelector('h3')||/Opposite meanings|Near synonyms/.test(p.textContent))`),'Repeated pair headings remain');
-  assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair details[open]').length===0`),'Answers shown before reveal');
-  assert(await evalJs(`document.querySelector('.jp-pair-number').textContent==='1'&&document.querySelectorAll('.jp-pair-number')[99].textContent==='100'&&document.querySelector('.jp-meaning-pair').getBoundingClientRect().height<110`),'Compact numbered rows missing');
+  assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair .jp-study-reveal[open]').length===200`),'All meanings must initially be visible');
+  assert(await evalJs(`document.querySelector('.jp-pair-number').textContent==='1'&&document.querySelectorAll('.jp-pair-number')[99].textContent==='100'&&document.querySelector('.jp-meaning-pair').getBoundingClientRect().height<170`),'Compact numbered rows missing');
   await evalJs(`document.querySelector('.jp-pair-word summary b').click()`);
-  assert(await evalJs(`document.querySelector('.jp-pair-word details').open&&document.querySelector('.jp-pair-word .jp-pair-meaning').textContent.includes('big')&&!document.querySelectorAll('.jp-pair-word details')[1].open`),'Clicking Kanji did not independently reveal its meaning');
+  assert(await evalJs(`!document.querySelector('.jp-pair-word details').open&&document.querySelector('.jp-pair-word .jp-pair-meaning').textContent.includes('big')&&document.querySelectorAll('.jp-pair-word details')[1].open`),'Clicking Kanji did not independently hide its meaning');
   await evalJs(`document.querySelector('.jp-pair-word summary b').click()`);
-  assert(await evalJs(`!document.querySelector('.jp-pair-word details').open`),'Clicking Kanji again did not hide meaning');
+  assert(await evalJs(`document.querySelector('.jp-pair-word details').open`),'Clicking Kanji again did not reveal meaning');
   await evalJs(`document.querySelector('[data-jp-furigana]').click()`);
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair ruby rt').length===200`),'Furigana readings missing');
   for(const query of ['おおきい','expensive','महँगो']){
@@ -45,10 +46,10 @@ async function main(){
   }
   await evalJs(`document.querySelector('#jpMeaningSearch').value='';document.querySelector('#jpMeaningSearch').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-jp-hard-word="大きい"]').click();document.querySelector('[data-jp-meaning-add]').click();document.querySelector('[data-jp-meaning-add]').click()`);
   assert(await evalJs(`(()=>{const d=JSON.parse(localStorage.studyHubData_v1),deck=d.decks.find(x=>x.jpMeaningFolder==='opposites');return deck&&d.cards.filter(x=>x.deckId===deck.id).length===100&&d.japanese.checks['hard:v:大きい'].hard;})()`),'Hard marking or duplicate-safe flashcards failed');
-  await evalJs(`document.querySelector('[data-jp-meanings=synonyms]').click()`);
+  await evalJs(`window.__openMeaningFolder('synonyms')`);
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair').length===30&&document.querySelector('.jp-meaning-context').textContent.includes('grammar')`),'Synonym content/notes missing');
   assert(await evalJs(`![...document.querySelectorAll('.jp-meaning-pair')].some(p=>p.querySelector('h3')||/Near synonyms ≈/.test(p.textContent))&&document.querySelectorAll('.jp-meaning-context').length===30&&document.querySelectorAll('.jp-meaning-pair .jp-study-item').length===60`),'Synonym headings or preserved study material failed');
-  await evalJs(`document.querySelector('[data-jp-meaning-add]').click();document.querySelector('[data-jp-meanings=uploads]').click();document.querySelector('[data-jp-meaning-import]').click()`);
+  await evalJs(`document.querySelector('[data-jp-meaning-add]').click();window.__openMeaningFolder('uploads');document.querySelector('[data-jp-meaning-import]').click()`);
   assert(await evalJs(`document.querySelector('#csvDeckName').value.startsWith('Japanese · Meanings')`),'Shared importer default absent');
   const csv='front,back\r\n"花","はな · flower, फूल\nNear synonym context"\r\n"猫","ねこ · cat <img src=x onerror=alert(1)>"\r\n"花","はな · flower, फूल\nNear synonym context"';
   const upload=async text=>{
@@ -59,6 +60,7 @@ async function main(){
   assert(await evalJs(`!document.querySelector('#csvImport').disabled&&document.querySelector('#csvImportPreview').textContent.includes('3 cards ready')&&!document.querySelector('#csvImportPreview img')`),'CSV preview quoting/multiline or escaping failed');
   await evalJs(`document.querySelector('#csvDeckName').value='Meaning upload test';document.querySelector('#csvImport').click()`);
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-upload').length===2&&!document.querySelector('.jp-meaning-upload img')`),'Imported duplicate handling or rendering failed');
+  assert(await evalJs(`!document.querySelector('[data-jp-meaning-deck]')&&!document.querySelector('.jp-week-card[data-jp-meanings]')&&document.querySelectorAll('.jp-meaning-upload details[open]').length===2&&!!document.querySelector('[data-jp-meanings=uploads]')`),'Selected CSV folder did not hide other folders or show meanings');
   assert(await evalJs(`(()=>{const d=JSON.parse(localStorage.studyHubData_v1),deck=d.decks.find(x=>x.name==='Meaning upload test');return deck.jpMeaningFolder==='uploaded'&&d.cards.filter(x=>x.deckId===deck.id).length===2&&d.notes[0].body==='original'&&d.japanese.notes['1.1']==='saved lesson note';})()`),'Upload did not preserve existing data');
   await evalJs(`document.querySelector('[data-jp-meaning-import]').click()`);
   await upload(csv);
@@ -72,7 +74,7 @@ async function main(){
   await evalJs(`document.querySelector('#modalOverlay').click()`);
   await send('Page.reload',{ignoreCache:true});
   for(let i=0;i<50;i++){if(await evalJs('Boolean(window.__studyHubBooted)'))break;await sleep(100);}
-  await evalJs(`document.querySelector('#sidebar [data-view=japanese]').click();document.querySelector('[data-jp-meanings=home]').click();document.querySelector('[data-jp-meanings=uploads]').click()`);
+  await evalJs(`document.querySelector('#sidebar [data-view=japanese]').click();window.__openMeaningFolder('home');window.__openMeaningFolder('uploads')`);
   assert(await evalJs(`document.querySelectorAll('[data-jp-meaning-deck]').length===1`),'Upload folder lost after reload');
   await evalJs(`document.querySelector('[data-jp-meaning-deck]').click()`);
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-upload').length===2`),'Upload words lost after reload');
@@ -84,16 +86,18 @@ async function main(){
   await send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
   for(const width of [375,320])for(const type of ['opposites','synonyms','uploads']){
     await send('Emulation.setDeviceMetricsOverride',{width,height:812,deviceScaleFactor:1,mobile:true});
-    await evalJs(`document.querySelector('[data-jp-meanings=${type}]').click()`);
+    await evalJs(`window.__openMeaningFolder('${type}')`);
     assert(await evalJs(`document.documentElement.scrollWidth<=innerWidth+1`),'Mobile overflow '+type+' '+width);
     if(type!=='uploads'){
       assert(await evalJs(`(()=>{const words=document.querySelectorAll('.jp-meaning-pair')[0].querySelectorAll('.jp-pair-word');return Math.abs(words[0].getBoundingClientRect().top-words[1].getBoundingClientRect().top)<2;})()`),'Mobile pair no longer side by side');
+      await evalJs(`document.querySelector('.jp-pair-word summary b').click()`);
+      assert(await evalJs(`!document.querySelector('.jp-pair-word details').open&&document.documentElement.scrollWidth<=innerWidth+1`),'Mobile meaning hide overflow');
       await evalJs(`document.querySelector('.jp-pair-word summary b').click()`);
       assert(await evalJs(`document.querySelector('.jp-pair-word details').open&&document.documentElement.scrollWidth<=innerWidth+1`),'Mobile meaning reveal overflow');
     }
   }
   await send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
-  await evalJs(`document.querySelector('[data-jp-meanings=opposites]').click();document.querySelector('.jp-study-reveal').open=true;document.querySelector('.jp-meaning-context').open=true;document.querySelector('#themeBtn').click()`);
+  await evalJs(`window.__openMeaningFolder('opposites');document.querySelector('.jp-study-reveal').open=true;document.querySelector('.jp-meaning-context').open=true;document.querySelector('#themeBtn').click()`);
   const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
   fs.writeFileSync(path.join(os.tmpdir(),'studyhub-meanings-mobile.png'),Buffer.from(shot.data,'base64'));
   await evalJs(`document.querySelector('.jp-meaning-pair').scrollIntoView()`);
@@ -103,10 +107,10 @@ async function main(){
   for(let i=0;i<40;i++){if(await evalJs(`!!document.querySelector('#impMerge')`))break;await sleep(50);}
   await evalJs(`document.querySelector('#impMerge').click()`);
   assert(await evalJs(`(()=>{const d=JSON.parse(localStorage.studyHubData_v1),deck=d.decks.find(x=>x.name==='Meaning upload test');return deck.jpMeaningFolder==='uploaded'&&d.cards.filter(x=>x.deckId===deck.id).length===2&&d.notes.some(x=>x.id==='backup-note')&&d.japanese.notes['1.1']==='saved lesson note';})()`),'Backup merge lost uploaded words or existing progress');
-  await evalJs(`document.querySelector('[data-jp-meanings=uploads]').click();document.querySelector('[data-jp-meaning-deck]').click();document.querySelector('[data-jp-meaning-manage]').click();document.querySelector('[data-delcard]').click();document.querySelector('[data-delcard]').click();document.querySelector('#mdClose').click()`);
+  await evalJs(`window.__openMeaningFolder('uploads');document.querySelector('[data-jp-meaning-deck]').click();document.querySelector('[data-jp-meaning-manage]').click();document.querySelector('[data-delcard]').click();document.querySelector('[data-delcard]').click();document.querySelector('#mdClose').click()`);
   assert(await evalJs(`document.querySelectorAll('[data-jp-meaning-deck]').length===0&&document.querySelector('#jpMeaningResults').textContent.includes('No uploaded words')`),'Empty folder did not disappear after deleting words');
   assert(errors.length===0,'JavaScript errors: '+errors.join('; '));
-  console.log('PASS: 100 opposites, 30 synonyms, meanings search, hidden answers, Furigana, hard words, flashcards, CSV preview/import/dedup/escaping, reload, backup merge, mobile and theme, no JS errors');
+  console.log('PASS: isolated opposite/synonym/CSV folders;100 opposites,30 synonyms, visible/toggleable meanings, search,Furigana,Hard,flashcards,CSV import/dedup/escaping,reload,backup merge,mobile/themes;no JS errors');
   ws.close();
 }
 main().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>browser.kill());
