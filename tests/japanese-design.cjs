@@ -5,7 +5,7 @@ const html=fs.readFileSync('study-hub.html','utf8');let restored=html;
 const css=fs.readFileSync('scripts/japanese-theme.css','utf8').trimEnd();
 assert.equal(restored.split(css).length,2,'Offline theme differs from authoring source');
 restored=restored.replace(css+'\n\n','');
-for(const name of ['jpRenderHome','jpRenderWeek','renderJapanese']){
+for(const name of ['jpRenderHome','jpRenderWeek','renderJapanese','jpStudyItemHtml','jpMeaningListHtml']){
  const marker='function '+name+'(',a=restored.indexOf(marker),b=restored.indexOf('\nfunction ',a+1),oa=before.indexOf(marker),ob=before.indexOf('\nfunction ',oa+1);
  assert(a>=0&&b>a&&oa>=0&&ob>oa);
  restored=restored.slice(0,a)+before.slice(oa,ob)+restored.slice(b);

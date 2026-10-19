@@ -32,6 +32,11 @@ async function main(){
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair').length===100&&document.querySelectorAll('.jp-meaning-pair .jp-study-item').length===200`),'Opposites count incorrect');
   assert(await evalJs(`![...document.querySelectorAll('.jp-meaning-pair')].some(p=>p.querySelector('h3')||/Opposite meanings|Near synonyms/.test(p.textContent))`),'Repeated pair headings remain');
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair details[open]').length===0`),'Answers shown before reveal');
+  assert(await evalJs(`document.querySelector('.jp-pair-number').textContent==='1'&&document.querySelectorAll('.jp-pair-number')[99].textContent==='100'&&document.querySelector('.jp-meaning-pair').getBoundingClientRect().height<110`),'Compact numbered rows missing');
+  await evalJs(`document.querySelector('.jp-pair-word summary b').click()`);
+  assert(await evalJs(`document.querySelector('.jp-pair-word details').open&&document.querySelector('.jp-pair-word .jp-pair-meaning').textContent.includes('big')&&!document.querySelectorAll('.jp-pair-word details')[1].open`),'Clicking Kanji did not independently reveal its meaning');
+  await evalJs(`document.querySelector('.jp-pair-word summary b').click()`);
+  assert(await evalJs(`!document.querySelector('.jp-pair-word details').open`),'Clicking Kanji again did not hide meaning');
   await evalJs(`document.querySelector('[data-jp-furigana]').click()`);
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair ruby rt').length===200`),'Furigana readings missing');
   for(const query of ['おおきい','expensive','महँगो']){
@@ -77,10 +82,17 @@ async function main(){
   assert(await evalJs(`document.querySelector('#flashcardEl').textContent.includes(' · ')`),'Flashcard answer did not flip');
   await evalJs(`document.querySelector('#exitStudyBtn').click();document.querySelector('#sidebar [data-view=japanese]').click()`);
   await send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
-  for(const type of ['opposites','synonyms','uploads']){
+  for(const width of [375,320])for(const type of ['opposites','synonyms','uploads']){
+    await send('Emulation.setDeviceMetricsOverride',{width,height:812,deviceScaleFactor:1,mobile:true});
     await evalJs(`document.querySelector('[data-jp-meanings=${type}]').click()`);
-    assert(await evalJs(`document.documentElement.scrollWidth<=innerWidth+1`),'Mobile overflow '+type);
+    assert(await evalJs(`document.documentElement.scrollWidth<=innerWidth+1`),'Mobile overflow '+type+' '+width);
+    if(type!=='uploads'){
+      assert(await evalJs(`(()=>{const words=document.querySelectorAll('.jp-meaning-pair')[0].querySelectorAll('.jp-pair-word');return Math.abs(words[0].getBoundingClientRect().top-words[1].getBoundingClientRect().top)<2;})()`),'Mobile pair no longer side by side');
+      await evalJs(`document.querySelector('.jp-pair-word summary b').click()`);
+      assert(await evalJs(`document.querySelector('.jp-pair-word details').open&&document.documentElement.scrollWidth<=innerWidth+1`),'Mobile meaning reveal overflow');
+    }
   }
+  await send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
   await evalJs(`document.querySelector('[data-jp-meanings=opposites]').click();document.querySelector('.jp-study-reveal').open=true;document.querySelector('.jp-meaning-context').open=true;document.querySelector('#themeBtn').click()`);
   const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
   fs.writeFileSync(path.join(os.tmpdir(),'studyhub-meanings-mobile.png'),Buffer.from(shot.data,'base64'));
