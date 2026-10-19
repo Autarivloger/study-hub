@@ -545,3 +545,22 @@ is marked as rare; learners should prioritize 届く and 届ける.
 Regenerate only this week's content with `node scripts/japanese-week30.cjs --update`.
 Check content preservation with `node tests/japanese-week30.cjs` and run the isolated
 browser test with `node tests/japanese-week30-browser.cjs` (Chrome required).
+
+## Compact course navigation
+
+The Python, Japanese, Cybersecurity and Web Development week pages show their
+existing daily lessons in a responsive card grid: four columns on desktop, three
+on tablets with a sidebar, and two on phones. Full titles/goals remain available
+in the cards' hover text and in the original lessons. Python completion buttons
+remain separate from the buttons that open a lesson.
+
+On the Python overview, click a phase heading or its +/− control to show/hide its
+weeks. All eight phases start closed. The browser remembers your choices under
+the separate `studyHubLearningGroups` layout preference; it is outside learner
+data and does not change the progress, backup/import or sync format.
+
+Styles and preference handling are in `scripts/learning-navigation.css` and
+`scripts/learning-navigation.js`, embedded for offline use. Reapply with
+`python scripts/apply-learning-navigation.py`. Validate with
+`node tests/learning-navigation.cjs` and
+`node tests/learning-navigation-browser.cjs` (Chrome required).

@@ -11,8 +11,8 @@ function renderWebDevelopment(){
       '<div class="section-label">Choose a year, then a week</div>'+roadmapYearsHtml(WEBDEV_PATH,WEBDEV_ROADMAP,webDevPage.week,'webdev');
   }else if(webDevPage.mode==='week'){
     content='<button type="button" class="back-link" data-webdev-all>← All years and weeks</button><div class="week-header"><div class="wh-eyebrow">Year '+Math.ceil(week.week/52)+' · Week '+week.week+' · Web Development</div><h2>'+escapeHtml(week.title)+'</h2></div>'+
-      '<section class="webdev-checkpoint"><h3>This week’s readiness check</h3><p>'+escapeHtml(week.checkpoint)+'</p></section><div class="section-label">Daily roadmap</div><div class="day-list">'+week.days.map(function(day){
-        return '<div class="day-row"><button type="button" class="day-open" data-webdev-day="'+day.day+'"><div class="dr-title">Day '+day.day+'</div><div class="dr-meta">'+escapeHtml(day.focus)+'</div></button></div>';
+      '<section class="webdev-checkpoint"><h3>This week’s readiness check</h3><p>'+escapeHtml(week.checkpoint)+'</p></section><div class="section-label">Daily roadmap</div><div class="day-list lesson-day-grid" aria-label="Choose a daily lesson">'+week.days.map(function(day){
+        return '<div class="day-row"><button type="button" class="day-open" data-webdev-day="'+day.day+'" title="'+escapeAttr("Day "+day.day+": "+day.focus)+'"><div class="dr-title day-card-number">Day '+day.day+'</div><div class="dr-meta">'+escapeHtml(day.focus)+'</div></button></div>';
       }).join('')+'</div>';
   }else{
     const day=week.days.find(item=>item.day===webDevPage.day)||week.days[0];webDevPage.day=day.day;

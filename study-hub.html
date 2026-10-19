@@ -2235,6 +2235,101 @@ body:not(.games-focus) .pane-header{padding:16px 24px 12px}
 @media(pointer:coarse){#sidebarToggle{min-height:44px}}
 /* COMPACT WORKSPACE STYLE END */
 
+/* LEARNING NAVIGATION STYLE START */
+/* Compact day choices. Full descriptions stay in the DOM and inside each lesson. */
+.lesson-day-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:stretch}
+.lesson-day-grid>*{min-width:0}
+.lesson-day-grid .day-row{position:relative;display:block;min-width:0;margin:0}
+.lesson-day-grid .day-open{display:flex;flex-direction:column;align-items:flex-start;gap:7px;width:100%;height:100%;min-height:116px;padding:14px;text-align:left;color:var(--text);border:1px solid var(--border);border-radius:12px;background:var(--bg-elev);overflow-wrap:anywhere}
+.lesson-day-grid .day-card-number{font-size:10px;font-weight:750;line-height:1.5;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.lesson-day-grid .dr-title{font-size:14px;line-height:1.45;letter-spacing:-.15px;color:var(--text);font-weight:650}
+.lesson-day-grid .dr-meta{font-size:12px;line-height:1.55;margin:0;color:var(--text-dim)}
+.lesson-day-grid .dr-title,.lesson-day-grid .dr-meta{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+#courseBody .lesson-day-grid .day-open{min-height:132px;padding-bottom:52px}
+#courseBody .lesson-day-grid .dr-title{-webkit-line-clamp:2}
+#courseBody .lesson-day-grid .dr-meta{position:absolute;bottom:19px;left:14px;right:62px;white-space:nowrap;display:block;text-overflow:ellipsis;overflow:hidden;font-size:11px}
+.lesson-day-grid .day-check{position:absolute;bottom:8px;right:8px;z-index:1;width:44px;height:44px;min-height:44px;border-radius:9px;background:var(--bg-soft);font-size:16px}
+.lesson-day-grid .day-check::before{content:'';display:inline-block;width:12px;height:12px;border:1.5px solid currentColor;border-radius:3px;vertical-align:middle}
+.lesson-day-grid .day-row.done .day-check::before{display:none}
+.lesson-day-grid .day-row.done .day-open{border-color:color-mix(in srgb,var(--accent) 45%,var(--border));background:var(--accent-soft)}
+.lesson-day-grid .day-row.done .dr-title{color:var(--text)}
+.lesson-day-grid :is(.day-open,.day-check):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* Week headers are compact, with all goals and progress still available. */
+:is(#courseBody,#cybersecurityBody,#webDevelopmentBody):has(>.lesson-day-grid)>.week-header{padding:12px 18px;margin-bottom:14px}
+:is(#courseBody,#cybersecurityBody,#webDevelopmentBody):has(>.lesson-day-grid)>.week-header h2{font-size:24px;line-height:1.25;margin:7px 0}
+:is(#courseBody,#cybersecurityBody,#webDevelopmentBody):has(>.lesson-day-grid)>.week-header .wh-goal{max-width:none}
+:is(#courseBody,#cybersecurityBody,#webDevelopmentBody):has(>.lesson-day-grid)>.section-label{margin-top:18px}
+#view-japanese .jp-mode-week>.jp-hero{padding:18px 20px;margin-bottom:16px}
+#view-japanese .jp-mode-week>.jp-hero h2{font-size:25px;line-height:1.3;margin:6px 0 8px}
+#view-japanese .jp-mode-week>.jp-hero p{font-size:13px;line-height:1.65;margin:7px 0}
+#view-japanese .jp-mode-week>.jp-hero .jp-progress{margin-top:12px}
+#view-japanese .jp-mode-week>.jp-section-title{font-size:15px;margin:14px 0 10px}
+#view-japanese .jp-day-grid .jp-day-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:112px;width:100%;margin:0;padding:11px 14px;border-radius:12px;background:var(--bg-elev);text-align:left}
+#view-japanese .jp-day-grid .jp-day-card::after{display:none}
+#view-japanese .jp-day-grid .jp-day-card>strong{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:16px;line-height:1.4;margin:0;max-width:100%}
+#view-japanese .jp-day-grid .jp-day-card>small:first-child{font-size:10px;color:var(--accent);line-height:1.5;letter-spacing:.03em}
+#view-japanese .jp-day-grid .jp-day-card>.jp-day-goal{font-size:12px;line-height:1.6;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%;margin-top:auto}
+#view-japanese .jp-day-grid .jp-day-card.is-complete{background:var(--accent-soft)}
+@media(min-width:761px){
+ #view-japanese .jp-mode-week>.jp-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,.42fr);gap:5px 24px;align-items:center;padding:16px 20px}
+ #view-japanese .jp-mode-week>.jp-hero>.jp-kicker{grid-column:1/-1}
+ #view-japanese .jp-mode-week>.jp-hero>h2{grid-column:1;grid-row:2;margin:0;font-size:23px}
+ #view-japanese .jp-mode-week>.jp-hero>p{grid-column:1;grid-row:3;margin:0}
+ #view-japanese .jp-mode-week>.jp-hero>.jp-progress{grid-column:2;grid-row:2;width:100%;margin:0}
+ #view-japanese .jp-mode-week>.jp-hero>small{grid-column:2;grid-row:3;font-size:11px;line-height:1.6;color:var(--text-dim)}
+}
+
+/* Native disclosures provide mouse, touch and keyboard expand/collapse. */
+#courseBody .phase-block.learning-group{padding:0;margin-bottom:12px;border-radius:13px;overflow:clip}
+#courseBody .learning-group>.phase-head{display:grid;grid-template-columns:34px minmax(0,1fr) 68px auto;gap:12px;align-items:center;padding:16px 18px;cursor:pointer;list-style:none;color:var(--text)}
+#courseBody .learning-group>.phase-head::-webkit-details-marker{display:none}
+#courseBody .learning-group>.phase-head:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+#courseBody .learning-group[open]>.phase-head{border-bottom:1px solid var(--border)}
+#courseBody .learning-group .ph-num{width:32px;height:32px;font-size:13px}
+#courseBody .learning-group .ph-name{font-size:15px;line-height:1.45;overflow-wrap:anywhere}
+#courseBody .learning-group .ph-months{font-size:11px;line-height:1.5;margin-top:3px}
+#courseBody .learning-group .ph-prog{width:auto}
+#courseBody .learning-group .ph-frac{font-size:11px}
+#courseBody .learning-group>.ph-blurb{padding:13px 18px 0;margin:0;color:var(--text-dim);font-size:13px;line-height:1.6}
+#courseBody .learning-group>.week-grid{margin:0;padding:14px 18px 18px}
+.learning-group-toggle{display:flex;align-items:center;gap:9px;color:var(--accent);font-size:11px;white-space:nowrap;font-weight:650}
+.learning-group-toggle svg{width:30px;height:30px;border:1px solid var(--border);border-radius:8px;background:var(--bg-soft);padding:7px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.learning-group[open] .learning-group-toggle .toggle-vertical{display:none}
+.learning-group .group-hide,.learning-group[open] .group-show{display:none}
+.learning-group[open] .group-hide{display:inline}
+@media(hover:hover) and (pointer:fine){
+ .lesson-day-grid .day-open:hover,#view-japanese .jp-day-grid .jp-day-card:hover{border-color:var(--accent);background:var(--accent-soft);box-shadow:var(--shadow)}
+ #courseBody .learning-group>.phase-head:hover{background:var(--bg-soft)}
+}
+@media(max-width:1100px) and (min-width:761px){.lesson-day-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){
+ .lesson-day-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .lesson-day-grid .day-open{min-height:108px;padding:12px;gap:6px}
+ .lesson-day-grid .dr-title{font-size:13px}
+ .lesson-day-grid .dr-meta{font-size:11px}
+ #courseBody .lesson-day-grid .day-open{min-height:128px}
+ #courseBody .lesson-day-grid .dr-meta{left:12px;bottom:20px}
+ #view-japanese .jp-day-grid .jp-day-card{padding:12px;min-height:110px;gap:5px}
+ #view-japanese .jp-day-grid .jp-day-card>.jp-day-goal{font-size:11px;line-height:1.6}
+ #view-japanese .jp-day-grid .jp-day-card>strong{font-size:15px}
+ #view-japanese .jp-mode-week>.jp-hero{padding:15px 16px;margin-bottom:13px}
+ #view-japanese .jp-mode-week>.jp-hero h2{font-size:22px}
+ :is(#courseBody,#cybersecurityBody,#webDevelopmentBody):has(>.lesson-day-grid)>.week-header{padding:13px 15px}
+ #courseBody .learning-group>.phase-head{padding:13px;gap:7px 10px;grid-template-columns:28px minmax(0,1fr) 32px}
+ #courseBody .learning-group .ph-num{width:27px;height:27px;font-size:12px;grid-row:1/3}
+ #courseBody .learning-group .ph-text{grid-column:2;grid-row:1}
+ #courseBody .learning-group .ph-name{font-size:14px}
+ #courseBody .learning-group .ph-months{font-size:10px}
+ #courseBody .learning-group .ph-prog{grid-column:2;grid-row:2;display:flex;align-items:center;gap:8px;text-align:left}
+ #courseBody .learning-group .ph-prog .pbar{width:72px;margin:0}
+ #courseBody .learning-group-toggle{grid-column:3;grid-row:1/3}
+ #courseBody .learning-group-toggle :is(.group-show,.group-hide){display:none}
+ #courseBody .learning-group>.week-grid{padding:12px}
+ #courseBody .learning-group>.ph-blurb{padding:12px 13px 0;font-size:12px}
+}
+@media(forced-colors:active){.lesson-day-grid .day-row.done .day-open,#view-japanese .jp-day-grid .jp-day-card.is-complete{border:2px solid Highlight}.learning-group-toggle svg{border-color:ButtonText}}
+/* LEARNING NAVIGATION STYLE END */
 </style>
 </head>
 <body>
@@ -8416,15 +8511,15 @@ function jpRenderWeek(week){
       '<p>Focus on <b>' + escapeHtml(item[2]) + '</b>. Use six study days: learn the pattern in context, collect new words, read a short passage, listen and shadow, speak about the topic, then review errors.</p>' +
       '<p class="jp-muted">Detailed teaching for this week is being added gradually. This roadmap is not a completed lesson. Until then, use the topic and speaking goal to guide independent practice.</p></div>';
   }
-  html += '<h2 class="jp-section-title">Daily lessons</h2>';
+  html += '<h2 class="jp-section-title">Daily lessons</h2><div class="lesson-day-grid jp-day-grid" aria-label="Choose a daily lesson">';
   lessons.forEach(function(l, i){
     const done=!!DB.japanese.done[jpStateId(l)];
-    const meta=l.sourceDay ? 'Source Day ' + l.sourceDay + ' · optional preview' : ((week>=2 && week<=10) ? (done ? '✓ Completed' : '') : 'Day ' + (i+1) + (done ? ' · ✓ Completed' : ''));
-    html += '<button type="button" class="jp-day-card' + (done?' is-complete':'') + '" data-jp-lesson="' + l.id + '">' +
+    const meta=l.sourceDay ? 'Source Day ' + l.sourceDay + ' · optional preview' : ((week===1 ? 'Day '+(i+1)+' · ' : '') + (done ? '✓ Completed' : l.reviewOnly ? 'Weekly review' : 'To study'));
+    html += '<button type="button" class="jp-day-card' + (done?' is-complete':'') + '" data-jp-lesson="' + l.id + '" title="' + escapeAttr(l.title+' · '+l.goal) + '">' +
       (meta ? '<small>' + meta + '</small>' : '') +
-      '<strong>' + escapeHtml(jpLessonDisplayTitle(l)) + '</strong><small>' + escapeHtml(l.goal) + '</small></button>';
+      '<strong>' + escapeHtml(jpLessonDisplayTitle(l)) + '</strong><small class="jp-day-goal">' + escapeHtml(l.goal) + '</small></button>';
   });
-  return html + (lessons.every(function(l){return l.optional;}) ? '<div class="jp-panel"><p class="jp-muted">These two imported lessons are optional previews. The other Week 19 roadmap topics will be taught in their own lessons later.</p></div>' : week===1 ? '<div class="jp-panel"><h3>Week 1 finish line</h3><p>Day 1–5 मा रूप र अर्थ सिक, Day 6 मा पूरा कथा पढेर आफ्नै भाषामा बुझाऊ, Day 7 मा उत्तर नहेरी सम्झ र बोल। Day 7 को quiz पछि गलत भएका दिन फेरि खोल; हतारमा Week 2 सुरु गर्नुपर्दैन।</p><button type="button" class="btn secondary" data-jp-lesson="1.7">Open Day 7 review →</button></div>' : week===2 ? '<div class="jp-panel"><h3>Week 2 finish line</h3><p>Day 1–6 मा प्रत्येक दिनका २० शब्दलाई सन्दर्भमा प्रयोग गर। Day 7 मा २० मुख्य शब्द अर्थ नहेरी सम्झ, fresh reading को सारांश देऊ र ६ वाक्य बोल। गलत भएका दिन फेरि पढेपछि Week 3 सुरु गर।</p><button type="button" class="btn secondary" data-jp-lesson="2.7">Open Day 7 review →</button></div>' : week===3 ? '<div class="jp-panel"><h3>Week 3 finish line</h3><p>Day 1–6 मा plain forms, opinions र relationship अनुसार बोल्ने style अभ्यास गर। Day 7 मा note नहेरी चार form chart बनाऊ, fresh reading बुझाऊ र एउटै कुरा friend तथा formal setting मा बोल। गलत quiz फेरि प्रयास गरेपछि मात्र अगाडि बढ।</p><button type="button" class="btn secondary" data-jp-lesson="3.7">Open Day 7 review →</button></div>' : week===4 ? '<div class="jp-panel"><h3>Week 4 finish line</h3><p>Day 1–6 मा action/state र चार प्रकारका rule छुट्याऊ। Day 7 मा fresh notice पढेर permission, prohibition, obligation र no-need आफ्नै शब्दमा explain गर। ている को अर्थ context बाट छुट्याउन र नियम मुखले भन्न सकेपछि Week 5 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="4.7">Open Day 7 review →</button></div>' : week===5 ? '<div class="jp-panel"><h3>Week 5 finish line</h3><p>Day 1–6 मा comparison, ranking, degree र recommendation बोल। Day 7 मा note नहेरी तीन विकल्प compare गर र प्रत्येक kanji को On compound तथा Kun word जोडी पढ। Evidence र कारणसहित निर्णय दिन सकेपछि Week 6 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="5.7">Open Day 7 review →</button></div>' : week===6 ? '<div class="jp-panel"><h3>Week 6 finish line</h3><p>Day 1–6 मा potential form, が/ことができる, 見える/聞こえる, service notice र obstacle/progress अभ्यास गर। Day 7 मा नोट नहेरी verb chart बनाऊ, fresh notice बाट पाँच तथ्य निकाल र आफ्नो ability progress दुई मिनेट बोल। Form र meaning दुवै सही भएपछि Week 7 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="6.7">Open Day 7 review →</button></div>' : week===7 ? '<div class="jp-panel"><h3>Week 7 finish line</h3><p>Day 1–6 मा help को direction, तीन viewpoints, polite request, offer/response र gratitude note अभ्यास गर। Day 7 मा arrow नहेरी बनाऊ, fresh thank-you note बुझ र एउटै घटना くれる/もらう दुवै camera angle बाट बोल। Relationship अनुसार request गर्न सकेपछि Week 8 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="7.7">Open Day 7 review →</button></div>' : week===8 ? '<div class="jp-panel"><h3>Week 8 finish line</h3><p>Day 1–6 मा と・たら・ば・なら को form भन्दा पहिले meaning र context छुट्याऊ। Day 7 मा note नहेरी चार-part decision chart बनाऊ, fresh passage बाट condition को कारण बताऊ र दुई मिनेट city guide बोल। Form छान्नुको कारण भन्न सकेपछि Week 9 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="8.7">Open Day 7 review →</button></div>' : week===9 ? '<div class="jp-panel"><h3>Week 9 finish line</h3><p>Day 1–6 मा 他動詞・自動詞 को camera angle, ている को state, てある को deliberate preparation र てしまう को regret/completion अभ्यास गर। Day 7 मा note नहेरी pair map बनाऊ, fresh lost-property notice बाट पाँच तथ्य निकाल र दुई मिनेटको report बोल। कारण, अवस्था र जिम्मेवारी स्पष्ट भन्न सकेपछि Week 10 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="9.7">Open Day 7 review →</button></div>' : week===10 ? '<div class="jp-panel"><h3>Week 10 finish line</h3><p>Day 1–6 मा passive, affected passive, factual passive, causative र causative-passive लाई form मात्र होइन viewpoint अनुसार प्रयोग गर। Day 7 मा note नहेरी तीन-form chart बनाऊ, fresh personal account पढ र दुई मिनेट आफ्नो अनुभव बोल। Actor, affected person र feeling स्पष्ट भएपछि Week 11 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="10.7">Open Day 7 review →</button></div>' : week===11 ? '<div class="jp-panel"><h3>Week 11 finish line</h3><p>Day 1–6 मा exact quote, indirect report, opinion, explanation, hearsay, naming र news summary अभ्यास गर। Day 7 मा note नहेरी six-pattern chart बनाऊ, fresh report बाट source र certainty जोगाएर पाँच तथ्य निकाल, अनि दुई मिनेटको attributed news report बोल। Quote, fact र hearsay स्पष्ट छुट्याउन सकेपछि Week 12 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="11.7">Open Day 7 review →</button></div>' : week===12 ? '<div class="jp-panel"><h3>Week 12 finish line · N4 checkpoint</h3><p>Day 1–6 मा story frame, timeline, omitted subject, listening skeleton, practical notices र 300-character story अभ्यास गर। Day 7 मा Furigana OFF बाट unseen passage पढ, source र numbers जोगाएर पाँच प्रश्न solve गर, अनि दुई मिनेट summary बोल। 80% भन्दा कम भए कमजोर Day फेरि पढ; सही facts र connected speech आएपछि N3 bridge सुरु गर।</p><button type="button" class="btn secondary" data-jp-lesson="12.7">Open Day 7 checkpoint →</button></div>' : week===13 ? '<div class="jp-panel"><h3>Week 13 finish line · N3 bridge</h3><p>Day 1–6 मा long-sentence structure, connector families, relative clauses, の/こと र paragraph flow अभ्यास गर। Day 7 मा vocabulary, Kanji, grammar र reading का 40 grouped drills तथा 20-question checkpoint गर। 80% भन्दा कम भएको category को सम्बन्धित Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="13.7">Open Day 7 full review →</button></div>' : week===14 ? '<div class="jp-panel"><h3>Week 14 finish line · purpose and goals</h3><p>Day 1–6 मा ために र ように लाई control, outcome र agent बाट छुट्याऊ; त्यसपछि つもり・予定・ことにする र ようにしている ले nine-month goal लाई measurable plan र daily habit मा बदल। Day 7 मा 40 retrieval drills, fresh reading र 20-question checkpoint गर। Pattern छान्नुको कारण बोल्न नसके सम्बन्धित Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="14.7">Open Day 7 full review →</button></div>' : week===15 ? '<div class="jp-panel"><h3>Week 15 finish line · change over time</h3><p>Day 1–6 मा ability र habit change, external decision, established rule, agency map र personal journey timeline अभ्यास गर। Day 7 मा vocabulary, Kanji, grammar र reading का 40 retrieval drills तथा 20-question checkpoint गर। Self decision, external decision, effort र result छुट्याउन नसकेको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="15.7">Open Day 7 full review →</button></div>' : week===16 ? '<div class="jp-panel"><h3>Week 16 finish line · source and certainty</h3><p>Day 1–6 मा appearance र hearsay そうだ, evidence-based ようだ, casual みたいだ र observation diary अभ्यास गर। Day 7 मा vocabulary, Kanji, grammar र reading का 40 retrieval drills तथा 20-question checkpoint गर। LOOK, HEARD, INFER र CASUAL छुट्याउन नसकेको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="16.7">Open Day 7 full review →</button></div>' : week===17 ? '<div class="jp-panel"><h3>Week 17 finish line · certainty and prediction</h3><p>Day 1–6 मा はず, はずがない, はずだった, かもしれない र に違いない लाई premise, possibility, conviction र confirmation अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh public notice र 20-question checkpoint गर। Prediction लाई fact बनाएको वा evidence भन्दा बलियो claim गरेको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="17.7">Open Day 7 full review →</button></div>' : week===18 ? '<div class="jp-panel"><h3>Week 18 finish line · time and aspect</h3><p>Day 1–6 मा たばかり, てばかりいる, three-stage ところ र うちに लाई recent feeling, repetition, exact stage र opportunity window अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh work diary र 20-question checkpoint गर। Timeline label वा remaining work अस्पष्ट भएको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="18.7">Open Day 7 full review →</button></div>' : week===19 ? '<div class="jp-panel"><h3>Week 19 finish line · contrast, cause, and tone</h3><p>Day 1–6 मा のに, くせに, おかげで र せいで लाई surprise, criticism, credit र blame अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh opinion reading र 20-question checkpoint गर। Evidence बिना blame गरेको वा summary मा speaker tone बदलिएको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="19.7.core">Open Day 7 full review →</button></div>' : week===20 ? '<div class="jp-panel"><h3>Week 20 finish line · topic, target, source, and evidence</h3><p>Day 1–6 मा について, に対して र によって family लाई topic, target, contrast, method, agent, cause, source र variation अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh news reading र 20-question checkpoint गर। Source वा number हराएको summary र evidence नभएको opinion भएको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="20.7">Open Day 7 full review →</button></div>' : week===21 ? '<div class="jp-panel"><h3>Week 21 finish line · explain the logic</h3><p>Day 1–6 मा わけだ, わけではない, わけがない, わけにはいかない र というわけ family लाई conclusion, scope, impossibility, duty र paraphrase अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh explanation reading र 20-question checkpoint गर। Evidence बिना strong judgment वा partial negation लाई total negation बनाएको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="21.7">Open Day 7 full review →</button></div>' : week===22 ? '<div class="jp-panel"><h3>Week 22 finish line · tactful advice</h3><p>Day 1–6 मा べき, ことだ र ほうがいい लाई principle, warning, regret, practical habit र situational choice अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh problem-column reading र 20-question checkpoint गर। Relationship र urgency नमिलेको advice वा first step नभएको reply फेरि सुधार।</p><button type="button" class="btn secondary" data-jp-lesson="22.7">Open Day 7 full review →</button></div>' : week===23 ? '<div class="jp-panel"><h3>Week 23 finish line · concede and respond</h3><p>Day 1–6 मा ても, 疑問詞〜ても, どんなに・いくら〜ても, たとえ〜ても, のに र それでも लाई condition, degree, hypothetical, emotion र discourse response अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh interview reading र 20-question checkpoint गर। Opposing view को scope बिगारेको वा evidence बिना dismiss गरेको response फेरि सुधार।</p><button type="button" class="btn secondary" data-jp-lesson="23.7">Open Day 7 full review →</button></div>' : week===24 ? '<div class="jp-panel"><h3>Week 24 finish line · audience and register</h3><p>साथी र शिक्षकलाई एउटै fact दुई register मा लेख। Request, permission, respectful/humble actor र email structure जाँच। Day 7 मा 40 retrieval drills र 20 quiz questions गर।</p><button class="btn secondary" data-jp-lesson="24.7">Open Day 7 full review →</button></div>' : week===25 ? '<div class="jp-panel"><h3>Week 25 finish line · people and society</h3><p>People, roles, activities, safety, support and local opinions लाई compound तथा sentence सँग सिक। Notice मा eligibility, event date, deadline, fee र exception निकाल। Day 7 मा 40 retrieval drills, fresh reading र 20-question checkpoint गर। Mistaken readings र facts फेरि जाँचेर मात्रै अगाडि बढ।</p><button type="button" class="btn secondary" data-jp-lesson="25.7">Open Day 7 full review →</button></div>' : week===26 ? '<div class="jp-panel"><h3>Week 26 finish line · work and study</h3><p>Roles, deadlines, reports, meetings, assignments र training notices अभ्यास गर। Day 7 मा 40 retrieval drills र 20-question checkpoint गर। Owner, task, deadline र decision status आफ्नै शब्दमा स्पष्ट भन्न सकेपछि अघि बढ।</p><button type="button" class="btn secondary" data-jp-lesson="26.7">Open Day 7 full review →</button></div>' : week===27 ? '<div class="jp-panel"><h3>Week 27 finish line · health and travel</h3><p>Symptoms, clinic notices, transport disruptions, bookings, lost belongings र travel plan अभ्यास गर। Day 7 मा 40 retrieval drills र 20-question checkpoint गर। Fact, condition, forecast र unknown छुट्याएर सहायता माग्न सकेपछि अघि बढ।</p><button type="button" class="btn secondary" data-jp-lesson="27.7">Open Day 7 full review →</button></div>' : week===28 ? '<div class="jp-panel"><h3>Week 28 finish line · main idea and evidence</h3><p>Day 1–6: दैनिक २० शब्द, On/Kun सहित ५ kanji, लामो original reading र evidence अभ्यास। Day 7: ४० retrieval drills र २० quiz questions। Summaryमा scope, condition र uncertainty जोगाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="28.7">Open Day 7 full review →</button></div>' : week===29 ? '<div class="jp-panel"><h3>Week 29 finish line · vocabulary and grammar in context</h3><p>Daily ２０ words, On/Kun सहित５kanji र१४quizquestions। पहिलेअर्थबुझ,त्यसपछिtime targetप्रयोगगर। Day 7मा４０drills र２０questions。 Wrong reading, particle, tense, scope रinferenceलाईअलगसुधार।</p><button type="button" class="btn secondary" data-jp-lesson="29.7">Open Day 7 full review →</button></div>' : week===30 ? '<div class="jp-panel"><h3>Week 30 finish line · notices, essays and evidence</h3><p>Day 1–6: २० words, On/Kun सहित ५ kanji, ३ grammar patterns, original reading, १४ quiz questions र आफ्नै सार। Day 7: ४८ retrieval drills र २४-question review। पहिले बुझ, त्यसपछि मात्र समयको वैकल्पिक लक्ष्य राख।</p><button type="button" class="btn secondary" data-jp-lesson="30.7">Open Day 7 full review →</button></div>' : '<div class="jp-panel"><h3>Day 7: review</h3>' +
+  return html + '</div>' + (lessons.every(function(l){return l.optional;}) ? '<div class="jp-panel"><p class="jp-muted">These two imported lessons are optional previews. The other Week 19 roadmap topics will be taught in their own lessons later.</p></div>' : week===1 ? '<div class="jp-panel"><h3>Week 1 finish line</h3><p>Day 1–5 मा रूप र अर्थ सिक, Day 6 मा पूरा कथा पढेर आफ्नै भाषामा बुझाऊ, Day 7 मा उत्तर नहेरी सम्झ र बोल। Day 7 को quiz पछि गलत भएका दिन फेरि खोल; हतारमा Week 2 सुरु गर्नुपर्दैन।</p><button type="button" class="btn secondary" data-jp-lesson="1.7">Open Day 7 review →</button></div>' : week===2 ? '<div class="jp-panel"><h3>Week 2 finish line</h3><p>Day 1–6 मा प्रत्येक दिनका २० शब्दलाई सन्दर्भमा प्रयोग गर। Day 7 मा २० मुख्य शब्द अर्थ नहेरी सम्झ, fresh reading को सारांश देऊ र ६ वाक्य बोल। गलत भएका दिन फेरि पढेपछि Week 3 सुरु गर।</p><button type="button" class="btn secondary" data-jp-lesson="2.7">Open Day 7 review →</button></div>' : week===3 ? '<div class="jp-panel"><h3>Week 3 finish line</h3><p>Day 1–6 मा plain forms, opinions र relationship अनुसार बोल्ने style अभ्यास गर। Day 7 मा note नहेरी चार form chart बनाऊ, fresh reading बुझाऊ र एउटै कुरा friend तथा formal setting मा बोल। गलत quiz फेरि प्रयास गरेपछि मात्र अगाडि बढ।</p><button type="button" class="btn secondary" data-jp-lesson="3.7">Open Day 7 review →</button></div>' : week===4 ? '<div class="jp-panel"><h3>Week 4 finish line</h3><p>Day 1–6 मा action/state र चार प्रकारका rule छुट्याऊ। Day 7 मा fresh notice पढेर permission, prohibition, obligation र no-need आफ्नै शब्दमा explain गर। ている को अर्थ context बाट छुट्याउन र नियम मुखले भन्न सकेपछि Week 5 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="4.7">Open Day 7 review →</button></div>' : week===5 ? '<div class="jp-panel"><h3>Week 5 finish line</h3><p>Day 1–6 मा comparison, ranking, degree र recommendation बोल। Day 7 मा note नहेरी तीन विकल्प compare गर र प्रत्येक kanji को On compound तथा Kun word जोडी पढ। Evidence र कारणसहित निर्णय दिन सकेपछि Week 6 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="5.7">Open Day 7 review →</button></div>' : week===6 ? '<div class="jp-panel"><h3>Week 6 finish line</h3><p>Day 1–6 मा potential form, が/ことができる, 見える/聞こえる, service notice र obstacle/progress अभ्यास गर। Day 7 मा नोट नहेरी verb chart बनाऊ, fresh notice बाट पाँच तथ्य निकाल र आफ्नो ability progress दुई मिनेट बोल। Form र meaning दुवै सही भएपछि Week 7 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="6.7">Open Day 7 review →</button></div>' : week===7 ? '<div class="jp-panel"><h3>Week 7 finish line</h3><p>Day 1–6 मा help को direction, तीन viewpoints, polite request, offer/response र gratitude note अभ्यास गर। Day 7 मा arrow नहेरी बनाऊ, fresh thank-you note बुझ र एउटै घटना くれる/もらう दुवै camera angle बाट बोल। Relationship अनुसार request गर्न सकेपछि Week 8 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="7.7">Open Day 7 review →</button></div>' : week===8 ? '<div class="jp-panel"><h3>Week 8 finish line</h3><p>Day 1–6 मा と・たら・ば・なら को form भन्दा पहिले meaning र context छुट्याऊ। Day 7 मा note नहेरी चार-part decision chart बनाऊ, fresh passage बाट condition को कारण बताऊ र दुई मिनेट city guide बोल। Form छान्नुको कारण भन्न सकेपछि Week 9 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="8.7">Open Day 7 review →</button></div>' : week===9 ? '<div class="jp-panel"><h3>Week 9 finish line</h3><p>Day 1–6 मा 他動詞・自動詞 को camera angle, ている को state, てある को deliberate preparation र てしまう को regret/completion अभ्यास गर। Day 7 मा note नहेरी pair map बनाऊ, fresh lost-property notice बाट पाँच तथ्य निकाल र दुई मिनेटको report बोल। कारण, अवस्था र जिम्मेवारी स्पष्ट भन्न सकेपछि Week 10 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="9.7">Open Day 7 review →</button></div>' : week===10 ? '<div class="jp-panel"><h3>Week 10 finish line</h3><p>Day 1–6 मा passive, affected passive, factual passive, causative र causative-passive लाई form मात्र होइन viewpoint अनुसार प्रयोग गर। Day 7 मा note नहेरी तीन-form chart बनाऊ, fresh personal account पढ र दुई मिनेट आफ्नो अनुभव बोल। Actor, affected person र feeling स्पष्ट भएपछि Week 11 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="10.7">Open Day 7 review →</button></div>' : week===11 ? '<div class="jp-panel"><h3>Week 11 finish line</h3><p>Day 1–6 मा exact quote, indirect report, opinion, explanation, hearsay, naming र news summary अभ्यास गर। Day 7 मा note नहेरी six-pattern chart बनाऊ, fresh report बाट source र certainty जोगाएर पाँच तथ्य निकाल, अनि दुई मिनेटको attributed news report बोल। Quote, fact र hearsay स्पष्ट छुट्याउन सकेपछि Week 12 जाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="11.7">Open Day 7 review →</button></div>' : week===12 ? '<div class="jp-panel"><h3>Week 12 finish line · N4 checkpoint</h3><p>Day 1–6 मा story frame, timeline, omitted subject, listening skeleton, practical notices र 300-character story अभ्यास गर। Day 7 मा Furigana OFF बाट unseen passage पढ, source र numbers जोगाएर पाँच प्रश्न solve गर, अनि दुई मिनेट summary बोल। 80% भन्दा कम भए कमजोर Day फेरि पढ; सही facts र connected speech आएपछि N3 bridge सुरु गर।</p><button type="button" class="btn secondary" data-jp-lesson="12.7">Open Day 7 checkpoint →</button></div>' : week===13 ? '<div class="jp-panel"><h3>Week 13 finish line · N3 bridge</h3><p>Day 1–6 मा long-sentence structure, connector families, relative clauses, の/こと र paragraph flow अभ्यास गर। Day 7 मा vocabulary, Kanji, grammar र reading का 40 grouped drills तथा 20-question checkpoint गर। 80% भन्दा कम भएको category को सम्बन्धित Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="13.7">Open Day 7 full review →</button></div>' : week===14 ? '<div class="jp-panel"><h3>Week 14 finish line · purpose and goals</h3><p>Day 1–6 मा ために र ように लाई control, outcome र agent बाट छुट्याऊ; त्यसपछि つもり・予定・ことにする र ようにしている ले nine-month goal लाई measurable plan र daily habit मा बदल। Day 7 मा 40 retrieval drills, fresh reading र 20-question checkpoint गर। Pattern छान्नुको कारण बोल्न नसके सम्बन्धित Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="14.7">Open Day 7 full review →</button></div>' : week===15 ? '<div class="jp-panel"><h3>Week 15 finish line · change over time</h3><p>Day 1–6 मा ability र habit change, external decision, established rule, agency map र personal journey timeline अभ्यास गर। Day 7 मा vocabulary, Kanji, grammar र reading का 40 retrieval drills तथा 20-question checkpoint गर। Self decision, external decision, effort र result छुट्याउन नसकेको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="15.7">Open Day 7 full review →</button></div>' : week===16 ? '<div class="jp-panel"><h3>Week 16 finish line · source and certainty</h3><p>Day 1–6 मा appearance र hearsay そうだ, evidence-based ようだ, casual みたいだ र observation diary अभ्यास गर। Day 7 मा vocabulary, Kanji, grammar र reading का 40 retrieval drills तथा 20-question checkpoint गर। LOOK, HEARD, INFER र CASUAL छुट्याउन नसकेको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="16.7">Open Day 7 full review →</button></div>' : week===17 ? '<div class="jp-panel"><h3>Week 17 finish line · certainty and prediction</h3><p>Day 1–6 मा はず, はずがない, はずだった, かもしれない र に違いない लाई premise, possibility, conviction र confirmation अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh public notice र 20-question checkpoint गर। Prediction लाई fact बनाएको वा evidence भन्दा बलियो claim गरेको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="17.7">Open Day 7 full review →</button></div>' : week===18 ? '<div class="jp-panel"><h3>Week 18 finish line · time and aspect</h3><p>Day 1–6 मा たばかり, てばかりいる, three-stage ところ र うちに लाई recent feeling, repetition, exact stage र opportunity window अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh work diary र 20-question checkpoint गर। Timeline label वा remaining work अस्पष्ट भएको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="18.7">Open Day 7 full review →</button></div>' : week===19 ? '<div class="jp-panel"><h3>Week 19 finish line · contrast, cause, and tone</h3><p>Day 1–6 मा のに, くせに, おかげで र せいで लाई surprise, criticism, credit र blame अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh opinion reading र 20-question checkpoint गर। Evidence बिना blame गरेको वा summary मा speaker tone बदलिएको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="19.7.core">Open Day 7 full review →</button></div>' : week===20 ? '<div class="jp-panel"><h3>Week 20 finish line · topic, target, source, and evidence</h3><p>Day 1–6 मा について, に対して र によって family लाई topic, target, contrast, method, agent, cause, source र variation अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh news reading र 20-question checkpoint गर। Source वा number हराएको summary र evidence नभएको opinion भएको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="20.7">Open Day 7 full review →</button></div>' : week===21 ? '<div class="jp-panel"><h3>Week 21 finish line · explain the logic</h3><p>Day 1–6 मा わけだ, わけではない, わけがない, わけにはいかない र というわけ family लाई conclusion, scope, impossibility, duty र paraphrase अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh explanation reading र 20-question checkpoint गर। Evidence बिना strong judgment वा partial negation लाई total negation बनाएको Day फेरि पढ।</p><button type="button" class="btn secondary" data-jp-lesson="21.7">Open Day 7 full review →</button></div>' : week===22 ? '<div class="jp-panel"><h3>Week 22 finish line · tactful advice</h3><p>Day 1–6 मा べき, ことだ र ほうがいい लाई principle, warning, regret, practical habit र situational choice अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh problem-column reading र 20-question checkpoint गर। Relationship र urgency नमिलेको advice वा first step नभएको reply फेरि सुधार।</p><button type="button" class="btn secondary" data-jp-lesson="22.7">Open Day 7 full review →</button></div>' : week===23 ? '<div class="jp-panel"><h3>Week 23 finish line · concede and respond</h3><p>Day 1–6 मा ても, 疑問詞〜ても, どんなに・いくら〜ても, たとえ〜ても, のに र それでも लाई condition, degree, hypothetical, emotion र discourse response अनुसार प्रयोग गर। Day 7 मा 40 retrieval drills, fresh interview reading र 20-question checkpoint गर। Opposing view को scope बिगारेको वा evidence बिना dismiss गरेको response फेरि सुधार।</p><button type="button" class="btn secondary" data-jp-lesson="23.7">Open Day 7 full review →</button></div>' : week===24 ? '<div class="jp-panel"><h3>Week 24 finish line · audience and register</h3><p>साथी र शिक्षकलाई एउटै fact दुई register मा लेख। Request, permission, respectful/humble actor र email structure जाँच। Day 7 मा 40 retrieval drills र 20 quiz questions गर।</p><button class="btn secondary" data-jp-lesson="24.7">Open Day 7 full review →</button></div>' : week===25 ? '<div class="jp-panel"><h3>Week 25 finish line · people and society</h3><p>People, roles, activities, safety, support and local opinions लाई compound तथा sentence सँग सिक। Notice मा eligibility, event date, deadline, fee र exception निकाल। Day 7 मा 40 retrieval drills, fresh reading र 20-question checkpoint गर। Mistaken readings र facts फेरि जाँचेर मात्रै अगाडि बढ।</p><button type="button" class="btn secondary" data-jp-lesson="25.7">Open Day 7 full review →</button></div>' : week===26 ? '<div class="jp-panel"><h3>Week 26 finish line · work and study</h3><p>Roles, deadlines, reports, meetings, assignments र training notices अभ्यास गर। Day 7 मा 40 retrieval drills र 20-question checkpoint गर। Owner, task, deadline र decision status आफ्नै शब्दमा स्पष्ट भन्न सकेपछि अघि बढ।</p><button type="button" class="btn secondary" data-jp-lesson="26.7">Open Day 7 full review →</button></div>' : week===27 ? '<div class="jp-panel"><h3>Week 27 finish line · health and travel</h3><p>Symptoms, clinic notices, transport disruptions, bookings, lost belongings र travel plan अभ्यास गर। Day 7 मा 40 retrieval drills र 20-question checkpoint गर। Fact, condition, forecast र unknown छुट्याएर सहायता माग्न सकेपछि अघि बढ।</p><button type="button" class="btn secondary" data-jp-lesson="27.7">Open Day 7 full review →</button></div>' : week===28 ? '<div class="jp-panel"><h3>Week 28 finish line · main idea and evidence</h3><p>Day 1–6: दैनिक २० शब्द, On/Kun सहित ५ kanji, लामो original reading र evidence अभ्यास। Day 7: ४० retrieval drills र २० quiz questions। Summaryमा scope, condition र uncertainty जोगाऊ।</p><button type="button" class="btn secondary" data-jp-lesson="28.7">Open Day 7 full review →</button></div>' : week===29 ? '<div class="jp-panel"><h3>Week 29 finish line · vocabulary and grammar in context</h3><p>Daily ２０ words, On/Kun सहित５kanji र१४quizquestions। पहिलेअर्थबुझ,त्यसपछिtime targetप्रयोगगर। Day 7मा４０drills र２０questions。 Wrong reading, particle, tense, scope रinferenceलाईअलगसुधार।</p><button type="button" class="btn secondary" data-jp-lesson="29.7">Open Day 7 full review →</button></div>' : week===30 ? '<div class="jp-panel"><h3>Week 30 finish line · notices, essays and evidence</h3><p>Day 1–6: २० words, On/Kun सहित ५ kanji, ३ grammar patterns, original reading, १४ quiz questions र आफ्नै सार। Day 7: ४८ retrieval drills र २४-question review। पहिले बुझ, त्यसपछि मात्र समयको वैकल्पिक लक्ष्य राख।</p><button type="button" class="btn secondary" data-jp-lesson="30.7">Open Day 7 full review →</button></div>' : '<div class="jp-panel"><h3>Day 7: review</h3>' +
     '<p>Re-read the hardest passage without translation. Redo missed questions. Speak for two minutes using this week’s patterns and write down the words you could not recall. Repeat any day that still feels shaky.</p></div>');
 }
 function jpWeekReviewPractice(lesson){
@@ -34021,10 +34116,10 @@ function renderCybersecurityRoadmap(){
     content = '<button type="button" class="back-link" data-cyber-all>← All weeks</button>' +
       '<div class="week-header"><div class="wh-eyebrow">Year ' + Math.ceil(week.week/52) + ' · Week ' + week.week + ' · Cybersecurity</div>' +
       '<h2>' + escapeHtml(week.title) + '</h2></div>' +
-      '<div class="section-label">' + (CYBERSECURITY_TEACH[week.week+".1"] ? 'Daily lessons' : 'Daily roadmap') + '</div><div class="day-list">' +
+      '<div class="section-label">' + (CYBERSECURITY_TEACH[week.week+".1"] ? 'Daily lessons' : 'Daily roadmap') + '</div><div class="day-list lesson-day-grid" aria-label="Choose a daily lesson">' +
       week.days.map(function(day){
-        return '<div class="day-row"><button type="button" class="day-open" data-cyber-day="' + day.day + '">' +
-          '<div class="dr-title">Day ' + day.day + '</div><div class="dr-meta">' +
+        return '<div class="day-row"><button type="button" class="day-open" data-cyber-day="' + day.day + '" title="' + escapeAttr("Day "+day.day+": "+day.focus) + '">' +
+          '<div class="dr-title day-card-number">Day ' + day.day + '</div><div class="dr-meta">' +
           escapeHtml(day.focus) + '</div></button></div>';
       }).join('') + '</div>';
   } else {
@@ -35760,19 +35855,20 @@ function renderCourseOverview(){
         const total = p.weeks.length * 7;
         const pdone = phaseDoneCount(p);
         return `
-        <div class="phase-block">
-          <div class="phase-head" data-phase="${p.n}">
+        <details class="phase-block learning-group" data-learning-group="python-phase-${p.n}"${learningGroupOpen('python-phase-'+p.n)?' open':''}>
+          <summary class="phase-head" data-phase="${p.n}">
             <div class="ph-num">${p.n}</div>
             <div class="ph-text">
               <div class="ph-name">${escapeHtml(p.name)}</div>
               <div class="ph-months">${p.months} · Weeks ${p.weeks[0]}–${p.weeks[p.weeks.length-1]}</div>
-              <div class="ph-blurb">${escapeHtml(p.blurb)}</div>
             </div>
             <div class="ph-prog">
               <div class="ph-frac">${pdone}/${total}</div>
               ${progressBar(pdone, total, true)}
             </div>
-          </div>
+            <span class="learning-group-toggle" aria-hidden="true"><span class="group-show">Show weeks</span><span class="group-hide">Hide weeks</span><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path class="toggle-vertical" d="M12 5v14"/></svg></span>
+          </summary>
+          <p class="ph-blurb">${escapeHtml(p.blurb)}</p>
           <div class="week-grid">
             ${p.weeks.map(wn=>{
               const wk = weekByNum(wn);
@@ -35785,11 +35881,12 @@ function renderCourseOverview(){
               </button>`;
             }).join("")}
           </div>
-        </div>`;
+        </details>`;
       }).join("")}
     </div>
   `;
 
+  wireLearningGroups(el);
   wireResumeCard();
   document.getElementById("pythonPracticeHome").onclick=openPythonPractice;
   el.querySelectorAll(".week-chip[data-week]").forEach(b=>{
@@ -35816,23 +35913,25 @@ function renderCourseWeek(){
     </div>
 
     <div class="section-label">Daily lessons</div>
-    <div class="day-list">
+    <div class="day-list lesson-day-grid python-day-grid" aria-label="Choose a daily lesson">
       ${days.map((d,i)=>{
         const done = isDone(num,i);
         const gd = globalDay(num,i);
         return `<div class="day-row ${done?'done':''}">
-          <button type="button" class="day-check" data-toggle="${i}" aria-label="Mark done">${done?'✓':''}</button>
-          <button type="button" class="day-open" data-day="${i}">
+          <button type="button" class="day-check" data-toggle="${i}" aria-pressed="${done}" aria-label="Mark ${DAY_NAMES[i]} ${done?'incomplete':'complete'}">${done?'✓':''}</button>
+          <button type="button" class="day-open" data-day="${i}" title="${escapeAttr(DAY_NAMES[i]+': '+d[0])}">
+            <span class="day-card-number">${DAY_NAMES[i]}</span>
             <div class="dr-title">${escapeHtml(d[0])}</div>
-            <div class="dr-meta">${DAY_NAMES[i]} · ${dateForDay(gd).toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"})}</div>
+            <div class="dr-meta">${dateForDay(gd).toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"})}</div>
           </button>
         </div>`;
       }).join("")}
       <div class="day-row ${isDone(num,6)?'done':''}">
-        <button type="button" class="day-check" data-toggle="6" aria-label="Mark done">${isDone(num,6)?'✓':''}</button>
-        <button type="button" class="day-open" data-day="6">
+        <button type="button" class="day-check" data-toggle="6" aria-pressed="${isDone(num,6)}" aria-label="Mark Day 7 ${isDone(num,6)?'incomplete':'complete'}">${isDone(num,6)?'✓':''}</button>
+        <button type="button" class="day-open" data-day="6" title="Day 7: Review &amp; rest">
+          <span class="day-card-number">Day 7</span>
           <div class="dr-title">Review &amp; rest</div>
-          <div class="dr-meta">Day 7 · ${dateForDay(globalDay(num,6)).toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"})}</div>
+          <div class="dr-meta">${dateForDay(globalDay(num,6)).toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"})}</div>
         </button>
       </div>
     </div>
@@ -178794,8 +178893,8 @@ function renderWebDevelopment(){
       '<div class="section-label">Choose a year, then a week</div>'+roadmapYearsHtml(WEBDEV_PATH,WEBDEV_ROADMAP,webDevPage.week,'webdev');
   }else if(webDevPage.mode==='week'){
     content='<button type="button" class="back-link" data-webdev-all>← All years and weeks</button><div class="week-header"><div class="wh-eyebrow">Year '+Math.ceil(week.week/52)+' · Week '+week.week+' · Web Development</div><h2>'+escapeHtml(week.title)+'</h2></div>'+
-      '<section class="webdev-checkpoint"><h3>This week’s readiness check</h3><p>'+escapeHtml(week.checkpoint)+'</p></section><div class="section-label">Daily roadmap</div><div class="day-list">'+week.days.map(function(day){
-        return '<div class="day-row"><button type="button" class="day-open" data-webdev-day="'+day.day+'"><div class="dr-title">Day '+day.day+'</div><div class="dr-meta">'+escapeHtml(day.focus)+'</div></button></div>';
+      '<section class="webdev-checkpoint"><h3>This week’s readiness check</h3><p>'+escapeHtml(week.checkpoint)+'</p></section><div class="section-label">Daily roadmap</div><div class="day-list lesson-day-grid" aria-label="Choose a daily lesson">'+week.days.map(function(day){
+        return '<div class="day-row"><button type="button" class="day-open" data-webdev-day="'+day.day+'" title="'+escapeAttr("Day "+day.day+": "+day.focus)+'"><div class="dr-title day-card-number">Day '+day.day+'</div><div class="dr-meta">'+escapeHtml(day.focus)+'</div></button></div>';
       }).join('')+'</div>';
   }else{
     const day=week.days.find(item=>item.day===webDevPage.day)||week.days[0];webDevPage.day=day.day;
@@ -178844,6 +178943,31 @@ function initCompactWorkspace(){
 }
 initCompactWorkspace();
 /* COMPACT WORKSPACE END */
+/* LEARNING NAVIGATION START — device-only presentation; no learner-data changes. */
+const learningGroupPreferenceKey='studyHubLearningGroups';
+const learningGroupPreferences=Object.create(null);
+try{
+  const raw=localStorage.getItem(learningGroupPreferenceKey);
+  const values=raw&&raw.length<4096?JSON.parse(raw):null;
+  if(values&&typeof values==='object'&&!Array.isArray(values)){
+    Object.keys(values).forEach(key=>{
+      if(/^python-phase-[1-8]$/.test(key)&&typeof values[key]==='boolean')learningGroupPreferences[key]=values[key];
+    });
+  }
+}catch(error){}
+function learningGroupOpen(key){return learningGroupPreferences[key]===true;}
+function wireLearningGroups(root){
+  root.querySelectorAll('details[data-learning-group]').forEach(group=>{
+    group.addEventListener('toggle',()=>{
+      if(!root.contains(group))return;
+      const key=group.dataset.learningGroup;
+      if(!/^python-phase-[1-8]$/.test(key)||learningGroupPreferences[key]===group.open)return;
+      learningGroupPreferences[key]=group.open;
+      try{localStorage.setItem(learningGroupPreferenceKey,JSON.stringify(learningGroupPreferences));}catch(error){}
+    });
+  });
+}
+/* LEARNING NAVIGATION END */
 
 boot();
 

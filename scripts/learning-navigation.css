@@ -1,0 +1,95 @@
+/* LEARNING NAVIGATION STYLE START */
+/* Compact day choices. Full descriptions stay in the DOM and inside each lesson. */
+.lesson-day-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:stretch}
+.lesson-day-grid>*{min-width:0}
+.lesson-day-grid .day-row{position:relative;display:block;min-width:0;margin:0}
+.lesson-day-grid .day-open{display:flex;flex-direction:column;align-items:flex-start;gap:7px;width:100%;height:100%;min-height:116px;padding:14px;text-align:left;color:var(--text);border:1px solid var(--border);border-radius:12px;background:var(--bg-elev);overflow-wrap:anywhere}
+.lesson-day-grid .day-card-number{font-size:10px;font-weight:750;line-height:1.5;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.lesson-day-grid .dr-title{font-size:14px;line-height:1.45;letter-spacing:-.15px;color:var(--text);font-weight:650}
+.lesson-day-grid .dr-meta{font-size:12px;line-height:1.55;margin:0;color:var(--text-dim)}
+.lesson-day-grid .dr-title,.lesson-day-grid .dr-meta{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+#courseBody .lesson-day-grid .day-open{min-height:132px;padding-bottom:52px}
+#courseBody .lesson-day-grid .dr-title{-webkit-line-clamp:2}
+#courseBody .lesson-day-grid .dr-meta{position:absolute;bottom:19px;left:14px;right:62px;white-space:nowrap;display:block;text-overflow:ellipsis;overflow:hidden;font-size:11px}
+.lesson-day-grid .day-check{position:absolute;bottom:8px;right:8px;z-index:1;width:44px;height:44px;min-height:44px;border-radius:9px;background:var(--bg-soft);font-size:16px}
+.lesson-day-grid .day-check::before{content:'';display:inline-block;width:12px;height:12px;border:1.5px solid currentColor;border-radius:3px;vertical-align:middle}
+.lesson-day-grid .day-row.done .day-check::before{display:none}
+.lesson-day-grid .day-row.done .day-open{border-color:color-mix(in srgb,var(--accent) 45%,var(--border));background:var(--accent-soft)}
+.lesson-day-grid .day-row.done .dr-title{color:var(--text)}
+.lesson-day-grid :is(.day-open,.day-check):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* Week headers are compact, with all goals and progress still available. */
+:is(#courseBody,#cybersecurityBody,#webDevelopmentBody):has(>.lesson-day-grid)>.week-header{padding:12px 18px;margin-bottom:14px}
+:is(#courseBody,#cybersecurityBody,#webDevelopmentBody):has(>.lesson-day-grid)>.week-header h2{font-size:24px;line-height:1.25;margin:7px 0}
+:is(#courseBody,#cybersecurityBody,#webDevelopmentBody):has(>.lesson-day-grid)>.week-header .wh-goal{max-width:none}
+:is(#courseBody,#cybersecurityBody,#webDevelopmentBody):has(>.lesson-day-grid)>.section-label{margin-top:18px}
+#view-japanese .jp-mode-week>.jp-hero{padding:18px 20px;margin-bottom:16px}
+#view-japanese .jp-mode-week>.jp-hero h2{font-size:25px;line-height:1.3;margin:6px 0 8px}
+#view-japanese .jp-mode-week>.jp-hero p{font-size:13px;line-height:1.65;margin:7px 0}
+#view-japanese .jp-mode-week>.jp-hero .jp-progress{margin-top:12px}
+#view-japanese .jp-mode-week>.jp-section-title{font-size:15px;margin:14px 0 10px}
+#view-japanese .jp-day-grid .jp-day-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:112px;width:100%;margin:0;padding:11px 14px;border-radius:12px;background:var(--bg-elev);text-align:left}
+#view-japanese .jp-day-grid .jp-day-card::after{display:none}
+#view-japanese .jp-day-grid .jp-day-card>strong{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:16px;line-height:1.4;margin:0;max-width:100%}
+#view-japanese .jp-day-grid .jp-day-card>small:first-child{font-size:10px;color:var(--accent);line-height:1.5;letter-spacing:.03em}
+#view-japanese .jp-day-grid .jp-day-card>.jp-day-goal{font-size:12px;line-height:1.6;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%;margin-top:auto}
+#view-japanese .jp-day-grid .jp-day-card.is-complete{background:var(--accent-soft)}
+@media(min-width:761px){
+ #view-japanese .jp-mode-week>.jp-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,.42fr);gap:5px 24px;align-items:center;padding:16px 20px}
+ #view-japanese .jp-mode-week>.jp-hero>.jp-kicker{grid-column:1/-1}
+ #view-japanese .jp-mode-week>.jp-hero>h2{grid-column:1;grid-row:2;margin:0;font-size:23px}
+ #view-japanese .jp-mode-week>.jp-hero>p{grid-column:1;grid-row:3;margin:0}
+ #view-japanese .jp-mode-week>.jp-hero>.jp-progress{grid-column:2;grid-row:2;width:100%;margin:0}
+ #view-japanese .jp-mode-week>.jp-hero>small{grid-column:2;grid-row:3;font-size:11px;line-height:1.6;color:var(--text-dim)}
+}
+
+/* Native disclosures provide mouse, touch and keyboard expand/collapse. */
+#courseBody .phase-block.learning-group{padding:0;margin-bottom:12px;border-radius:13px;overflow:clip}
+#courseBody .learning-group>.phase-head{display:grid;grid-template-columns:34px minmax(0,1fr) 68px auto;gap:12px;align-items:center;padding:16px 18px;cursor:pointer;list-style:none;color:var(--text)}
+#courseBody .learning-group>.phase-head::-webkit-details-marker{display:none}
+#courseBody .learning-group>.phase-head:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+#courseBody .learning-group[open]>.phase-head{border-bottom:1px solid var(--border)}
+#courseBody .learning-group .ph-num{width:32px;height:32px;font-size:13px}
+#courseBody .learning-group .ph-name{font-size:15px;line-height:1.45;overflow-wrap:anywhere}
+#courseBody .learning-group .ph-months{font-size:11px;line-height:1.5;margin-top:3px}
+#courseBody .learning-group .ph-prog{width:auto}
+#courseBody .learning-group .ph-frac{font-size:11px}
+#courseBody .learning-group>.ph-blurb{padding:13px 18px 0;margin:0;color:var(--text-dim);font-size:13px;line-height:1.6}
+#courseBody .learning-group>.week-grid{margin:0;padding:14px 18px 18px}
+.learning-group-toggle{display:flex;align-items:center;gap:9px;color:var(--accent);font-size:11px;white-space:nowrap;font-weight:650}
+.learning-group-toggle svg{width:30px;height:30px;border:1px solid var(--border);border-radius:8px;background:var(--bg-soft);padding:7px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.learning-group[open] .learning-group-toggle .toggle-vertical{display:none}
+.learning-group .group-hide,.learning-group[open] .group-show{display:none}
+.learning-group[open] .group-hide{display:inline}
+@media(hover:hover) and (pointer:fine){
+ .lesson-day-grid .day-open:hover,#view-japanese .jp-day-grid .jp-day-card:hover{border-color:var(--accent);background:var(--accent-soft);box-shadow:var(--shadow)}
+ #courseBody .learning-group>.phase-head:hover{background:var(--bg-soft)}
+}
+@media(max-width:1100px) and (min-width:761px){.lesson-day-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){
+ .lesson-day-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .lesson-day-grid .day-open{min-height:108px;padding:12px;gap:6px}
+ .lesson-day-grid .dr-title{font-size:13px}
+ .lesson-day-grid .dr-meta{font-size:11px}
+ #courseBody .lesson-day-grid .day-open{min-height:128px}
+ #courseBody .lesson-day-grid .dr-meta{left:12px;bottom:20px}
+ #view-japanese .jp-day-grid .jp-day-card{padding:12px;min-height:110px;gap:5px}
+ #view-japanese .jp-day-grid .jp-day-card>.jp-day-goal{font-size:11px;line-height:1.6}
+ #view-japanese .jp-day-grid .jp-day-card>strong{font-size:15px}
+ #view-japanese .jp-mode-week>.jp-hero{padding:15px 16px;margin-bottom:13px}
+ #view-japanese .jp-mode-week>.jp-hero h2{font-size:22px}
+ :is(#courseBody,#cybersecurityBody,#webDevelopmentBody):has(>.lesson-day-grid)>.week-header{padding:13px 15px}
+ #courseBody .learning-group>.phase-head{padding:13px;gap:7px 10px;grid-template-columns:28px minmax(0,1fr) 32px}
+ #courseBody .learning-group .ph-num{width:27px;height:27px;font-size:12px;grid-row:1/3}
+ #courseBody .learning-group .ph-text{grid-column:2;grid-row:1}
+ #courseBody .learning-group .ph-name{font-size:14px}
+ #courseBody .learning-group .ph-months{font-size:10px}
+ #courseBody .learning-group .ph-prog{grid-column:2;grid-row:2;display:flex;align-items:center;gap:8px;text-align:left}
+ #courseBody .learning-group .ph-prog .pbar{width:72px;margin:0}
+ #courseBody .learning-group-toggle{grid-column:3;grid-row:1/3}
+ #courseBody .learning-group-toggle :is(.group-show,.group-hide){display:none}
+ #courseBody .learning-group>.week-grid{padding:12px}
+ #courseBody .learning-group>.ph-blurb{padding:12px 13px 0;font-size:12px}
+}
+@media(forced-colors:active){.lesson-day-grid .day-row.done .day-open,#view-japanese .jp-day-grid .jp-day-card.is-complete{border:2px solid Highlight}.learning-group-toggle svg{border-color:ButtonText}}
+/* LEARNING NAVIGATION STYLE END */
