@@ -1,7 +1,8 @@
 const fs=require('fs'),cp=require('child_process'),assert=require('assert/strict');
 const {lessons,examples}=require('../scripts/web-development-week1-content.cjs');
 const html=fs.readFileSync('study-hub.html','utf8');
-const data=JSON.parse(html.split('const WEBDEV_TEACH = ')[1].split(';\n/* WEB DEVELOPMENT TEACHING END */')[0]);
+const all=JSON.parse(html.split('const WEBDEV_TEACH = ')[1].split(';\n/* WEB DEVELOPMENT TEACHING END */')[0]);
+const data=Object.fromEntries(Object.entries(all).filter(([id])=>id.startsWith('1.')));
 assert.deepEqual(data,lessons);assert.deepEqual(Object.keys(data),['1.1','1.2','1.3','1.4','1.5','1.6','1.7']);
 for(const [id,l] of Object.entries(data)){
  assert.equal(l.id,'webdev:'+id);assert(l.objective&&l.reflection);assert(l.sections.length>=20);assert(l.sections.filter(s=>s.t==='h').length>=4);

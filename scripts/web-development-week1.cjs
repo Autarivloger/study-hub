@@ -5,7 +5,10 @@ let html=fs.readFileSync(file,'utf8');
 const json=x=>JSON.stringify(x,null,2).replace(/<\//g,'<\\/');
 function atomic(target,value){fs.writeFileSync(target+'.tmp',value,'utf8');for(let i=0;;i++){try{fs.renameSync(target+'.tmp',target);break;}catch(e){if(i>=12)throw e;Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,200);}}}
 const start='/* WEB DEVELOPMENT TEACHING START */',end='/* WEB DEVELOPMENT TEACHING END */';
-const block=start+'\nconst WEBDEV_TEACH = '+json(lessons)+';\n'+end+'\n';
+// Revising Week 1 must retain teaching authored for every other week.
+const oldBlock=html.match(/const WEBDEV_TEACH = ([\s\S]*?);\n\/\* WEB DEVELOPMENT TEACHING END \*\//);
+const existing=oldBlock?JSON.parse(oldBlock[1]):{};
+const block=start+'\nconst WEBDEV_TEACH = '+json({...existing,...lessons})+';\n'+end+'\n';
 if(html.includes(start)){
  assert(process.argv.includes('--update'),'Week 1 already exists. Use --update to revise it.');
  const a=html.indexOf(start),b=html.indexOf(end,a)+end.length;assert(b>a);html=html.slice(0,a)+block.trimEnd()+html.slice(b);

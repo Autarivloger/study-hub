@@ -20,7 +20,7 @@ async function main(){
  for(let i=0;i<100&&!await evaluate('Boolean(window.__studyHubBooted)');i++)await sleep(80);
  assert(await evaluate('Boolean(window.__studyHubBooted)'),'Boot');
  await evaluate('closeModal();DB=applyDefaults({course:{done:{"1.0":"2026-10-19"},notes:{"1.0":"Keep Python note"}},japanese:{done:{"31.1":"2026-10-20"},notes:{"31.1":"Keep Japanese note"}},lessonsDone:{"old-session":"2026-10-19"},lessonQuizScores:{"old-quiz":75},headNotes:{legacy:"Keep heading note","cyber:9.1|day-notes":"Keep Cyber note"}});save();switchView("webdev");closeModal()');
- assert(await evaluate('document.querySelectorAll(".cyber-phase [data-webdev-week]").length===156&&[...document.querySelectorAll(".cyber-phase [data-webdev-week]")].filter(b=>b.textContent.includes("Lessons ready")).length===1'),'Roadmap intact; only Week1 ready');
+ assert(await evaluate('document.querySelectorAll(".cyber-phase [data-webdev-week]").length===156&&[...document.querySelectorAll(".cyber-phase [data-webdev-week]")].filter(b=>b.textContent.includes("Lessons ready")).length===new Set(Object.keys(WEBDEV_TEACH).map(id=>id.split(".")[0])).size'),'Roadmap and authored readiness intact');
  await evaluate('document.querySelector(".webdev-start [data-webdev-week]").click()');
  assert(await evaluate('document.querySelectorAll("[data-webdev-day]").length===7&&document.querySelector(".webdev-week-progress").textContent.includes("0 / 7")'),'Week grid and progress');
  for(let day=1;day<=7;day++){
@@ -45,7 +45,7 @@ async function main(){
  assert.equal(await evaluate('DB.lessonQuizScores["webdev:1.4"]'),100,'Best score not lowered');
  assert(await evaluate('DB.headNotes[window.__webHeadingKey]==="Remember UTF-8 <script>literal</script>"&&[...document.querySelectorAll(".webdev-teaching textarea")].some(t=>t.value.includes("<script>literal</script>"))'),'Heading note literal round trip');
  await evaluate('webDevPage={mode:"day",week:1,day:1};renderWebDevelopment()');assert(await evaluate('document.querySelector("[data-webdev-step=\\"-1\\"]").disabled'),'First boundary');
- await evaluate('webDevPage={mode:"day",week:1,day:7};renderWebDevelopment();document.querySelector("[data-webdev-step=\\"1\\"]").click()');assert(await evaluate('webDevPage.week===2&&webDevPage.day===1&&!!document.querySelector(".webdev-roadmap-label")&&!document.querySelector(".webdev-teaching")'),'Next week still roadmap');
+ await evaluate('webDevPage={mode:"day",week:1,day:7};renderWebDevelopment();document.querySelector("[data-webdev-step=\\"1\\"]").click()');assert(await evaluate('webDevPage.week===2&&webDevPage.day===1&&Boolean(document.querySelector(".webdev-teaching"))===Boolean(WEBDEV_TEACH["2.1"])'),'Next week readiness');
  await evaluate('document.querySelector("[data-webdev-step=\\"-1\\"]").click()');assert(await evaluate('webDevPage.week===1&&webDevPage.day===7&&!!document.querySelector(".webdev-teaching")'),'Return to authored week');
  for(const [width,height] of [[1480,900],[900,768],[768,1024],[375,812],[320,700]]){
   await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<761});
