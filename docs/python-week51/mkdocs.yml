@@ -1,0 +1,11 @@
+site_name: Study Hub Records
+docs_dir: manual
+site_dir: site
+use_directory_urls: false
+theme:
+  name: mkdocs
+nav:
+  - Start: index.md
+  - API: api.md
+  - Performance: performance.md
+  - Release: release.md

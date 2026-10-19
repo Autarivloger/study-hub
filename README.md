@@ -23,6 +23,20 @@ use, with no font download or decorative JavaScript. Reading widths, text select
 touch targets, Furigana navigation clearance, reduced motion and High Contrast
 keyboard outlines are covered by the design checks.
 
+## Python Week 51 — Performance, packaging & professional practice
+
+Open **Course → Week 51** for six days with 36 teaching parts, 72 exercises,
+72 explained quiz questions, 108 executed Python examples/solutions and six
+embedded visuals. Study call/line profiling, fair timing and allocation measures,
+three algorithm rewrites, package metadata, wheels, documentation, code review
+and focused contribution habits. Take additional sessions whenever needed.
+The [original records library](docs/python-week51/README.md) includes behavior
+tests, a measured benchmark, executable docstrings, a real MkDocs build and a
+release verifier that builds a wheel from its source archive, installs it into
+a fresh environment and runs the installed API and CLI outside the checkout.
+TestPyPI publication and an actual upstream submission are separate manual online
+exercises; local builds never upload packages or handle learner credentials.
+
 ## Python Week 50 — Concurrency & parallelism
 
 Open **Course → Week 50** for six days, 36 parts, 72 exercises, 72 explained

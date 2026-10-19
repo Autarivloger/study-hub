@@ -1,0 +1,8 @@
+build==1.6.1
+setuptools==84.0.0
+wheel==0.48.0
+twine==7.0.0
+mkdocs==1.6.1
+line-profiler==5.1.0
+pytest==9.1.1
+ruff==0.17.1
