@@ -2545,6 +2545,46 @@ body:not(.games-focus) .pane-header{padding:16px 24px 12px}
 .webdev-week-progress{color:var(--accent);font-weight:600;}
 @media(max-width:760px){#webDevelopmentBody .webdev-teaching .btn,#webDevelopmentBody .webdev-teaching .ls-quiz-opt,#webDevelopmentBody .webdev-completion .btn{min-height:44px;}}
 /* WEB DEVELOPMENT TEACHING STYLE END */
+/* GITA BOOK STYLE START */
+.gita-library{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:16px;margin:18px 0}
+.gita-library .card{margin:0}.gita-book-cover{width:94px;float:left;margin:0 18px 12px 0;border-radius:8px}
+.gita-daily blockquote{font-size:20px;line-height:1.7;margin:12px 0;color:var(--text);font-weight:600}
+.gita-daily p[lang=ne],.gita-study [lang=ne]{line-height:1.9}
+.gita-daily small,.gita-muted{color:var(--text-dim);font-size:12px;line-height:1.6}
+.gita-reader{max-width:1100px;margin:0 auto;min-width:0}
+.gita-reader .card{padding:18px;margin:14px 0;border:1px solid var(--border);background:var(--bg-elev);border-radius:16px}
+.gita-reader h2{font-size:24px;line-height:1.5;margin:8px 0}
+.gita-reader button,.gita-reader input,.gita-reader select{font:inherit}
+.gita-reader :is(button,input,select){min-height:44px}
+.gita-toolbar{position:sticky;top:var(--gita-sticky-top,76px);z-index:22;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--bg-elev);box-shadow:var(--shadow)}
+.gita-toolbar label{display:flex;align-items:center;gap:6px;font-size:12px}
+.gita-toolbar input{width:76px;max-width:100%;padding:6px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:7px}
+.gita-toolbar select{max-width:100%;min-width:0;padding:6px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:7px}
+.gita-toolbar .gita-chapter-select{flex:1 1 220px}.gita-toolbar .btn{padding:6px 10px;font-size:12px}
+.gita-page-scroll{overflow-x:auto;margin:12px 0 32px;padding:4px 0;overscroll-behavior-x:contain}
+.gita-paper{position:relative;margin:0 auto;background:#fff;box-shadow:0 4px 24px #0002;isolation:isolate}
+.gita-paper canvas{display:block;width:100%;height:auto}
+.gita-ink{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.gita-ink.is-drawing{pointer-events:auto;touch-action:none;cursor:crosshair}
+.gita-ink polyline{fill:none;stroke:#d33a24;stroke-width:.0028;stroke-linecap:round;stroke-linejoin:round}
+.gita-pencil-tools{position:fixed;right:calc(18px + env(safe-area-inset-right));bottom:calc(20px + env(safe-area-inset-bottom));z-index:75;display:flex;flex-direction:column;gap:7px;padding:8px;border:1px solid var(--border);border-radius:18px;background:var(--bg-elev);box-shadow:var(--shadow)}
+.gita-pencil-tools button{width:48px;height:48px;min-height:48px;padding:8px;border-radius:12px}
+.gita-pencil-tools svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;pointer-events:none}
+.gita-pencil-tools [aria-pressed=true]{background:var(--accent);color:var(--bg)}
+.gita-pencil-tools:not(.is-drawing) :is(#gitaUndo,#gitaRedo){display:none}
+.gita-pencil-help{margin:8px 0;font-size:12px;color:var(--text-dim);line-height:1.6;max-width:75ch}
+.gita-status{font-size:12px;color:var(--text-dim);min-height:24px;margin:8px 0}
+.gita-study summary{cursor:pointer;font-weight:600;line-height:1.6;min-height:44px;padding:8px 0}
+.gita-study p{line-height:1.85}.gita-study details{border-top:1px solid var(--border);padding:10px 0}
+.gita-study h3{font-size:17px;margin:14px 0 8px}
+.gita-chapter-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.gita-chapter-grid button{text-align:left;white-space:normal;font-size:12px}
+.gita-reader .gita-notes textarea{width:100%;min-height:120px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);resize:vertical;box-sizing:border-box}
+.gita-reader .gita-book-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media(max-width:760px){.gita-library{grid-template-columns:1fr}.gita-reader h2{font-size:20px}.gita-toolbar{top:var(--gita-sticky-top,124px)}.gita-toolbar .gita-chapter-select{flex-basis:100%}.gita-chapter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gita-pencil-tools{right:10px;bottom:12px;padding:6px;gap:5px}.gita-pencil-tools button{width:44px;height:44px;min-height:44px}.gita-page-scroll{margin-bottom:200px}.gita-daily blockquote{font-size:18px}}
+@media print{.gita-pencil-tools,.gita-toolbar{display:none}}
+/* GITA BOOK STYLE END */
+
 </style>
 </head>
 <body>
@@ -6580,7 +6620,10 @@ function mergeIntoDB(incoming){
 
   MAP_KEYS.forEach(function(key){
     Object.keys(incoming[key]).forEach(function(k){
-      if(key === "lessonQuizScores"){
+      /* GITA BOOK MERGE */
+      if(key==="headNotes" && gitaIsRecordKey(k)){
+        DB.headNotes[k]=gitaMergeRecord(DB.headNotes[k],incoming.headNotes[k]);
+      }else if(key === "lessonQuizScores"){
         const mine = DB[key][k];
         const theirs = incoming[key][k];
         DB[key][k] = (mine == null) ? theirs : Math.max(mine, theirs);   // keep the best
@@ -6748,6 +6791,7 @@ function confirmDialog(message, onYes){
 /* ============ Navigation ============ */
 const views = ["webdev","games","sokoban","sudoku","chess","course","lessons","journal","wisdom","liked","typing","japanese","reviews","notes","timer","flashcards","todo","quiz"];
 function switchView(name){
+  /* GITA BOOK LEAVE */ if(name!=="lessons" && typeof gitaBookLeave==="function")gitaBookLeave();
   if(name!=="japanese")jpStopSpeech();
   const navigationName=["chess","sudoku","sokoban"].includes(name)?"games":name;
   views.forEach(v=>{
@@ -165245,6 +165289,711 @@ function wireLessonQuiz(el, L){
   });
 }
 
+/* GITA BOOK DATA START */
+const GITA_BOOK = {
+  "id": "gita-v1",
+  "pages": 1296,
+  "sourceSha256": "b444867d9721b826f63a20a2806ca25c13a264e141ca3c20c7a3121d0cb3dd1c",
+  "chapters": [
+    {
+      "chapter": 1,
+      "name": "अर्जुनविषादयोग",
+      "page": 25,
+      "end": 64,
+      "context": "युद्धभूमिमा आफन्त र गुरुहरू देखेपछि अर्जुनको आत्मविश्वास हल्लिन्छ। शारीरिक कम्पन, शोक र नैतिक प्रश्नबाट संवाद सुरु हुन्छ।",
+      "insight": "सङ्कट केवल डरको कथा होइन: सम्बन्ध, कर्तव्य र हानिको प्रश्न आपसमा ठोक्किएका छन्। तुरुन्त जोस बढाउने सल्लाहभन्दा पहिले समस्या इमानदारीसँग सुन्नुपर्छ।",
+      "practice": "अलमल परेको एउटा निर्णय लेख। तथ्य, भावना र नैतिक प्रश्नलाई तीन छुट्टै पङ्क्तिमा छुट्याऊ।",
+      "question": "मेरो निर्णयमा करुणा, डर र आफ्नो सुविधाको चाहना कति मिसिएका छन्?"
+    },
+    {
+      "chapter": 2,
+      "name": "सांख्ययोग",
+      "page": 65,
+      "end": 166,
+      "context": "अर्जुन शिष्य भएर मार्गदर्शन माग्छन्। कृष्ण आत्मा र शरीरको भेद, कर्मयोग तथा स्थिर प्रज्ञाको चर्चा गर्छन्।",
+      "insight": "आत्मबोध यहाँ मूल आध्यात्मिक विषय हो। कर्मफलको आसक्ति त्याग्नु भनेको लापरवाह काम वा परिणामप्रति गैरजिम्मेवारी होइन; समबुद्धिसहित कर्तव्य गर्नु हो।",
+      "practice": "आजको एउटा कामको जिम्मेवारी र तयारी तय गर। फल चाहँदा पनि त्यसलाई आफ्नो सम्पूर्ण मूल्यको मापदण्ड नबनाऊ।",
+      "question": "सफलता वा असफलताले मेरो कर्तव्य र चरित्रको अभ्यास किन रोक्नुपर्छ?"
+    },
+    {
+      "chapter": 3,
+      "name": "कर्मयोग",
+      "page": 167,
+      "end": 271,
+      "context": "ज्ञान महत्त्वपूर्ण भए कर्म किन गर्ने भन्ने अर्जुनको प्रश्नको उत्तरमा निष्काम कर्तव्य, यज्ञ र लोकसङ्ग्रहको चर्चा हुन्छ।",
+      "insight": "काम छोडेर मात्र बन्धन हट्दैन। स्वार्थको पकड, राग–द्वेष र कामनालाई जाँच्दै अरूको हितसँग जोडिएको कर्म महत्त्वपूर्ण हुन्छ।",
+      "practice": "आफ्नो कामबाट कसलाई लाभ वा हानि हुन्छ लेख। देखाउनका लागि होइन, सही कारणले एउटा काम पूरा गर।",
+      "question": "म काम टार्न ज्ञानको भाषा प्रयोग गरिरहेको त छैन?"
+    },
+    {
+      "chapter": 4,
+      "name": "ज्ञानकर्मसंन्यासयोग",
+      "page": 273,
+      "end": 352,
+      "context": "योगको परम्परा, अवतार, कर्म–अकर्मको विवेक र ज्ञानको महिमा एकै प्रसङ्गमा आउँछन्।",
+      "insight": "बाहिरी चहलपहलले मात्र कर्मको आध्यात्मिक अर्थ बताउँदैन। उद्देश्य र कर्तापनको आसक्ति जाँच्नुपर्छ। गुरुबाट सिक्दा विनम्र प्रश्न र सेवा पनि चाहिन्छ।",
+      "practice": "नबुझेको एउटा कुरा स्पष्ट प्रश्न बनाएर सोध। उत्तरलाई व्यवहारमा जाँच, केवल शब्द सङ्कलन नगर।",
+      "question": "म आफूलाई जान्ने देखाउन खोज्छु कि साँच्चै बुझ्न?"
+    },
+    {
+      "chapter": 5,
+      "name": "कर्मसंन्यासयोग",
+      "page": 353,
+      "end": 409,
+      "context": "संन्यास र कर्मयोगको सम्बन्ध, भित्री अलिप्तता, समदृष्टि र शान्तिको विषय स्पष्ट गरिन्छ।",
+      "insight": "काम भइरहँदा पनि अहंकार र स्वामित्वको पकड घटाउन सकिन्छ। समदृष्टिले मानिसको गरिमा बुझाउँछ; व्यवहारमा आवश्यक विवेक हटाउँदैन।",
+      "practice": "कसैलाई उसको पद वा उपयोगिताले मात्र मूल्याङ्कन गरेको क्षण सम्झ। अर्को भेटमा सम्मानपूर्वक सुन।",
+      "question": "म सम्मान सबैलाई दिन्छु कि आफूलाई फाइदा हुनेलाई मात्र?"
+    },
+    {
+      "chapter": 6,
+      "name": "आत्मसंयमयोग",
+      "page": 411,
+      "end": 488,
+      "context": "कर्मयोगबाट ध्यानको अभ्यासमा प्रवेश हुन्छ। संयमित जीवन, मनको चञ्चलता, अभ्यास–वैराग्य र योगीको दृष्टि चर्चा हुन्छ।",
+      "insight": "मन भड्किनु अभ्यासको अन्त्य होइन। बारम्बार फर्काउनु अभ्यास हो। टीकाको आत्मोद्धार र भक्तिप्रधान लक्ष्यलाई केवल श्वासको प्रविधिमा सीमित नगर।",
+      "practice": "आज केही समय सहज भएर बस। ध्यान भड्किएको थाहा पाएपछि विनम्रतासाथ रोजेको आधारमा फर्क।",
+      "question": "म अभ्यास गर्दैछु कि आफूलाई तुरुन्त पूर्ण शान्त हुन दबाब दिँदैछु?"
+    },
+    {
+      "chapter": 7,
+      "name": "ज्ञानविज्ञानयोग",
+      "page": 489,
+      "end": 577,
+      "context": "कृष्ण आफ्नो समग्र स्वरूप, प्रकृति र जीवको सम्बन्ध, माया तथा शरणागतिको चर्चा गर्छन्।",
+      "insight": "यस भक्तिप्रधान प्रसङ्गमा ज्ञान केवल तथ्य होइन; परमात्मासँगको सम्बन्ध बुझ्ने र जीवनमा स्वीकार्ने दिशा पनि हो। दैनिक कुरामा दिव्य आधार स्मरण गरिन्छ।",
+      "practice": "पानी पिउँदा वा प्रकृति हेर्दा एक क्षण कृतज्ञता राख। यसलाई आफ्नै उपलब्धिको प्रशंसा मात्र नबनाऊ।",
+      "question": "मेरो ज्ञानले नम्रता बढाएको छ कि अरूमाथि श्रेष्ठताको भावना?"
+    },
+    {
+      "chapter": 8,
+      "name": "अक्षरब्रह्मयोग",
+      "page": 579,
+      "end": 621,
+      "context": "अर्जुनका ब्रह्म, अध्यात्म, कर्म र अन्तकालसम्बन्धी प्रश्नबाट स्मरण, अभ्यास र परमगतिको चर्चा खुल्छ।",
+      "insight": "भगवान्को स्मरण र आफ्नो कर्तव्यलाई विरोधी बनाइएको छैन। दीर्घ अभ्यासले जीवनको दिशा बनाउँछ; यो इच्छामात्रैले सबै घटना नियन्त्रण गर्ने वचन होइन।",
+      "practice": "दिनको एउटा नियमित कामलाई आफ्नो मूल्य वा ईश्वरस्मरणसँग जोड्ने सानो सङ्केत राख।",
+      "question": "मेरो दिनभरको दोहोरिने ध्यान कुन दिशामा गइरहेको छ?"
+    },
+    {
+      "chapter": 9,
+      "name": "राजविद्याराजगुह्ययोग",
+      "page": 623,
+      "end": 692,
+      "context": "भगवान् र जगत्को सम्बन्ध, भक्ति, समर्पण र दैनिक क्रियालाई अर्पण गर्ने भावको चर्चा हुन्छ।",
+      "insight": "भक्तिको मूल्य केवल बाहिरी वस्तुको मूल्यमा सीमित छैन। सानो अर्पण पनि शुद्ध भावसँग अर्थपूर्ण हुन्छ। व्यवहारिक अभ्यासमा इमानदार उद्देश्य र समर्पण जोडिन्छ।",
+      "practice": "आजको साधारण काम सुरु गर्नुअघि कसको हितका लागि र कस्तो भावले गर्दैछु भनेर सोच।",
+      "question": "मेरो अर्पणमा प्रेम छ कि प्रशंसा पाउने हिसाब?"
+    },
+    {
+      "chapter": 10,
+      "name": "विभूतियोग",
+      "page": 693,
+      "end": 742,
+      "context": "कृष्ण आफ्ना विभूतिका उदाहरण दिएर अर्जुनलाई जगत्मा दिव्य महिमा चिन्न सिकाउँछन्।",
+      "insight": "उत्कृष्टता देखेर ईर्ष्यामात्र गर्ने बानीको सट्टा त्यसको गहिरो आधार सम्झने भक्तिको दृष्टि हो। आफूले देखेको अंशलाई सम्पूर्ण सत्य नठान।",
+      "practice": "कसैको राम्रो गुण देख्दा उसबाट सिक्न सकिने एउटा कुरा लेख।",
+      "question": "म अरूको गुणबाट सिक्छु कि तुलना गरेर आफ्नै ध्यान हराउँछु?"
+    },
+    {
+      "chapter": 11,
+      "name": "विश्वरूपदर्शनयोग",
+      "page": 743,
+      "end": 802,
+      "context": "अर्जुनले विश्वरूप देख्दा विस्मयसँगै भय पनि अनुभव गर्छन्। काल, सीमित कर्तापन र भक्तिको प्रश्न तीव्र हुन्छ।",
+      "insight": "मानिसको व्यक्तिगत दृष्टि सम्पूर्ण घटनाको केन्द्र होइन। निमित्तभावले अहंकार घटाउँछ, तर नैतिक जिम्मेवारी मेटाउँदैन। युद्धप्रसङ्गलाई व्यक्तिगत क्रोधको औचित्य नबनाऊ।",
+      "practice": "एउटा सफलतामा अरूको सहयोग र आफूले नियन्त्रण नगरेका अवस्थाहरूको भूमिका सम्झ।",
+      "question": "जिम्मेवारी लिँदै पनि सबै श्रेय आफूलाई मात्र दिन छोड्न सक्छु?"
+    },
+    {
+      "chapter": 12,
+      "name": "भक्तियोग",
+      "page": 803,
+      "end": 857,
+      "context": "उपासनाको मार्ग, अभ्यासका चरण र प्रिय भक्तका गुणहरू प्रस्तुत हुन्छन्।",
+      "insight": "भक्ति केवल भावुक क्षण वा बाहिरी प्रदर्शन होइन। अद्वेष, मैत्री, करुणा, संयम र समता व्यवहारमा देखिनुपर्छ। कठिन अभ्यासमा क्रमिक बाटो पनि दिइएको छ।",
+      "practice": "आज एउटा व्यवहारमा द्वेष घटाऊ र करुणा थप। सम्भव नभएको उच्च अवस्था नाटक गर्नुको सट्टा सानो अभ्यास गर।",
+      "question": "मेरो आध्यात्मिक अभ्यासले अरूसँग बोल्ने तरिका सुधारेको छ?"
+    },
+    {
+      "chapter": 13,
+      "name": "क्षेत्रक्षेत्रज्ञविभागयोग",
+      "page": 859,
+      "end": 914,
+      "context": "क्षेत्र, क्षेत्रज्ञ, ज्ञानका गुण र प्रकृति–पुरुषको भेदमाथि विचार गरिन्छ। यस संस्करणमा अध्यायमा ३४ श्लोक छन्।",
+      "insight": "देखिने शरीर–मनका परिवर्तन र तिनको ज्ञाताको विवेक मूल विषय हो। ज्ञानका लक्षणमा नम्रता र अहिंसा पनि छन्; केवल बौद्धिक बहस पर्याप्त होइन।",
+      "practice": "एउटा उठेको विचारलाई तुरुन्त आफ्नो स्थायी परिचय नबनाऊ। प्रतिक्रिया अघि त्यसलाई चिनेको क्षण राख।",
+      "question": "म आफ्नो धारणा र अहंकारलाई नै सम्पूर्ण सत्य ठानिरहेको छु?"
+    },
+    {
+      "chapter": 14,
+      "name": "गुणत्रयविभागयोग",
+      "page": 915,
+      "end": 950,
+      "context": "सत्त्व, रज र तमले अनुभव र कर्मलाई कसरी बाँध्छन्, अनि गुणातीत दृष्टि के हो भन्ने चर्चा हुन्छ।",
+      "insight": "गुणहरूलाई अरूलाई राम्रो–नराम्रो ठप्पा लगाउने औजार नबनाऊ। आफ्नै स्पष्टता, बेचैनी र जडताका अवस्था बुझेर विवेक बढाउने अध्ययन गर।",
+      "practice": "आजको कामअघि आफ्नो अवस्था लेख: स्पष्ट, हतारिएको वा टारिरहेको? त्यसअनुसार जिम्मेवार सानो कदम छान।",
+      "question": "म मनको वर्तमान अवस्थालाई अपरिवर्तनीय भाग्य ठानिरहेको त छैन?"
+    },
+    {
+      "chapter": 15,
+      "name": "पुरुषोत्तमयोग",
+      "page": 951,
+      "end": 1010,
+      "context": "संसारवृक्ष, आसक्तिको छेदन, जीवको स्वरूप र पुरुषोत्तमको चर्चा हुन्छ।",
+      "insight": "वैराग्य सम्बन्धप्रति निर्दय हुनु होइन। क्षणिक वस्तुलाई अन्तिम आश्रय ठान्ने भ्रमबाट विवेकपूर्वक छुट्नु र परमात्मातर्फ उन्मुख हुनु यसको आध्यात्मिक दिशा हो।",
+      "practice": "आज अनावश्यक एउटा उपभोग वा तुलनाको बानी रोक। त्यस ठाउँमा अध्ययन, सेवा वा स्मरण राख।",
+      "question": "कुन अस्थायी कुरा गुम्ने कल्पनाले मेरो सम्पूर्ण शान्ति खोस्छ?"
+    },
+    {
+      "chapter": 16,
+      "name": "दैवासुरसम्पद्विभागयोग",
+      "page": 1011,
+      "end": 1060,
+      "context": "दैवी–आसुरी प्रवृत्ति र काम, क्रोध, लोभजस्ता पतनकारी कारणहरू विचार गरिन्छ।",
+      "insight": "यी गुणको अध्ययन आफ्नै चरित्र जाँच्ने ऐना हो। अरूलाई तुच्छ घोषणा गर्ने सूची होइन। आचरण, सत्य र संयमलाई अभिमानभन्दा माथि राख्नुपर्छ।",
+      "practice": "क्रोध वा लोभ उठेको एउटा क्षणमा तुरुन्त काम नगरी कारण र सम्भावित हानि लेख।",
+      "question": "म आफ्नो गलत इच्छालाई सही देखाउन बहाना बनाइरहेको छु?"
+    },
+    {
+      "chapter": 17,
+      "name": "श्रद्धात्रयविभागयोग",
+      "page": 1061,
+      "end": 1099,
+      "context": "श्रद्धा, आहार, यज्ञ, तप र दानका भेद तथा ओम् तत् सत्को चर्चा हुन्छ।",
+      "insight": "अभ्यासको बाहिरी रूप मात्र होइन, त्यसको उद्देश्य र गुण पनि महत्त्वपूर्ण छन्। वाणीको तपमा सत्य, हित र अनावश्यक उद्वेग नदिने शैली जोडिएका छन्।",
+      "practice": "आज कठिन सत्य भन्नुपरे त्यसलाई उपयोगी, उचित समयको र सम्मानजनक भाषामा भन।",
+      "question": "मेरो अनुशासन इमानदार साधना हो कि अरूलाई देखाउने प्रदर्शन?"
+    },
+    {
+      "chapter": 18,
+      "name": "मोक्षसंन्यासयोग",
+      "page": 1101,
+      "end": 1263,
+      "context": "संन्यास, त्याग, कर्मका कारण, बुद्धि, धृति, सुख, भक्ति र शरणागतिको समन्वयपछि अर्जुनको भ्रम हट्ने निष्कर्ष आउँछ।",
+      "insight": "सम्पूर्ण संवादको दिशा जिम्मेवार कर्म, विवेक र समर्पण जोड्नु हो। १८.६३ मा विचार गर्न भनिन्छ; अन्त्यको निश्चय केवल नाराबाट होइन, संवाद र बोधबाट आउँछ।",
+      "practice": "ठूलो निर्णयअघि तथ्य, कर्तव्य र उद्देश्य जाँच। नबुझेको कुरा सोध र बुझिसकेपछि एउटा जिम्मेवार कदम चाल।",
+      "question": "मैले सुनेको शिक्षा व्यवहारमा बदल्ने पहिलो इमानदार कदम के हो?"
+    }
+  ],
+  "daily": [
+    {
+      "id": "gita-reflection-1",
+      "ref": "2.47",
+      "page": 127,
+      "line": "कर्ममा इमानदार बन; फलको चिन्तालाई आफ्नो मालिक नबनाऊ।",
+      "meaning": "आफ्नो जिम्मेवारी र तयारीमा ध्यान देऊ। फल तिम्रो एक्लो नियन्त्रणमा हुँदैन, तर त्यसैले काम नगर्ने छुट पनि हुँदैन।",
+      "action": "आजको एउटा आवश्यक काम २० मिनेट ध्यान दिएर गर।",
+      "theme": "Responsible action"
+    },
+    {
+      "id": "gita-reflection-2",
+      "ref": "6.26",
+      "page": 456,
+      "line": "मन भड्कियो भने आफूलाई दोष नदेऊ; फेरि फर्किनु नै अभ्यास हो।",
+      "meaning": "मन यताउता जाने कुरा ध्यानको प्रसङ्गमै स्वीकारिएको छ। सजग भएर पुनः आधारमा ल्याउने काम दोहोर्‍याउनु अभ्यास हो।",
+      "action": "केही सहज श्वास चिन्दै, भड्किँदा बिस्तारै ध्यान फर्काऊ।",
+      "theme": "Returning attention"
+    },
+    {
+      "id": "gita-reflection-3",
+      "ref": "1.28–30",
+      "page": 48,
+      "line": "अलमल स्वीकारेपछि मात्र स्पष्ट प्रश्न जन्मिन्छ।",
+      "meaning": "अर्जुनको सङ्कटमा मन र शरीर दुवै विचलित हुन्छन्। व्यवहारिक पाठ: भावनालाई लुकाएर हतारिनुभन्दा समस्या इमानदारीसँग चिन्नु।",
+      "action": "अहिलेको अलमल एक वाक्यमा लेख।",
+      "theme": "Honest self-observation"
+    },
+    {
+      "id": "gita-reflection-4",
+      "ref": "1.46–47",
+      "page": 61,
+      "line": "जब निर्णय अड्किन्छ, सुन्ने र बुझ्ने ठाउँ बनाऊ।",
+      "meaning": "अध्यायको अन्त्यमा अर्जुन शोकमा बस्छन्; समाधान अझै आएको छैन। यो प्रेरणा त्यस अवस्थाबाट निकालिएको अभ्यास हो, कृष्णको प्रत्यक्ष आदेश होइन।",
+      "action": "ठूलो निर्णयमा नबुझेको एउटा प्रश्न तयार गर।",
+      "theme": "Beginning a dialogue"
+    },
+    {
+      "id": "gita-reflection-5",
+      "ref": "2.48",
+      "page": 131,
+      "line": "सफलतामा नफुल, असफलतामा नढल; आफ्नो कर्म जाँच।",
+      "meaning": "समबुद्धि उदासीनता होइन। राम्रो तयारी र जिम्मेवारीसहित काम गर्दै फलले मनलाई पूर्ण रूपमा चलाउन नदिने अभ्यास हो।",
+      "action": "आजको परिणामबाट एउटा सुधार सिक, आफ्नो मूल्यको फैसला नगर।",
+      "theme": "Equanimity"
+    },
+    {
+      "id": "gita-reflection-6",
+      "ref": "3.19",
+      "page": 203,
+      "line": "सही काम गर, केवल प्रशंसाका लागि होइन।",
+      "meaning": "निष्काम कर्ममा कर्तव्यको मूल्य बाहिरी पुरस्कारमा मात्र अडिएको हुँदैन। आफ्नो काम कसको हितमा छ भन्ने पनि विचार गर।",
+      "action": "कसैले नदेखे पनि एउटा उपयोगी काम पूरा गर।",
+      "theme": "Duty without display"
+    },
+    {
+      "id": "gita-reflection-7",
+      "ref": "3.21",
+      "page": 211,
+      "line": "तिम्रो व्यवहार पनि अरूले पढ्ने एउटा पाठ हो।",
+      "meaning": "प्रभावशाली व्यक्तिको आचरण अरूले पछ्याउँछन्। व्यवहारिक पाठ: उपदेशअघि आफ्नै सानो उदाहरण इमानदार बनाऊ।",
+      "action": "पालना गर्न नसकेको एउटा सल्लाह आज आफैँ पालन गर।",
+      "theme": "Leading through conduct"
+    },
+    {
+      "id": "gita-reflection-8",
+      "ref": "4.34",
+      "page": 338,
+      "line": "विनम्र प्रश्नले सिकाइको ढोका खोल्छ।",
+      "meaning": "ज्ञानको प्रसङ्गमा प्रणिपात, प्रश्न र सेवा जोडिएका छन्। नबुझी सहमत हुनु वा अहंकारले नसोध्नु दुवैबाट सिकाइ रोक्न सक्छ।",
+      "action": "आज एउटा स्पष्ट, सम्मानपूर्वक सोधिएको प्रश्न राख।",
+      "theme": "Learning with humility"
+    },
+    {
+      "id": "gita-reflection-9",
+      "ref": "4.38–39",
+      "page": 346,
+      "line": "बुझेको कुरा आचरणमा आएपछि ज्ञान उज्यालो हुन्छ।",
+      "meaning": "ज्ञानको महिमा श्रद्धा र संयमको प्रसङ्गमा छ। शब्द थुपार्नु मात्र होइन, विवेक र अभ्यासद्वारा बुझाइ गहिरो पार्नु उपयोगी हुन्छ।",
+      "action": "एउटा सिकेको कुरा प्रयोग गरेर परिणाम लेख।",
+      "theme": "Knowledge and practice"
+    },
+    {
+      "id": "gita-reflection-10",
+      "ref": "5.10",
+      "page": 374,
+      "line": "काम पूरा गर, तर अहंकारको पकड हलुका राख।",
+      "meaning": "कर्मलाई अर्पण गर्दै आसक्ति छोड्ने शिक्षा छ। यसले कामको गुणस्तर र नैतिक जिम्मेवारी घटाउने अर्थ दिँदैन।",
+      "action": "कामपछि योगदान दिने अरूको नाम पनि सम्झ।",
+      "theme": "Action and offering"
+    },
+    {
+      "id": "gita-reflection-11",
+      "ref": "5.18",
+      "page": 388,
+      "line": "सम्मानको सुरुवात मानिसको गरिमा देख्नबाट हुन्छ।",
+      "meaning": "समदृष्टिको आध्यात्मिक प्रसङ्ग सबैमा रहेको आत्मतत्त्वसँग जोडिन्छ। व्यवहारमा सम्मान राख्दै परिस्थिति अनुसारको विवेक पनि चाहिन्छ।",
+      "action": "सामान्यतया बेवास्ता गर्ने व्यक्तिलाई सम्मानपूर्वक सुन।",
+      "theme": "Equal regard"
+    },
+    {
+      "id": "gita-reflection-12",
+      "ref": "6.5",
+      "page": 420,
+      "line": "आफ्नै विरोधी बन्ने बानी घटाऊ; उठाउने कदम रोज।",
+      "meaning": "आत्मोद्धारको शिक्षा आफ्ना बानी र आसक्तिको जिम्मेवारी लिन प्रेरित गर्छ। सहयोग माग्नु कमजोरी होइन; यो सबै कठिनाइ एक्लै जित्ने वचन पनि होइन।",
+      "action": "आफूलाई होच्याउने वाक्यलाई सानो कार्ययोजनामा बदल।",
+      "theme": "Self-support"
+    },
+    {
+      "id": "gita-reflection-13",
+      "ref": "6.16–17",
+      "page": 438,
+      "line": "दिगो साधनालाई सन्तुलन चाहिन्छ, अति होइन।",
+      "meaning": "आहार, विहार, काम र निद्रामा संयम ध्यानको आधारका रूपमा आउँछ। यसलाई अरूभन्दा कठोर देखिने प्रतिस्पर्धा नबनाऊ।",
+      "action": "आज पढाइ, आराम र निद्राको यथार्थ योजना बनाऊ।",
+      "theme": "Moderation"
+    },
+    {
+      "id": "gita-reflection-14",
+      "ref": "7.8",
+      "page": 510,
+      "line": "साधारण कुरामा कृतज्ञता चिन्न सिक।",
+      "meaning": "पानीको रसजस्ता विभूतिका उदाहरणले कृष्णको व्यापक उपस्थितितर्फ ध्यान लगाउँछन्। यो पंक्ति त्यस भक्तिप्रधान दृष्टिको दैनिक अभ्यास हो।",
+      "action": "पानी पिउँदा एक क्षण रोकिएर कृतज्ञता राख।",
+      "theme": "Recognising the sacred"
+    },
+    {
+      "id": "gita-reflection-15",
+      "ref": "7.19",
+      "page": 544,
+      "line": "गहिरो बुझाइले अहंकार बढाउँदैन, आश्रयको बोध बढाउँछ।",
+      "meaning": "यस श्लोकको भक्ति र परमात्माबोधलाई केवल बौद्धिक उपलब्धि नठान। व्यवहारिक पाठ: सिक्दै जाँदा आफ्नो सीमालाई पनि चिन्नु।",
+      "action": "आज नजानेको एउटा कुरा इमानदारीसँग स्वीकार गर।",
+      "theme": "Humility in understanding"
+    },
+    {
+      "id": "gita-reflection-16",
+      "ref": "8.7",
+      "page": 591,
+      "line": "कर्तव्य गर्दै आफ्नो गहिरो दिशा नबिर्स।",
+      "meaning": "भगवान्को स्मरण र कर्तव्य एउटै जीवनमा जोडिन्छन्। दैनिक प्रयोगमा कामको बीचमा आफ्नो मूल्य वा ईश्वरस्मरण नहराउनु अभ्यास हो।",
+      "action": "एक नियमित कामअघि आफ्नो उद्देश्य सम्झ।",
+      "theme": "Remembrance and duty"
+    },
+    {
+      "id": "gita-reflection-17",
+      "ref": "8.8",
+      "page": 594,
+      "line": "मनको दिशा बारम्बारको अभ्यासले बलियो हुन्छ।",
+      "meaning": "अभ्यासयोगको प्रसङ्ग परमात्मास्मरण हो। व्यवहारिक प्रयोगमा पनि दोहोरिने ध्यानले बानीको दिशा बनाउँछ; एक दिनले सबै सिद्ध हुँदैन।",
+      "action": "पाँच मिनेटको स्थिर अध्ययन समय दोहोर्‍याऊ।",
+      "theme": "Steady practice"
+    },
+    {
+      "id": "gita-reflection-18",
+      "ref": "9.26",
+      "page": 663,
+      "line": "अर्पणको मूल्य वस्तुभन्दा हृदयको भावमा पनि हुन्छ।",
+      "meaning": "पत्र, पुष्प, फल र जलको उदाहरण भक्तिको भाव स्पष्ट गर्न आउँछ। यो महँगो प्रदर्शनभन्दा सच्चा समर्पण सम्झाउने प्रसङ्ग हो।",
+      "action": "आज सानो काम प्रेम र इमानदारीसाथ गर।",
+      "theme": "Sincere offering"
+    },
+    {
+      "id": "gita-reflection-19",
+      "ref": "9.27",
+      "page": 665,
+      "line": "साधारण कामलाई पनि पवित्र उद्देश्य दिन सकिन्छ।",
+      "meaning": "कर्म, भोजन, दान र तप अर्पण गर्ने भाव चर्चा हुन्छ। व्यवहारिक अर्थमा आफ्नो दैनिक क्रियाको उद्देश्य जाँचेर स्वार्थको पकड घटाऊ।",
+      "action": "एउटा काम सुरु गर्दा कसको हितका लागि हो लेख।",
+      "theme": "Everyday dedication"
+    },
+    {
+      "id": "gita-reflection-20",
+      "ref": "10.10",
+      "page": 708,
+      "line": "सच्चा लगनसँग विवेकको बाटो पनि खोज।",
+      "meaning": "कृष्णले प्रेमपूर्वक भजन गर्ने भक्तलाई बुद्धियोग दिने कुरा गर्छन्। यो केवल धेरै चाह्यो भने सबै पाइन्छ भन्ने उत्पादकताको नारा होइन।",
+      "action": "भक्ति वा मूल्यअनुसारको एउटा विवेकपूर्ण निर्णय गर।",
+      "theme": "Devotion and discernment"
+    },
+    {
+      "id": "gita-reflection-21",
+      "ref": "10.41",
+      "page": 739,
+      "line": "अरूको उत्कृष्टता देखेर ईर्ष्याभन्दा सिकाइ रोज।",
+      "meaning": "विभूतिको दृष्टिले महिमा र सामर्थ्यलाई दिव्य तेजको अंश मानिन्छ। व्यवहारिक प्रयोगमा गुण देख्दा नम्र भई सिक्न सकिन्छ।",
+      "action": "कसैको राम्रो बानीबाट अपनाउन मिल्ने एउटा कुरा छान।",
+      "theme": "Learning from excellence"
+    },
+    {
+      "id": "gita-reflection-22",
+      "ref": "11.33",
+      "page": 772,
+      "line": "सबै श्रेय आफ्नो होइन; आफ्नो जिम्मेवारी भने छ।",
+      "meaning": "विश्वरूप र कालको युद्धप्रसङ्गमा निमित्तभाव आउँछ। दैनिक जीवनमा यो अहंकार घटाउने चिन्तन हो, हानि पुर्‍याउने औचित्य वा जिम्मेवारीबाट भाग्ने अनुमति होइन।",
+      "action": "एक सफलतामा सहयोग गर्ने तीन कारण सम्झ।",
+      "theme": "Instrument and responsibility"
+    },
+    {
+      "id": "gita-reflection-23",
+      "ref": "11.55",
+      "page": 801,
+      "line": "समर्पणको परीक्षा व्यवहारको अद्वेषमा पनि हुन्छ।",
+      "meaning": "भक्ति, कर्म, आसक्तिरहितता र प्राणीप्रतिको निर्वैर भाव एउटै श्लोकमा जोडिएका छन्। आध्यात्मिक शब्दभन्दा आचरण जाँच।",
+      "action": "मनमा रहेको एउटा द्वेषमा प्रतिक्रिया दिनुअघि रोक।",
+      "theme": "Devotion in conduct"
+    },
+    {
+      "id": "gita-reflection-24",
+      "ref": "12.9",
+      "page": 823,
+      "line": "उच्च अवस्था तुरुन्त नआए पनि अभ्यासको बाटो खुला छ।",
+      "meaning": "मन स्थिर राख्न कठिन भए अभ्यासयोगतर्फ क्रमिक मार्ग दिइन्छ। तुलना गरेर हार मान्नुभन्दा उपयुक्त सानो अभ्यास गर।",
+      "action": "आज दोहोर्‍याउन सकिने पाँच मिनेटको अभ्यास छान।",
+      "theme": "A gradual path"
+    },
+    {
+      "id": "gita-reflection-25",
+      "ref": "12.13–14",
+      "page": 836,
+      "line": "करुणा र मैत्री तिम्रो साधनाको भाषा बनून्।",
+      "meaning": "प्रिय भक्तका गुणमा अद्वेष, मैत्री, करुणा, क्षमा र संयम आउँछन्। भक्ति व्यक्तिसँग व्यवहार गर्ने तरिकामा पनि देखिनुपर्छ।",
+      "action": "आजको एउटा कुराकानीमा ध्यान दिएर सुन र कठोरता घटाऊ।",
+      "theme": "Compassion"
+    },
+    {
+      "id": "gita-reflection-26",
+      "ref": "13.7–11",
+      "page": 868,
+      "line": "नम्रता ज्ञानको सजावट होइन, त्यसको अभ्यास हो।",
+      "meaning": "यस संस्करणमा ज्ञानका गुणबारे यी श्लोकमा अहंकारको कमी, अहिंसा र सरलता आउँछन्। सही हुनु र अरूलाई होच्याउनु एउटै कुरा होइन।",
+      "action": "गल्ती थाहा पाएपछि एउटा कुरा सहजै सच्याऊ।",
+      "theme": "Qualities of knowledge"
+    },
+    {
+      "id": "gita-reflection-27",
+      "ref": "13.27–28",
+      "page": 904,
+      "line": "आफ्नो उन्नतिमा अरूको हानि जोड्न नखोज।",
+      "meaning": "सबैमा एकै परमात्मालाई देख्ने दृष्टिको प्रसङ्ग छ। यहाँको व्यवहारिक स्मरण करुणा र जिम्मेवार आचरण हो।",
+      "action": "निर्णयले अरूलाई पर्ने एउटा असर जाँच।",
+      "theme": "Seeing beyond oneself"
+    },
+    {
+      "id": "gita-reflection-28",
+      "ref": "14.6–8",
+      "page": 919,
+      "line": "आफ्नो अवस्था चिन्नु नै अर्को सही कदमको सुरुवात हो।",
+      "meaning": "सत्त्व, रज र तमको चर्चा स्पष्टता, आसक्त बेचैनी र प्रमाद बुझ्न सहायता गर्छ। यी शब्द अरूलाई स्थायी ठप्पा लगाउन प्रयोग नगर।",
+      "action": "अहिले स्पष्ट, हतारिएको वा टारिरहेको कुन अवस्था छ लेख।",
+      "theme": "Understanding tendencies"
+    },
+    {
+      "id": "gita-reflection-29",
+      "ref": "14.24–25",
+      "page": 945,
+      "line": "प्रशंसा र आलोचनाबीच पनि आफ्नो विवेक सम्हाल।",
+      "meaning": "गुणातीत पुरुषको समताको लक्षण उच्च आध्यात्मिक अवस्था हो। दैनिक अभ्यासमा उपयोगी आलोचना सुन्दै अनावश्यक प्रतिक्रिया कम गर्न सकिन्छ।",
+      "action": "एक टिप्पणीमा तुरुन्त प्रतिक्रिया दिनुअघि अर्थ बुझ।",
+      "theme": "Steadiness"
+    },
+    {
+      "id": "gita-reflection-30",
+      "ref": "15.3–4",
+      "page": 959,
+      "line": "छोड्नुपर्ने आसक्ति चिन; अर्थपूर्ण आश्रय खोज।",
+      "meaning": "संसारवृक्ष र असङ्गको प्रसङ्ग परमात्मातर्फ उन्मुख हुने वैराग्य हो। सम्बन्धप्रति निर्दय हुनु वा कर्तव्य त्याग्नु यसको सरल विकल्प होइन।",
+      "action": "अनावश्यक तुलना गर्ने एउटा बानी आज रोक।",
+      "theme": "Discernment and detachment"
+    },
+    {
+      "id": "gita-reflection-31",
+      "ref": "15.15",
+      "page": 997,
+      "line": "स्मरण र ज्ञानलाई अहंकारभन्दा कृतज्ञतासँग जोड।",
+      "meaning": "कृष्ण हृदयमा स्थित रही स्मृति र ज्ञानको आधार भएको बताउँछन्। व्यवहारिक पाठ: बुझ्ने क्षमता र सहयोगप्रति कृतज्ञ रहनु।",
+      "action": "आजको सिकाइमा मद्दत गर्ने स्रोत वा व्यक्तिलाई धन्यवाद देऊ।",
+      "theme": "Gratitude for understanding"
+    },
+    {
+      "id": "gita-reflection-32",
+      "ref": "16.1–3",
+      "page": 1011,
+      "line": "चरित्र साना, इमानदार कामबाट देखिन्छ।",
+      "meaning": "दैवी सम्पत्तिका गुणमा अभय, शुद्धता, दान, संयम, सत्य र करुणा आउँछन्। सूची कण्ठस्थभन्दा एउटा गुणको अभ्यास उपयोगी हुन्छ।",
+      "action": "आज एउटा साँचो र उपयोगी काम रोज।",
+      "theme": "Character"
+    },
+    {
+      "id": "gita-reflection-33",
+      "ref": "16.21",
+      "page": 1055,
+      "line": "कामना, क्रोध र लोभले तान्दा विवेकको विराम राख।",
+      "meaning": "तीन पतनकारी द्वारको प्रसङ्ग आफ्ना प्रवृत्ति जाँच्न हो। भाव उठेको थाहा पाउनु र त्यसैअनुसार हानिकारक कर्म गर्नु अलग कुरा हुन्।",
+      "action": "कडा प्रतिक्रिया वा आवेगको खरिदअघि केही समय रोक।",
+      "theme": "A pause before impulse"
+    },
+    {
+      "id": "gita-reflection-34",
+      "ref": "17.15",
+      "page": 1082,
+      "line": "सत्य बोल, तर त्यसलाई चोट दिने बहाना नबनाऊ।",
+      "meaning": "वाणीको तपमा अनुद्वेगकारी, सत्य, प्रिय र हितकारी वचन जोडिन्छ। असजिलो सत्य पनि उचित समय र सम्मानको भाषामा भन्न सकिन्छ।",
+      "action": "आज एउटा कठिन कुरा भन्नुअघि उपयोगी शब्द रोज।",
+      "theme": "Discipline of speech"
+    },
+    {
+      "id": "gita-reflection-35",
+      "ref": "17.16",
+      "page": 1083,
+      "line": "मनको अनुशासनमा सौम्यता पनि चाहिन्छ।",
+      "meaning": "मनःप्रसाद, सौम्यता, मौन, आत्मसंयम र भावशुद्धि मानसिक तपका पक्ष हुन्। शान्त देखिने अभिनयभन्दा आफ्नो उद्देश्य इमानदारीसँग जाँच।",
+      "action": "एक मिनेट मौन बसेर आजको उद्देश्य लेख।",
+      "theme": "Inner discipline"
+    },
+    {
+      "id": "gita-reflection-36",
+      "ref": "18.63",
+      "page": 1218,
+      "line": "सुनेको कुरा गहिरो विचार गर, अनि जिम्मेवार निर्णय लेऊ।",
+      "meaning": "कृष्णले उपदेशपछि समग्र विचारको स्थान दिन्छन्। प्रश्न सोध्नु र विवेकपूर्वक बुझ्नु संवादको अंश हो; अन्धो दोहोर्‍याइ यसको विकल्प होइन।",
+      "action": "आजको निर्णयमा एउटा तथ्य र एउटा नैतिक प्रश्न जाँच।",
+      "theme": "Reflection before decision"
+    },
+    {
+      "id": "gita-reflection-37",
+      "ref": "18.73",
+      "page": 1254,
+      "line": "बुझाइको फल एउटा इमानदार अगाडिको कदम हो।",
+      "meaning": "अर्जुनको अन्तिम निश्चय सम्पूर्ण संवादपछि आउँछ। व्यवहारिक पाठ: अस्पष्ट जोसभन्दा बुझाइ, भरोसा र जिम्मेवार कर्मको सम्बन्ध बनाउनु।",
+      "action": "लामो समय टारेको आवश्यक कामको पहिलो सानो कदम चाल।",
+      "theme": "From understanding to action"
+    }
+  ]
+};
+/* GITA BOOK READER START */
+const GITA_PREFIX='book:gita:v1|';
+let gitaPdfPromise=null,gitaRenderTask=null,gitaRenderGeneration=0,gitaReadTimer=null,gitaCurrent=null,gitaDrawing=false,gitaDailyStamp='';
+const gitaScriptPromises={};
+function gitaReadRecord(key,store){
+  try{const v=JSON.parse((store||DB.headNotes)[GITA_PREFIX+key]||'null');return v&&typeof v==='object'&&!Array.isArray(v)?v:null;}catch(e){return null;}
+}
+function gitaIsRecordKey(key){return /^book:gita:v1\|(position|bookmark|mark:[a-z0-9-]+)$/.test(key);}
+function gitaMergeRecord(mine,theirs){
+  try{const a=JSON.parse(mine||'null'),b=JSON.parse(theirs||'null');if(!b||typeof b!=='object'||!Number.isFinite(b.updatedAt))return mine===undefined?theirs:mine;
+    if(!a||!Number.isFinite(a.updatedAt)||b.updatedAt>a.updatedAt||(b.updatedAt===a.updatedAt&&String(theirs)>String(mine)))return theirs;
+  }catch(e){}return mine===undefined?theirs:mine;
+}
+function gitaWriteRecord(key,record){
+  const old=gitaReadRecord(key),updatedAt=Math.max(Date.now(),(old?.updatedAt||0)+1);
+  DB.headNotes[GITA_PREFIX+key]=JSON.stringify(Object.assign({},record,{updatedAt:updatedAt}));save();
+}
+function gitaMarks(page,includeDeleted){
+  return Object.keys(DB.headNotes).filter(k=>k.startsWith(GITA_PREFIX+'mark:')).map(k=>({key:k.slice(GITA_PREFIX.length),value:gitaReadRecord(k.slice(GITA_PREFIX.length))})).filter(x=>x.value&&x.value.page===page&&(includeDeleted||!x.value.deleted)&&Array.isArray(x.value.points)).sort((a,b)=>(a.value.createdAt||0)-(b.value.createdAt||0));
+}
+function gitaDailyIndex(date){
+  const d=date||new Date(),n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000);
+  return ((n-20746)%GITA_BOOK.daily.length+GITA_BOOK.daily.length)%GITA_BOOK.daily.length;
+}
+function gitaDailyHtml(){
+  gitaDailyStamp=new Date().toDateString();
+  const item=GITA_BOOK.daily[gitaDailyIndex()];
+  return '<article class="card gita-daily"><p class="yoga-eyebrow">TODAY’S GITA THOUGHT · '+escapeHtml(new Date().toLocaleDateString())+'</p><blockquote lang="ne">'+escapeHtml(item.line)+'</blockquote><p lang="ne"><b>सरल अर्थ:</b> '+escapeHtml(item.meaning)+'</p><p lang="ne"><b>आजको सानो अभ्यास:</b> '+escapeHtml(item.action)+'</p><p class="gita-muted">Gita '+escapeHtml(item.ref)+' · '+escapeHtml(item.theme)+'<br>Original Nepali reflection inspired by the passage; not a verbatim verse or the book’s Hindi translation.</p><button type="button" class="btn secondary btn-sm" data-gita-source="'+item.page+'">Read the source context →</button></article>';
+}
+function gitaLibraryHtml(){
+  const pos=gitaReadRecord('position'),page=Math.max(1,Math.min(GITA_BOOK.pages,Number(pos?.page)||1));
+  return '<div class="gita-library"><article class="card"><img class="gita-book-cover" src="books/gita-cover.jpg" alt="Cover of your supplied Bhagavad Gita" loading="lazy"><p class="yoga-eyebrow">BOOK</p><h3>श्रीमद्भगवद्गीता</h3><p>Sadhak-Sanjivani · Swami Ramsukhdas<br>Original supplied PDF · 1,296 pages</p><p class="gita-muted">Resume at PDF page '+page+'. Your reading place, pencil marks and notes save separately from the original book.</p><button type="button" class="btn" data-yoga-mode="book">Open Book →</button></article>'+gitaDailyHtml()+'</div>';
+}
+function gitaLoadScript(path,test){
+  if(test())return Promise.resolve();
+  if(gitaScriptPromises[path])return gitaScriptPromises[path];
+  gitaScriptPromises[path]=new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=path;s.onload=()=>{if(test())resolve();else{s.remove();delete gitaScriptPromises[path];reject(Error('Book asset did not initialise'));}};s.onerror=()=>{s.remove();delete gitaScriptPromises[path];reject(Error('Book files are not available. Open online once, or keep the books and vendor folders beside study-hub.html.'));};document.head.append(s);});
+  return gitaScriptPromises[path];
+}
+function gitaLoadPdf(){
+  if(gitaPdfPromise)return gitaPdfPromise;
+  gitaPdfPromise=Promise.all([
+    gitaLoadScript('vendor/pdfjs-6.4.299/pdf.worker.js',()=>Boolean(window.pdfjsWorker)),
+    gitaLoadScript('vendor/pdfjs-6.4.299/pdf.js',()=>Boolean(window.StudyHubPdf)),
+    gitaLoadScript('books/gita-pdf-v1.js',()=>Boolean(window.STUDY_HUB_GITA_BASE64))
+  ]).then(async()=>{const raw=atob(window.STUDY_HUB_GITA_BASE64),data=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)data[i]=raw.charCodeAt(i);
+    const doc=await window.StudyHubPdf.getDocument({data:data,isEvalSupported:false,useWasm:false,useWorkerFetch:false,disableAutoFetch:true,disableStream:true,stopAtErrors:false}).promise;
+    if(doc.numPages!==GITA_BOOK.pages)throw Error('The book page count differs from the verified original.');return doc;
+  }).catch(e=>{gitaPdfPromise=null;throw e;});
+  return gitaPdfPromise;
+}
+function gitaPaperOffset(){
+  if(!gitaCurrent?.ready)return 0;const p=document.getElementById('gitaPaper');if(!p)return 0;
+  const rect=p.getBoundingClientRect(),top=gitaStickyTop()+70;
+  return Math.max(0,Math.min(1,(top-rect.top)/Math.max(rect.height,1)));
+}
+function gitaStickyTop(){
+  let top=0;for(const id of ['topbar','tabnav']){const n=document.getElementById(id);if(!n||!n.getClientRects().length)continue;const r=n.getBoundingClientRect();if(r.top<=top+2)top=Math.max(top,r.bottom);}
+  return top;
+}
+function gitaSaveReading(){
+  if(!gitaCurrent?.ready)return;
+  const record={page:gitaCurrent.page,offset:gitaPaperOffset()};
+  const old=gitaReadRecord('position');
+  if(!old||old.page!==record.page||Math.abs((old.offset||0)-record.offset)>.005)gitaWriteRecord('position',record);
+}
+function gitaBookLeave(){
+  if(!gitaCurrent&&!gitaRenderTask)return;
+  gitaSaveReading();clearTimeout(gitaReadTimer);gitaReadTimer=null;gitaRenderGeneration++;
+  if(gitaRenderTask)gitaRenderTask.cancel();gitaRenderTask=null;gitaCurrent=null;gitaDrawing=false;
+}
+function gitaDrawMarks(){
+  const svg=document.getElementById('gitaInk');if(!svg||!gitaCurrent)return;
+  svg.replaceChildren();for(const {value:m} of gitaMarks(gitaCurrent.page)){
+    const points=m.points.slice(0,1000).filter(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite)).map(p=>p.map(v=>Math.max(0,Math.min(1,v))).join(',')).join(' ');
+    if(!points)continue;const n=document.createElementNS('http://www.w3.org/2000/svg','polyline');n.setAttribute('points',points);svg.append(n);
+  }
+  const undo=document.getElementById('gitaUndo'),redo=document.getElementById('gitaRedo');
+  if(undo)undo.disabled=!gitaMarks(gitaCurrent.page).length;
+  if(redo)redo.disabled=!gitaMarks(gitaCurrent.page,true).some(m=>m.value.deleted);
+}
+function gitaWireDrawing(){
+  const svg=document.getElementById('gitaInk');let stroke=null,pointer=null,preview=null;
+  function point(e){const r=svg.getBoundingClientRect();return [(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height].map(v=>Math.round(Math.max(0,Math.min(1,v))*10000)/10000);}
+  svg.onpointerdown=e=>{if(!gitaDrawing||!gitaCurrent?.ready||e.button!==0)return;e.preventDefault();pointer=e.pointerId;stroke=[point(e)];svg.setPointerCapture(pointer);preview=document.createElementNS('http://www.w3.org/2000/svg','polyline');svg.append(preview);};
+  svg.onpointermove=e=>{if(!stroke||e.pointerId!==pointer)return;const p=point(e),last=stroke[stroke.length-1];if(Math.hypot(p[0]-last[0],p[1]-last[1])>.0015&&stroke.length<1000)stroke.push(p);preview.setAttribute('points',stroke.map(p=>p.join(',')).join(' '));};
+  function finish(e){if(!stroke||e.pointerId!==pointer)return;const points=stroke;stroke=null;pointer=null;
+    if(points.length>1)gitaWriteRecord('mark:'+uid(),{page:gitaCurrent.page,points:points,createdAt:Date.now(),deleted:false});
+    gitaDrawMarks();document.getElementById('gitaStatus').textContent=points.length>1?'Underline saved.':'Drag along the text to draw an underline.';
+  }
+  svg.onpointerup=finish;
+  svg.onpointercancel=()=>{stroke=null;pointer=null;gitaDrawMarks();};
+}
+function gitaSetPencil(on){
+  gitaDrawing=Boolean(on);const svg=document.getElementById('gitaInk'),button=document.getElementById('gitaPencil');
+  document.querySelector('.gita-pencil-tools')?.classList.toggle('is-drawing',gitaDrawing);
+  if(svg)svg.classList.toggle('is-drawing',gitaDrawing);
+  if(button){button.setAttribute('aria-pressed',String(gitaDrawing));button.setAttribute('aria-label',gitaDrawing?'Turn pencil off to scroll':'Turn pencil on to underline');}
+  const help=document.getElementById('gitaPencilHelp');if(help)help.textContent=gitaDrawing?'Pencil ON · drag across the page to underline. Turn the pencil off to scroll normally.':'Reading mode · scroll normally. Turn on the floating pencil to draw an underline. Marks stay aligned when you zoom.';
+}
+async function gitaRenderPage(page,offset){
+  page=Math.max(1,Math.min(GITA_BOOK.pages,Math.trunc(Number(page)||1)));
+  gitaSaveReading();if(gitaRenderTask)gitaRenderTask.cancel();
+  const generation=++gitaRenderGeneration;gitaCurrent={page:page,ready:false};gitaSetPencil(false);
+  const status=document.getElementById('gitaStatus');if(!status)return;status.textContent='Opening PDF page '+page+'…';
+  document.getElementById('gitaPage').value=page;
+  document.getElementById('gitaPrevious').disabled=page===1;document.getElementById('gitaNext').disabled=page===GITA_BOOK.pages;
+  document.getElementById('gitaPencil').disabled=true;
+  try{
+    const doc=await gitaLoadPdf();if(generation!==gitaRenderGeneration)return;
+    const pdfPage=await doc.getPage(page);if(generation!==gitaRenderGeneration)return;
+    const wrap=document.getElementById('gitaPageScroll'),paper=document.getElementById('gitaPaper'),canvas=paper.querySelector('canvas');
+    const zoom=Number(document.getElementById('gitaZoom').value)||1,base=pdfPage.getViewport({scale:1}),width=Math.max(200,Math.min(940,wrap.clientWidth-8))*zoom;
+    const viewport=pdfPage.getViewport({scale:width/base.width}),ratio=Math.min(devicePixelRatio||1,2);
+    paper.style.width=viewport.width+'px';paper.style.height=viewport.height+'px';
+    canvas.width=Math.round(viewport.width*ratio);canvas.height=Math.round(viewport.height*ratio);
+    canvas.setAttribute('aria-label','Original Bhagavad Gita · PDF page '+page+' of '+GITA_BOOK.pages);
+    canvas.style.width=viewport.width+'px';canvas.style.height=viewport.height+'px';
+    gitaRenderTask=pdfPage.render({canvasContext:canvas.getContext('2d'),viewport:viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0],background:'#fff'});
+    await gitaRenderTask.promise;if(generation!==gitaRenderGeneration)return;gitaRenderTask=null;gitaCurrent.ready=true;
+    gitaDrawMarks();document.getElementById('gitaPencil').disabled=false;
+    const chapter=GITA_BOOK.chapters.filter(c=>c.page<=page).slice(-1)[0];
+    document.getElementById('gitaCurrentPage').textContent='PDF page '+page+' / '+GITA_BOOK.pages+(chapter?' · Chapter '+chapter.chapter:' · Front matter');
+    status.textContent='Page ready. Your reading place saves automatically.';
+    const notes=document.getElementById('gitaPageNotes');
+    notes.innerHTML=renderSections([{t:'h',v:'My notes · PDF page '+page,noteKey:GITA_PREFIX+'page-note:'+page}],GITA_PREFIX+'page:'+page);wireHeadNotes(notes);
+    requestAnimationFrame(()=>{if(generation!==gitaRenderGeneration)return;const r=paper.getBoundingClientRect();window.scrollTo({top:Math.max(0,window.scrollY+r.top+(Number(offset)||0)*r.height-gitaStickyTop()-80),behavior:'instant'});gitaWriteRecord('position',{page:page,offset:Math.max(0,Math.min(1,Number(offset)||0))});});
+    gitaOfflineStatus();
+  }catch(e){if(e?.name==='RenderingCancelledException'||generation!==gitaRenderGeneration)return;status.textContent='Could not open the book. '+e.message;document.getElementById('gitaRetry').hidden=false;}
+}
+async function gitaOfflineStatus(){
+  const node=document.getElementById('gitaOfflineStatus');if(!node)return;
+  if(location.protocol==='file:'){node.textContent='Local book · available offline with the books and vendor folders.';return;}
+  try{const assets=['books/gita-pdf-v1.js','vendor/pdfjs-6.4.299/pdf.js','vendor/pdfjs-6.4.299/pdf.worker.js'];const hits=await Promise.all(assets.map(p=>caches.match(new URL(p,location.href).href)));node.textContent=hits.every(Boolean)?'Book saved for offline reading on this device.':'To save offline, open Book while online once and wait for the page to finish loading.';}catch(e){node.textContent='Offline availability depends on this browser keeping its website data.';}
+}
+function gitaSourceButtons(root){
+  root.querySelectorAll('[data-gita-source]').forEach(b=>b.onclick=()=>{const page=Number(b.dataset.gitaSource);yogaPage.mode='book';renderYoga();gitaRenderPage(page,0);});
+}
+function renderGitaBook(el){
+  gitaBookLeave();const pos=gitaReadRecord('position')||{page:1,offset:0},bookmark=gitaReadRecord('bookmark');
+  const pencil='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-1 5 5-1L20 8l-4-4L4 16Zm10-10 4 4M3 21l5-1"/></svg>';
+  el.innerHTML='<div class="gita-reader"><button type="button" class="back-link" id="gitaBookBack">← Yoga & Meditation</button><section class="card"><p class="yoga-eyebrow">BOOK · ORIGINAL PDF</p><h2>श्रीमद्भगवद्गीता</h2><p>Sadhak-Sanjivani Hindi commentary · Swami Ramsukhdas · Gita Press</p><p class="gita-muted">Your supplied 1,296-page PDF is preserved unchanged. Red pencil marks and reading progress are personal saved overlays, not changes to the book.</p><div class="gita-book-actions"><button type="button" class="btn" id="gitaResume">Resume reading →</button><button type="button" class="btn secondary" id="gitaBookmarkGo"'+(!bookmark?' disabled':'')+'>'+(bookmark?'Saved place · page '+Number(bookmark.page):'No saved bookmark yet')+'</button><button type="button" class="btn secondary" id="gitaDownload">Download original PDF</button></div><p class="gita-muted" id="gitaOfflineStatus">The reader loads only when opened.</p></section>'+gitaDailyHtml()+
+    '<details class="card gita-study" id="gitaStudyGuide"><summary>Understand the book · chapter guide and daily study method</summary>'+gitaStudyHtml()+'</details>'+
+    '<div class="gita-toolbar" id="gitaToolbar" aria-label="Book page controls"><button type="button" class="btn secondary" id="gitaPrevious" aria-label="Previous book page">←</button><label>PDF page <input type="number" min="1" max="'+GITA_BOOK.pages+'" id="gitaPage" value="'+Math.max(1,Math.min(GITA_BOOK.pages,Number(pos.page)||1))+'"></label><button type="button" class="btn secondary" id="gitaGo">Go</button><button type="button" class="btn secondary" id="gitaNext" aria-label="Next book page">→</button><select id="gitaChapter" class="gita-chapter-select" aria-label="Choose a Gita chapter"><option value="">Choose chapter</option>'+GITA_BOOK.chapters.map(c=>'<option value="'+c.page+'">'+c.chapter+'. '+escapeHtml(c.name)+'</option>').join('')+'</select><select id="gitaZoom" aria-label="Book zoom"><option value="1">Fit width</option><option value="1.3">130%</option><option value="1.6">160%</option><option value="2">200%</option></select></div>'+
+    '<p id="gitaCurrentPage" class="gita-muted"></p><p class="gita-pencil-help" id="gitaPencilHelp">Reading mode · use the floating pencil to underline.</p><p class="gita-status" id="gitaStatus" role="status" aria-live="polite"></p><button type="button" class="btn secondary" id="gitaRetry" hidden>Retry opening</button><div class="gita-page-scroll" id="gitaPageScroll"><div class="gita-paper" id="gitaPaper"><canvas aria-label="Original Bhagavad Gita PDF page"></canvas><svg class="gita-ink" id="gitaInk" viewBox="0 0 1 1" preserveAspectRatio="none" aria-label="Pencil drawing area"></svg></div></div><section class="gita-notes" id="gitaPageNotes"></section>'+
+    '<div class="gita-pencil-tools" aria-label="Reading pencil tools"><button type="button" class="btn secondary" id="gitaPencil" aria-label="Turn pencil on to underline" aria-pressed="false" title="Pencil · underline">'+pencil+'</button><button type="button" class="btn secondary" id="gitaUndo" aria-label="Undo last underline on this page" title="Undo underline" disabled>↶</button><button type="button" class="btn secondary" id="gitaRedo" aria-label="Restore last undone underline on this page" title="Redo underline" disabled>↷</button><button type="button" class="btn secondary" id="gitaBookmark" aria-label="Save my reading place" title="Save this reading place">▣</button></div></div>';
+  el.querySelector('.gita-reader').style.setProperty('--gita-sticky-top',(gitaStickyTop()+4)+'px');
+  document.getElementById('gitaBookBack').onclick=()=>{gitaBookLeave();yogaPage.mode='home';renderYoga();window.scrollTo(0,0);};
+  document.getElementById('gitaGo').onclick=()=>gitaRenderPage(document.getElementById('gitaPage').value,0);
+  document.getElementById('gitaPage').onkeydown=e=>{if(e.key==='Enter')document.getElementById('gitaGo').click();};
+  document.getElementById('gitaPrevious').onclick=()=>gitaRenderPage((gitaCurrent?.page||1)-1,0);
+  document.getElementById('gitaNext').onclick=()=>gitaRenderPage((gitaCurrent?.page||1)+1,0);
+  document.getElementById('gitaChapter').onchange=e=>{if(e.target.value)gitaRenderPage(e.target.value,0);};
+  document.getElementById('gitaZoom').onchange=()=>gitaRenderPage(gitaCurrent?.page||pos.page,gitaPaperOffset());
+  document.getElementById('gitaPencil').onclick=()=>gitaSetPencil(!gitaDrawing);
+  document.getElementById('gitaUndo').onclick=()=>{const m=gitaMarks(gitaCurrent.page).slice(-1)[0];if(m){gitaWriteRecord(m.key,Object.assign({},m.value,{deleted:true}));gitaDrawMarks();}};
+  document.getElementById('gitaRedo').onclick=()=>{const m=gitaMarks(gitaCurrent.page,true).filter(x=>x.value.deleted).sort((a,b)=>b.value.updatedAt-a.value.updatedAt)[0];if(m){gitaWriteRecord(m.key,Object.assign({},m.value,{deleted:false}));gitaDrawMarks();}};
+  document.getElementById('gitaBookmark').onclick=()=>{if(!gitaCurrent?.ready)return;gitaWriteRecord('bookmark',{page:gitaCurrent.page,offset:gitaPaperOffset()});const b=document.getElementById('gitaBookmarkGo');b.disabled=false;b.textContent='Saved place · page '+gitaCurrent.page;toast('Reading place saved');};
+  document.getElementById('gitaBookmarkGo').onclick=()=>{const b=gitaReadRecord('bookmark');if(b)gitaRenderPage(b.page,b.offset);};
+  document.getElementById('gitaResume').onclick=()=>{const p=gitaReadRecord('position')||pos;gitaRenderPage(p.page,p.offset);};
+  document.getElementById('gitaRetry').onclick=()=>{document.getElementById('gitaRetry').hidden=true;gitaRenderPage(gitaCurrent?.page||pos.page,0);};
+  document.getElementById('gitaDownload').onclick=async()=>{try{await gitaLoadPdf();const raw=atob(window.STUDY_HUB_GITA_BASE64),bytes=Uint8Array.from(raw,c=>c.charCodeAt(0)),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');a.href=url;a.download='shrimad-bhagavad-gita.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);}catch(e){toast('Open the book successfully before downloading.');}};
+  gitaSourceButtons(el);gitaWireDrawing();gitaRenderPage(pos.page,pos.offset);
+}
+function gitaStudyHtml(){
+  return '<p lang="ne">यो ग्रन्थ युद्धभूमिमा अर्जुनको नैतिक सङ्कटबाट सुरु भएको कृष्ण–अर्जुन संवाद हो। साधक–सञ्जीवनीको केन्द्र केवल उपलब्धि वा जोस होइन; विवेक, निष्काम कर्म, आत्मबोध र भगवान्प्रतिको भक्ति जोडिएका छन्। तलका सार र जीवनका उदाहरण मौलिक अध्ययन-सहायता हुन्; मूल श्लोक र टीकाको विकल्प होइनन्।</p><h3>Read slowly · reflect · practise</h3><ol lang="ne"><li>पहिले अघिपछिको प्रसङ्ग पढ। आज १–३ श्लोक र तिनको टीका पर्याप्त हुन सक्छ। पृष्ठ सङ्ख्याको हतार नगर।</li><li>वक्ता, समस्या र उत्तर छुट्याऊ। नबुझेका शब्द लेख। एउटा वाक्य अलग गरेर आफ्नै इच्छाको अर्थ नलगाऊ।</li><li>एउटा सरल अर्थ आफ्नै शब्दमा लेख; त्यसपछि जीवनमा गर्ने एउटा सानो काम छान।</li><li>राति व्यवहार जाँच: कहाँ पालन भयो, कहाँ भएन, भोलि के सुधार्ने? आफूलाई गाली नगरी फेरि अभ्यास गर।</li></ol><p class="gita-muted">Chapter buttons use verified PDF page numbers from this file. A verse reference identifies the passage; read the surrounding commentary as well. Chapter 13 numbering can vary across editions; this guide follows the supplied book.</p><div class="gita-chapter-grid">'+GITA_BOOK.chapters.map(c=>'<button type="button" class="btn secondary" data-gita-source="'+c.page+'">'+c.chapter+'. '+escapeHtml(c.name)+'</button>').join('')+'</div>'+GITA_BOOK.chapters.map(c=>'<details><summary>'+c.chapter+'. '+escapeHtml(c.name)+' · PDF '+c.page+'</summary><p lang="ne"><b>प्रसङ्ग:</b> '+escapeHtml(c.context)+'</p><p lang="ne"><b>गहिरो विचार:</b> '+escapeHtml(c.insight)+'</p><p lang="ne"><b>जीवनमा अभ्यास:</b> '+escapeHtml(c.practice)+'</p><p lang="ne"><b>आफैँलाई प्रश्न:</b> '+escapeHtml(c.question)+'</p><button type="button" class="btn secondary" data-gita-source="'+c.page+'">Read Chapter '+c.chapter+' →</button></details>').join('');
+}
+window.addEventListener('scroll',()=>{if(!gitaCurrent?.ready||yogaPage.mode!=='book')return;clearTimeout(gitaReadTimer);gitaReadTimer=setTimeout(gitaSaveReading,350);},{passive:true});
+window.addEventListener('pagehide',gitaSaveReading);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)gitaSaveReading();});
+function gitaRefreshDaily(){
+  if(gitaDailyStamp===new Date().toDateString()||!document.getElementById('view-lessons').classList.contains('active'))return;
+  const cards=document.querySelectorAll('#lessonsBody .gita-daily');cards.forEach(c=>{c.outerHTML=gitaDailyHtml();});gitaSourceButtons(document.getElementById('lessonsBody'));
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)gitaRefreshDaily();});
+setInterval(gitaRefreshDaily,60000);
+let gitaResizeTimer;
+window.addEventListener('resize',()=>{if(!gitaCurrent?.ready)return;clearTimeout(gitaResizeTimer);gitaResizeTimer=setTimeout(()=>{if(!gitaCurrent?.ready)return;const page=gitaCurrent.page,offset=gitaPaperOffset();document.querySelector('.gita-reader')?.style.setProperty('--gita-sticky-top',(gitaStickyTop()+4)+'px');gitaRenderPage(page,offset);},180);});
+new MutationObserver(()=>{if(gitaCurrent&&!document.getElementById('view-lessons').classList.contains('active'))gitaBookLeave();}).observe(document.getElementById('view-lessons'),{attributes:true,attributeFilter:['class']});
+/* GITA BOOK READER END */
+
+/* GITA BOOK DATA END */
 const YOGA_COURSE = {
   "poses": [
     {
@@ -165876,10 +166625,13 @@ function yogaStages(session,duration){
 }
 function renderYoga(){
   const el=document.getElementById('lessonsBody');
+  if(yogaPage.mode==='book' && typeof renderGitaBook==='function')return renderGitaBook(el);
+  if(typeof gitaBookLeave==='function')gitaBookLeave();
   const completed=YOGA_COURSE.sessions.filter(function(s){return lessonDone(s.id);}).length;
   const next=YOGA_COURSE.sessions.find(function(s){return !lessonDone(s.id);})||YOGA_COURSE.sessions[0];
-  let html='<div class="yoga-wrap"><div class="yoga-intro card"><p class="yoga-eyebrow">Sadhana · Intermediate Path</p><h2>Steadiness in the body, ease in the mind</h2><p>Build from your 10 minutes of familiar Sun Salutation and 5 minutes of running. Prioritise quality before duration and repeat comfortable sessions. You do not have to complete these seven sessions on seven consecutive days.</p><div class="yoga-actions">'+yogaLink('Practice path','home')+yogaLink('Pose Guide','poses')+yogaLink('Meditation / Breathing','meditations')+yogaLink('Gita Reflection','gita')+'</div></div>';
+  let html='<div class="yoga-wrap"><div class="yoga-intro card"><p class="yoga-eyebrow">Sadhana · Intermediate Path</p><h2>Steadiness in the body, ease in the mind</h2><p>Build from your 10 minutes of familiar Sun Salutation and 5 minutes of running. Prioritise quality before duration and repeat comfortable sessions. You do not have to complete these seven sessions on seven consecutive days.</p><div class="yoga-actions">'+yogaLink('Practice path','home')+yogaLink('Pose Guide','poses')+yogaLink('Meditation / Breathing','meditations')+yogaLink('Gita Reflection','gita')+(typeof GITA_BOOK==='object'?yogaLink('Book','book'):'')+'</div></div>';
   if(yogaPage.mode==='home'){
+    if(typeof gitaLibraryHtml==='function')html+=gitaLibraryHtml();
     html+='<div class="card"><h3>Module 1 · Steadiness and awareness</h3><p>'+completed+' / '+YOGA_COURSE.sessions.length+' sessions complete · 20 or 30 min</p>'+progressBar(completed,YOGA_COURSE.sessions.length)+'<p>Start with 20 minutes. After several comfortable repetitions, choose 30 minutes if you wish. Times are suggestions: do not add holds or repetitions simply to fill them.</p>'+yogaLink(completed===YOGA_COURSE.sessions.length?'Practise again':'Continue: Session '+next.day,'session',next.id)+'</div><div class="yoga-grid">'+YOGA_COURSE.sessions.map(function(item){return '<button type="button" class="card yoga-card" data-yoga-mode="session" data-yoga-id="'+escapeAttr(item.id)+'"><span class="yoga-eyebrow">Session '+item.day+(lessonDone(item.id)?' · ✓ Complete':'')+'</span><h3>'+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.goal)+'</p></button>';}).join('')+'</div><div class="ls-box ls-tip"><b>What intermediate means here</b>Deepen balance, movement control and attention. This self-guided module excludes headstands, shoulderstands, forced Lotus Pose, breath retention and forceful pranayama. Get alignment feedback from a qualified in-person teacher for new or difficult poses.</div>';
   }else if(yogaPage.mode==='poses'){
     html+='<h2>Pose Guide · read first, then practise slowly</h2>'+YOGA_COURSE.poses.map(yogaPoseHtml).join('');
@@ -165900,6 +166652,7 @@ function renderYoga(){
   }
   html+='<details class="yoga-guide yoga-safety"><summary>Practice limits and sources</summary><p>Stop for sharp pain, dizziness, breathing difficulty or faintness. Seek immediate help for serious symptoms such as chest pain or fainting. With an injury, pregnancy, a heart or breathing condition, or uncontrolled blood pressure, discuss suitable intensity and poses with a qualified clinician or instructor. Text guidance cannot assess your alignment. If meditation causes distress, stop, open the eyes and reconnect with the room.</p><p>These practices are not presented as cures, detox methods or guarantees of spiritual results. Do not add difficult poses or forceful breathing to this self-guided module.</p><p><a href="https://www.nccih.nih.gov/health/yoga-effectiveness-and-safety" target="_blank" rel="noopener noreferrer">NCCIH · Yoga effectiveness and safety</a><br><a href="https://www.nccih.nih.gov/health/meditation-and-mindfulness-effectiveness-and-safety" target="_blank" rel="noopener noreferrer">NCCIH · Meditation safety</a><br>Traditional study: your supplied Gita Press Bhagavad Gita, Chapter 6, printed pages 434–439, 456, 467–468. External sources need internet; all course teaching is available offline.</p></details></div>';
   el.innerHTML=html;
+  if(typeof gitaSourceButtons==='function')gitaSourceButtons(el);
   if(yogaPage.mode!=='home')el.querySelector('.yoga-intro').classList.add('yoga-compact');
   el.querySelectorAll('[data-yoga-mode]').forEach(function(btn){btn.onclick=function(){yogaPage.mode=btn.dataset.yogaMode;yogaPage.id=btn.dataset.yogaId||null;renderYoga();window.scrollTo(0,0);};});
   el.querySelectorAll('[data-yoga-duration]').forEach(function(btn){btn.onclick=function(){const y=window.scrollY;yogaPage.duration=Number(btn.dataset.yogaDuration);renderYoga();window.scrollTo(0,y);};});

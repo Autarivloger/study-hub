@@ -1,0 +1,30 @@
+const fs=require('fs'),cp=require('child_process'),assert=require('assert/strict'),crypto=require('crypto');
+const current=fs.readFileSync('study-hub.html','utf8'),old=cp.execFileSync('git',['show','1818c5f:study-hub.html'],{encoding:'utf8',maxBuffer:45e6});
+const data=require('../scripts/gita-book-content.cjs');
+const embedded=JSON.parse(current.match(/const GITA_BOOK = ([\s\S]*?);\n\/\* GITA BOOK READER START \*\//)[1]);assert.deepEqual(embedded,data);
+const raw=JSON.parse(fs.readFileSync('books/gita-pdf-v1.js','utf8').split('window.STUDY_HUB_GITA_BASE64=')[1].trim().replace(/;$/,''));
+const bytes=Buffer.from(raw,'base64');assert.equal(bytes.length,8469916);assert.equal(bytes.subarray(0,5).toString(),'%PDF-');
+assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),data.sourceSha256,'Original PDF bytes changed');
+assert.equal(data.pages,1296);assert.equal(data.chapters.length,18);assert.equal(data.daily.length,37);
+assert.equal(new Set(data.daily.map(d=>d.ref)).size,37);
+for(const d of data.daily){const chapter=data.chapters[Number(d.ref.split('.')[0])-1];assert(d.page>=chapter.page&&d.page<=chapter.end,'Reference outside chapter '+d.ref);assert(d.line&&d.meaning&&d.action&&d.theme);}
+assert.equal(new Set(data.daily.map(d=>Number(d.ref.split('.')[0]))).size,18,'Reflections must cover all chapters');
+let stripped=current.replace(/\/\* GITA BOOK DATA START \*\/[\s\S]*?\/\* GITA BOOK DATA END \*\/\n/,'');
+stripped=stripped.replace(/\/\* GITA BOOK STYLE START \*\/[\s\S]*?\/\* GITA BOOK STYLE END \*\/\n\n/,'');
+const view=/\/\* ================= YOGA & MEDITATION ================= \*\/[\s\S]*?(?=function renderLessons\(\)\{)/;
+stripped=stripped.replace(view,()=>old.match(view)[0]);
+stripped=stripped.replace('      /* GITA BOOK MERGE */\n      if(key==="headNotes" && gitaIsRecordKey(k)){\n        DB.headNotes[k]=gitaMergeRecord(DB.headNotes[k],incoming.headNotes[k]);\n      }else if(key === "lessonQuizScores"){','      if(key === "lessonQuizScores"){');
+stripped=stripped.replace('  /* GITA BOOK LEAVE */ if(name!=="lessons" && typeof gitaBookLeave==="function")gitaBookLeave();\n','');
+assert.equal(stripped,old,'Unrelated content, schemas, sync, navigation or styling changed');
+const source=fs.readFileSync('scripts/gita-book.js','utf8');
+const fn=name=>source.match(new RegExp('^function '+name+'\\([^\\n]*\\)\\{[\\s\\S]*?^\\}','m'))[0];
+const merge=new Function(fn('gitaMergeRecord')+';return gitaMergeRecord;')();
+const a=JSON.stringify({page:127,updatedAt:100}),b=JSON.stringify({page:456,updatedAt:200});
+assert.equal(merge(a,b),b);assert.equal(merge(b,a),b);assert.equal(merge(undefined,a),a);
+const erased=JSON.stringify({page:127,points:[[.2,.3],[.6,.3]],updatedAt:200,deleted:true});
+const visible=JSON.stringify({page:127,points:[[.2,.3],[.6,.3]],updatedAt:100,deleted:false});
+assert.equal(merge(erased,visible),erased);assert.equal(merge(visible,erased),erased,'Deleted marks must not resurrect');
+const index=new Function('GITA_BOOK',fn('gitaDailyIndex')+';return gitaDailyIndex;')(data);
+assert.equal(index(new Date(2026,9,20,9)),0);assert.equal(index(new Date(2026,9,20,23)),0);assert.equal(index(new Date(2026,9,21,0)),1);assert.equal(index(new Date(2026,9,20+37,9)),0);
+for(const m of current.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)){if(/type=["']application\/json["']/.test(m[1]))JSON.parse(m[2]);else if(!/\bsrc=/.test(m[1]))new Function(m[2]);}
+console.log('PASS: exact original PDF digest/1296 pages;18 chapter guides;37 distinct referenced reflections covering all chapters;daily calendar rotation;newer record merge and deletion tombstones;existing HTML byte-identical outside explicitly scoped hooks;schemas and original courses retained;JS/JSON valid.');

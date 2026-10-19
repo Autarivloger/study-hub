@@ -3,3 +3,5 @@ desktop.ini
 .DS_Store
 *.bak
 study-hub-backup-*.json
+# Local PDF extraction and build dependencies; never publish analysis files.
+tmp/pdfs/
