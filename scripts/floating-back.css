@@ -1,0 +1,16 @@
+/* STUDY HUB FLOATING BACK STYLE START */
+#floatingBack{
+  position:fixed;left:250px;bottom:calc(18px + env(safe-area-inset-bottom));
+  z-index:35;display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;padding:0;border:1px solid var(--border);border-radius:50%;
+  background:var(--bg-elev);color:var(--accent);box-shadow:0 4px 18px #0003;
+  cursor:pointer;touch-action:manipulation;
+}
+#floatingBack[hidden]{display:none!important}
+#floatingBack svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+#floatingBack:hover{background:var(--accent-soft)}
+#floatingBack:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(min-width:761px) and (max-width:1000px){#floatingBack{left:210px}}
+@media(max-width:760px){#floatingBack{left:calc(14px + env(safe-area-inset-left))}}
+@media print{#floatingBack{display:none!important}}
+/* STUDY HUB FLOATING BACK STYLE END */
