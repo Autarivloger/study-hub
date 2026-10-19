@@ -1857,6 +1857,157 @@ body:not(.games-focus) .learning-resume .btn{background:linear-gradient(145deg,#
 @media(forced-colors:active){button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid Highlight;}}
 /* STUDY HUB PREMIUM THEME END */
 
+/* JAPANESE STUDY DESIGN START
+   Presentation only. Scoped to Japanese; offline system fonts and theme tokens. */
+#view-japanese{--jp-gap:18px;--jp-radius:16px;}
+#view-japanese>.pane-header{max-width:1160px;margin:0 auto;padding:24px 32px 8px;}
+#view-japanese>.pane-header h1{font-size:19px;letter-spacing:-.3px;}
+#view-japanese .jp-wrap{max-width:1160px;padding:16px 32px 56px;min-width:0;}
+#view-japanese .jp-wrap.jp-mode-lesson{max-width:1000px;}
+#view-japanese :where(.jp-hero,.jp-panel,.jp-week-card,.jp-day-card){border:1px solid var(--border);border-radius:var(--jp-radius);box-shadow:none;}
+#view-japanese .jp-hero{padding:26px 28px;margin:0 0 22px;background:var(--bg-elev);}
+#view-japanese .jp-hero h2{font-size:clamp(24px,2.3vw,30px);line-height:1.35;letter-spacing:-.6px;margin:8px 0 12px;overflow-wrap:anywhere;text-wrap:pretty;}
+#view-japanese .jp-hero p{font-size:15px;line-height:1.8;margin:10px 0;}
+#view-japanese .jp-kicker{display:inline-block;font-size:10px;line-height:1.7;letter-spacing:.09em;font-weight:700;}
+#view-japanese .jp-muted{font-size:13px;line-height:1.75;}
+#view-japanese .jp-actions{gap:8px;margin:14px 0 0;align-items:center;}
+#view-japanese .jp-wrap>.jp-actions:first-child{margin:0 0 18px;}
+#view-japanese .btn{min-height:42px;padding:10px 14px;font-size:12px;line-height:1.5;border-radius:10px;white-space:normal;overflow-wrap:anywhere;}
+#view-japanese .btn:focus-visible,#view-japanese summary:focus-visible,#view-japanese .jp-hard-btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+#view-japanese .jp-progress{height:6px;border-radius:20px;margin:20px 0 8px;}
+#view-japanese .jp-progress span{background:var(--accent);border-radius:inherit;}
+#view-japanese .jp-home-dashboard{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);grid-template-areas:'route quick' 'route review';gap:var(--jp-gap);align-items:stretch;margin-bottom:32px;}
+#view-japanese .jp-home-dashboard>.jp-hero,#view-japanese .jp-home-dashboard>.review-hero{min-width:0;margin:0;}
+#view-japanese .jp-home-dashboard>.jp-quick-card{grid-area:quick;background:var(--bg-elev);padding:22px;}
+#view-japanese .jp-home-dashboard>.review-hero{grid-area:review;background:var(--bg-elev);padding:22px;border-radius:var(--jp-radius);box-shadow:none;border:1px solid var(--border);}
+#view-japanese .jp-home-dashboard>.review-hero h2,#view-japanese .jp-home-dashboard>.jp-quick-card h2{font-size:21px;line-height:1.4;margin:8px 0 10px;letter-spacing:-.35px;}
+#view-japanese .jp-home-dashboard>.review-hero p,#view-japanese .jp-home-dashboard>.jp-quick-card p{font-size:14px;line-height:1.8;margin:8px 0 14px;}
+#view-japanese .jp-home-dashboard .review-kicker{font-size:10px;letter-spacing:.07em;line-height:1.7;}
+#view-japanese .jp-quick-card .jp-actions>.jp-muted{font-size:11px;}
+#view-japanese .jp-home-dashboard>.jp-route-hero{grid-area:route;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:32px;background:var(--hero,#153d30);color:var(--hero-text,#f4f8f1);border-color:transparent;}
+#view-japanese .jp-route-hero h2{font-size:clamp(28px,2.8vw,37px);line-height:1.2;max-width:15ch;letter-spacing:-.85px;margin:14px 0;}
+#view-japanese .jp-route-hero .jp-kicker,#view-japanese .jp-route-hero .jp-muted{color:var(--hero-muted,#c3d7c9);}
+#view-japanese .jp-route-hero>p{max-width:56ch;font-size:14px;line-height:1.9;}
+#view-japanese .jp-route-hero>.jp-progress{width:100%;background:#ffffff26;margin-top:22px;}
+#view-japanese .jp-route-hero>.jp-progress span{background:#b8dfbb;}
+#view-japanese .jp-route-hero>.jp-actions{width:100%;}
+#view-japanese .jp-route-hero .btn:not(.secondary){background:#eef6ed;color:#153d30;border-color:transparent;flex-basis:100%;text-align:left;box-shadow:none;}
+#view-japanese .jp-route-hero .btn.secondary{background:#ffffff0d;color:#edf5ee;border-color:#ffffff38;box-shadow:none;}
+#view-japanese .jp-route-hero .btn.secondary:hover{background:#ffffff20;}
+#view-japanese .jp-route-hero .btn:focus-visible{outline-color:#eef6ed;}
+#view-japanese .jp-route-tools{display:flex;flex-wrap:wrap;gap:8px;width:100%;margin-top:10px;}
+#view-japanese #jp-learning-path{scroll-margin-top:calc(var(--shell-height,72px) + 80px);}
+#view-japanese .jp-month{margin:0 0 30px;}
+#view-japanese .jp-month>.jp-section-title{display:flex;align-items:center;gap:16px;font-size:17px;font-weight:650;margin:0 0 15px;letter-spacing:-.2px;}
+#view-japanese .jp-month>.jp-section-title::after{content:'';height:1px;background:var(--border);flex:1;}
+#view-japanese .jp-month .jp-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;}
+#view-japanese .jp-week-card{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:18px;min-height:172px;text-align:left;background:var(--bg-elev);}
+#view-japanese .jp-week-card>.jp-kicker{padding:3px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);}
+#view-japanese .jp-week-card strong{font-size:15px;font-weight:650;line-height:1.6;margin:0;overflow-wrap:anywhere;}
+#view-japanese .jp-week-card small{font-size:11px;line-height:1.65;margin-top:auto;padding-top:12px;border-top:1px solid var(--border);width:100%;}
+#view-japanese .jp-section-title{font-size:17px;line-height:1.5;letter-spacing:-.2px;margin:28px 0 14px;}
+#view-japanese .jp-day-card{position:relative;min-height:0;padding:17px 46px 17px 20px;margin:10px 0;background:var(--bg-elev);}
+#view-japanese .jp-day-card::after{content:'→';position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:19px;color:var(--accent);}
+#view-japanese .jp-day-card.is-complete{border-left:3px solid var(--accent);}
+#view-japanese .jp-day-card.is-complete::after{content:'✓';font-size:16px;}
+#view-japanese .jp-day-card>strong{font-size:16px;line-height:1.6;font-weight:650;margin:4px 0;overflow-wrap:anywhere;}
+#view-japanese .jp-day-card>small{display:block;font-size:13px;line-height:1.75;}
+#view-japanese .jp-day-card>small:first-child{font-size:10px;letter-spacing:.04em;color:var(--accent);}
+#view-japanese .jp-panel{padding:23px 25px;margin:16px 0;background:var(--bg-elev);}
+#view-japanese .jp-panel h3{font-size:18px;line-height:1.5;font-weight:650;letter-spacing:-.25px;margin:0 0 14px;}
+#view-japanese .jp-panel h4{font-size:15px;line-height:1.6;margin:18px 0 10px;}
+#view-japanese .jp-panel p{font-size:15px;line-height:1.95;margin:10px 0;}
+#view-japanese .jp-panel p.jp-muted{font-size:13px;line-height:1.85;}
+#view-japanese .jp-pattern{font-size:17px;line-height:1.9;font-weight:600;border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow-wrap:anywhere;}
+#view-japanese .jp-jp{font-size:21px;line-height:2;overflow-wrap:anywhere;}
+#view-japanese .jp-reading{font-size:21px;line-height:2.3;overflow-wrap:anywhere;}
+#view-japanese .jp-gloss{font-size:13px;line-height:1.85;margin-top:7px;}
+#view-japanese .jp-example{padding:13px 16px;margin:14px 0;border-left-width:2px;border-radius:0 10px 10px 0;}
+#view-japanese .jp-rule-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px;}
+#view-japanese .jp-rule-card{padding:16px;border-radius:11px;}
+#view-japanese .jp-lesson-nav{gap:7px;margin:20px 0;}
+#view-japanese .jp-lesson-nav .btn{min-height:38px;padding:8px 12px;font-size:11px;border-radius:8px;}
+#view-japanese .jp-vocab{grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:10px;}
+#view-japanese .jp-vocab>.jp-study-item{padding:14px;border:1px solid var(--border);border-radius:11px;}
+#view-japanese .jp-study-item>b{font-size:21px;font-weight:650;line-height:1.8;}
+#view-japanese .jp-study-reveal{margin:8px 0 4px;}
+#view-japanese .jp-study-reveal summary{font-size:11px;line-height:1.7;font-weight:600;padding:4px 0;}
+#view-japanese .jp-study-reveal small{font-size:12px;line-height:1.85;}
+#view-japanese .jp-hard-btn{font-size:11px;line-height:1.5;min-height:34px;padding:7px 10px;border-radius:8px;margin-top:9px;}
+#view-japanese .jp-kanji-readings{font-size:12px;line-height:1.8;}
+#view-japanese .jp-panel>details:not(.jp-meaning-context){padding:11px 13px;margin:12px 0;background:var(--bg-soft);border:1px solid var(--border);border-radius:10px;}
+#view-japanese summary{line-height:1.7;font-size:13px;cursor:pointer;}
+#view-japanese .jp-q{min-width:0;padding:18px 0;border:none;border-top:1px solid var(--border);margin:12px 0;}
+#view-japanese .jp-q legend{font-size:15px;line-height:1.9;padding:0 0 6px;max-width:100%;overflow-wrap:anywhere;}
+#view-japanese .jp-choice{min-height:46px;padding:12px 14px;margin:9px 0;border-radius:10px;font-size:15px;line-height:1.9;overflow-wrap:anywhere;}
+#view-japanese .jp-choice input{width:16px;height:16px;vertical-align:middle;margin-right:9px;accent-color:var(--accent);}
+#view-japanese .jp-check{font-size:13px;line-height:1.8;padding-top:8px;}
+#view-japanese .jp-check input{accent-color:var(--accent);width:16px;height:16px;vertical-align:middle;}
+#view-japanese .jp-notes{min-height:150px;font-size:15px;line-height:1.9;padding:15px;border-radius:11px;}
+#view-japanese .jp-furigana-float{min-height:40px;padding:9px 13px;font-size:11px;box-shadow:var(--shadow);border:1px solid var(--border);}
+#view-japanese [id^=jp-day]{scroll-margin-top:calc(var(--shell-height,72px) + 80px);}
+#view-japanese .jp-meaning-pair{padding:15px;gap:11px;}
+#view-japanese .jp-meaning-pair .jp-study-item{padding:13px;}
+#view-japanese .jp-meaning-context{padding-top:12px;}
+#view-japanese .jp-review-drill-grid{gap:12px;}
+#view-japanese .jp-review-drill{padding:16px;border-radius:11px;}
+@media(hover:hover) and (pointer:fine){
+  #view-japanese .jp-week-card:hover,#view-japanese .jp-day-card:hover{background:var(--bg-elev);border-color:var(--accent);box-shadow:var(--shadow);}
+}
+@media(max-width:1200px){
+  #view-japanese .jp-month .jp-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #view-japanese .jp-home-dashboard{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+  #view-japanese .jp-home-dashboard>.jp-route-hero{padding:25px;}
+}
+@media(max-width:960px){
+  #view-japanese .jp-home-dashboard{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'route route' 'quick review';}
+  #view-japanese .jp-route-hero h2{max-width:24ch;}
+}
+@media(max-width:760px){
+  #view-japanese{--jp-gap:13px;--jp-radius:14px;}
+  #view-japanese>.pane-header{padding:20px 18px 5px;}
+  #view-japanese>.pane-header h1{font-size:17px;}
+  #view-japanese .jp-wrap{padding:14px 18px 36px;}
+  #view-japanese .jp-hero{padding:21px;margin-bottom:18px;}
+  #view-japanese .jp-hero h2{font-size:25px;}
+  #view-japanese .jp-home-dashboard{grid-template-columns:minmax(0,1fr);grid-template-areas:'quick' 'route' 'review';margin-bottom:26px;}
+  #view-japanese .jp-home-dashboard>.jp-route-hero{padding:25px;}
+  #view-japanese .jp-route-hero h2{font-size:31px;max-width:19ch;}
+  #view-japanese .jp-home-dashboard>.jp-quick-card,#view-japanese .jp-home-dashboard>.review-hero{padding:20px;}
+  #view-japanese .jp-route-hero .btn{font-size:12px;}
+  #view-japanese .jp-month .jp-grid{gap:10px;}
+  #view-japanese .jp-week-card{padding:16px;min-height:150px;}
+  #view-japanese .jp-panel{padding:19px 18px;margin:14px 0;}
+  #view-japanese .jp-panel h3{font-size:17px;}
+  #view-japanese .jp-vocab{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  #view-japanese .jp-vocab>.jp-study-item{padding:11px 10px;}
+  #view-japanese .jp-study-item>b{font-size:20px;}
+  #view-japanese .jp-hard-btn{min-height:40px;}
+  #view-japanese .jp-jp,#view-japanese .jp-reading{font-size:20px;}
+  #view-japanese .jp-mode-lesson>.jp-actions:first-child{padding-top:42px;}
+  #view-japanese .jp-rule-grid{grid-template-columns:minmax(0,1fr);}
+  #view-japanese .jp-day-card{padding:16px 40px 16px 17px;}
+  #view-japanese .jp-day-card::after{right:16px;}
+  #view-japanese .jp-choice{padding:11px 12px;}
+}
+@media(max-width:520px){
+  #view-japanese .jp-month .jp-grid{grid-template-columns:minmax(0,1fr);}
+  #view-japanese .jp-month .jp-week-card{min-height:124px;}
+  #view-japanese .jp-grid:not(.jp-month .jp-grid){grid-template-columns:minmax(0,1fr);}
+  #view-japanese .jp-route-tools .btn{width:100%;text-align:left;}
+}
+@media(max-width:350px){
+  #view-japanese .jp-wrap{padding-left:12px;padding-right:12px;}
+  #view-japanese .jp-panel{padding:17px 14px;}
+  #view-japanese .jp-vocab{grid-template-columns:minmax(0,1fr);}
+}
+@media(forced-colors:active){
+  #view-japanese .jp-route-hero{background:Canvas;color:CanvasText;border:1px solid CanvasText;}
+  #view-japanese .jp-route-hero .jp-muted,#view-japanese .jp-route-hero .jp-kicker{color:CanvasText;}
+  #view-japanese .jp-route-hero .btn{border:1px solid ButtonText;}
+}
+/* JAPANESE STUDY DESIGN END */
+
 </style>
 </head>
 <body>
@@ -7761,15 +7912,17 @@ function jpRenderMeanings(){
 
 function jpRenderHome(){
   const next = jpNextLesson();
-  let html = jpQuickReviewCardHtml() + reviewHomeCardHtml("japanese") + '<div class="jp-hero"><div class="jp-kicker">Your 9-month route · 36 weeks</div>' +
-    '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-meanings="home">📚 Meaning Folder · Opposites, Synonyms &amp; CSV</button></div><h2>From N5 basics to practical N3</h2>' +
+  let html = '<div class="jp-home-dashboard">' + jpQuickReviewCardHtml() + reviewHomeCardHtml("japanese") + '<div class="jp-hero jp-route-hero"><div class="jp-kicker">Your 9-month route · 36 weeks</div>' +
+    '<h2>From N5 basics to practical N3</h2>' +
     '<p class="jp-muted">You already know some N5, so the first two weeks repair the basics through a short diagnostic bridge. Move on when the reading and speaking tasks feel comfortable. Weeks 3–12 build N4, weeks 13–28 build N3, and the last eight weeks are for timed practice and real use.</p>' +
     jpProgressBar(jpDoneCount(), JP_LESSONS.filter(function(l){return !l.optional;}).length) +
     '<div class="jp-actions"><button type="button" class="btn" data-jp-lesson="' + next.id + '">Continue: ' + escapeHtml(jpLessonDisplayTitle(next)) + ' →</button>' +
     '<button type="button" class="btn secondary" data-jp-search="1">🔎 Search Japanese</button>' +
-    '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div></div>';
+    '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div>' +
+    '<div class="jp-route-tools"><button type="button" class="btn secondary" data-jp-meanings="home">📚 Meaning Folder · Opposites, Synonyms &amp; CSV</button>' +
+    '<button type="button" class="btn secondary" data-jp-jump="jp-learning-path">Browse weeks ↓</button></div></div></div><div id="jp-learning-path">';
   for(let month=1;month<=9;month++){
-    html += '<h2 class="jp-section-title">Month ' + month + '</h2><div class="jp-grid">';
+    html += '<section class="jp-month" aria-labelledby="jpMonth' + month + '"><h2 class="jp-section-title" id="jpMonth' + month + '">Month ' + month + '</h2><div class="jp-grid">';
     for(let w=(month-1)*4+1;w<=month*4;w++){
       const item = JP_WEEKS[w-1], lessons = jpWeekLessons(w);
       const done = lessons.filter(function(l){ return DB.japanese.done[jpStateId(l)]; }).length;
@@ -7779,9 +7932,9 @@ function jpRenderHome(){
         (lessons.length ? done + ' / ' + lessons.length + ' lessons done' : 'Roadmap · lessons to come') +
         '</small></button>';
     }
-    html += '</div>';
+    html += '</div></section>';
   }
-  return html;
+  return html + '</div>';
 }
 function jpRenderWeek(week){
   const item = JP_WEEKS[week-1], lessons = jpWeekLessons(week);
@@ -7800,7 +7953,7 @@ function jpRenderWeek(week){
   lessons.forEach(function(l, i){
     const done=!!DB.japanese.done[jpStateId(l)];
     const meta=l.sourceDay ? 'Source Day ' + l.sourceDay + ' · optional preview' : ((week>=2 && week<=10) ? (done ? '✓ Completed' : '') : 'Day ' + (i+1) + (done ? ' · ✓ Completed' : ''));
-    html += '<button type="button" class="jp-day-card" data-jp-lesson="' + l.id + '">' +
+    html += '<button type="button" class="jp-day-card' + (done?' is-complete':'') + '" data-jp-lesson="' + l.id + '">' +
       (meta ? '<small>' + meta + '</small>' : '') +
       '<strong>' + escapeHtml(jpLessonDisplayTitle(l)) + '</strong><small>' + escapeHtml(l.goal) + '</small></button>';
   });
@@ -8113,7 +8266,7 @@ function renderJapanese(){
     });
     jpEventsBound=true;
   }
-  body.innerHTML='<div class="jp-wrap">' +
+  body.innerHTML='<div class="jp-wrap jp-mode-' + escapeAttr(jpPage.mode) + '">' +
     (jpPage.mode==="meanings" ? jpRenderMeanings() : jpPage.mode==="lesson" ? jpRenderLesson(jpPage.lesson) :
      jpPage.mode==="week" ? jpRenderWeek(jpPage.week) :
      jpPage.mode==="hard" ? jpRenderHard() :

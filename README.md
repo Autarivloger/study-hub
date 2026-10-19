@@ -23,6 +23,13 @@ use, with no font download or decorative JavaScript. Reading widths, text select
 touch targets, Furigana navigation clearance, reduced motion and High Contrast
 keyboard outlines are covered by the design checks.
 
+The Japanese area has a dedicated study dashboard, a grouped monthly path,
+compact day cards and consistent lesson/vocabulary/quiz sizing. Its presentation
+source is `scripts/japanese-theme.css`, embedded in the HTML for offline use.
+The daily random review stays immediately available; Continue, Meaning Folder,
+Hard words and all 36 weeks remain accessible. The Japanese theme is scoped to
+that view and preserves the curriculum, existing progress keys and storage logic.
+
 ## Cybersecurity — foundations to defensive Python
 
 Open **Cybersecurity → Week 9** for seven complete English lessons: a scoped
