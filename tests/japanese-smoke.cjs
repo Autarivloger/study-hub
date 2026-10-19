@@ -745,7 +745,7 @@ async function main(){
   await evalJs("document.querySelector('[data-jp-home]').click()");
 
 
-  await evalJs("document.querySelector('[data-jp-lesson=\"19.1\"]').click()");
+  await evalJs("document.querySelector('[data-jp-week=\"19\"]').click();document.querySelector('[data-jp-lesson=\"19.5.core\"]').click();document.querySelector('[data-jp-lesson=\"19.1\"]').click()");
   assert(await evalJs("document.querySelectorAll('.jp-panel h3').length >= 10"),"Imported grammar sections missing");
   assert(await evalJs("document.body.textContent.includes('Natural conversation') && document.body.textContent.includes('Write and compare')"),"Imported conversation or writing practice missing");
   assert(await evalJs("document.querySelectorAll('.jp-vocab')[0].children.length === 10 && document.querySelectorAll('.jp-vocab')[1].children.length === 10"),"Day 16 vocabulary or kanji missing");
@@ -1024,7 +1024,7 @@ async function main(){
     fs.writeFileSync(path.join(os.tmpdir(),"studyhub-japanese-hard-mobile.png"),Buffer.from(shot.data,"base64"));
   }
   await evalJs("document.querySelector('[data-jp-lesson=\"1.1\"]').click()");
-  await evalJs("document.querySelector('[data-jp-home]').click();document.querySelector('[data-jp-lesson=\"19.1\"]').click()");
+  await evalJs("document.querySelector('[data-jp-home]').click();document.querySelector('[data-jp-week=\"19\"]').click();document.querySelector('[data-jp-lesson=\"19.5.core\"]').click();document.querySelector('[data-jp-lesson=\"19.1\"]').click()");
   assert(await evalJs("document.documentElement.scrollWidth <= window.innerWidth + 1"),"Mobile advanced lesson overflows horizontally");
   if(process.env.JP_SHOTS){
     const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});

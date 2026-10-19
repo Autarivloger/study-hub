@@ -7767,11 +7767,7 @@ function jpRenderHome(){
     jpProgressBar(jpDoneCount(), JP_LESSONS.filter(function(l){return !l.optional;}).length) +
     '<div class="jp-actions"><button type="button" class="btn" data-jp-lesson="' + next.id + '">Continue: ' + escapeHtml(jpLessonDisplayTitle(next)) + ' →</button>' +
     '<button type="button" class="btn secondary" data-jp-search="1">🔎 Search Japanese</button>' +
-    '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div></div>' +
-    '<div class="jp-panel"><h3>From your previous Japanese notes · advanced preview</h3>' +
-    '<p class="jp-muted">Day 16 and Day 17 are available as optional reference. They do not mean you have completed N4. Keep following the Continue path first; return here when the N4 bridge feels secure.</p>' +
-    '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-lesson="19.1">Day 16 · Contrast and change</button>' +
-    '<button type="button" class="btn secondary" data-jp-lesson="19.2">Day 17 · Three kinds of although</button></div></div>';
+    '<button type="button" class="btn secondary" data-jp-hard-folder="1">★ Hard to remember (' + jpHardItems().length + ')</button></div></div>';
   for(let month=1;month<=9;month++){
     html += '<h2 class="jp-section-title">Month ' + month + '</h2><div class="jp-grid">';
     for(let w=(month-1)*4+1;w<=month*4;w++){
@@ -7845,6 +7841,7 @@ function jpRenderLesson(id){
   const checks = DB.japanese.checks[stateId] || {};
   const studyPrefix=(lesson.teRules || lesson.studyNav) ? 'jp-day' + id.split('.')[1] + '-' : '';
   let html = reviewOverdueReminderHtml() + '<div class="jp-actions"><button type="button" class="btn secondary" data-jp-week="' + week + '">← Week ' + week + '</button>' +
+    (id==='19.1' || id==='19.2' ? '<button type="button" class="btn secondary" data-jp-lesson="19.5.core">← Week 19 · Day 5</button>' : '') +
     '<button type="button" class="btn secondary" data-jp-home="1">All weeks</button>' +
     '<button type="button" class="btn secondary" data-jp-search="1">🔎 Search Japanese</button>' +
     '<button type="button" class="btn secondary jp-furigana-float" data-jp-furigana="1" aria-pressed="' + jpFuriganaOn + '" title="Show or hide readings without losing your place">あ Furigana ' + (jpFuriganaOn?'ON':'OFF') + '</button>' +
@@ -7859,6 +7856,14 @@ function jpRenderLesson(id){
       }).join('') + '</nav>' : '') +
     '<div class="jp-panel"><h3>Understand it</h3><p>' + jpFuriganaHtml(lesson.explain,lesson) + '</p>' +
     '<div class="jp-pattern">' + jpFuriganaHtml(lesson.syntax,lesson) + '</div></div>';
+  if(id==='19.5.core'){
+    html += '<section class="jp-panel jp-contrast-extras" aria-label="Extra contrast practice"><h3>Extra contrast practice</h3>' +
+      '<p class="jp-muted">After comparing のに with neutral and formal alternatives, use these optional lessons to practise more contrast expressions. The first also retains your addition and continuing-change practice. These are supporting lessons, not extra numbered days.</p><div class="jp-actions">' +
+      ['19.1','19.2'].map(function(extraId){
+        const extra=JP_LESSONS.find(function(item){return item.id===extraId;});
+        return '<button type="button" class="btn secondary" data-jp-lesson="'+extraId+'">'+escapeHtml(extra.title)+'</button>';
+      }).join('') + '</div></section>';
+  }
   if(lesson.teRules){
     html += '<div class="jp-panel" id="jp-day1-rules"><h3>て-form builder · three verb groups</h3>' +
       '<p class="jp-muted">हरेक group को नियम हेरेर पहिले आफैँ रूप बनाऊ, अनि उदाहरणसँग मिलाऊ।</p><div class="jp-rule-grid">';
