@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>StudyLog · Capstone</title>
+<style>
+:root{color-scheme:light dark;--bg:#f4f7f5;--card:#fff;--ink:#18372b;--muted:#506a5c;--line:#d6e3da;--accent:#22664e;--soft:#e5f0e9}
+@media(prefers-color-scheme:dark){:root{--bg:#111c17;--card:#1b2a22;--ink:#e6efe8;--muted:#b0c4b7;--line:#375044;--accent:#9ad2ae;--soft:#263e30}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,sans-serif}main{max-width:1080px;margin:auto;padding:32px 20px}header{margin-bottom:28px}h1{font-size:36px;line-height:1.2;margin:8px 0}h2{font-size:20px;margin-top:0}p{color:var(--muted)}.eyebrow{font-size:12px;font-weight:750;letter-spacing:.12em}.grid{display:grid;grid-template-columns:350px minmax(0,1fr);gap:20px}.card{padding:24px;border:1px solid var(--line);background:var(--card);border-radius:18px;box-shadow:0 5px 20px #153b2410}label{display:block;font-size:14px;margin:12px 0 5px}input,textarea,button{font:inherit}input,textarea{width:100%;padding:10px 12px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:9px}textarea{min-height:90px;resize:vertical}button{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:9px;padding:9px 14px;min-height:44px;cursor:pointer}.primary{background:var(--accent);color:var(--card);font-weight:700}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.row>input{width:auto;min-width:140px;flex:1}button:disabled{opacity:.5;cursor:wait}.session{padding:18px 0;border-bottom:1px solid var(--line)}.session:last-child{border-bottom:0}.session h3{margin:0;overflow-wrap:anywhere}.session p{margin:6px 0;white-space:pre-wrap;overflow-wrap:anywhere}.meta{font-size:13px;color:var(--muted)}#status{min-height:28px;margin:14px 0;overflow-wrap:anywhere}.totals{padding:14px 16px;background:var(--soft);border-radius:12px;margin-bottom:18px}.actions{margin-top:16px}.access{margin:18px 0}summary{cursor:pointer}.access p{font-size:13px}.pagination{margin-top:20px}:focus-visible{outline:3px solid var(--accent);outline-offset:3px}[hidden]{display:none!important}@media(max-width:760px){main{padding:22px 16px}.grid{grid-template-columns:1fr}h1{font-size:30px}.card{padding:20px}}
+</style></head><body><main>
+<header><div class="eyebrow">PYTHON · FINAL CAPSTONE</div><h1>StudyLog</h1><p>A quiet place to record your practice and see your progress.</p></header>
+<details class="access"><summary>Access token, if your server requires one</summary><p>The token stays in this page's memory and clears on refresh. Enter it only for a server you trust; use HTTPS for a remote connection.</p><div class="row"><input id="accessToken" type="password" aria-label="Server access token" autocomplete="off"><button id="connect" type="button">Connect</button></div></details>
+<div id="status" role="status" aria-live="polite"></div><div class="grid">
+<section class="card"><h2 id="formHeading">Add a study session</h2><form id="sessionForm"><label for="day">Date</label><input id="day" type="date" required><label for="subject">Subject</label><input id="subject" maxlength="80" required placeholder="Python, Japanese, or your own topic"><label for="minutes">Minutes</label><input id="minutes" type="number" min="1" max="1440" step="1" required value="25"><label for="note">What did you practise?</label><textarea id="note" maxlength="1000"></textarea><div class="row actions"><button id="save" class="primary" type="submit">Save session</button><button id="cancelEdit" type="button" hidden>Cancel edit</button></div></form></section>
+<section class="card"><h2>Your sessions</h2><div id="totals" class="totals">Loading totals…</div><div class="row"><input id="filterDay" type="date" aria-label="Filter by date"><button id="filter" type="button">Filter</button><button id="clearFilter" type="button">All dates</button></div><div id="sessions"></div><div class="row pagination"><button id="previous" type="button">Previous</button><span id="pageLabel" class="meta"></span><button id="next" type="button">Next</button></div></section>
+</div></main>
+<script>
+const byId=id=>document.getElementById(id), statusBox=byId('status');
+let token='', editing=null, offset=0, busy=false;const pageSize=10;
+function notice(text){statusBox.textContent=text;}
+async function request(url,options={}){
+ const headers={...(options.body?{'Content-Type':'application/json'}:{}),...(token?{Authorization:'Bearer '+token}:{}),...options.headers};
+ const response=await fetch(url,{...options,headers});const data=await response.json();
+ if(!response.ok){const message=Array.isArray(data.detail)?'Check the date, subject and whole-number minutes.':data.detail;throw Error(message||'Request failed');}
+ return data;
+}
+function clearEditor(){editing=null;byId('sessionForm').reset();const now=new Date();byId('day').value=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');byId('formHeading').textContent='Add a study session';byId('cancelEdit').hidden=true;}
+function text(tag,value,className){const element=document.createElement(tag);element.textContent=value;if(className)element.className=className;return element;}
+async function load(){
+ const day=byId('filterDay').value, suffix=day?'&day='+encodeURIComponent(day):'';
+ const [page,summary]=await Promise.all([request('/api/sessions?limit='+pageSize+'&offset='+offset+suffix),request('/api/summary'+(day?'?day='+encodeURIComponent(day):''))]);
+ byId('totals').textContent=summary.sessions+' sessions · '+summary.minutes+' minutes'+(day?' · '+day:' · all dates');
+ const root=byId('sessions');root.replaceChildren();
+ if(!page.items.length)root.append(text('p','No sessions here yet. Add one or choose another date.'));
+ page.items.forEach(entry=>{
+  const article=document.createElement('article');article.className='session';article.append(text('h3',entry.subject),text('div',entry.day+' · '+entry.minutes+' min','meta'),text('p',entry.note));
+  const buttons=document.createElement('div');buttons.className='row';
+  const edit=text('button','Edit');edit.type='button';edit.onclick=()=>{editing=entry;['day','subject','minutes','note'].forEach(key=>byId(key).value=entry[key]);byId('formHeading').textContent='Edit session';byId('cancelEdit').hidden=false;byId('subject').focus();};
+  const remove=text('button','Delete');remove.type='button';remove.onclick=async()=>{if(!confirm('Delete this session?'))return;remove.disabled=true;try{await request('/api/sessions/'+entry.id+'?version='+entry.version,{method:'DELETE'});if(editing?.id===entry.id)clearEditor();offset=0;await load();notice('Session deleted.');}catch(error){notice(error.message);}finally{remove.disabled=false;}};
+  buttons.append(edit,remove);article.append(buttons);root.append(article);
+ });
+ byId('previous').disabled=offset===0;byId('next').disabled=offset+page.items.length>=summary.sessions;byId('pageLabel').textContent='Page '+(offset/pageSize+1);
+}
+byId('sessionForm').onsubmit=async event=>{event.preventDefault();if(busy)return;busy=true;byId('save').disabled=true;
+ const payload={day:byId('day').value,subject:byId('subject').value,minutes:Number(byId('minutes').value),note:byId('note').value};if(editing)payload.version=editing.version;
+ let saved=false;try{await request('/api/sessions'+(editing?'/'+editing.id:''),{method:editing?'PUT':'POST',body:JSON.stringify(payload)});saved=true;clearEditor();offset=0;await load();notice('Session saved.');}catch(error){notice((saved?'Session saved, but list refresh failed: ':'')+error.message);}finally{busy=false;byId('save').disabled=false;}
+};
+byId('cancelEdit').onclick=clearEditor;byId('connect').onclick=()=>{token=byId('accessToken').value;byId('accessToken').value='';offset=0;load().then(()=>notice('Connected.')).catch(error=>notice(error.message));};
+byId('filter').onclick=()=>{offset=0;load().catch(error=>notice(error.message));};byId('clearFilter').onclick=()=>{byId('filterDay').value='';offset=0;load().catch(error=>notice(error.message));};
+byId('previous').onclick=()=>{offset=Math.max(0,offset-pageSize);load().catch(error=>notice(error.message));};byId('next').onclick=()=>{offset+=pageSize;load().catch(error=>notice(error.message));};
+clearEditor();load().catch(error=>notice(error.message));
+</script></body></html>

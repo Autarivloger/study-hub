@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "studyhub52-capstone"
+version = "1.0.0"
+description = "An original single-owner StudyLog capstone with SQLite and a local web interface"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+dependencies = ["fastapi>=0.143,<0.144", "uvicorn>=0.54,<0.55", "pydantic>=2.14,<2.15"]
+
+[tool.setuptools.packages.find]
+include = ["capstone*"]
+
+[tool.setuptools.package-data]
+capstone = ["static/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+filterwarnings = ["error"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100

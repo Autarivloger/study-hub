@@ -23,6 +23,20 @@ use, with no font download or decorative JavaScript. Reading widths, text select
 touch targets, Furigana navigation clearance, reduced motion and High Contrast
 keyboard outlines are covered by the design checks.
 
+## Python Week 52 — Capstone & what comes next
+
+Open **Course → Week 52** for six days with 36 teaching parts, 72 exercises,
+72 explained quiz questions, 108 executed examples/solutions and six embedded
+visuals. Work from specification and scope through architecture, core behavior,
+error cases, measured queries, deployment evidence and a final retrospective.
+The [original StudyLog capstone](docs/python-week52/README.md) includes SQLite,
+a validated FastAPI service, a responsive offline-assets interface, revision-aware
+edits/deletes, summaries, tests and verified snapshots. Actual localhost HTTP,
+process restart, restored service, browser workflows and a fresh installed wheel
+are checked separately. Docker and remote/second-device instructions are manual
+exercises and are not represented as executed public deployment. Day labels are
+milestones: use additional sessions for independent reconstruction and practice.
+
 ## Python Week 51 — Performance, packaging & professional practice
 
 Open **Course → Week 51** for six days with 36 teaching parts, 72 exercises,
