@@ -1,0 +1,90 @@
+/* COMPACT WORKSPACE STYLE START */
+:root{--sidebar-width:232px}
+@media(min-width:761px){
+  #sidebar{width:var(--sidebar-width);padding:12px 10px 10px;overflow:hidden;gap:8px}
+  #sidebarNavigation{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;overscroll-behavior:contain;padding:0 3px}
+  #sidebar .nav-label{min-width:0;overflow-wrap:anywhere}
+  #sidebar .nav-group-label{padding-top:3px;padding-bottom:7px}
+  #sidebar .nav-group-label:not(:first-child){padding-top:16px}
+  #sidebar .side-footer{margin-top:16px;padding-top:10px}
+  #sidebar .side-footer .stat{line-height:1.65}
+  #sidebarToggle{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:42px;flex-shrink:0;border:1px solid var(--border);border-radius:9px;background:var(--bg-elev);color:var(--text-dim);font:600 12px var(--font-ui);cursor:pointer}
+  #sidebarToggle:hover{background:var(--accent-soft);color:var(--accent)}
+  #sidebarToggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  :root.sidebar-compact{--sidebar-width:72px}
+  .sidebar-compact #sidebar{padding:10px 7px;gap:8px}
+  .sidebar-compact #sidebarNavigation{padding:0;scrollbar-width:none}
+  .sidebar-compact #sidebarNavigation::-webkit-scrollbar{display:none}
+  .sidebar-compact #sidebar .nav-label,.sidebar-compact #sidebar .nav-group-label,.sidebar-compact #sidebar .side-footer,.sidebar-compact .sidebar-toggle-label{display:none}
+  .sidebar-compact #sidebar button.nav-item{justify-content:center;gap:0;width:100%;min-height:44px;padding:9px 0;margin:0 0 3px;border-radius:10px}
+  .sidebar-compact #sidebar .nav-group-label:not(:first-child)+.nav-item{margin-top:10px}
+  .sidebar-compact #sidebar button.nav-item .ic,.sidebar-compact #sidebar .ui-icon{width:22px;height:22px}
+  .sidebar-compact #sidebarToggle svg{transform:rotate(180deg)}
+  #floatingBack{left:calc(var(--sidebar-width) + 18px)}
+}
+@media(min-width:761px) and (max-width:1000px){:root{--sidebar-width:196px}}
+@media(max-width:760px){#sidebarToggle{display:none}}
+
+/* Less dashboard chrome; teaching text and code retain their existing sizes. */
+body:not(.games-focus) .pane-header{padding:16px 24px 12px}
+#courseBody{padding:6px 24px 36px}
+.workspace-welcome{margin:0 0 16px;gap:16px}
+.workspace-welcome h2{font-size:clamp(24px,2.1vw,28px);line-height:1.2;letter-spacing:-.65px;margin-bottom:5px}
+.workspace-eyebrow{margin-bottom:5px}
+.learning-dashboard{grid-template-columns:minmax(0,1.6fr) minmax(190px,1fr);gap:12px;margin-bottom:12px}
+.learning-resume{padding:18px 20px;border-radius:15px;min-height:0}
+.learning-resume .today-card{max-width:88%;gap:7px}
+.learning-resume .tc-title{font-size:clamp(20px,1.8vw,24px);line-height:1.3;letter-spacing:-.4px;overflow-wrap:anywhere}
+.learning-resume .tc-meta{margin:0 0 5px;line-height:1.5}
+.learning-resume .btn{padding:9px 13px}
+.learning-art{width:115px;height:115px;opacity:.25}
+.learning-dashboard .course-hero{padding:16px 18px;border-radius:15px}
+.learning-dashboard .course-hero .ch-big{font-size:30px;letter-spacing:-.8px;margin:8px 0 10px}
+.learning-dashboard .course-hero .ch-big span{font-size:11px;margin-top:5px}
+.learning-dashboard .course-hero .ch-sub{margin-top:8px;line-height:1.5}
+.learning-shortcuts{gap:12px;margin-bottom:20px}
+.learning-shortcuts .review-hero,.learning-shortcuts .python-practice-link{padding:14px 18px;border-radius:13px}
+.learning-shortcuts h2,.learning-shortcuts h3{font-size:16px;margin:6px 0}
+.learning-shortcuts p{line-height:1.55;margin-bottom:10px}
+.learning-path-title{margin-bottom:12px}
+.phase-block{padding:18px;margin-bottom:14px}
+.phase-head{padding-bottom:11px}
+.week-header,.day-header{padding:18px 20px;margin-bottom:18px}
+.week-header h2,.day-header h2{margin:7px 0 10px}
+.review-wrap,.jp-wrap{padding-left:24px;padding-right:24px}
+#view-japanese>.pane-header{padding:18px 24px 6px}
+#lessonsBody{padding:12px 24px 32px}
+#cybersecurityBody,#webDevelopmentBody{padding:20px 24px}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-year>summary{padding:14px 18px}
+.webdev-start{padding:18px 20px;gap:18px;margin-top:16px}
+.webdev-start h2{font-size:20px}
+.deck-grid{padding:12px 24px;gap:14px}.deck-card{padding:18px}
+@media(max-width:760px){
+  body:not(.games-focus) .pane-header{padding:14px 18px 8px}
+  #courseBody{padding:8px 18px 30px}
+  .workspace-welcome{margin-bottom:12px}
+  .workspace-welcome h2{font-size:24px}
+  .learning-dashboard{grid-template-columns:1fr;gap:10px}
+  .learning-resume{padding:16px 18px;min-height:0}
+  .learning-resume .today-card{max-width:100%}
+  .learning-resume .tc-title{font-size:21px}
+  .learning-art{display:none}
+  .learning-dashboard .course-hero{padding:12px 16px}
+  .learning-dashboard .course-hero .ch-big{display:flex;align-items:baseline;gap:7px;font-size:27px;margin:5px 0 8px}
+  .learning-dashboard .course-hero .ch-big span{margin:0;font-size:11px;line-height:1.5}
+  .learning-dashboard .course-hero .ch-sub{margin-top:6px}
+  .learning-shortcuts{gap:10px;margin-bottom:18px}
+  .learning-shortcuts .review-hero,.learning-shortcuts .python-practice-link{padding:13px 16px}
+  .phase-block{padding:14px}
+  .week-header,.day-header{padding:16px 18px}
+  .review-wrap,.jp-wrap{padding-left:18px;padding-right:18px}
+  #view-japanese>.pane-header{padding:16px 18px 5px}
+  #lessonsBody,#cybersecurityBody,#webDevelopmentBody{padding-left:18px;padding-right:18px}
+  :is(#cybersecurityBody,#webDevelopmentBody) .cyber-year>summary{padding:13px 12px}
+  .webdev-start{padding:16px}
+  .deck-grid{padding-left:18px;padding-right:18px}
+  #view-japanese .jp-furigana-float{min-height:44px}
+}
+@media(max-width:360px){#courseBody{padding-left:14px;padding-right:14px}}
+@media(pointer:coarse){#sidebarToggle{min-height:44px}}
+/* COMPACT WORKSPACE STYLE END */

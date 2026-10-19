@@ -17,6 +17,14 @@ All styling and icons are embedded in the HTML; no fonts or UI libraries are
 downloaded. Editable presentation sources live in `scripts/premium-theme.css`
 and `scripts/premium-shell.js`. Curriculum and learner storage are unchanged.
 
+The bottom sidebar arrow switches between labelled navigation and a narrow icon
+rail. Icons keep accessible names and hover titles; the arrow remains available
+while the navigation list scrolls. The preference is stored locally under
+`studyHubSidebarCompact`, separately from learner data. Python's opening dashboard
+and shared page spacing are compact, while lesson/code text keeps its existing
+size. Presentation sources are `scripts/compact-workspace.css` and
+`scripts/compact-workspace.js`, embedded for offline use.
+
 The refined theme adds softly shaded cards, a glass desktop header, coordinated
 study tools and clearer visual hierarchy. All styles remain embedded for offline
 use, with no font download or decorative JavaScript. Reading widths, text selection,
