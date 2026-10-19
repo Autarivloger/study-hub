@@ -11076,6 +11076,742 @@ const CYBERSECURITY_ROADMAP = [
         "python": []
       }
     ]
+  },
+  {
+    "week": 9,
+    "title": "Python for security evidence",
+    "topics": [
+      "Read-only fixtures, question and evidence limits",
+      "JSON shape, required fields and explicit rejection",
+      "Deliveries, event identity and conflicting copies",
+      "Offsets, UTC, unknown times and late arrivals",
+      "Windows, thresholds, false positives and evidence references",
+      "Raw bytes, reference hashes and repeatable tests"
+    ],
+    "python": [
+      "Inspect a prepared JSON file with pathlib",
+      "Validate typed records before analysing them",
+      "Deduplicate using source and event ID",
+      "Normalise aware timestamps with datetime",
+      "Create a bounded findings summary",
+      "Use hashlib and unittest on sample evidence"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "A scoped local evidence lab",
+        "topics": [
+          "Read-only fixtures, question and evidence limits"
+        ],
+        "python": [
+          "Inspect a prepared JSON file with pathlib"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Validate security records",
+        "topics": [
+          "JSON shape, required fields and explicit rejection"
+        ],
+        "python": [
+          "Validate typed records before analysing them"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Count events without double-counting",
+        "topics": [
+          "Deliveries, event identity and conflicting copies"
+        ],
+        "python": [
+          "Deduplicate using source and event ID"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Build an honest timeline",
+        "topics": [
+          "Offsets, UTC, unknown times and late arrivals"
+        ],
+        "python": [
+          "Normalise aware timestamps with datetime"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Turn counts into a review finding",
+        "topics": [
+          "Windows, thresholds, false positives and evidence references"
+        ],
+        "python": [
+          "Create a bounded findings summary"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Check reproducibility and file integrity",
+        "topics": [
+          "Raw bytes, reference hashes and repeatable tests"
+        ],
+        "python": [
+          "Use hashlib and unittest on sample evidence"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and independent investigation",
+        "topics": [
+          "Rebuild the pipeline and explain what it cannot prove"
+        ],
+        "python": [
+          "Analyse a changed fixture and check your conclusions"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 10,
+    "title": "File integrity and recovery automation",
+    "topics": [
+      "Owned practice directory, inventory and expected state",
+      "Byte hashes, provenance and baseline protection",
+      "Added, removed, changed and unreadable files",
+      "Symlinks, permissions and partial collection",
+      "Restore into a separate directory and verify usability",
+      "Reproducible output, tests and known limitations"
+    ],
+    "python": [
+      "List explicit fixture files with pathlib",
+      "Stream SHA-256 digests into JSON",
+      "Compare manifests without deleting anything",
+      "Report skipped paths and errors separately",
+      "Check restored fixture bytes and required files",
+      "Write a CLI with explicit input/output paths"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Choose files and a baseline",
+        "topics": [
+          "Owned practice directory, inventory and expected state"
+        ],
+        "python": [
+          "List explicit fixture files with pathlib"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Create an integrity manifest",
+        "topics": [
+          "Byte hashes, provenance and baseline protection"
+        ],
+        "python": [
+          "Stream SHA-256 digests into JSON"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Compare two snapshots",
+        "topics": [
+          "Added, removed, changed and unreadable files"
+        ],
+        "python": [
+          "Compare manifests without deleting anything"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Handle filesystem edge cases",
+        "topics": [
+          "Symlinks, permissions and partial collection"
+        ],
+        "python": [
+          "Report skipped paths and errors separately"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Rehearse recovery",
+        "topics": [
+          "Restore into a separate directory and verify usability"
+        ],
+        "python": [
+          "Check restored fixture bytes and required files"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Build a read-only integrity report",
+        "topics": [
+          "Reproducible output, tests and known limitations"
+        ],
+        "python": [
+          "Write a CLI with explicit input/output paths"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and restore challenge",
+        "topics": [
+          "Interpret changes without assuming malicious intent"
+        ],
+        "python": [
+          "Test a changed and a missing practice file"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 11,
+    "title": "Network evidence with Python",
+    "topics": [
+      "Devices, addresses and ownership boundaries",
+      "IPv4/IPv6, subnet membership and documentation ranges",
+      "Queries, answers, TTL and collection context",
+      "Headers, status, certificate context and missing evidence",
+      "Time, shared IPs and non-secret request references",
+      "Expected paths, observations and unanswered questions"
+    ],
+    "python": [
+      "Validate a supplied CSV inventory",
+      "Use ipaddress on literal addresses; no discovery",
+      "Compare prepared DNS records without live queries",
+      "Parse saved HTTP metadata",
+      "Join fixture rows with documented keys",
+      "Generate a plain-text local report"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Read a prepared network inventory",
+        "topics": [
+          "Devices, addresses and ownership boundaries"
+        ],
+        "python": [
+          "Validate a supplied CSV inventory"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Understand addresses and networks",
+        "topics": [
+          "IPv4/IPv6, subnet membership and documentation ranges"
+        ],
+        "python": [
+          "Use ipaddress on literal addresses; no discovery"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Interpret DNS evidence",
+        "topics": [
+          "Queries, answers, TTL and collection context"
+        ],
+        "python": [
+          "Compare prepared DNS records without live queries"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Interpret HTTP and TLS observations",
+        "topics": [
+          "Headers, status, certificate context and missing evidence"
+        ],
+        "python": [
+          "Parse saved HTTP metadata"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Correlate network and application records",
+        "topics": [
+          "Time, shared IPs and non-secret request references"
+        ],
+        "python": [
+          "Join fixture rows with documented keys"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Build a network evidence notebook",
+        "topics": [
+          "Expected paths, observations and unanswered questions"
+        ],
+        "python": [
+          "Generate a plain-text local report"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and boundary challenge",
+        "topics": [
+          "Explain why a connection is not proof of a user action"
+        ],
+        "python": [
+          "Test mixed IPv4/IPv6 and incomplete records"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 12,
+    "title": "Secure application behaviour",
+    "topics": [
+      "Assets, actors, actions and trust boundaries",
+      "Types, lengths, unknown fields and failure responses",
+      "Object ownership and action-specific decisions",
+      "SQL parameters, output text and command arguments",
+      "Credential transport, expiry and CSRF model",
+      "Reproduce a bounded bug and preserve the correction"
+    ],
+    "python": [
+      "Represent an explicit owner/resource policy",
+      "Test safe and invalid synthetic inputs",
+      "Write a positive/negative policy test matrix",
+      "Test parameterised SQLite operations locally",
+      "Test an isolated teaching service with test credentials",
+      "Use pytest against your own local application"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Model a protected operation",
+        "topics": [
+          "Assets, actors, actions and trust boundaries"
+        ],
+        "python": [
+          "Represent an explicit owner/resource policy"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Validate at the input boundary",
+        "topics": [
+          "Types, lengths, unknown fields and failure responses"
+        ],
+        "python": [
+          "Test safe and invalid synthetic inputs"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Check authorisation",
+        "topics": [
+          "Object ownership and action-specific decisions"
+        ],
+        "python": [
+          "Write a positive/negative policy test matrix"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Keep interpretation boundaries separate",
+        "topics": [
+          "SQL parameters, output text and command arguments"
+        ],
+        "python": [
+          "Test parameterised SQLite operations locally"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Understand sessions and browser intent",
+        "topics": [
+          "Credential transport, expiry and CSRF model"
+        ],
+        "python": [
+          "Test an isolated teaching service with test credentials"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Write regression tests",
+        "topics": [
+          "Reproduce a bounded bug and preserve the correction"
+        ],
+        "python": [
+          "Use pytest against your own local application"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and secure-change challenge",
+        "topics": [
+          "Explain the control and demonstrate its boundary"
+        ],
+        "python": [
+          "Add one permission regression case"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 13,
+    "title": "Identity, secrets and configuration",
+    "topics": [
+      "Human accounts, service identities and recovery routes",
+      "Required actions, granted scope and expiry",
+      "Required values, safe defaults and failure messages",
+      "Redaction, limited collection and exposure response",
+      "Pinned versions, advisories and affected context",
+      "Backup, staged rollout, verification and rollback"
+    ],
+    "python": [
+      "Summarise a fictional dependency map",
+      "Compare fixture grants with a stated policy",
+      "Validate synthetic environment configuration",
+      "Test redaction using clearly fake strings",
+      "Parse a prepared dependency/advisory worksheet",
+      "Compare expected/observed fixture settings"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Map identity dependencies",
+        "topics": [
+          "Human accounts, service identities and recovery routes"
+        ],
+        "python": [
+          "Summarise a fictional dependency map"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Review least privilege",
+        "topics": [
+          "Required actions, granted scope and expiry"
+        ],
+        "python": [
+          "Compare fixture grants with a stated policy"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Handle configuration deliberately",
+        "topics": [
+          "Required values, safe defaults and failure messages"
+        ],
+        "python": [
+          "Validate synthetic environment configuration"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Keep secrets out of logs and source",
+        "topics": [
+          "Redaction, limited collection and exposure response"
+        ],
+        "python": [
+          "Test redaction using clearly fake strings"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Review dependency information",
+        "topics": [
+          "Pinned versions, advisories and affected context"
+        ],
+        "python": [
+          "Parse a prepared dependency/advisory worksheet"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Plan a safe configuration change",
+        "topics": [
+          "Backup, staged rollout, verification and rollback"
+        ],
+        "python": [
+          "Compare expected/observed fixture settings"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and least-privilege challenge",
+        "topics": [
+          "Explain unknowns and a verified improvement"
+        ],
+        "python": [
+          "Produce a findings record without credential values"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 14,
+    "title": "Detection engineering foundations",
+    "topics": [
+      "Observed behaviour, required sources and intended action",
+      "Benign, concerning, malformed and incomplete examples",
+      "Identity, timestamps, cutoff and late data",
+      "False positives, false negatives and labelled-set limits",
+      "Context, exceptions, coverage and versioned changes",
+      "Evidence links, priority and bounded next checks"
+    ],
+    "python": [
+      "Express a rule as a small pure function",
+      "Generate deterministic synthetic fixtures",
+      "Count unique events in explicit intervals",
+      "Calculate a confusion matrix with checked denominators",
+      "Compare two rules against the same fixtures",
+      "Create a reproducible alert summary"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Write a detection question",
+        "topics": [
+          "Observed behaviour, required sources and intended action"
+        ],
+        "python": [
+          "Express a rule as a small pure function"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Design a test dataset",
+        "topics": [
+          "Benign, concerning, malformed and incomplete examples"
+        ],
+        "python": [
+          "Generate deterministic synthetic fixtures"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Choose windows and grouping",
+        "topics": [
+          "Identity, timestamps, cutoff and late data"
+        ],
+        "python": [
+          "Count unique events in explicit intervals"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Measure rule behaviour",
+        "topics": [
+          "False positives, false negatives and labelled-set limits"
+        ],
+        "python": [
+          "Calculate a confusion matrix with checked denominators"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Tune without hiding evidence",
+        "topics": [
+          "Context, exceptions, coverage and versioned changes"
+        ],
+        "python": [
+          "Compare two rules against the same fixtures"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Write an alert runbook",
+        "topics": [
+          "Evidence links, priority and bounded next checks"
+        ],
+        "python": [
+          "Create a reproducible alert summary"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and detection challenge",
+        "topics": [
+          "Separate an alert from a confirmed incident"
+        ],
+        "python": [
+          "Test one new benign and one concerning scenario"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 15,
+    "title": "Incident investigation and recovery",
+    "topics": [
+      "Scope, owner, evidence inventory and uncertainty",
+      "Collection notes, hashes, duplicates and clock caveats",
+      "Facts, hypotheses and discriminating evidence",
+      "Containment options, authority and operational effects",
+      "Known-good state, restore point and usability checks",
+      "Impact, actions, unknowns and prevention follow-up"
+    ],
+    "python": [
+      "Create a structured fictional case file",
+      "Build a referenced multi-source timeline",
+      "Group observations without inventing attribution",
+      "Compare a prepared decision table",
+      "Restore synthetic files into a separate target",
+      "Generate a case summary with evidence references"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Open an investigation record",
+        "topics": [
+          "Scope, owner, evidence inventory and uncertainty"
+        ],
+        "python": [
+          "Create a structured fictional case file"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Preserve and reconcile evidence",
+        "topics": [
+          "Collection notes, hashes, duplicates and clock caveats"
+        ],
+        "python": [
+          "Build a referenced multi-source timeline"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Test competing explanations",
+        "topics": [
+          "Facts, hypotheses and discriminating evidence"
+        ],
+        "python": [
+          "Group observations without inventing attribution"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Plan response decisions",
+        "topics": [
+          "Containment options, authority and operational effects"
+        ],
+        "python": [
+          "Compare a prepared decision table"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Rehearse recovery in a practice folder",
+        "topics": [
+          "Known-good state, restore point and usability checks"
+        ],
+        "python": [
+          "Restore synthetic files into a separate target"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Communicate and improve",
+        "topics": [
+          "Impact, actions, unknowns and prevention follow-up"
+        ],
+        "python": [
+          "Generate a case summary with evidence references"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and incident tabletop",
+        "topics": [
+          "Explain choices and verify recovery criteria"
+        ],
+        "python": [
+          "Replay the complete fictional case"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 16,
+    "title": "Defensive Python capstone",
+    "topics": [
+      "User question, accepted inputs and non-goals",
+      "Size/shape validation, input errors and tests",
+      "Deduplication, time, rules and traceable results",
+      "Escaped output, provenance and supported conclusions",
+      "Invalid data, conflicts, repeatability and restore",
+      "Rebuild instructions, evidence and limitations"
+    ],
+    "python": [
+      "Write a small CLI contract",
+      "Read only explicitly supplied fixture paths",
+      "Compose tested pure functions",
+      "Export JSON and plain text with no secrets",
+      "Run an independent fixture test suite",
+      "Package a local project with a clear README"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Specify the evidence assistant",
+        "topics": [
+          "User question, accepted inputs and non-goals"
+        ],
+        "python": [
+          "Write a small CLI contract"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Build the ingestion boundary",
+        "topics": [
+          "Size/shape validation, input errors and tests"
+        ],
+        "python": [
+          "Read only explicitly supplied fixture paths"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Implement analysis",
+        "topics": [
+          "Deduplication, time, rules and traceable results"
+        ],
+        "python": [
+          "Compose tested pure functions"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Produce a usable report",
+        "topics": [
+          "Escaped output, provenance and supported conclusions"
+        ],
+        "python": [
+          "Export JSON and plain text with no secrets"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Test failure and recovery",
+        "topics": [
+          "Invalid data, conflicts, repeatability and restore"
+        ],
+        "python": [
+          "Run an independent fixture test suite"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Demonstrate and document",
+        "topics": [
+          "Rebuild instructions, evidence and limitations"
+        ],
+        "python": [
+          "Package a local project with a clear README"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and choose the next direction",
+        "topics": [
+          "Independent demonstration and a realistic improvement plan"
+        ],
+        "python": [
+          "Explain and extend the project without a template"
+        ]
+      }
+    ]
   }
 ];
 const CYBERSECURITY_TEACH = {
@@ -18437,6 +19173,1108 @@ const CYBERSECURITY_TEACH = {
         "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
       }
     ]
+  },
+  "9.1": {
+    "objective": "Set up a read-only Python evidence lab, state one investigation question and distinguish a delivered record from a verified real-world event.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Start with the security question"
+      },
+      {
+        "t": "p",
+        "v": "Weeks 1–8 established accounts, networks, controls and evidence. Now Python will help you repeat careful analysis. The question for this week is: how many distinct failed-login events does the prepared source report in a stated interval, and what needs review? Answering that question requires defining the source, identity rule, time interval and collection cutoff. A large number printed by a script is useful only when you can explain what was counted."
+      },
+      {
+        "t": "new",
+        "v": "Evidence pipeline",
+        "note": "A sequence of explicit transformations: read original input → validate records → reconcile identities → normalise known times → count a defined behaviour → explain results and limitations. Each stage preserves references back to the source."
+      },
+      {
+        "t": "p",
+        "v": "The supplied case is the same fictional Week 7 dataset. It contains 12 deliveries from authentication, application, network, endpoint, alert and legacy-export sources. Documentation IP addresses are public teaching values, not systems to contact. C-7 is a non-secret correlation label. Nothing here establishes an observation about your computer or your accounts. The script reads the supplied file; it does not discover devices, retrieve account logs or change settings."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Prepare a small working folder"
+      },
+      {
+        "t": "new",
+        "v": "pathlib.Path and the supplied security_lab module",
+        "note": "Path represents filesystem paths. The original helper module security_lab.py sits beside the fixture and defines small analysis functions. SAMPLE is the fixture path relative to that module, so the program does not search your computer for logs."
+      },
+      {
+        "t": "p",
+        "v": "Download the repository and open docs/cybersecurity-week9 in PowerShell. Python 3.12 or later is sufficient; all imports use the standard library. Save each complete lesson snippet into practice.py in this folder, then run python practice.py. Do not overwrite security_lab.py or call your file json.py. The website shows recorded example output; Python runs locally in your own terminal. Reading the lessons remains available offline."
+      },
+      {
+        "t": "sh",
+        "v": "python --version\npython -m unittest -v\npython security_lab.py"
+      },
+      {
+        "t": "p",
+        "v": "Run these as separate commands. The first checks your interpreter, the second runs the supplied tests, and the third prints the worked report. A test run checks specific expected behaviours; it does not certify a whole computer as secure. There is no package installation step or API credential. Read README.md before changing the lab, and keep the reference fixture unchanged so that later comparisons have a stable starting point."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Inspect before interpreting"
+      },
+      {
+        "t": "new",
+        "v": "load_fixture() and JSON document shape",
+        "note": "load_fixture reads a bounded UTF-8 JSON document and checks its top-level structure. JSON objects become Python dictionaries and arrays become lists. This helper returns events plus context; it does not authenticate the source or prove every row is valid."
+      },
+      {
+        "t": "code",
+        "v": "from security_lab import load_fixture\ndocument = load_fixture()\nprint('Deliveries:', len(document['events']))\nprint('First reference:', document['events'][0]['record'])\nprint('Scope:', document['context']['scope'])"
+      },
+      {
+        "t": "out",
+        "v": "Deliveries: 12\nFirst reference: L01\nScope: Prepared sample records, not any real account/device/service observation"
+      },
+      {
+        "t": "p",
+        "v": "Read the expressions from the inside outward. document[\"events\"] retrieves the delivery list; len counts its entries; [0] selects the first delivery; [\"record\"] retrieves the collector reference. The value L01 lets you return to that row. It is not the same thing as event_id A01, which belongs to the source event. Keeping both references will explain why L03 and L04 can describe one source event without becoming one identical delivery."
+      },
+      {
+        "t": "h",
+        "v": "Part 4 · Keep the originals and state limits"
+      },
+      {
+        "t": "p",
+        "v": "Write your question, input filename and assumptions before analysing. The worksheet assumes offset-bearing clocks are correct for this exercise. X01 lacks a documented timezone. A log is a source report with a particular collection history; an accepted-login label does not independently prove which human used an account. Read the context limitations and keep them with your result. A script should make these uncertainties visible rather than replace them with confident guesses."
+      },
+      {
+        "t": "ex",
+        "v": "Practice: count delivered authentication rows before deduplication. Explain the unit in your answer."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture\nrows = load_fixture()['events']\nprint('Authentication deliveries:', sum(row['source'] == 'auth' for row in rows))\nprint('Unit: deliveries, not unique events')",
+        "out": "Authentication deliveries: 6\nUnit: deliveries, not unique events",
+        "why": "Each True contributes one to sum. The source filter is explicit, but a repeated delivery still counts until Day 3 reconciles event identities."
+      },
+      {
+        "t": "h",
+        "v": "Part 5 · A defensible first observation"
+      },
+      {
+        "t": "p",
+        "v": "Keep three sentences separate: what the input contains, what your code calculated, and what the result means for the question. At this stage you know the delivered record count and can locate a reference. You have not yet excluded malformed rows, reconciled duplicates or resolved time. Finish this stage before introducing a threshold. You can take several study sessions for one labelled day; understanding each transformation is more important than reaching the next button."
+      },
+      {
+        "t": "ex",
+        "v": "Mini challenge: list the source labels in a stable order without printing full records."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture\nsources = {row['source'] for row in load_fixture()['events']}\nprint(', '.join(sorted(sources)))",
+        "out": "alert, application, auth, endpoint, legacy-export, network",
+        "why": "A set removes repeated labels. sorted makes the presentation reproducible. This summarises categories rather than exposing every field."
+      },
+      {
+        "t": "key",
+        "v": "Security question first; explicit input, reference and counting unit second; interpretation only after the required checks."
+      }
+    ],
+    "checks": [
+      {
+        "q": "What is Python helping investigate this week?",
+        "a": "Distinct reported failed-login events in a stated interval, with evidence references and limitations.",
+        "why": "The question determines the filters and counting unit."
+      },
+      {
+        "q": "Does 12 deliveries prove 12 independent events?",
+        "a": "No. One source event can be delivered more than once.",
+        "why": "Delivery identity and source-event identity are different."
+      },
+      {
+        "q": "Does the website execute these Python snippets?",
+        "a": "No. It displays recorded output; run practice.py locally in the supplied folder.",
+        "why": "A rendered code block is not an interpreter."
+      },
+      {
+        "q": "Why keep the context object?",
+        "a": "It records the fictional scope and interpretation limitations.",
+        "why": "Data without provenance can support misleading conclusions."
+      },
+      {
+        "q": "Should the script contact a displayed documentation IP?",
+        "a": "No. The analysis only reads prepared local evidence.",
+        "why": "An address inside a record is data, not an instruction."
+      },
+      {
+        "q": "Why keep the reference fixture unchanged?",
+        "a": "It provides a stable input for checks and later comparisons.",
+        "why": "Make changes in a separate practice copy."
+      }
+    ],
+    "reflection": "Write the investigation question, counting unit, reference filename and two limits. Record your own terminal result without copying any real account data.",
+    "references": [
+      {
+        "title": "Python: JSON input and size limits",
+        "url": "https://docs.python.org/3/library/json.html"
+      },
+      {
+        "title": "Python: aware timestamps",
+        "url": "https://docs.python.org/3/library/datetime.html"
+      },
+      {
+        "title": "OWASP: logging, sensitive data and interpretation",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      },
+      {
+        "title": "Week 9 lab setup and helper explanations",
+        "url": "docs/cybersecurity-week9/README.md"
+      }
+    ]
+  },
+  "9.2": {
+    "objective": "Reject malformed inputs explicitly, distinguish structural validation from trust, and keep rejected-row references beside accepted records.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Parsing is only the first boundary"
+      },
+      {
+        "t": "p",
+        "v": "Yesterday you read the prepared file. Today consider a record with status \"403\" as text, a missing source or a boolean status True. A JSON parser can accept all those values because they are legal JSON types. Your analysis still needs a contract for what each field means. If you count before checking, missing values may crash the script, or a convenient conversion may silently transform a bad observation into an apparently valid one."
+      },
+      {
+        "t": "new",
+        "v": "Schema and validation",
+        "note": "A schema is a stated shape/type contract. Validation checks an input against that contract. It can establish that a status is an integer in the expected range; it cannot establish that a real service actually returned that status."
+      },
+      {
+        "t": "p",
+        "v": "The lab requires nonblank strings for record, source, event_id, event_time, received_time and action. It checks their length and control characters. Present status values must be actual integers from 100 to 599; present write_performed values must be booleans. An account label, if present, must be bounded text. Unknown metadata remains present. Dates are handled separately: a nonblank event_time can still be invalid or offset-free and will be reported as unknown on Day 4."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Bound the document before analysis"
+      },
+      {
+        "t": "new",
+        "v": "Input budget and strict JSON decoding",
+        "note": "The loader reads at most 100,001 bytes, rejecting files above 100,000 bytes and more than 1,000 deliveries. It also rejects duplicate JSON object keys and NaN/Infinity. These deliberate limits make this small fixture lab easier to reason about."
+      },
+      {
+        "t": "p",
+        "v": "An ordinary dictionary cannot retain two different values for the same key after the later value replaces the earlier one. The helper therefore uses object_pairs_hook to inspect key/value pairs before building each object. parse_constant rejects Python decoder extensions for non-finite numbers. You do not need to memorise these callbacks today; find their short definitions in security_lab.py and explain why the boundary rejects ambiguity instead of guessing which value the source intended."
+      },
+      {
+        "t": "p",
+        "v": "A byte budget is useful but is not a complete untrusted-document service. Extreme nesting and a hostile collection environment require additional design. This course lab uses a small supplied fixture; it is not a request to load arbitrary downloads into a privileged program. The lesson is to match a boundary to an explicit workload and record what it does not guarantee. Unknown input is not automatically trustworthy just because the file extension is .json."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Accept, reject and preserve the reference"
+      },
+      {
+        "t": "new",
+        "v": "validate_rows(rows)",
+        "note": "This supplied pure helper returns two lists: accepted copies and errors containing a one-based row number plus reason. It does not edit the original records or repair rejected values. Tuple unpacking assigns the two returned lists to two names."
+      },
+      {
+        "t": "code",
+        "v": "from security_lab import load_fixture, validate_rows\naccepted, rejected = validate_rows(load_fixture()['events'])\nprint('Accepted:', len(accepted))\nprint('Rejected:', len(rejected))"
+      },
+      {
+        "t": "out",
+        "v": "Accepted: 12\nRejected: 0"
+      },
+      {
+        "t": "p",
+        "v": "The clean reference fixture has no rejected rows. That does not make it a complete incident history. It means the rows passed this contract. For a bad file, keep the input count, accepted count and rejected count visible. Otherwise a report may say only two failures when the missing third observation was discarded by a parser. Never make an error count disappear merely because the remaining records are easier to analyse."
+      },
+      {
+        "t": "h",
+        "v": "Part 4 · Avoid helpful-looking coercion"
+      },
+      {
+        "t": "new",
+        "v": "type(value) is int versus isinstance(value, int)",
+        "note": "In Python bool is a subclass of int, so isinstance(True, int) is True. The status boundary deliberately requires type(value) is int to reject a boolean masquerading as an HTTP status."
+      },
+      {
+        "t": "ex",
+        "v": "Practice: add a clearly invalid copy in memory and show its rejected-row reason. Leave the fixture file alone."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture, validate_rows\nrow = load_fixture()['events'][0]\nbad = {**row, 'record': 'TEST', 'status': True}\naccepted, rejected = validate_rows([bad])\nprint('Accepted:', len(accepted))\nprint('Rejected row:', rejected[0]['row'])\nprint('Reason:', rejected[0]['reason'])",
+        "out": "Accepted: 0\nRejected row: 1\nReason: status must be an integer from 100 to 599",
+        "why": "Dictionary unpacking creates a new top-level object. Strict type checking stops True from being interpreted as status 1 or accepted as a valid integer status."
+      },
+      {
+        "t": "p",
+        "v": "Do not fix an invalid status with int(value) inside the validator. That would accept some strings and lose the difference between a source contract violation and a valid observation. A documented normalisation stage can be appropriate for another source, but it must preserve what changed and why. In this lab rejection is the intentional behaviour, and later results must disclose any rejected observations."
+      },
+      {
+        "t": "h",
+        "v": "Part 5 · Validate failure cases, not only the happy path"
+      },
+      {
+        "t": "ex",
+        "v": "Mini challenge: demonstrate a missing required field and verify that the original delivery still has it."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture, validate_rows\noriginal = load_fixture()['events'][0]\ncopy = {key: value for key, value in original.items() if key != 'source'}\naccepted, rejected = validate_rows([copy])\nprint('Rejected:', len(rejected))\nprint('Original source:', original['source'])",
+        "out": "Rejected: 1\nOriginal source: auth",
+        "why": "The comprehension creates a separate object. A meaningful rejection test also checks that analysis did not damage its reference input."
+      },
+      {
+        "t": "p",
+        "v": "Use the supplied unit tests to inspect malformed objects, repeated delivery labels, unexpected types and loader limits. A good test names an expected failure, not merely that the program ran. Keep your day note focused on the contract and observed behaviour. If you cannot explain why an input was accepted or rejected, pause before using its count as evidence for a security finding."
+      },
+      {
+        "t": "key",
+        "v": "Valid shape is not verified truth. Keep rejection evidence visible and preserve the unmodified input."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Does successful JSON parsing establish valid record types?",
+        "a": "No. Parsing and application validation are separate boundaries.",
+        "why": "Legal JSON can violate the analysis contract."
+      },
+      {
+        "q": "Why reject status True?",
+        "a": "A boolean is not an HTTP status even though bool subclasses int in Python.",
+        "why": "The contract requires an actual integer from 100 to 599."
+      },
+      {
+        "q": "Should invalid rows vanish from the report?",
+        "a": "No. Retain their row references and reasons.",
+        "why": "Missing evidence can change how a count should be interpreted."
+      },
+      {
+        "q": "Does a valid event_time string establish a known UTC time?",
+        "a": "No. It can still lack an offset or contain an invalid date.",
+        "why": "Time semantics are checked separately."
+      },
+      {
+        "q": "Why reject duplicate JSON object keys?",
+        "a": "They make the intended value ambiguous and ordinary decoding can overwrite a value.",
+        "why": "Detect ambiguity before building the dictionary."
+      },
+      {
+        "q": "Does the small input budget make this a general hostile-file sandbox?",
+        "a": "No. It is a bounded teaching loader with stated limits.",
+        "why": "Match guarantees to the workload actually implemented."
+      }
+    ],
+    "reflection": "Describe one accepted row, one rejected row and why validation cannot prove authenticity. Explain how you checked that the reference data stayed unchanged.",
+    "references": [
+      {
+        "title": "Python: JSON input and size limits",
+        "url": "https://docs.python.org/3/library/json.html"
+      },
+      {
+        "title": "Python: aware timestamps",
+        "url": "https://docs.python.org/3/library/datetime.html"
+      },
+      {
+        "title": "OWASP: logging, sensitive data and interpretation",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      },
+      {
+        "title": "Week 9 lab setup and helper explanations",
+        "url": "docs/cybersecurity-week9/README.md"
+      }
+    ]
+  },
+  "9.3": {
+    "objective": "Count source events once using their documented identity and quarantine conflicting copies instead of choosing a convenient version.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Separate three different quantities"
+      },
+      {
+        "t": "p",
+        "v": "A collector receives deliveries. A source produces events. An alert describes a rule result over some events. Those three quantities are not interchangeable. The reference case has 12 deliveries and 11 source events. L03 and L04 both carry authentication event A03. Alert Z01 describes an earlier threshold calculation; counting that alert as another failed login would count an analytical conclusion as if it were another underlying occurrence."
+      },
+      {
+        "t": "new",
+        "v": "Composite event identity",
+        "note": "In this worksheet the pair (source, event_id) identifies a source event. A tuple can be a dictionary key because its text elements are hashable. event_id alone is insufficient when different sources can reuse the same label."
+      },
+      {
+        "t": "p",
+        "v": "Identity is a contract, not something to invent from whichever fields happen to match. Some systems identify events using an extra tenant or device key, or reuse IDs after a restart. Learn the source contract before extending the method. In this prepared fixture the source-plus-ID rule is explicitly documented, and it permits authentication A03 to stay separate from an unrelated source that happens to use A03 too."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Compare the event payload"
+      },
+      {
+        "t": "new",
+        "v": "Delivery metadata versus event payload",
+        "note": "record, received_time and annotation describe the delivery in this fixture. The remaining fields describe its event payload. Equal payload copies with the same event identity count once. A different payload under the same identity is a conflict requiring review."
+      },
+      {
+        "t": "p",
+        "v": "L03 and L04 have different collector labels and receipt times. Their event payload agrees, so the retained source event can point to L03 while a duplicate note points from L04 to L03. We do not delete either original. Do not generalise the exclusion of annotation to every system: here it is a collector note. If another source uses that field as event evidence, excluding it would hide a relevant difference."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Reconcile the prepared evidence"
+      },
+      {
+        "t": "new",
+        "v": "deduplicate(rows)",
+        "note": "This supplied helper groups validated rows by composite identity, compares payloads and returns unique rows, duplicate-delivery references and conflict groups. Validate first. Deduplication does not parse or authenticate a record."
+      },
+      {
+        "t": "code",
+        "v": "from security_lab import load_fixture, validate_rows, deduplicate\naccepted, rejected = validate_rows(load_fixture()['events'])\nunique, duplicates, conflicts = deduplicate(accepted)\nprint('Unique events:', len(unique))\nprint('Repeated deliveries:', duplicates)\nprint('Conflicting groups:', len(conflicts))"
+      },
+      {
+        "t": "out",
+        "v": "Unique events: 11\nRepeated deliveries: [{'record': 'L04', 'kept': 'L03'}]\nConflicting groups: 0"
+      },
+      {
+        "t": "p",
+        "v": "The chosen representative is the first delivered equal copy. If you reverse delivery order, the representative reference can change even though the unique-event count is the same. That is why a reproducible report records both its input and reconciliation policy. Never claim that the retained delivery arrived first in real-world event time simply because it appeared first in the collector file."
+      },
+      {
+        "t": "h",
+        "v": "Part 4 · Do not overwrite a conflict"
+      },
+      {
+        "t": "p",
+        "v": "Imagine another delivery for auth A01 whose result changes from rejected to accepted. A dictionary assignment seen[key] = row would quietly keep the later version and hide the disagreement. The supplied helper excludes that entire conflicting group from normal counts and reports its references. The resulting count is incomplete with an explicit quality flag; it is not a confident corrected total. Resolving the conflict needs authorised source evidence beyond this worksheet."
+      },
+      {
+        "t": "ex",
+        "v": "Practice: introduce one conflicting payload in memory and inspect the references kept for review."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture, deduplicate\nfirst = load_fixture()['events'][0]\nchanged = {**first, 'record': 'TEST', 'result': 'accepted'}\nunique, duplicates, conflicts = deduplicate([first, changed])\nprint('Countable events:', len(unique))\nprint('Conflicting references:', conflicts[0]['records'])",
+        "out": "Countable events: 0\nConflicting references: ['L01', 'TEST']",
+        "why": "The helper preserves the disagreement instead of deciding which result is true. This example isolates deduplication using two already well-shaped rows."
+      },
+      {
+        "t": "h",
+        "v": "Part 5 · Check the invariants and count honestly"
+      },
+      {
+        "t": "p",
+        "v": "For the clean fixture, accepted deliveries equal unique events plus repeated equal deliveries because there are no conflicts. With conflicts, add the number of deliveries inside quarantined groups as a separate term. Do not add the number of conflict groups to the number of events and call that an exact reconciliation. A group can contain several deliveries. Write which unit each total uses, and test the clean and conflict cases separately."
+      },
+      {
+        "t": "ex",
+        "v": "Mini challenge: prove that equal event IDs from different sources are separate under this contract."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture, deduplicate\nfirst = load_fixture()['events'][0]\nother = {**first, 'record': 'OTHER', 'source': 'training-copy'}\nunique, duplicates, conflicts = deduplicate([first, other])\nprint('Distinct composite identities:', len(unique))",
+        "out": "Distinct composite identities: 2",
+        "why": "Changing the source changes the documented identity. This does not assert that a real source is trustworthy; it exercises the grouping contract."
+      },
+      {
+        "t": "p",
+        "v": "Stop before applying a threshold. At this point you have defensible source-event units and references to duplicate or disputed evidence. You still need time semantics and a stated interval. A clear intermediate result is valuable: it allows a reviewer to challenge one assumption without having to reverse-engineer an entire script."
+      },
+      {
+        "t": "key",
+        "v": "Deduplicate by a documented source-event identity. Preserve duplicate references and surface conflicts before counting behaviour."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Why is event_id alone not the key?",
+        "a": "Different sources can reuse the same event_id.",
+        "why": "The documented identity is source plus event_id."
+      },
+      {
+        "q": "Is L04 another failed-login event?",
+        "a": "No. It repeats auth A03 under this fixture contract.",
+        "why": "It is another delivery of the same source event."
+      },
+      {
+        "q": "Is alert Z01 an additional login failure?",
+        "a": "No. It is a separate alert event about earlier failures.",
+        "why": "Counting evidence and conclusions together inflates the behaviour count."
+      },
+      {
+        "q": "What happens to conflicting copies?",
+        "a": "The group is quarantined from ordinary event counts and its references are reported.",
+        "why": "Do not overwrite evidence or invent which version is correct."
+      },
+      {
+        "q": "Can representative delivery references change after reordering?",
+        "a": "Yes. Equal copies retain the first supplied representative.",
+        "why": "Record input order/policy; the unique count should still agree."
+      },
+      {
+        "q": "Can every source ignore annotation during comparison?",
+        "a": "No. That exclusion belongs to this fixture contract.",
+        "why": "Field meaning must come from the source specification."
+      }
+    ],
+    "reflection": "Reconcile 12 deliveries to 11 unique events. Explain L03/L04, Z01 and how a conflict changes the confidence of a count.",
+    "references": [
+      {
+        "title": "Python: JSON input and size limits",
+        "url": "https://docs.python.org/3/library/json.html"
+      },
+      {
+        "title": "Python: aware timestamps",
+        "url": "https://docs.python.org/3/library/datetime.html"
+      },
+      {
+        "title": "OWASP: logging, sensitive data and interpretation",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      },
+      {
+        "title": "Week 9 lab setup and helper explanations",
+        "url": "docs/cybersecurity-week9/README.md"
+      }
+    ]
+  },
+  "9.4": {
+    "objective": "Convert explicit offsets to UTC, preserve unknown times and distinguish event-time order from collection-time availability.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Two clocks answer different questions"
+      },
+      {
+        "t": "p",
+        "v": "Event time says when the source reports something happened. Received time says when the collector reports obtaining the delivery. A04 happened at 00:01:30 UTC but arrived at 00:08:30 UTC. Sorting receipt times can therefore put an earlier event at the end. Neither field alone proves a source clock was accurate. The fixture assumes its offset-bearing source clocks are correct only so that we can practise reconciliation with a known contract."
+      },
+      {
+        "t": "new",
+        "v": "Aware datetime and UTC normalisation",
+        "note": "A datetime with a usable UTC offset describes an instant relative to UTC. astimezone(timezone.utc) changes its representation while preserving that instant. An offset-free time does not establish which instant it means."
+      },
+      {
+        "t": "p",
+        "v": "09:00:00+09:00 and 00:00:00Z represent the same instant on the stated date. Python datetime.fromisoformat parses the forms used here. The supplied utc_time helper returns None for invalid or offset-free values. It never guesses your computer timezone, never replaces missing data with the current time and never treats received_time as an undocumented substitute for event_time."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Show one conversion clearly"
+      },
+      {
+        "t": "code",
+        "v": "from security_lab import utc_time\nprint(utc_time('2026-10-01T09:00:00+09:00').isoformat())\nprint(utc_time('2026-10-01 09:01:30'))"
+      },
+      {
+        "t": "out",
+        "v": "2026-10-01T00:00:00+00:00\nNone"
+      },
+      {
+        "t": "p",
+        "v": "The first output has +00:00, indicating UTC. The second is None, meaning that this helper cannot place the value on the UTC event timeline. None does not mean midnight, zero events or that the event never happened. The input remains in a separate unknown-time list. Keeping unknowns is necessary because leaving them out of an interval count can otherwise look like evidence of absence."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Build a known-time view without losing unknowns"
+      },
+      {
+        "t": "new",
+        "v": "timeline(rows)",
+        "note": "This helper returns known-time records ordered by UTC instant plus deterministic source/ID tie-breakers, and a separate list of unknown-time records. Sorting changes the view, not the source file or the credibility of its clocks."
+      },
+      {
+        "t": "ex",
+        "v": "Practice: build the unique-event timeline and name the unknown delivery reference."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture, validate_rows, deduplicate, timeline\naccepted, _ = validate_rows(load_fixture()['events'])\nunique, _, _ = deduplicate(accepted)\nordered, unknown = timeline(unique)\nprint('Known-time events:', len(ordered))\nprint('Order:', ','.join(row['event_id'] for row in ordered))\nprint('Unknown references:', [row['record'] for row in unknown])",
+        "out": "Known-time events: 10\nOrder: A01,A02,A04,A03,A10,N01,P01,P02,E01,Z01\nUnknown references: ['L11']",
+        "why": "Validation and reconciliation happen before ordering. L11 stays available for review rather than receiving an invented offset."
+      },
+      {
+        "t": "p",
+        "v": "Notice where A04 appears relative to A02 and A03. It belongs between them by reported event time, even though the collector delivered it last. Deterministic tie-breaking makes repeated output stable when timestamps tie; it does not establish causal order between simultaneous observations. A timeline should state what its ordering rule can and cannot resolve."
+      },
+      {
+        "t": "h",
+        "v": "Part 4 · Define the interval before filtering"
+      },
+      {
+        "t": "new",
+        "v": "Half-open interval [start, end)",
+        "note": "The start instant is included and the end instant is excluded. Adjacent intervals can share a boundary without counting that boundary event twice. The helper requires increasing offset-bearing endpoints."
+      },
+      {
+        "t": "p",
+        "v": "Our question uses [00:00,00:03) UTC on 2026-10-01. A failure exactly at 00:00 belongs to it; one exactly at 00:03 does not. This boundary rule is deliberate and must appear in the report. An inclusive end may be suitable for a different query, but silently changing it between runs makes counts incomparable. Always compare compatible aware instants rather than sorting raw mixed-offset strings."
+      },
+      {
+        "t": "h",
+        "v": "Part 5 · Separate what happened from what was available"
+      },
+      {
+        "t": "ex",
+        "v": "Mini challenge: compare known failures available by 00:07 with the complete fixture at its later cutoff."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture, validate_rows, deduplicate, utc_time, login_window\naccepted, _ = validate_rows(load_fixture()['events'])\nunique, _, _ = deduplicate(accepted)\ncutoff = utc_time('2026-10-01T00:07:00Z')\nearly = [row for row in unique if utc_time(row['received_time']) <= cutoff]\nstart, end = '2026-10-01T00:00:00Z', '2026-10-01T00:03:00Z'\nprint('Available early:', len(login_window(early, start, end)[0]))\nprint('Available later:', len(login_window(unique, start, end)[0]))",
+        "out": "Available early: 3\nAvailable later: 4",
+        "why": "This clean fixture has valid receipt offsets. In a general collector, unknown receipt times would need their own visible handling rather than this simplified comprehension."
+      },
+      {
+        "t": "p",
+        "v": "The earlier alert seeing three failures and the final worksheet seeing four are consistent with late arrival. They use different collection cutoffs. Neither total alone demonstrates tampering or a broken alert. In your note include interval, cutoff and clock assumption together. If a source timezone is undocumented, the next task is obtaining that documentation or another trusted time reference, not selecting whichever offset makes the timeline look neat."
+      },
+      {
+        "t": "key",
+        "v": "Normalise known offsets, retain unknowns and disclose event interval plus collection cutoff. Time order is not proof of causation."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Do 09:00+09:00 and 00:00Z describe different instants here?",
+        "a": "No. They describe the same instant on the stated date.",
+        "why": "Offsets must be normalised before comparison."
+      },
+      {
+        "q": "What should happen to L11?",
+        "a": "Keep it in the unknown-time list.",
+        "why": "Its source timezone is undocumented."
+      },
+      {
+        "q": "Can received_time silently replace missing event_time?",
+        "a": "No. They answer different questions.",
+        "why": "A substitute would change the timeline semantics."
+      },
+      {
+        "q": "Is an event exactly at the interval end included?",
+        "a": "No, the stated interval is half-open.",
+        "why": "[start,end) includes start and excludes end."
+      },
+      {
+        "q": "Why do early and later counts differ?",
+        "a": "A04 arrived after the earlier collection cutoff.",
+        "why": "Availability time and event time differ."
+      },
+      {
+        "q": "Does UTC sorting verify clock accuracy or causation?",
+        "a": "No. It orders reported instants under stated assumptions.",
+        "why": "Accurate clocks and causal links need separate evidence."
+      }
+    ],
+    "reflection": "Explain A04’s two times, L11’s unknown timezone and the interval boundary using your own examples. Record both counts and their collection contexts.",
+    "references": [
+      {
+        "title": "Python: JSON input and size limits",
+        "url": "https://docs.python.org/3/library/json.html"
+      },
+      {
+        "title": "Python: aware timestamps",
+        "url": "https://docs.python.org/3/library/datetime.html"
+      },
+      {
+        "title": "OWASP: logging, sensitive data and interpretation",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      },
+      {
+        "title": "Week 9 lab setup and helper explanations",
+        "url": "docs/cybersecurity-week9/README.md"
+      }
+    ]
+  },
+  "9.5": {
+    "objective": "Apply a small explicit review rule to unique timed events and write a finding that separates observations, quality flags, interpretation and next checks.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Translate the question into a rule"
+      },
+      {
+        "t": "p",
+        "v": "The question now has the pieces it needs: a prepared source, validated records, documented event identity and known-time interval. Our teaching rule requests review when an account label has at least three unique authentication failure events in the fixed three-minute interval. This is a toy rule for reasoning, not a threshold to copy into every real service. Normal retry patterns, source coverage and operational context change what a useful threshold would be."
+      },
+      {
+        "t": "new",
+        "v": "Detection rule and review threshold",
+        "note": "A rule describes observable conditions. Crossing a threshold produces a review candidate. It does not by itself prove malicious intent, identity takeover, malware or harm."
+      },
+      {
+        "t": "p",
+        "v": "The rule filters source auth and action login.failed. It does not count every record containing the word failed, every HTTP refusal or the alert itself. It groups source-event observations by a reported account label, which is not independent proof of who acted. Keep that distinction in the title and conclusion: reported failures for maya under this dataset, not attacker identified."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Follow a small complete pipeline"
+      },
+      {
+        "t": "new",
+        "v": "analyse(document)",
+        "note": "This supplied helper combines validation, deduplication, timing, interval filtering and a review summary. The report keeps rejected rows, duplicates, conflicts and unknown-time references alongside counts. Its interval and threshold are deliberately fixed for the supplied case."
+      },
+      {
+        "t": "code",
+        "v": "from security_lab import load_fixture, analyse\nreport = analyse(load_fixture())\nprint('Unique events:', report['unique_events'])\nprint('Window failures:', report['failure_count'])\nprint('Review labels:', report['review_accounts'])\nprint(report['conclusion'])"
+      },
+      {
+        "t": "out",
+        "v": "Unique events: 11\nWindow failures: 4\nReview labels: ['maya']\nThreshold requests review; account compromise is not established"
+      },
+      {
+        "t": "p",
+        "v": "Read the helper rather than treating it as magic. Counter accumulates counts for each account label in selected events. The comparison count >= 3 produces the candidate list. sorted gives deterministic output. The report never blocks an account, resets a credential or deletes a file. It provides a bounded observation for a person to assess with the correct authority and additional context."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Link the finding to evidence"
+      },
+      {
+        "t": "ex",
+        "v": "Practice: identify the delivery references supporting the four counted failures and show quality flags beside them."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture, analyse\nreport = analyse(load_fixture())\nprint('Evidence:', ','.join(report['failure_records']))\nprint('Rejected:', len(report['rejected']))\nprint('Conflicts:', len(report['conflicts']))\nprint('Unknown event-time references:', report['unknown_time_records'])",
+        "out": "Evidence: L01,L02,L03,L12\nRejected: 0\nConflicts: 0\nUnknown event-time references: ['L11']",
+        "why": "A count with traceable references can be reviewed. Unknowns and rejected inputs are part of the result, even when they do not change this particular failure count."
+      },
+      {
+        "t": "p",
+        "v": "The retained references appear in input grouping order, not sorted event-time order. This is acceptable because they identify evidence rather than claiming chronology. If you need a chronological display, use the separately explained timeline view and label it. Avoid making the same array mean both collection order and event order in different paragraphs of a report."
+      },
+      {
+        "t": "h",
+        "v": "Part 4 · Test an alternative explanation"
+      },
+      {
+        "t": "p",
+        "v": "Four failed logins could result from stale credentials in an approved job, ordinary user mistakes, or misuse. The prepared records do not select among those explanations. Ask for the permitted job schedule and credential-change history, appropriate user confirmation and additional account/session evidence. A later accepted-login event is relevant context, but it is not proof that the failures caused a successful intrusion. Shared IPs do not identify a unique person."
+      },
+      {
+        "t": "new",
+        "v": "False positive, false negative and coverage",
+        "note": "A false positive flags benign activity under an intended detection goal. A false negative misses concerning activity under that goal. You need suitable labelled context to measure them; no alert and no observed event are not equivalent to no harm."
+      },
+      {
+        "t": "p",
+        "v": "A legitimate job repeatedly failing might be a correct detection of failures but an unhelpful signal for a rule advertised as confirmed account compromise. Define the intended goal before naming an error. You cannot estimate a production false-positive rate from one prepared case, and tuning the threshold until this worksheet looks quiet is not evidence of improvement. Later weeks will build explicitly labelled test sets and evaluate rule changes against the same data."
+      },
+      {
+        "t": "h",
+        "v": "Part 5 · Write an actionable, limited finding"
+      },
+      {
+        "t": "ex",
+        "v": "Mini challenge: print a three-line finding with an observation, an unknown and the next evidence question."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture, analyse\nreport = analyse(load_fixture())\nprint(f\"Observed: {report['failure_count']} distinct failures in {report['failure_window']}\")\nprint('Unknown: whether these failures were ordinary mistakes, a stale job or misuse')\nprint('Next: check authorised job history and account context before response decisions')",
+        "out": "Observed: 4 distinct failures in [2026-10-01T00:00:00Z, 2026-10-01T00:03:00Z)\nUnknown: whether these failures were ordinary mistakes, a stale job or misuse\nNext: check authorised job history and account context before response decisions",
+        "why": "Separate observation from hypothesis and action. A defensible next question is more useful than invented attribution."
+      },
+      {
+        "t": "p",
+        "v": "Finish by stating the full fixture cutoff, 00:08:30 UTC, and the known clock assumption. Mention that the alert at 00:07 had only three failures available. If conflicts or rejected rows appear in a modified copy, explain how they limit the total rather than reporting a clean verdict. Save the reasoning in your day notes; do not paste raw real logs or credential values into a public learning report."
+      },
+      {
+        "t": "key",
+        "v": "A threshold is a reason to review. A finding needs the interval, cutoff, evidence references, quality flags and a justified next question."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Does four failures prove takeover?",
+        "a": "No. It establishes reported failures under the stated counting rule.",
+        "why": "Intent, identity and account impact need more evidence."
+      },
+      {
+        "q": "Why filter source and action explicitly?",
+        "a": "To count the intended behaviour rather than unrelated errors or alerts.",
+        "why": "A word match is not the same as an event contract."
+      },
+      {
+        "q": "Can one prepared case establish a production false-positive rate?",
+        "a": "No. Suitable labelled context and representative evaluation are missing.",
+        "why": "Do not generalise a demonstration into an operational metric."
+      },
+      {
+        "q": "Should the script automatically block maya?",
+        "a": "No. It generates a review candidate, not an authorised response decision.",
+        "why": "A threshold alone is insufficient for impact-bearing action."
+      },
+      {
+        "q": "What makes the finding traceable?",
+        "a": "Its source references, interval, collection cutoff and processing policy.",
+        "why": "A reviewer must be able to inspect the basis of the count."
+      },
+      {
+        "q": "Name a useful next evidence question.",
+        "a": "Was an authorised job using stale credentials at the relevant time?",
+        "why": "A discriminating question can help distinguish plausible explanations."
+      }
+    ],
+    "reflection": "Write a short finding with evidence references, interval/cutoff, quality flags, two plausible explanations and one next authorised check.",
+    "references": [
+      {
+        "title": "Python: JSON input and size limits",
+        "url": "https://docs.python.org/3/library/json.html"
+      },
+      {
+        "title": "Python: aware timestamps",
+        "url": "https://docs.python.org/3/library/datetime.html"
+      },
+      {
+        "title": "OWASP: logging, sensitive data and interpretation",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      },
+      {
+        "title": "Week 9 lab setup and helper explanations",
+        "url": "docs/cybersecurity-week9/README.md"
+      }
+    ]
+  },
+  "9.6": {
+    "objective": "Check original file bytes, distinguish repeatability from correctness and run failure-case tests without changing the evidence fixture.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Know which input you analysed"
+      },
+      {
+        "t": "p",
+        "v": "A report should identify the input version. Two files can have the same name and different bytes. A SHA-256 digest helps compare a file with a retained reference, while the filename and collection notes explain where the bytes came from. Hash the original file bytes, not a pretty-printed dictionary, when your question concerns whether the exact file changed. JSON whitespace can change bytes without changing the parsed observations."
+      },
+      {
+        "t": "new",
+        "v": "hashlib.sha256 and a byte digest",
+        "note": "hashlib is Python’s standard hashing module. sha256 accumulates bytes and produces a fixed-length hexadecimal digest. digest(path) is the supplied chunk-reading helper; it does not encrypt the file, prove who created it or establish trust in a reference stored beside it."
+      },
+      {
+        "t": "p",
+        "v": "The helper reads fixed-size chunks rather than loading an arbitrarily large file at once. In this lab the loader already limits input size, but streaming is still a useful habit for hashing. The same digest comparison is meaningful only when the earlier reference and its provenance are protected appropriately. An adversary able to replace both a file and its local digest can make that local pair agree."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Observe byte change without inventing semantic change"
+      },
+      {
+        "t": "code",
+        "v": "import hashlib\nfrom security_lab import SAMPLE, digest\nraw = SAMPLE.read_bytes()\nprint('Digest agrees:', digest() == hashlib.sha256(raw).hexdigest())\nprint('SHA-256 hex characters:', len(digest()))\nprint('Extra newline changes bytes:', hashlib.sha256(raw + b'\\n').hexdigest() != digest())"
+      },
+      {
+        "t": "out",
+        "v": "Digest agrees: True\nSHA-256 hex characters: 64\nExtra newline changes bytes: True"
+      },
+      {
+        "t": "p",
+        "v": "The changed-byte demonstration stays in memory; it does not overwrite the fixture. A different digest tells you that the bytes differ. It does not tell you whether the change was malicious, whether the previous version was correct, or which field changed. For meaning, parse the separately controlled version and compare the relevant records under their schema. Keep byte integrity and semantic analysis as two related but distinct questions."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Make the analysis repeatable"
+      },
+      {
+        "t": "new",
+        "v": "Determinism and reproducibility",
+        "note": "Deterministic analysis gives the same result for the same input and policy. Reproducibility also needs enough input, environment and method information for someone else to repeat it. A deterministic mistake is still a mistake."
+      },
+      {
+        "t": "ex",
+        "v": "Practice: run the pipeline twice and verify the original bytes are unchanged."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import SAMPLE, load_fixture, analyse\nbefore = SAMPLE.read_bytes()\none = analyse(load_fixture())\ntwo = analyse(load_fixture())\nprint('Repeated reports agree:', one == two)\nprint('Reference unchanged:', SAMPLE.read_bytes() == before)",
+        "out": "Repeated reports agree: True\nReference unchanged: True",
+        "why": "Repeated equality checks consistency. Independent expected outcomes and failure cases are needed to check correctness."
+      },
+      {
+        "t": "p",
+        "v": "Avoid inserting the current time or an absolute machine path into the analytical result when those values are not part of the question. They make repeated output differ for irrelevant reasons. A separate execution record can retain environment and run time when needed. In this example the fixed interval and fixture facts make exact comparison easy. When the source grows or collection changes, record the new cutoff instead of pretending the old result still describes it."
+      },
+      {
+        "t": "h",
+        "v": "Part 4 · Test what could make the finding wrong"
+      },
+      {
+        "t": "new",
+        "v": "unittest and regression cases",
+        "note": "unittest runs named checks with expected outcomes. A regression case preserves behaviour after a fix. The supplied suite tests the clean count, duplicate/conflict handling, unknown times, interval endpoints, loader errors, unchanged inputs and byte/semantic differences."
+      },
+      {
+        "t": "sh",
+        "v": "python -m unittest -v"
+      },
+      {
+        "t": "p",
+        "v": "Use independently reasoned expectations: an event exactly at the end is excluded; a repeated source event does not add another failure; different sources may reuse an ID; a conflicting group is reported rather than overwritten. These cases test the investigation semantics. A test that merely repeats the implementation’s calculation as its expected value may reproduce the same bug and provide little additional confidence."
+      },
+      {
+        "t": "h",
+        "v": "Part 5 · Share the smallest useful result"
+      },
+      {
+        "t": "p",
+        "v": "Real authentication logs can contain identifiers, IPs, user agents and sensitive data. OWASP’s logging guidance stresses excluding secrets and controlling access to log data. This fixture is fictional and public, but that does not grant permission to publish a real export. A minimal summary should include only the fields needed for its reader and keep detailed evidence in its approved location. Python can help apply a field allowlist, but the sharing decision still needs review."
+      },
+      {
+        "t": "ex",
+        "v": "Mini challenge: select a small summary from the fictional report without copying the complete event list."
+      },
+      {
+        "t": "sol",
+        "code": "import json\nfrom security_lab import load_fixture, analyse\nreport = analyse(load_fixture())\nsummary = {name: report[name] for name in ('scope', 'failure_count', 'conclusion')}\nprint(json.dumps(summary, sort_keys=True))",
+        "out": "{\"conclusion\": \"Threshold requests review; account compromise is not established\", \"failure_count\": 4, \"scope\": \"Prepared Week7 fixture; no real account observations\"}",
+        "why": "An allowlist states which fields are included. It is a useful starting point for minimisation, not automatic approval to share real sensitive findings."
+      },
+      {
+        "t": "key",
+        "v": "Digest agreement, repeated output and passing tests answer different questions. Keep the evidence and the claim for each check explicit."
+      }
+    ],
+    "checks": [
+      {
+        "q": "Does a hash encrypt a log file?",
+        "a": "No. It summarises bytes for comparison.",
+        "why": "Hashing does not hide the source data."
+      },
+      {
+        "q": "Does a digest beside a file establish an independently trusted baseline?",
+        "a": "No. Both may have been replaced together.",
+        "why": "Reference provenance and protection matter."
+      },
+      {
+        "q": "Can a newline change the digest while parsed observations stay equal?",
+        "a": "Yes. Byte identity and JSON meaning are different comparisons.",
+        "why": "Hash the intended representation."
+      },
+      {
+        "q": "Do two equal reports prove the analysis is correct?",
+        "a": "No. A deterministic bug can repeat exactly.",
+        "why": "Use independent expected results and boundary cases."
+      },
+      {
+        "q": "Why test an event exactly at the interval end?",
+        "a": "It verifies the documented half-open boundary.",
+        "why": "A small off-by-one boundary error changes a security count."
+      },
+      {
+        "q": "May the same public sharing policy be used for real logs?",
+        "a": "No. Review readers and minimise fields under the actual data policy.",
+        "why": "Public synthetic evidence does not imply public real evidence."
+      }
+    ],
+    "reflection": "Record the test outcomes you actually ran. Explain byte identity, repeatability and correctness separately, then write a minimal fictional summary.",
+    "references": [
+      {
+        "title": "Python: JSON input and size limits",
+        "url": "https://docs.python.org/3/library/json.html"
+      },
+      {
+        "title": "Python: aware timestamps",
+        "url": "https://docs.python.org/3/library/datetime.html"
+      },
+      {
+        "title": "OWASP: logging, sensitive data and interpretation",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      },
+      {
+        "title": "Week 9 lab setup and helper explanations",
+        "url": "docs/cybersecurity-week9/README.md"
+      }
+    ]
+  },
+  "9.7": {
+    "objective": "Independently explain and reconstruct the evidence pipeline, test changed observations and produce a referenced investigation summary without overclaiming.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Retrieve the model before rereading"
+      },
+      {
+        "t": "p",
+        "v": "Close the earlier explanations and draw seven boxes: question, bounded input, row validation, identity reconciliation, time, rule and finding. For each arrow name what can go wrong and which reference survives. Explain why parsing is not validation, validation is not authenticity, a delivery is not always another event, and a rule match is not a confirmed incident. If a distinction feels uncertain, return to the matching day and demonstrate it using a small example."
+      },
+      {
+        "t": "new",
+        "v": "Independent demonstration",
+        "note": "You can explain the contract, predict a changed result, implement or adapt the relevant step, and verify it against an independently reasoned expectation. Merely reproducing a supplied terminal output is a useful earlier milestone, not the same demonstration."
+      },
+      {
+        "t": "p",
+        "v": "The current module is short enough to inspect in stages. You do not need to memorise its spelling. Use the official module documentation when a function signature is unfamiliar, but write down your expected result before pressing Run. Take extra sessions for any stage you cannot explain; a Day 7 label is not a deadline that justifies skipping the reasoning."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Reconcile the reference case"
+      },
+      {
+        "t": "code",
+        "v": "from security_lab import load_fixture, analyse\nreport = analyse(load_fixture())\nprint('Deliveries / unique / timed:', report['deliveries'], report['unique_events'], len(report['ordered_event_ids']))\nprint('Failure count:', report['failure_count'])\nprint('Unknown references:', report['unknown_time_records'])"
+      },
+      {
+        "t": "out",
+        "v": "Deliveries / unique / timed: 12 11 10\nFailure count: 4\nUnknown references: ['L11']"
+      },
+      {
+        "t": "p",
+        "v": "The clean case has 12 deliveries, 11 unique source events and ten events placed on the known-time timeline. Four unique authentication failures belong to [00:00,00:03) UTC. L04 repeats L03. L12 delivers A04 late. L11 remains unknown-time. Z01 is an alert event and not a fifth failure. The final collector cutoff is 00:08:30 UTC; the earlier alert had only three counted failures available. Explain each number without relying on the output block."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Predict one change at a time"
+      },
+      {
+        "t": "p",
+        "v": "Make separate practice copies, or change an independent in-memory document. Add an equal copy of A01 with a new record label: delivered rows increase by one while the unique failure count stays four. Next create a conflicting payload under A01: the group becomes a quality issue and is excluded, so the remaining count is incomplete. Then remove a failure’s offset: it remains a source event but cannot enter a known UTC interval. Finally add a new unique failure exactly at 00:03:00Z: it is outside the half-open interval."
+      },
+      {
+        "t": "ex",
+        "v": "Practice: add an equal delivery copy in memory and confirm the predicted delivery/event/failure counts."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture, analyse\ndocument = load_fixture()\ndocument['events'].append({**document['events'][0], 'record': 'EXTRA'})\nreport = analyse(document)\nprint('Deliveries:', report['deliveries'])\nprint('Unique:', report['unique_events'])\nprint('Failures:', report['failure_count'])",
+        "out": "Deliveries: 13\nUnique: 11\nFailures: 4",
+        "why": "The new delivery label is distinct, but its source-event identity and payload agree with A01. The input file itself remains untouched."
+      },
+      {
+        "t": "h",
+        "v": "Part 4 · Challenge an edge and keep the unknown"
+      },
+      {
+        "t": "ex",
+        "v": "Mini challenge: remove the offset from A01 in memory. Explain why this reduces the known-window count without proving fewer real failures."
+      },
+      {
+        "t": "sol",
+        "code": "from security_lab import load_fixture, analyse\ndocument = load_fixture()\ndocument['events'][0]['event_time'] = '2026-10-01 00:00:00'\nreport = analyse(document)\nprint('Known-window failures:', report['failure_count'])\nprint('Unknown failure-time references:', report['unknown_failure_times'])",
+        "out": "Known-window failures: 3\nUnknown failure-time references: ['L01']",
+        "why": "The source event is not erased. Its time cannot be safely compared with the stated UTC interval; the quality flag explains the smaller count."
+      },
+      {
+        "t": "p",
+        "v": "For every variant compare the expected result and all quality flags, not only the headline number. A lower count can result from worse data quality. A greater count can result from another delivery or a later cutoff rather than more underlying behaviour. This is where security reasoning and Python meet: the code must preserve enough context for the explanation to remain honest after the data changes."
+      },
+      {
+        "t": "h",
+        "v": "Part 5 · Write and defend a small case summary"
+      },
+      {
+        "t": "p",
+        "v": "Your deliverable is one page: scope and question; input/version and identity contract; interval/cutoff and clock assumption; observations with source references; rejected/conflicting/unknown evidence; interpretation and alternatives; next authorised evidence question. Include the tests you personally ran and one limitation of the helper. Do not claim confirmed takeover, exfiltration or a clean account. The provided observations do not establish those conclusions."
+      },
+      {
+        "t": "p",
+        "v": "Use the questions below as an oral or written review. Answer before revealing, and revise answers that omit the counting unit or the evidence boundary. When ready, Week 10’s roadmap continues with file integrity and recovery automation: still a cybersecurity task supported by Python. Weeks 10–16 currently contain daily plans, not completed teaching lessons. Return for each full week when you are ready rather than mistaking a roadmap title for mastered material."
+      },
+      {
+        "t": "key",
+        "v": "A good security script preserves the distinction between source observations, data-quality limits and conclusions. Demonstrate your reasoning on a changed case."
+      }
+    ],
+    "checks": [
+      {
+        "q": "What exact question does the reference pipeline answer?",
+        "a": "How many unique reported auth failures fall in the stated fixed interval, with quality/context limits.",
+        "why": "It is not a universal compromise detector."
+      },
+      {
+        "q": "How many deliveries, unique events and known-time events are in the clean fixture?",
+        "a": "12 deliveries, 11 unique events and 10 known-time events.",
+        "why": "Duplicate delivery L04 and unknown-time L11 affect different counts."
+      },
+      {
+        "q": "Why is L04 not another failure?",
+        "a": "It repeats auth A03 with an equal event payload.",
+        "why": "The composite source-event identity is unchanged."
+      },
+      {
+        "q": "Why is Z01 not a fifth failure?",
+        "a": "Its action is an alert rule result, not login.failed.",
+        "why": "A derived alert and its supporting observations are different units."
+      },
+      {
+        "q": "What is the counted interval?",
+        "a": "[2026-10-01T00:00:00Z, 2026-10-01T00:03:00Z).",
+        "why": "State the timezone and end-exclusion rule."
+      },
+      {
+        "q": "What is the final collection cutoff?",
+        "a": "00:08:30 UTC on 2026-10-01 in the prepared case.",
+        "why": "The later collection includes A04, which the earlier alert had not received."
+      },
+      {
+        "q": "Why preserve L11 separately?",
+        "a": "Its source time lacks a documented timezone.",
+        "why": "Do not turn an unknown instant into a guessed known instant."
+      },
+      {
+        "q": "How should conflicting same-identity payloads be handled?",
+        "a": "Report the references and quarantine the group from normal counting.",
+        "why": "Silent overwrite hides disagreement."
+      },
+      {
+        "q": "What happens when an equal A01 delivery gets a new record label?",
+        "a": "13 deliveries, still 11 unique events and four counted failures.",
+        "why": "New delivery identity does not necessarily mean a new source event."
+      },
+      {
+        "q": "What happens to a new event exactly at 00:03Z?",
+        "a": "It is excluded from this fixed interval.",
+        "why": "The end is not included."
+      },
+      {
+        "q": "Can fewer counted failures mean poorer evidence?",
+        "a": "Yes, for example when a relevant event loses its timezone.",
+        "why": "Read the unknown/error flags beside the count."
+      },
+      {
+        "q": "Does a valid JSON object prove a trustworthy source?",
+        "a": "No. Format, contract and provenance are separate questions.",
+        "why": "Syntactic correctness is not authenticity."
+      },
+      {
+        "q": "Does same-IP evidence identify one person?",
+        "a": "No. Addresses may be shared or translated, and attribution needs additional evidence.",
+        "why": "Do not promote a field label into identity proof."
+      },
+      {
+        "q": "What does a changed SHA-256 establish?",
+        "a": "The compared byte sequences differ, under the comparison assumptions.",
+        "why": "It does not by itself establish cause or malicious intent."
+      },
+      {
+        "q": "Name one competing explanation for the failures.",
+        "a": "Ordinary mistakes or stale credentials in an authorised job, alongside possible misuse.",
+        "why": "Ask for discriminating authorised evidence rather than choosing by drama."
+      },
+      {
+        "q": "What establishes readiness for the next stage?",
+        "a": "Explain and reproduce the clean and changed cases with justified outputs and limitations.",
+        "why": "Independent demonstration is stronger evidence than a completion checkbox."
+      }
+    ],
+    "reflection": "Create the one-page investigation summary and record which variants you predicted correctly. List any concepts that need another session before Week 10.",
+    "references": [
+      {
+        "title": "Python: JSON input and size limits",
+        "url": "https://docs.python.org/3/library/json.html"
+      },
+      {
+        "title": "Python: aware timestamps",
+        "url": "https://docs.python.org/3/library/datetime.html"
+      },
+      {
+        "title": "OWASP: logging, sensitive data and interpretation",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      },
+      {
+        "title": "Week 9 lab setup and helper explanations",
+        "url": "docs/cybersecurity-week9/README.md"
+      }
+    ]
   }
 };
 let cyberPage = {mode:"overview", week:1, day:1};
@@ -19580,14 +21418,14 @@ function renderCybersecurityRoadmap(){
   let content = "";
   if(cyberPage.mode==="overview"){
     content = '<div class="cyber-heading"><div><h1>Cybersecurity Roadmap</h1>' +
-      '<p class="cyber-subtitle">2 months · 8 weeks · Start from scratch</p></div></div>' +
+      '<p class="cyber-subtitle">' + CYBERSECURITY_ROADMAP.length + ' weeks · Foundations → Defensive Python · Study at your own pace</p></div></div>' +
       '<div class="section-label">Your lesson folders</div><button type="button" class="safety-folder-card" data-safety-open><span class="dr-title">📁 Online Safety</span><span class="dr-meta">Lesson 1–7 · Accounts, passwords, MFA, passkeys, phishing and updates →</span></button>' +
       '<div class="section-label">Choose a week</div><div class="week-grid">' +
       CYBERSECURITY_ROADMAP.map(function(item){
         return '<button type="button" class="week-chip" data-cyber-week="' + item.week + '">' +
           '<span class="wc-num">Week ' + item.week + '</span>' +
           '<span class="wc-title">' + escapeHtml(item.title) + '</span>' +
-          '<span class="wc-prog">Day 1–Day 7</span></button>';
+          '<span class="wc-prog">Day 1–Day 7 · ' + (CYBERSECURITY_TEACH[item.week+".1"] ? 'Lessons ready' : 'Roadmap') + '</span></button>';
       }).join('') + '</div>';
   } else if(cyberPage.mode==="week"){
     content = '<button type="button" class="back-link" data-cyber-all>← All weeks</button>' +
@@ -19609,13 +21447,13 @@ function renderCybersecurityRoadmap(){
       '<h2>Day ' + day.day + '</h2><p class="wh-goal">' + escapeHtml(day.focus) + '</p></div>' +
       '<section class="cyber-day-topics"><h3>What to study today</h3><ul class="ex-list">' +
       day.topics.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') + '</ul></section>' +
-      (lesson ? cyberLessonHtml(lesson,"cyber:"+week.week+"."+day.day) : '') +
+      (lesson ? cyberLessonHtml(lesson,"cyber:"+week.week+"."+day.day) : '<p class="ls-box ls-tip">Roadmap only. This day lists the next learning goals; its full teaching lesson will be added later.</p>') +
       (day.python.length ? '<section class="cyber-python"><h3>Where Python helps</h3><ul class="ex-list">' +
         day.python.map(function(topic){ return '<li>' + escapeHtml(topic) + '</li>'; }).join('') + '</ul></section>' : '') +
       '<div class="cyber-day-navigation"><button type="button" class="btn secondary" data-cyber-step="-1"' +
       (position===0 ? ' disabled' : '') + '>← Previous day</button>' +
       '<button type="button" class="btn" data-cyber-step="1"' +
-      (position===55 ? ' disabled' : '') + '>Next day →</button></div>';
+      (position===CYBERSECURITY_ROADMAP.length*7-1 ? ' disabled' : '') + '>Next day →</button></div>';
   }
   body.innerHTML = content +
     '<div class="cyber-footer"><div class="cyber-references">References: ' +
@@ -19655,7 +21493,7 @@ function renderCybersecurityRoadmap(){
   body.querySelectorAll("[data-cyber-step]").forEach(function(button){
     button.onclick = function(){
       const position=(cyberPage.week-1)*7+cyberPage.day-1+Number(button.dataset.cyberStep);
-      if(position<0 || position>=56) return;
+      if(position<0 || position>=CYBERSECURITY_ROADMAP.length*7) return;
       cyberPage={mode:"day", week:Math.floor(position/7)+1, day:position%7+1};
       update();
     };

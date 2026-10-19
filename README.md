@@ -23,6 +23,24 @@ use, with no font download or decorative JavaScript. Reading widths, text select
 touch targets, Furigana navigation clearance, reduced motion and High Contrast
 keyboard outlines are covered by the design checks.
 
+## Cybersecurity — foundations to defensive Python
+
+Open **Cybersecurity → Week 9** for seven complete English lessons: a scoped
+local lab, JSON validation, event deduplication, UTC/unknown timestamps,
+traceable findings, byte integrity and a full weekly review. It includes 21
+executed Python examples/solutions, 14 practices/challenges and 52 explained
+self-checks. [The standard-library lab](docs/cybersecurity-week9/README.md) reuses
+the exact fictional Week 7 records, keeps originals unchanged and makes no
+network/account requests. Read lessons offline; run Python in the supplied local
+folder. Existing day notes use the same storage keys and backup/import paths.
+
+Weeks **9–16** now have daily cybersecurity roadmaps with Python's supporting
+role in every day. Week 9 has full teaching; **Weeks 10–16 are explicitly labelled
+roadmaps** awaiting full lessons. Topics progress through file integrity/recovery,
+network evidence, secure application behaviour, identity/configuration, detection,
+incident investigation and a defensive capstone. Navigation follows the actual
+roadmap length; the original eight-week foundation and Online Safety remain.
+
 ## Python Week 52 — Capstone & what comes next
 
 Open **Course → Week 52** for six days with 36 teaching parts, 72 exercises,

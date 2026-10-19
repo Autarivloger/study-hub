@@ -1,0 +1,30 @@
+name: Cybersecurity Week 9 evidence lab
+on:
+  push:
+    paths: ['docs/cybersecurity-week9/**', 'scripts/cybersecurity-week9*', 'scripts/cybersecurity-next-roadmap.cjs', 'tests/cybersecurity-next.cjs', '.github/workflows/cybersecurity-week9.yml']
+  pull_request:
+    paths: ['docs/cybersecurity-week9/**', 'scripts/cybersecurity-week9*', 'scripts/cybersecurity-next-roadmap.cjs', 'tests/cybersecurity-next.cjs', '.github/workflows/cybersecurity-week9.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.12', '3.13']
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Test evidence semantics and source preservation
+        run: python -m unittest discover -s docs/cybersecurity-week9 -v
+      - name: Execute all lesson examples and check additive integration
+        run: node tests/cybersecurity-next.cjs

@@ -1,0 +1,100 @@
+{
+  "9.1": [
+    {
+      "code": "from security_lab import load_fixture\ndocument = load_fixture()\nprint('Deliveries:', len(document['events']))\nprint('First reference:', document['events'][0]['record'])\nprint('Scope:', document['context']['scope'])",
+      "out": "Deliveries: 12\nFirst reference: L01\nScope: Prepared sample records, not any real account/device/service observation"
+    },
+    {
+      "code": "from security_lab import load_fixture\nrows = load_fixture()['events']\nprint('Authentication deliveries:', sum(row['source'] == 'auth' for row in rows))\nprint('Unit: deliveries, not unique events')",
+      "out": "Authentication deliveries: 6\nUnit: deliveries, not unique events"
+    },
+    {
+      "code": "from security_lab import load_fixture\nsources = {row['source'] for row in load_fixture()['events']}\nprint(', '.join(sorted(sources)))",
+      "out": "alert, application, auth, endpoint, legacy-export, network"
+    }
+  ],
+  "9.2": [
+    {
+      "code": "from security_lab import load_fixture, validate_rows\naccepted, rejected = validate_rows(load_fixture()['events'])\nprint('Accepted:', len(accepted))\nprint('Rejected:', len(rejected))",
+      "out": "Accepted: 12\nRejected: 0"
+    },
+    {
+      "code": "from security_lab import load_fixture, validate_rows\nrow = load_fixture()['events'][0]\nbad = {**row, 'record': 'TEST', 'status': True}\naccepted, rejected = validate_rows([bad])\nprint('Accepted:', len(accepted))\nprint('Rejected row:', rejected[0]['row'])\nprint('Reason:', rejected[0]['reason'])",
+      "out": "Accepted: 0\nRejected row: 1\nReason: status must be an integer from 100 to 599"
+    },
+    {
+      "code": "from security_lab import load_fixture, validate_rows\noriginal = load_fixture()['events'][0]\ncopy = {key: value for key, value in original.items() if key != 'source'}\naccepted, rejected = validate_rows([copy])\nprint('Rejected:', len(rejected))\nprint('Original source:', original['source'])",
+      "out": "Rejected: 1\nOriginal source: auth"
+    }
+  ],
+  "9.3": [
+    {
+      "code": "from security_lab import load_fixture, validate_rows, deduplicate\naccepted, rejected = validate_rows(load_fixture()['events'])\nunique, duplicates, conflicts = deduplicate(accepted)\nprint('Unique events:', len(unique))\nprint('Repeated deliveries:', duplicates)\nprint('Conflicting groups:', len(conflicts))",
+      "out": "Unique events: 11\nRepeated deliveries: [{'record': 'L04', 'kept': 'L03'}]\nConflicting groups: 0"
+    },
+    {
+      "code": "from security_lab import load_fixture, deduplicate\nfirst = load_fixture()['events'][0]\nchanged = {**first, 'record': 'TEST', 'result': 'accepted'}\nunique, duplicates, conflicts = deduplicate([first, changed])\nprint('Countable events:', len(unique))\nprint('Conflicting references:', conflicts[0]['records'])",
+      "out": "Countable events: 0\nConflicting references: ['L01', 'TEST']"
+    },
+    {
+      "code": "from security_lab import load_fixture, deduplicate\nfirst = load_fixture()['events'][0]\nother = {**first, 'record': 'OTHER', 'source': 'training-copy'}\nunique, duplicates, conflicts = deduplicate([first, other])\nprint('Distinct composite identities:', len(unique))",
+      "out": "Distinct composite identities: 2"
+    }
+  ],
+  "9.4": [
+    {
+      "code": "from security_lab import utc_time\nprint(utc_time('2026-10-01T09:00:00+09:00').isoformat())\nprint(utc_time('2026-10-01 09:01:30'))",
+      "out": "2026-10-01T00:00:00+00:00\nNone"
+    },
+    {
+      "code": "from security_lab import load_fixture, validate_rows, deduplicate, timeline\naccepted, _ = validate_rows(load_fixture()['events'])\nunique, _, _ = deduplicate(accepted)\nordered, unknown = timeline(unique)\nprint('Known-time events:', len(ordered))\nprint('Order:', ','.join(row['event_id'] for row in ordered))\nprint('Unknown references:', [row['record'] for row in unknown])",
+      "out": "Known-time events: 10\nOrder: A01,A02,A04,A03,A10,N01,P01,P02,E01,Z01\nUnknown references: ['L11']"
+    },
+    {
+      "code": "from security_lab import load_fixture, validate_rows, deduplicate, utc_time, login_window\naccepted, _ = validate_rows(load_fixture()['events'])\nunique, _, _ = deduplicate(accepted)\ncutoff = utc_time('2026-10-01T00:07:00Z')\nearly = [row for row in unique if utc_time(row['received_time']) <= cutoff]\nstart, end = '2026-10-01T00:00:00Z', '2026-10-01T00:03:00Z'\nprint('Available early:', len(login_window(early, start, end)[0]))\nprint('Available later:', len(login_window(unique, start, end)[0]))",
+      "out": "Available early: 3\nAvailable later: 4"
+    }
+  ],
+  "9.5": [
+    {
+      "code": "from security_lab import load_fixture, analyse\nreport = analyse(load_fixture())\nprint('Unique events:', report['unique_events'])\nprint('Window failures:', report['failure_count'])\nprint('Review labels:', report['review_accounts'])\nprint(report['conclusion'])",
+      "out": "Unique events: 11\nWindow failures: 4\nReview labels: ['maya']\nThreshold requests review; account compromise is not established"
+    },
+    {
+      "code": "from security_lab import load_fixture, analyse\nreport = analyse(load_fixture())\nprint('Evidence:', ','.join(report['failure_records']))\nprint('Rejected:', len(report['rejected']))\nprint('Conflicts:', len(report['conflicts']))\nprint('Unknown event-time references:', report['unknown_time_records'])",
+      "out": "Evidence: L01,L02,L03,L12\nRejected: 0\nConflicts: 0\nUnknown event-time references: ['L11']"
+    },
+    {
+      "code": "from security_lab import load_fixture, analyse\nreport = analyse(load_fixture())\nprint(f\"Observed: {report['failure_count']} distinct failures in {report['failure_window']}\")\nprint('Unknown: whether these failures were ordinary mistakes, a stale job or misuse')\nprint('Next: check authorised job history and account context before response decisions')",
+      "out": "Observed: 4 distinct failures in [2026-10-01T00:00:00Z, 2026-10-01T00:03:00Z)\nUnknown: whether these failures were ordinary mistakes, a stale job or misuse\nNext: check authorised job history and account context before response decisions"
+    }
+  ],
+  "9.6": [
+    {
+      "code": "import hashlib\nfrom security_lab import SAMPLE, digest\nraw = SAMPLE.read_bytes()\nprint('Digest agrees:', digest() == hashlib.sha256(raw).hexdigest())\nprint('SHA-256 hex characters:', len(digest()))\nprint('Extra newline changes bytes:', hashlib.sha256(raw + b'\\n').hexdigest() != digest())",
+      "out": "Digest agrees: True\nSHA-256 hex characters: 64\nExtra newline changes bytes: True"
+    },
+    {
+      "code": "from security_lab import SAMPLE, load_fixture, analyse\nbefore = SAMPLE.read_bytes()\none = analyse(load_fixture())\ntwo = analyse(load_fixture())\nprint('Repeated reports agree:', one == two)\nprint('Reference unchanged:', SAMPLE.read_bytes() == before)",
+      "out": "Repeated reports agree: True\nReference unchanged: True"
+    },
+    {
+      "code": "import json\nfrom security_lab import load_fixture, analyse\nreport = analyse(load_fixture())\nsummary = {name: report[name] for name in ('scope', 'failure_count', 'conclusion')}\nprint(json.dumps(summary, sort_keys=True))",
+      "out": "{\"conclusion\": \"Threshold requests review; account compromise is not established\", \"failure_count\": 4, \"scope\": \"Prepared Week7 fixture; no real account observations\"}"
+    }
+  ],
+  "9.7": [
+    {
+      "code": "from security_lab import load_fixture, analyse\nreport = analyse(load_fixture())\nprint('Deliveries / unique / timed:', report['deliveries'], report['unique_events'], len(report['ordered_event_ids']))\nprint('Failure count:', report['failure_count'])\nprint('Unknown references:', report['unknown_time_records'])",
+      "out": "Deliveries / unique / timed: 12 11 10\nFailure count: 4\nUnknown references: ['L11']"
+    },
+    {
+      "code": "from security_lab import load_fixture, analyse\ndocument = load_fixture()\ndocument['events'].append({**document['events'][0], 'record': 'EXTRA'})\nreport = analyse(document)\nprint('Deliveries:', report['deliveries'])\nprint('Unique:', report['unique_events'])\nprint('Failures:', report['failure_count'])",
+      "out": "Deliveries: 13\nUnique: 11\nFailures: 4"
+    },
+    {
+      "code": "from security_lab import load_fixture, analyse\ndocument = load_fixture()\ndocument['events'][0]['event_time'] = '2026-10-01 00:00:00'\nreport = analyse(document)\nprint('Known-window failures:', report['failure_count'])\nprint('Unknown failure-time references:', report['unknown_failure_times'])",
+      "out": "Known-window failures: 3\nUnknown failure-time references: ['L01']"
+    }
+  ]
+}

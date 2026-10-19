@@ -686,5 +686,741 @@
         "python": []
       }
     ]
+  },
+  {
+    "week": 9,
+    "title": "Python for security evidence",
+    "topics": [
+      "Read-only fixtures, question and evidence limits",
+      "JSON shape, required fields and explicit rejection",
+      "Deliveries, event identity and conflicting copies",
+      "Offsets, UTC, unknown times and late arrivals",
+      "Windows, thresholds, false positives and evidence references",
+      "Raw bytes, reference hashes and repeatable tests"
+    ],
+    "python": [
+      "Inspect a prepared JSON file with pathlib",
+      "Validate typed records before analysing them",
+      "Deduplicate using source and event ID",
+      "Normalise aware timestamps with datetime",
+      "Create a bounded findings summary",
+      "Use hashlib and unittest on sample evidence"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "A scoped local evidence lab",
+        "topics": [
+          "Read-only fixtures, question and evidence limits"
+        ],
+        "python": [
+          "Inspect a prepared JSON file with pathlib"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Validate security records",
+        "topics": [
+          "JSON shape, required fields and explicit rejection"
+        ],
+        "python": [
+          "Validate typed records before analysing them"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Count events without double-counting",
+        "topics": [
+          "Deliveries, event identity and conflicting copies"
+        ],
+        "python": [
+          "Deduplicate using source and event ID"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Build an honest timeline",
+        "topics": [
+          "Offsets, UTC, unknown times and late arrivals"
+        ],
+        "python": [
+          "Normalise aware timestamps with datetime"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Turn counts into a review finding",
+        "topics": [
+          "Windows, thresholds, false positives and evidence references"
+        ],
+        "python": [
+          "Create a bounded findings summary"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Check reproducibility and file integrity",
+        "topics": [
+          "Raw bytes, reference hashes and repeatable tests"
+        ],
+        "python": [
+          "Use hashlib and unittest on sample evidence"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and independent investigation",
+        "topics": [
+          "Rebuild the pipeline and explain what it cannot prove"
+        ],
+        "python": [
+          "Analyse a changed fixture and check your conclusions"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 10,
+    "title": "File integrity and recovery automation",
+    "topics": [
+      "Owned practice directory, inventory and expected state",
+      "Byte hashes, provenance and baseline protection",
+      "Added, removed, changed and unreadable files",
+      "Symlinks, permissions and partial collection",
+      "Restore into a separate directory and verify usability",
+      "Reproducible output, tests and known limitations"
+    ],
+    "python": [
+      "List explicit fixture files with pathlib",
+      "Stream SHA-256 digests into JSON",
+      "Compare manifests without deleting anything",
+      "Report skipped paths and errors separately",
+      "Check restored fixture bytes and required files",
+      "Write a CLI with explicit input/output paths"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Choose files and a baseline",
+        "topics": [
+          "Owned practice directory, inventory and expected state"
+        ],
+        "python": [
+          "List explicit fixture files with pathlib"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Create an integrity manifest",
+        "topics": [
+          "Byte hashes, provenance and baseline protection"
+        ],
+        "python": [
+          "Stream SHA-256 digests into JSON"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Compare two snapshots",
+        "topics": [
+          "Added, removed, changed and unreadable files"
+        ],
+        "python": [
+          "Compare manifests without deleting anything"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Handle filesystem edge cases",
+        "topics": [
+          "Symlinks, permissions and partial collection"
+        ],
+        "python": [
+          "Report skipped paths and errors separately"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Rehearse recovery",
+        "topics": [
+          "Restore into a separate directory and verify usability"
+        ],
+        "python": [
+          "Check restored fixture bytes and required files"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Build a read-only integrity report",
+        "topics": [
+          "Reproducible output, tests and known limitations"
+        ],
+        "python": [
+          "Write a CLI with explicit input/output paths"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and restore challenge",
+        "topics": [
+          "Interpret changes without assuming malicious intent"
+        ],
+        "python": [
+          "Test a changed and a missing practice file"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 11,
+    "title": "Network evidence with Python",
+    "topics": [
+      "Devices, addresses and ownership boundaries",
+      "IPv4/IPv6, subnet membership and documentation ranges",
+      "Queries, answers, TTL and collection context",
+      "Headers, status, certificate context and missing evidence",
+      "Time, shared IPs and non-secret request references",
+      "Expected paths, observations and unanswered questions"
+    ],
+    "python": [
+      "Validate a supplied CSV inventory",
+      "Use ipaddress on literal addresses; no discovery",
+      "Compare prepared DNS records without live queries",
+      "Parse saved HTTP metadata",
+      "Join fixture rows with documented keys",
+      "Generate a plain-text local report"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Read a prepared network inventory",
+        "topics": [
+          "Devices, addresses and ownership boundaries"
+        ],
+        "python": [
+          "Validate a supplied CSV inventory"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Understand addresses and networks",
+        "topics": [
+          "IPv4/IPv6, subnet membership and documentation ranges"
+        ],
+        "python": [
+          "Use ipaddress on literal addresses; no discovery"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Interpret DNS evidence",
+        "topics": [
+          "Queries, answers, TTL and collection context"
+        ],
+        "python": [
+          "Compare prepared DNS records without live queries"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Interpret HTTP and TLS observations",
+        "topics": [
+          "Headers, status, certificate context and missing evidence"
+        ],
+        "python": [
+          "Parse saved HTTP metadata"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Correlate network and application records",
+        "topics": [
+          "Time, shared IPs and non-secret request references"
+        ],
+        "python": [
+          "Join fixture rows with documented keys"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Build a network evidence notebook",
+        "topics": [
+          "Expected paths, observations and unanswered questions"
+        ],
+        "python": [
+          "Generate a plain-text local report"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and boundary challenge",
+        "topics": [
+          "Explain why a connection is not proof of a user action"
+        ],
+        "python": [
+          "Test mixed IPv4/IPv6 and incomplete records"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 12,
+    "title": "Secure application behaviour",
+    "topics": [
+      "Assets, actors, actions and trust boundaries",
+      "Types, lengths, unknown fields and failure responses",
+      "Object ownership and action-specific decisions",
+      "SQL parameters, output text and command arguments",
+      "Credential transport, expiry and CSRF model",
+      "Reproduce a bounded bug and preserve the correction"
+    ],
+    "python": [
+      "Represent an explicit owner/resource policy",
+      "Test safe and invalid synthetic inputs",
+      "Write a positive/negative policy test matrix",
+      "Test parameterised SQLite operations locally",
+      "Test an isolated teaching service with test credentials",
+      "Use pytest against your own local application"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Model a protected operation",
+        "topics": [
+          "Assets, actors, actions and trust boundaries"
+        ],
+        "python": [
+          "Represent an explicit owner/resource policy"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Validate at the input boundary",
+        "topics": [
+          "Types, lengths, unknown fields and failure responses"
+        ],
+        "python": [
+          "Test safe and invalid synthetic inputs"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Check authorisation",
+        "topics": [
+          "Object ownership and action-specific decisions"
+        ],
+        "python": [
+          "Write a positive/negative policy test matrix"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Keep interpretation boundaries separate",
+        "topics": [
+          "SQL parameters, output text and command arguments"
+        ],
+        "python": [
+          "Test parameterised SQLite operations locally"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Understand sessions and browser intent",
+        "topics": [
+          "Credential transport, expiry and CSRF model"
+        ],
+        "python": [
+          "Test an isolated teaching service with test credentials"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Write regression tests",
+        "topics": [
+          "Reproduce a bounded bug and preserve the correction"
+        ],
+        "python": [
+          "Use pytest against your own local application"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and secure-change challenge",
+        "topics": [
+          "Explain the control and demonstrate its boundary"
+        ],
+        "python": [
+          "Add one permission regression case"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 13,
+    "title": "Identity, secrets and configuration",
+    "topics": [
+      "Human accounts, service identities and recovery routes",
+      "Required actions, granted scope and expiry",
+      "Required values, safe defaults and failure messages",
+      "Redaction, limited collection and exposure response",
+      "Pinned versions, advisories and affected context",
+      "Backup, staged rollout, verification and rollback"
+    ],
+    "python": [
+      "Summarise a fictional dependency map",
+      "Compare fixture grants with a stated policy",
+      "Validate synthetic environment configuration",
+      "Test redaction using clearly fake strings",
+      "Parse a prepared dependency/advisory worksheet",
+      "Compare expected/observed fixture settings"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Map identity dependencies",
+        "topics": [
+          "Human accounts, service identities and recovery routes"
+        ],
+        "python": [
+          "Summarise a fictional dependency map"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Review least privilege",
+        "topics": [
+          "Required actions, granted scope and expiry"
+        ],
+        "python": [
+          "Compare fixture grants with a stated policy"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Handle configuration deliberately",
+        "topics": [
+          "Required values, safe defaults and failure messages"
+        ],
+        "python": [
+          "Validate synthetic environment configuration"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Keep secrets out of logs and source",
+        "topics": [
+          "Redaction, limited collection and exposure response"
+        ],
+        "python": [
+          "Test redaction using clearly fake strings"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Review dependency information",
+        "topics": [
+          "Pinned versions, advisories and affected context"
+        ],
+        "python": [
+          "Parse a prepared dependency/advisory worksheet"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Plan a safe configuration change",
+        "topics": [
+          "Backup, staged rollout, verification and rollback"
+        ],
+        "python": [
+          "Compare expected/observed fixture settings"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and least-privilege challenge",
+        "topics": [
+          "Explain unknowns and a verified improvement"
+        ],
+        "python": [
+          "Produce a findings record without credential values"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 14,
+    "title": "Detection engineering foundations",
+    "topics": [
+      "Observed behaviour, required sources and intended action",
+      "Benign, concerning, malformed and incomplete examples",
+      "Identity, timestamps, cutoff and late data",
+      "False positives, false negatives and labelled-set limits",
+      "Context, exceptions, coverage and versioned changes",
+      "Evidence links, priority and bounded next checks"
+    ],
+    "python": [
+      "Express a rule as a small pure function",
+      "Generate deterministic synthetic fixtures",
+      "Count unique events in explicit intervals",
+      "Calculate a confusion matrix with checked denominators",
+      "Compare two rules against the same fixtures",
+      "Create a reproducible alert summary"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Write a detection question",
+        "topics": [
+          "Observed behaviour, required sources and intended action"
+        ],
+        "python": [
+          "Express a rule as a small pure function"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Design a test dataset",
+        "topics": [
+          "Benign, concerning, malformed and incomplete examples"
+        ],
+        "python": [
+          "Generate deterministic synthetic fixtures"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Choose windows and grouping",
+        "topics": [
+          "Identity, timestamps, cutoff and late data"
+        ],
+        "python": [
+          "Count unique events in explicit intervals"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Measure rule behaviour",
+        "topics": [
+          "False positives, false negatives and labelled-set limits"
+        ],
+        "python": [
+          "Calculate a confusion matrix with checked denominators"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Tune without hiding evidence",
+        "topics": [
+          "Context, exceptions, coverage and versioned changes"
+        ],
+        "python": [
+          "Compare two rules against the same fixtures"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Write an alert runbook",
+        "topics": [
+          "Evidence links, priority and bounded next checks"
+        ],
+        "python": [
+          "Create a reproducible alert summary"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and detection challenge",
+        "topics": [
+          "Separate an alert from a confirmed incident"
+        ],
+        "python": [
+          "Test one new benign and one concerning scenario"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 15,
+    "title": "Incident investigation and recovery",
+    "topics": [
+      "Scope, owner, evidence inventory and uncertainty",
+      "Collection notes, hashes, duplicates and clock caveats",
+      "Facts, hypotheses and discriminating evidence",
+      "Containment options, authority and operational effects",
+      "Known-good state, restore point and usability checks",
+      "Impact, actions, unknowns and prevention follow-up"
+    ],
+    "python": [
+      "Create a structured fictional case file",
+      "Build a referenced multi-source timeline",
+      "Group observations without inventing attribution",
+      "Compare a prepared decision table",
+      "Restore synthetic files into a separate target",
+      "Generate a case summary with evidence references"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Open an investigation record",
+        "topics": [
+          "Scope, owner, evidence inventory and uncertainty"
+        ],
+        "python": [
+          "Create a structured fictional case file"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Preserve and reconcile evidence",
+        "topics": [
+          "Collection notes, hashes, duplicates and clock caveats"
+        ],
+        "python": [
+          "Build a referenced multi-source timeline"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Test competing explanations",
+        "topics": [
+          "Facts, hypotheses and discriminating evidence"
+        ],
+        "python": [
+          "Group observations without inventing attribution"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Plan response decisions",
+        "topics": [
+          "Containment options, authority and operational effects"
+        ],
+        "python": [
+          "Compare a prepared decision table"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Rehearse recovery in a practice folder",
+        "topics": [
+          "Known-good state, restore point and usability checks"
+        ],
+        "python": [
+          "Restore synthetic files into a separate target"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Communicate and improve",
+        "topics": [
+          "Impact, actions, unknowns and prevention follow-up"
+        ],
+        "python": [
+          "Generate a case summary with evidence references"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and incident tabletop",
+        "topics": [
+          "Explain choices and verify recovery criteria"
+        ],
+        "python": [
+          "Replay the complete fictional case"
+        ]
+      }
+    ]
+  },
+  {
+    "week": 16,
+    "title": "Defensive Python capstone",
+    "topics": [
+      "User question, accepted inputs and non-goals",
+      "Size/shape validation, input errors and tests",
+      "Deduplication, time, rules and traceable results",
+      "Escaped output, provenance and supported conclusions",
+      "Invalid data, conflicts, repeatability and restore",
+      "Rebuild instructions, evidence and limitations"
+    ],
+    "python": [
+      "Write a small CLI contract",
+      "Read only explicitly supplied fixture paths",
+      "Compose tested pure functions",
+      "Export JSON and plain text with no secrets",
+      "Run an independent fixture test suite",
+      "Package a local project with a clear README"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "focus": "Specify the evidence assistant",
+        "topics": [
+          "User question, accepted inputs and non-goals"
+        ],
+        "python": [
+          "Write a small CLI contract"
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Build the ingestion boundary",
+        "topics": [
+          "Size/shape validation, input errors and tests"
+        ],
+        "python": [
+          "Read only explicitly supplied fixture paths"
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Implement analysis",
+        "topics": [
+          "Deduplication, time, rules and traceable results"
+        ],
+        "python": [
+          "Compose tested pure functions"
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Produce a usable report",
+        "topics": [
+          "Escaped output, provenance and supported conclusions"
+        ],
+        "python": [
+          "Export JSON and plain text with no secrets"
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Test failure and recovery",
+        "topics": [
+          "Invalid data, conflicts, repeatability and restore"
+        ],
+        "python": [
+          "Run an independent fixture test suite"
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Demonstrate and document",
+        "topics": [
+          "Rebuild instructions, evidence and limitations"
+        ],
+        "python": [
+          "Package a local project with a clear README"
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Review and choose the next direction",
+        "topics": [
+          "Independent demonstration and a realistic improvement plan"
+        ],
+        "python": [
+          "Explain and extend the project without a template"
+        ]
+      }
+    ]
   }
 ]

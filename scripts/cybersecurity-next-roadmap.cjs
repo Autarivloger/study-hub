@@ -1,0 +1,70 @@
+// Original next-stage learning milestones. Each week can take several sessions.
+const plan = [
+ [9,'Python for security evidence',[
+  ['A scoped local evidence lab','Read-only fixtures, question and evidence limits','Inspect a prepared JSON file with pathlib'],
+  ['Validate security records','JSON shape, required fields and explicit rejection','Validate typed records before analysing them'],
+  ['Count events without double-counting','Deliveries, event identity and conflicting copies','Deduplicate using source and event ID'],
+  ['Build an honest timeline','Offsets, UTC, unknown times and late arrivals','Normalise aware timestamps with datetime'],
+  ['Turn counts into a review finding','Windows, thresholds, false positives and evidence references','Create a bounded findings summary'],
+  ['Check reproducibility and file integrity','Raw bytes, reference hashes and repeatable tests','Use hashlib and unittest on sample evidence'],
+  ['Review and independent investigation','Rebuild the pipeline and explain what it cannot prove','Analyse a changed fixture and check your conclusions']]],
+ [10,'File integrity and recovery automation',[
+  ['Choose files and a baseline','Owned practice directory, inventory and expected state','List explicit fixture files with pathlib'],
+  ['Create an integrity manifest','Byte hashes, provenance and baseline protection','Stream SHA-256 digests into JSON'],
+  ['Compare two snapshots','Added, removed, changed and unreadable files','Compare manifests without deleting anything'],
+  ['Handle filesystem edge cases','Symlinks, permissions and partial collection','Report skipped paths and errors separately'],
+  ['Rehearse recovery','Restore into a separate directory and verify usability','Check restored fixture bytes and required files'],
+  ['Build a read-only integrity report','Reproducible output, tests and known limitations','Write a CLI with explicit input/output paths'],
+  ['Review and restore challenge','Interpret changes without assuming malicious intent','Test a changed and a missing practice file']]],
+ [11,'Network evidence with Python',[
+  ['Read a prepared network inventory','Devices, addresses and ownership boundaries','Validate a supplied CSV inventory'],
+  ['Understand addresses and networks','IPv4/IPv6, subnet membership and documentation ranges','Use ipaddress on literal addresses; no discovery'],
+  ['Interpret DNS evidence','Queries, answers, TTL and collection context','Compare prepared DNS records without live queries'],
+  ['Interpret HTTP and TLS observations','Headers, status, certificate context and missing evidence','Parse saved HTTP metadata'],
+  ['Correlate network and application records','Time, shared IPs and non-secret request references','Join fixture rows with documented keys'],
+  ['Build a network evidence notebook','Expected paths, observations and unanswered questions','Generate a plain-text local report'],
+  ['Review and boundary challenge','Explain why a connection is not proof of a user action','Test mixed IPv4/IPv6 and incomplete records']]],
+ [12,'Secure application behaviour',[
+  ['Model a protected operation','Assets, actors, actions and trust boundaries','Represent an explicit owner/resource policy'],
+  ['Validate at the input boundary','Types, lengths, unknown fields and failure responses','Test safe and invalid synthetic inputs'],
+  ['Check authorisation','Object ownership and action-specific decisions','Write a positive/negative policy test matrix'],
+  ['Keep interpretation boundaries separate','SQL parameters, output text and command arguments','Test parameterised SQLite operations locally'],
+  ['Understand sessions and browser intent','Credential transport, expiry and CSRF model','Test an isolated teaching service with test credentials'],
+  ['Write regression tests','Reproduce a bounded bug and preserve the correction','Use pytest against your own local application'],
+  ['Review and secure-change challenge','Explain the control and demonstrate its boundary','Add one permission regression case']]],
+ [13,'Identity, secrets and configuration',[
+  ['Map identity dependencies','Human accounts, service identities and recovery routes','Summarise a fictional dependency map'],
+  ['Review least privilege','Required actions, granted scope and expiry','Compare fixture grants with a stated policy'],
+  ['Handle configuration deliberately','Required values, safe defaults and failure messages','Validate synthetic environment configuration'],
+  ['Keep secrets out of logs and source','Redaction, limited collection and exposure response','Test redaction using clearly fake strings'],
+  ['Review dependency information','Pinned versions, advisories and affected context','Parse a prepared dependency/advisory worksheet'],
+  ['Plan a safe configuration change','Backup, staged rollout, verification and rollback','Compare expected/observed fixture settings'],
+  ['Review and least-privilege challenge','Explain unknowns and a verified improvement','Produce a findings record without credential values']]],
+ [14,'Detection engineering foundations',[
+  ['Write a detection question','Observed behaviour, required sources and intended action','Express a rule as a small pure function'],
+  ['Design a test dataset','Benign, concerning, malformed and incomplete examples','Generate deterministic synthetic fixtures'],
+  ['Choose windows and grouping','Identity, timestamps, cutoff and late data','Count unique events in explicit intervals'],
+  ['Measure rule behaviour','False positives, false negatives and labelled-set limits','Calculate a confusion matrix with checked denominators'],
+  ['Tune without hiding evidence','Context, exceptions, coverage and versioned changes','Compare two rules against the same fixtures'],
+  ['Write an alert runbook','Evidence links, priority and bounded next checks','Create a reproducible alert summary'],
+  ['Review and detection challenge','Separate an alert from a confirmed incident','Test one new benign and one concerning scenario']]],
+ [15,'Incident investigation and recovery',[
+  ['Open an investigation record','Scope, owner, evidence inventory and uncertainty','Create a structured fictional case file'],
+  ['Preserve and reconcile evidence','Collection notes, hashes, duplicates and clock caveats','Build a referenced multi-source timeline'],
+  ['Test competing explanations','Facts, hypotheses and discriminating evidence','Group observations without inventing attribution'],
+  ['Plan response decisions','Containment options, authority and operational effects','Compare a prepared decision table'],
+  ['Rehearse recovery in a practice folder','Known-good state, restore point and usability checks','Restore synthetic files into a separate target'],
+  ['Communicate and improve','Impact, actions, unknowns and prevention follow-up','Generate a case summary with evidence references'],
+  ['Review and incident tabletop','Explain choices and verify recovery criteria','Replay the complete fictional case']]],
+ [16,'Defensive Python capstone',[
+  ['Specify the evidence assistant','User question, accepted inputs and non-goals','Write a small CLI contract'],
+  ['Build the ingestion boundary','Size/shape validation, input errors and tests','Read only explicitly supplied fixture paths'],
+  ['Implement analysis','Deduplication, time, rules and traceable results','Compose tested pure functions'],
+  ['Produce a usable report','Escaped output, provenance and supported conclusions','Export JSON and plain text with no secrets'],
+  ['Test failure and recovery','Invalid data, conflicts, repeatability and restore','Run an independent fixture test suite'],
+  ['Demonstrate and document','Rebuild instructions, evidence and limitations','Package a local project with a clear README'],
+  ['Review and choose the next direction','Independent demonstration and a realistic improvement plan','Explain and extend the project without a template']]]
+];
+module.exports=plan.map(([week,title,days])=>({week,title,
+ topics:days.slice(0,6).map(d=>d[1]),python:days.slice(0,6).map(d=>d[2]),
+ days:days.map(([focus,topic,python],i)=>({day:i+1,focus,topics:[topic],python:[python]}))}));
