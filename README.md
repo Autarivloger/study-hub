@@ -650,3 +650,28 @@ See [Week 1 guide and reference files](docs/web-development-week1/README.md).
 Validate with `node tests/web-development-week1.cjs` and
 `node tests/web-development-week1-browser.cjs` (Chrome required). The latter uses
 synthetic storage and also opens all four reference pages with networking off.
+
+## GitHub Pages publication
+
+The site is published at its existing `autarivloger.github.io/study-hub/` address
+using `.github/workflows/publish-pages.yml`. Pages **Source** is **GitHub Actions**.
+The workflow runs on pushes to `main` and can also be started manually. It uses
+an explicit Ubuntu 24.04 image, one publishing job and official GitHub actions
+pinned to verified release commits. It replaces the built-in branch publishing
+workflow that stalled while publishing Web Development Week 1.
+
+`scripts/package-pages.py` copies tracked public files into a new staging
+directory, including all course/game/reference files. Hidden development files
+are excluded; `.nojekyll` is kept. It does not package Git metadata, ignored local
+files or browser storage. The HTML, service worker, manifest and icons are copied
+without transforming their contents. No learner-data format changes are needed.
+
+The generated `build-info.json` contains the deployed commit and HTML checksum.
+Check this file and the **Publish Study Hub** run before reporting an update as
+live. A successful push alone is not proof of a successful publication.
+
+Test packaging with
+`python -m unittest discover -s tests -p test_package_pages.py -v`.
+The previous publishing setting was **Deploy from a branch → main → / (root)**;
+it remains a configuration rollback option. The domain and HTTPS setting stay
+the same. No password, personal token or additional repository secret is used.
