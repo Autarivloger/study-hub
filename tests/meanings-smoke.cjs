@@ -30,6 +30,7 @@ async function main(){
   assert(await evalJs(`document.querySelector('.jp-hero h2').textContent==='Meaning Folder'&&document.querySelectorAll('[data-jp-meanings]').length===4`),'Meaning folder navigation missing');
   await evalJs(`document.querySelector('[data-jp-meanings=opposites]').click()`);
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair').length===100&&document.querySelectorAll('.jp-meaning-pair .jp-study-item').length===200`),'Opposites count incorrect');
+  assert(await evalJs(`![...document.querySelectorAll('.jp-meaning-pair')].some(p=>p.querySelector('h3')||/Opposite meanings|Near synonyms/.test(p.textContent))`),'Repeated pair headings remain');
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair details[open]').length===0`),'Answers shown before reveal');
   await evalJs(`document.querySelector('[data-jp-furigana]').click()`);
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair ruby rt').length===200`),'Furigana readings missing');
@@ -41,6 +42,7 @@ async function main(){
   assert(await evalJs(`(()=>{const d=JSON.parse(localStorage.studyHubData_v1),deck=d.decks.find(x=>x.jpMeaningFolder==='opposites');return deck&&d.cards.filter(x=>x.deckId===deck.id).length===100&&d.japanese.checks['hard:v:大きい'].hard;})()`),'Hard marking or duplicate-safe flashcards failed');
   await evalJs(`document.querySelector('[data-jp-meanings=synonyms]').click()`);
   assert(await evalJs(`document.querySelectorAll('.jp-meaning-pair').length===30&&document.querySelector('.jp-meaning-context').textContent.includes('grammar')`),'Synonym content/notes missing');
+  assert(await evalJs(`![...document.querySelectorAll('.jp-meaning-pair')].some(p=>p.querySelector('h3')||/Near synonyms ≈/.test(p.textContent))&&document.querySelectorAll('.jp-meaning-context').length===30&&document.querySelectorAll('.jp-meaning-pair .jp-study-item').length===60`),'Synonym headings or preserved study material failed');
   await evalJs(`document.querySelector('[data-jp-meaning-add]').click();document.querySelector('[data-jp-meanings=uploads]').click();document.querySelector('[data-jp-meaning-import]').click()`);
   assert(await evalJs(`document.querySelector('#csvDeckName').value.startsWith('Japanese · Meanings')`),'Shared importer default absent');
   const csv='front,back\r\n"花","はな · flower, फूल\nNear synonym context"\r\n"猫","ねこ · cat <img src=x onerror=alert(1)>"\r\n"花","はな · flower, फूल\nNear synonym context"';
