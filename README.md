@@ -564,3 +564,18 @@ Styles and preference handling are in `scripts/learning-navigation.css` and
 `python scripts/apply-learning-navigation.py`. Validate with
 `node tests/learning-navigation.cjs` and
 `node tests/learning-navigation-browser.cjs` (Chrome required).
+
+## Shared visual polish
+
+`scripts/premium-polish.css` defines a common heading scale, aligned page frames,
+consistent card corners, quieter shadows and compact exercise/quiz spacing across
+the workspace. Japanese practice prompts and their closed answer controls share a
+row on wider screens; opening an answer gives it the full width. Phone layouts
+wrap naturally and retain 44px answer targets. Reading, Kanji and code keep their
+learning sizes. No lesson text, app JavaScript or stored data is changed.
+
+The stylesheet is also embedded in `study-hub.html` for offline use. Reapply it with
+`python scripts/apply-premium-polish.py`; validate preservation with
+`node tests/premium-polish.cjs`. The browser comparison uses
+`node tests/premium-polish-browser.cjs --before`, then
+`node tests/premium-polish-browser.cjs` (Chrome required).
