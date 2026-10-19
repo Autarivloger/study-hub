@@ -17,6 +17,12 @@ All styling and icons are embedded in the HTML; no fonts or UI libraries are
 downloaded. Editable presentation sources live in `scripts/premium-theme.css`
 and `scripts/premium-shell.js`. Curriculum and learner storage are unchanged.
 
+The refined theme adds softly shaded cards, a glass desktop header, coordinated
+study tools and clearer visual hierarchy. All styles remain embedded for offline
+use, with no font download or decorative JavaScript. Reading widths, text selection,
+touch targets, Furigana navigation clearance, reduced motion and High Contrast
+keyboard outlines are covered by the design checks.
+
 ## Python Week 50 — Concurrency & parallelism
 
 Open **Course → Week 50** for six days, 36 parts, 72 exercises, 72 explained

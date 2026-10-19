@@ -7,13 +7,14 @@ const profile=fs.mkdtempSync(path.join(os.tmpdir(),'studyhub-design-profile-'));
 const fixture=path.join(profile,'study-hub.html');
 fs.writeFileSync(fixture,fs.readFileSync(path.resolve(__dirname,'../study-hub.html'),'utf8').replace('\nboot();\n','window.__courseTestEval=expression=>eval(expression);\nboot();\n'));
 const browser=spawn('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',['--headless=new','--disable-gpu','--no-sandbox','--no-first-run','--remote-debugging-port=0','--user-data-dir='+profile,pathToFileURL(fixture).href],{stdio:'ignore'});
+const watchdog=setTimeout(()=>{console.error('Design check timed out');browser.kill();process.exit(1);},120000);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));let ws;
 async function main(){
  let port;for(let i=0;i<100;i++){const p=path.join(profile,'DevToolsActivePort');if(fs.existsSync(p)){port=Number(fs.readFileSync(p,'utf8').split('\n')[0]);break;}await sleep(100);}assert(port,'Chrome startup');
  const tabs=await(await fetch('http://127.0.0.1:'+port+'/json/list')).json();ws=new WebSocket(tabs.find(t=>t.type==='page').webSocketDebuggerUrl);await new Promise((r,j)=>{ws.onopen=r;ws.onerror=j;});
  let seq=0;const pending=new Map(),errors=[];
  ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.method==='Runtime.exceptionThrown')errors.push(m.params.exceptionDetails.exception?.description||m.params.exceptionDetails.text);if(m.method==='Runtime.consoleAPICalled'&&m.params.type==='error')errors.push(m.params.args.map(a=>a.value||a.description).join(' '));if(m.id&&pending.has(m.id)){const p=pending.get(m.id);pending.delete(m.id);m.error?p.reject(Error(JSON.stringify(m.error))):p.resolve(m.result);}};
- const send=(method,params={})=>new Promise((resolve,reject)=>{const id=++seq;pending.set(id,{resolve,reject});ws.send(JSON.stringify({id,method,params}));});
+ const send=(method,params={})=>new Promise((resolve,reject)=>{const id=++seq,timer=setTimeout(()=>{pending.delete(id);reject(Error('Browser command timed out: '+method));},20000);pending.set(id,{resolve:value=>{clearTimeout(timer);resolve(value);},reject:error=>{clearTimeout(timer);reject(error);}});ws.send(JSON.stringify({id,method,params}));});
  const evaluate=async expression=>{const r=await send('Runtime.evaluate',{expression:'window.__courseTestEval?window.__courseTestEval('+JSON.stringify(expression)+'):eval('+JSON.stringify(expression)+')',returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error(r.exceptionDetails.exception?.description||r.exceptionDetails.text);return r.result.value;};
  const shot=async name=>{await sleep(120);const r=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(r.data,'base64'));};
  await send('Runtime.enable');await send('Page.enable');
@@ -33,7 +34,7 @@ async function main(){
  }
  if(before){console.log('Baseline screenshots:',out);return;}
  const sections=['course','japanese','quiz','reviews','typing','timer','flashcards','todo','lessons','journal','wisdom','liked','games'];
- for(const [width,height] of [[1440,1000],[1024,768],[768,1024],[375,812],[320,568]]){
+ for(const [width,height] of [[1440,1000],[1024,768],[800,900],[768,1024],[375,812],[320,568]]){
   await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<761});
   await send('Emulation.setTouchEmulationEnabled',{enabled:width<761});
   for(const theme of ['light','dark']){
@@ -53,6 +54,8 @@ async function main(){
   assert(await evaluate('!document.getElementById("workspaceTools").open&&document.activeElement===document.querySelector("#workspaceTools summary")'),'Tools Escape and focus');
  }
  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+ // A wide touch screen still shows the full search label, not a 44px icon box.
+ assert(await evaluate('(()=>{const e=document.getElementById("searchBtn"),r=e.getBoundingClientRect();return [...e.children].every(c=>{const b=c.getBoundingClientRect();return b.width===0||(b.left>=r.left&&b.right<=r.right);});})()'),'Desktop touch search label is clipped');
  await evaluate('document.documentElement.setAttribute("data-theme","light");courseView={mode:"overview",week:null,dayIdx:null};switchView("course");document.querySelector("#goResumeBtn").click()');
  assert(await evaluate('courseView.mode==="day"&&courseView.week===50&&courseView.part===1'),'Resume exact location');
  assert(await evaluate('DB.course.notes["50.0"]==="Keep my study note"&&DB.headNotes.legacy==="Keep heading notes"'),'Saved notes unchanged');
@@ -63,7 +66,37 @@ async function main(){
  await send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
  await evaluate('courseView={mode:"day",week:50,dayIdx:0,part:1};switchView("course");window.scrollTo(0,0)');await shot('lesson-mobile');
  await evaluate('document.querySelector("#workspaceTools summary").click()');await shot('tools-mobile');
+ await evaluate('document.getElementById("workspaceTools").open=false;switchView("japanese");document.querySelector(\'[data-jp-week="29"]\').click();document.querySelector(\'[data-jp-lesson="29.1"]\').click()');
+ for(const [width,height] of [[800,900],[768,1024],[375,812],[320,568]]){
+  await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<761});
+  await send('Emulation.setTouchEmulationEnabled',{enabled:width<761});
+  await evaluate('window.scrollTo(0,700)');
+  const f=await evaluate('(()=>{const e=document.querySelector(".jp-furigana-float"),r=e.getBoundingClientRect(),header=document.getElementById("topbar").getBoundingClientRect(),tabs=document.getElementById("tabnav").getBoundingClientRect();return {top:r.top,left:r.left,right:r.right,bottom:r.bottom,height:r.height,navBottom:Math.max(header.bottom,tabs.bottom),vw:innerWidth,vh:innerHeight,hit:document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)===e};})()');
+  assert(f.top>=f.navBottom&&f.left>=0&&f.right<=f.vw&&f.bottom<=f.vh&&f.hit,'Furigana overlaps navigation or is covered '+width+' '+JSON.stringify(f));
+  if(width<761){
+   assert(f.height>=44,'Furigana touch target');
+   assert(await evaluate('[...document.querySelectorAll("#searchBtn,#themeBtn,#workspaceTools summary,#tabnav button")].every(e=>{const r=e.getBoundingClientRect();return r.height>=44&&r.width>=44;})'),'Header/tab touch targets');
+  }
+  const was=await evaluate('jpFuriganaOn');
+  await evaluate('document.querySelector(".jp-furigana-float").click()');
+  assert(await evaluate('jpFuriganaOn')!==was,'Furigana toggle');
+ }
+ await shot('japanese-reading-mobile');
+ await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+ await send('Emulation.setTouchEmulationEnabled',{enabled:false});
+ await evaluate('document.documentElement.setAttribute("data-theme","dark")');
+ const dark=await evaluate('getComputedStyle(document.documentElement).getPropertyValue("--surface-glass")');
+ await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'dark'}]});
+ await evaluate('document.documentElement.removeAttribute("data-theme")');
+ assert.equal(await evaluate('getComputedStyle(document.documentElement).getPropertyValue("--surface-glass")'),dark,'System dark glass surface differs from explicit dark');
+ await send('Emulation.setEmulatedMedia',{features:[{name:'forced-colors',value:'active'}]});
+ await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab'});
+ await evaluate('document.getElementById("themeBtn").focus()');
+ assert(await evaluate('(()=>{const e=document.activeElement,s=getComputedStyle(e);return e.matches(":focus-visible")&&s.outlineStyle!=="none"&&parseFloat(s.outlineWidth)>=2;})()'),'Keyboard focus invisible in High Contrast mode');
+ await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+ await evaluate('courseView={mode:"overview",week:null,dayIdx:null};switchView("course")');
+ assert(await evaluate('getComputedStyle(document.querySelector(".week-chip")).transitionDuration.split(",").every(x=>parseFloat(x)===0)'),'Reduced-motion card transition');
  assert.deepEqual(errors,[],'Browser errors');
- console.log('PASS: 13 sections at 5 widths in both themes; tools, keyboard dismissal/focus, search, sync, exact resume and preserved notes. Screenshots:',out);
+ console.log('PASS: 13 sections at 6 widths in both themes; tools, search, sync, exact resume, preserved notes, Furigana clearance/toggle, touch targets, system dark, High Contrast focus and reduced motion. Screenshots:',out);
 }
-main().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{ws?.close();browser.kill();});
+main().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{clearTimeout(watchdog);ws?.close();browser.kill();});
