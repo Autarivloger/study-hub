@@ -19,6 +19,23 @@ async function main(){
  async function add(title,goal){await evaluate('document.querySelector("#habitAdd").click();document.querySelector("#habitTitle").value='+JSON.stringify(title)+';document.querySelector("#habitCategory").value="Learning";document.querySelector("#habitGoal").value='+goal+';document.querySelector("#habitForm").requestSubmit()');}
  await add('Reading',2);await add('Practice',31);
  assert(await evaluate('habitRows("2026-10").length===2&&document.querySelectorAll("[data-habit-check]").length===62'),'Add/month grid failed');
+ const beforeActions=await evaluate('JSON.stringify(DB)');
+ assert(await evaluate('document.querySelectorAll("[data-habit-actions] svg").length===2&&[...document.querySelectorAll(".ht-row-actions")].every(e=>e.hidden)&&document.querySelector("[data-habit-row]").getBoundingClientRect().height<=60'),'Pencil or compact default rows failed');
+ await evaluate('document.querySelector("[data-habit-actions]").click()');
+ assert(await evaluate('document.querySelector("[data-habit-actions]").getAttribute("aria-expanded")==="true"&&!document.querySelector(".ht-row-actions").hidden'),'Pencil did not reveal actions');
+ await evaluate('document.querySelectorAll("[data-habit-actions]")[1].click()');
+ assert(await evaluate('document.querySelector(".ht-row-actions").hidden&&document.querySelectorAll("[data-habit-actions][aria-expanded=true]").length===1'),'Another row left multiple menus open');
+ await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});
+ // Focus may be elsewhere after programmatic clicks; exercise Escape from its real row control.
+ await evaluate('document.querySelectorAll("[data-habit-actions]")[1].focus()');
+ await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});
+ assert(await evaluate('document.querySelectorAll("[data-habit-actions][aria-expanded=true]").length===0&&document.activeElement===document.querySelectorAll("[data-habit-actions]")[1]'),'Escape did not close/focus the pencil');
+ await evaluate('document.querySelector("[data-habit-actions]").click();document.querySelector("[data-habit-edit]").click()');
+ assert(await evaluate('document.querySelector("#cdYes").textContent==="Continue to edit"&&!document.querySelector("#habitForm")'),'Edit bypassed confirmation');
+ await evaluate('document.querySelector("#cdNo").click()');
+ assert(await evaluate('JSON.stringify(DB)')===beforeActions,'Opening/cancelling actions changed saved data');
+ await evaluate('document.querySelector("[data-habit-actions]").click();document.querySelector("[data-habit-edit]").click();document.querySelector("#cdYes").click();document.querySelector("#habitCancel").click()');
+ assert(await evaluate('JSON.stringify(DB)')===beforeActions,'Cancelling the editor changed saved data');
  const firstId=await evaluate('habitRows("2026-10")[0].id');
  const secondId=await evaluate('habitRows("2026-10")[1].id');
  await evaluate('document.querySelector("[data-habit-check][data-day=\\"1\\"]").click()');
@@ -27,11 +44,11 @@ async function main(){
  assert(await evaluate('habitStats("2026-10").total===3&&habitStats("2026-10").earned===2&&habitStats("2026-10").percent===6'),'Extra days incorrectly compensate another habit goal');
  await evaluate('document.querySelector("[data-habit-check][data-day=\\"3\\"]").click()');
  assert(await evaluate('DB.habitTracker.checks[habitDayKey("2026-10",'+JSON.stringify(firstId)+',3)].done===false'),'Unchecked state was not retained');
- await evaluate('document.querySelector("[data-habit-edit]").click();document.querySelector("#habitTitle").value="Reading <img src=x onerror=alert(1)>";document.querySelector("#habitForm").requestSubmit()');
+ await evaluate('document.querySelector("[data-habit-actions]").click();document.querySelector("[data-habit-edit]").click();document.querySelector("#cdYes").click();document.querySelector("#habitTitle").value="Reading <img src=x onerror=alert(1)>";document.querySelector("#habitForm").requestSubmit()');
  assert(await evaluate('habitCount(habitRows("2026-10")[0],"2026-10")===2&&!document.querySelector(".ht-name img")'),'Edit lost checks or inserted untrusted markup');
  await evaluate('document.querySelector("#habitNext").click()');
  assert(await evaluate('habitMonth()==="2026-11"&&habitRows("2026-11").length===2&&habitStats("2026-11").total===0&&habitRows("2026-11")[1].goalMode==="daily"&&habitGoal(habitRows("2026-11")[1],"2026-11")===30'),'Next month did not copy names/adjust daily goal/reset checks');
- await evaluate('document.querySelector("[data-habit-check][data-day=\\"1\\"]").click();document.querySelector("[data-habit-edit]").click();document.querySelector("#habitTitle").value="November reading";document.querySelector("#habitForm").requestSubmit()');
+ await evaluate('document.querySelector("[data-habit-check][data-day=\\"1\\"]").click();document.querySelector("[data-habit-edit]").click();document.querySelector("#cdYes").click();document.querySelector("#habitTitle").value="November reading";document.querySelector("#habitForm").requestSubmit()');
  assert(await evaluate('habitRows("2026-10")[0].title.startsWith("Reading")&&habitStats("2026-10").total===2'),'Month edit/check changed another month');
  await evaluate('document.querySelector("#habitPrev").click()');
  assert(await evaluate('habitMonth()==="2026-10"&&habitStats("2026-10").total===2'),'Prior month did not retain checks');
