@@ -2534,6 +2534,17 @@ body:not(.games-focus) .pane-header{padding:16px 24px 12px}
 .jp-listening [role="status"]{min-height:1.65em;}
 @media(max-width:600px){#view-japanese .jp-listening .jp-actions>.btn{flex:1 1 130px;min-height:44px;}.jp-listening .jp-listening-prompt{font-size:17px;}}
 /* JAPANESE LISTENING STYLE END */
+
+/* WEB DEVELOPMENT TEACHING STYLE START */
+#webDevelopmentBody:has(.webdev-teaching){max-width:1040px;}
+.webdev-teaching{margin-top:22px;min-width:0;}
+.webdev-teaching .ls-code,.webdev-teaching .ls-out{min-width:0;max-width:100%;}
+.webdev-teaching pre{overflow-x:auto;max-width:100%;}
+.webdev-completion{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:20px 0;}
+.webdev-completion span{max-width:60ch;color:var(--text-dim);font-size:12px;line-height:1.6;}
+.webdev-week-progress{color:var(--accent);font-weight:600;}
+@media(max-width:760px){#webDevelopmentBody .webdev-teaching .btn,#webDevelopmentBody .webdev-teaching .ls-quiz-opt,#webDevelopmentBody .webdev-completion .btn{min-height:44px;}}
+/* WEB DEVELOPMENT TEACHING STYLE END */
 </style>
 </head>
 <body>
@@ -166037,6 +166048,9 @@ function wireHeadNotes(el){
    Used by both the Lessons tab and the day pages inside the Course. */
 let tryCount = 0;
 let solCount = 0;
+function teachingCodeHtml(value,language){
+  return language && language!=="python" ? escapeHtml(value) : highlightPy(value);
+}
 function renderSections(sections, ctx){
   /* ctx names the day or lesson. It is supplied only by the two teaching
      call sites, so practice sets and the mistakes list stay unchanged. */
@@ -166066,7 +166080,7 @@ function renderSections(sections, ctx){
     if(s.t==="checkpoint") return `<div data-course-quiz="${escapeAttr(s.lesson.id)}">${DB.lessonsDone[s.lesson.id]?'<p class="ls-p">Previously completed lesson · saved progress retained</p>':''}${renderLessonQuiz(s.lesson)}</div>`;
     if(s.t==="p")    return `<p class="ls-p">${escapeHtml(s.v).replace(/\n/g,"<br>")}</p>`;
     if(s.t==="figure" && /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(s.src||"")) return `<figure style="margin:18px 0"><img src="${escapeAttr(s.src)}" alt="${escapeAttr(s.alt||"Lesson chart")}" style="display:block;width:100%;height:auto;border-radius:12px;background:#fff"><figcaption class="ls-p">${escapeHtml(s.note||"")}</figcaption></figure>`;
-    if(s.t==="code") return `<div class="ls-code"><div class="ls-code-tag">python</div><pre><code>${highlightPy(s.v)}</code></pre></div>`;
+    if(s.t==="code") return `<div class="ls-code"><div class="ls-code-tag">${escapeHtml(s.lang || "python")}</div><pre><code>${teachingCodeHtml(s.v,s.lang)}</code></pre></div>`;
     if(s.t==="sh")   return `<div class="ls-code ls-sh"><div class="ls-code-tag">terminal</div><pre><code>${highlightShell(s.v)}</code></pre></div>`;
     if(s.t==="out")  return `<div class="ls-out"><div class="ls-out-tag">output</div><pre><code>${escapeHtml(s.v)}</code></pre></div>`;
     if(s.t==="tip")  return `<div class="ls-box ls-tip"><b>Tip</b>${escapeHtml(s.v).replace(/\n/g,"<br>")}</div>`;
@@ -166083,18 +166097,18 @@ function renderSections(sections, ctx){
     /* Syntax pattern: the shape of the construct, before any real example. */
     if(s.t==="syn")  return `<div class="ls-syn">
         <div class="ls-syn-tag">Syntax</div>
-        <pre><code>${highlightPy(s.v)}</code></pre>
+        <pre><code>${teachingCodeHtml(s.v,s.lang)}</code></pre>
         ${s.note ? `<div class="ls-syn-note">${escapeHtml(s.note)}</div>` : ""}
       </div>`;
     /* Common mistake: the wrong version, the fix, and why. */
     if(s.t==="mis")  return `<div class="ls-mis">
         <div class="ls-mis-row ls-mis-bad">
           <div class="ls-mis-lab">Don't</div>
-          <pre><code>${highlightPy(s.wrong)}</code></pre>
+          <pre><code>${teachingCodeHtml(s.wrong,s.lang)}</code></pre>
         </div>
         <div class="ls-mis-row ls-mis-good">
           <div class="ls-mis-lab">Do</div>
-          <pre><code>${highlightPy(s.right)}</code></pre>
+          <pre><code>${teachingCodeHtml(s.right,s.lang)}</code></pre>
         </div>
         <div class="ls-mis-why">${escapeHtml(s.why).replace(/\n/g,"<br>")}</div>
       </div>`;
@@ -166103,7 +166117,7 @@ function renderSections(sections, ctx){
       return `<div class="ls-sol">
         <button type="button" class="btn secondary btn-sm" data-sol="${i}">Show solution</button>
         <div class="ls-sol-body" id="solB${i}" hidden>
-          <div class="ls-code${s.sh ? " ls-sh" : ""}"><div class="ls-code-tag">${s.sh ? "terminal \u00b7 solution" : "solution"}</div><pre><code>${s.sh ? highlightShell(s.code) : highlightPy(s.code)}</code></pre></div>
+          <div class="ls-code${s.sh ? " ls-sh" : ""}"><div class="ls-code-tag">${s.sh ? "terminal \u00b7 solution" : "solution"}</div><pre><code>${s.sh ? highlightShell(s.code) : teachingCodeHtml(s.code,s.lang)}</code></pre></div>
           ${s.out ? `<div class="ls-out"><div class="ls-out-tag">output</div><pre><code>${escapeHtml(s.out)}</code></pre></div>` : ""}
           <div class="ls-sol-why"><b>How it works</b>${escapeHtml(s.why).replace(/\n/g,"<br>")}</div>
         </div>
@@ -166113,7 +166127,7 @@ function renderSections(sections, ctx){
       const i = tryCount++;
       return `<div class="ls-try">
         <div class="ls-try-q">${escapeHtml(s.q)}</div>
-        <pre><code>${highlightPy(s.code)}</code></pre>
+        <pre><code>${teachingCodeHtml(s.code,s.lang)}</code></pre>
         <button type="button" class="btn secondary btn-sm" data-reveal="${i}">Show answer</button>
         <div class="ls-try-a" id="tryA${i}" hidden>
           <div class="ls-try-ans">${escapeHtml(s.a)}</div>
@@ -179122,8 +179136,1491 @@ const WEBDEV_ROADMAP = [
   }
 ];
 /* WEB DEVELOPMENT DATA END */
+/* WEB DEVELOPMENT TEACHING START */
+const WEBDEV_TEACH = {
+  "1.1": {
+    "id": "webdev:1.1",
+    "title": "Files and folders",
+    "objective": "Create a separate practice folder, identify a filename and extension, and locate a file without changing your existing Study Hub files.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Give your work a home"
+      },
+      {
+        "t": "p",
+        "v": "A website starts as files that you can find, open and change. Before writing code, create a small place for your practice. If you save different copies in Downloads, Desktop and Documents without noticing, you can edit one file while looking at another. Today you will prevent that confusion."
+      },
+      {
+        "t": "new",
+        "v": "File",
+        "note": "A named item stored on your device, such as a photograph or a text document. A web page can be stored in a text file. Its name helps you find it again."
+      },
+      {
+        "t": "new",
+        "v": "Folder (directory)",
+        "note": "A container that organises files and other folders. A project folder keeps the files belonging to one piece of work together."
+      },
+      {
+        "t": "p",
+        "v": "Use your file manager. On Windows it is called File Explorer; Windows key + E opens it. Open Documents, create a folder named web-projects, open it, then create a folder named first-page. Use the New folder command or right-click an empty area and choose New → Folder. These are folder names you type, not commands to run."
+      },
+      {
+        "t": "p",
+        "v": "Your study website already contains an index.html file. Keep this practice project in its own first-page folder. Do not replace the Study Hub index.html or study-hub.html. The new practice page will be a different file in a different location."
+      },
+      {
+        "t": "code",
+        "v": "Documents/\n  web-projects/\n    first-page/",
+        "lang": "files"
+      },
+      {
+        "t": "new",
+        "v": "Folder tree",
+        "note": "A drawing of which folder contains which item. Indentation here means inside. Documents contains web-projects; web-projects contains first-page. The slash in this drawing is a separator, not part of a folder name."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Names, extensions and paths"
+      },
+      {
+        "t": "new",
+        "v": "Filename and extension",
+        "note": "In index.html, index is the base name and .html is the extension. The extension gives software a clue about the file type. It is not part of the page title that readers see."
+      },
+      {
+        "t": "code",
+        "v": "index.html       → HTML page\nwelcome.txt      → plain text\nphoto.jpg        → an image\nindex.html.txt   → a .txt file, not the intended .html filename",
+        "lang": "files"
+      },
+      {
+        "t": "p",
+        "v": "On some computers extensions are hidden. In Windows File Explorer, look under View for Show → File name extensions; some versions show a File name extensions checkbox directly on the View tab. Enable it so that you can see the full name. If your menus differ, use the file Properties or Details to check the actual name and type. Knowing the full name matters more than memorising a particular menu."
+      },
+      {
+        "t": "new",
+        "v": "Path",
+        "note": "The location of an item, described by its containing folders and name. Two files can both be called index.html if they are in different folders."
+      },
+      {
+        "t": "code",
+        "v": "Documents/web-projects/first-page/index.html\nDocuments/web-projects/second-page/index.html",
+        "lang": "files"
+      },
+      {
+        "t": "p",
+        "v": "These two paths point to different files. A Windows path may use backslashes instead, such as C:\\Users\\YourName\\Documents\\web-projects\\first-page\\index.html. Your account name and the location of Documents can differ, especially when Documents is managed by OneDrive. Use the folder you actually created rather than copying this sample path literally."
+      },
+      {
+        "t": "new",
+        "v": "Plain text",
+        "note": "Text stored without word-processor formatting such as bold fonts or page layout. HTML source is plain text containing markup. Changing an image file name to .html does not turn its contents into HTML."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · A naming habit you can trust"
+      },
+      {
+        "t": "p",
+        "v": "For this project use lower-case names and hyphens: first-page, learning-notes.txt, index.html. This is a convention, not a rule that every computer enforces. Consistency makes later file references easier to get right. Some hosting systems distinguish Index.html from index.html even if your local computer appears more forgiving."
+      },
+      {
+        "t": "mis",
+        "wrong": "first-page/index.html.txt\nSecond copy somewhere in Downloads",
+        "right": "first-page/index.html\nOne known practice folder",
+        "why": "Check the real extension and full location. Renaming a plain-text file can correct an accidental .txt suffix, but changing an extension alone never converts arbitrary file content.",
+        "lang": "text"
+      },
+      {
+        "t": "key",
+        "v": "Before coding, be able to say: this is my project folder, this is my file, and this is its real extension."
+      },
+      {
+        "t": "h",
+        "v": "Practice · Find it without guessing"
+      },
+      {
+        "t": "try",
+        "q": "Which line describes a folder, and which describes an HTML filename?",
+        "code": "first-page\nindex.html",
+        "a": "first-page is our project folder. index.html is the filename we will create on Day 4.",
+        "why": "A folder is the container; a filename identifies an item within it.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Both files have the same name. Are they the same file?",
+        "code": "first-page/index.html\nbackup-copy/index.html",
+        "a": "No. They occupy different folders. Editing one does not automatically edit the other.",
+        "why": "Compare the containing folder as well as the final name.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "The icon looks like a browser, but Properties says index.html.txt. What should you check?",
+        "code": "Name: index.html.txt",
+        "a": "Check the actual contents and extension. For our plain-text HTML page the intended final name is index.html.",
+        "why": "Icons and hidden extensions are clues, not proof of the file you intended to create.",
+        "lang": "text"
+      },
+      {
+        "t": "h",
+        "v": "Mini challenge · Navigate away and return"
+      },
+      {
+        "t": "p",
+        "v": "Create the two folders, move to a different location in your file manager, then find first-page again without using the Recent files list. Write its actual location in your day notes. You do not need to create an HTML document yet."
+      },
+      {
+        "t": "sol",
+        "code": "Documents → web-projects → first-page\nFolder name: first-page\nFuture filename: index.html",
+        "why": "Your path can differ. Success means that you can find your own folder again and distinguish it from the folder containing Study Hub.",
+        "lang": "text"
+      },
+      {
+        "t": "h",
+        "v": "Ready to continue?"
+      },
+      {
+        "t": "p",
+        "v": "You can find the folder again, explain .html versus .txt, and recognise two different files with the same name. If this still feels uncertain, repeat today before opening an editor."
+      }
+    ],
+    "quiz": [
+      {
+        "q": "What is the main job of a project folder?",
+        "options": [
+          "Keep related project files together",
+          "Change every file into HTML",
+          "Publish files automatically"
+        ],
+        "correct": 0,
+        "why": "A folder organises work; it does not convert or publish its contents."
+      },
+      {
+        "q": "What is the extension of index.html.txt?",
+        "options": [
+          ".html",
+          ".index",
+          ".txt"
+        ],
+        "correct": 2,
+        "why": "The final suffix is .txt. Showing full extensions exposes this common beginner mistake."
+      },
+      {
+        "q": "Two index.html files are in different folders. What is true?",
+        "options": [
+          "Saving one must update both",
+          "They can contain different content",
+          "They must always be the same file"
+        ],
+        "correct": 1,
+        "why": "Their paths identify different locations. A filename alone is not enough."
+      },
+      {
+        "q": "Which location should you use for this practice?",
+        "options": [
+          "A separate first-page project folder",
+          "The existing Study Hub index.html",
+          "An unknown copy in Recent files"
+        ],
+        "correct": 0,
+        "why": "Practise in a separate folder so your learning app remains intact."
+      },
+      {
+        "q": "Does renaming photo.jpg to photo.html create HTML content?",
+        "options": [
+          "Yes, all extensions convert data",
+          "Yes, if the icon changes",
+          "No, the contents have not been converted"
+        ],
+        "correct": 2,
+        "why": "A name is not a content conversion. HTML requires suitable text markup."
+      }
+    ],
+    "reflection": "Write the actual location of your first-page folder. Explain file, folder, extension and path using your own examples."
+  },
+  "1.2": {
+    "id": "webdev:1.2",
+    "title": "Your browser and editor",
+    "objective": "Use a plain-text editor to create and save a file, then use a browser to open a local file and recognise the difference between editing and viewing.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Two tools, two jobs"
+      },
+      {
+        "t": "p",
+        "v": "Keep the first-page folder from Day 1. You need a tool that edits text and a tool that displays a page. A code editor does not have to be complicated. If you already have one, use it. A plain-text editor such as Notepad is enough for this week; installing extensions, a server or a framework is not required."
+      },
+      {
+        "t": "new",
+        "v": "Text editor and code editor",
+        "note": "A text editor changes plain-text files. A code editor adds conveniences such as coloured syntax, indentation and a project sidebar. These conveniences help you read and change source; they are not what makes HTML work."
+      },
+      {
+        "t": "new",
+        "v": "Browser",
+        "note": "An application such as Chrome, Edge or Firefox that reads web content and displays pages. You will use it to view the file that your editor saves."
+      },
+      {
+        "t": "p",
+        "v": "Do not use a word-processing document such as .docx as your HTML source. A word processor can store formatting and other structures that are not the plain-text file we need. Also, the page you are reading in Study Hub is the instruction page; your practice page opens in another tab."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Save one small text file"
+      },
+      {
+        "t": "p",
+        "v": "Open your text editor. Create a new document and type the sentence below yourself. Save it inside first-page as welcome.txt. In most desktop editors Ctrl + S saves; the first save asks for a location and filename. On macOS, use Command + S. Confirm the location rather than accepting an unfamiliar default folder."
+      },
+      {
+        "t": "code",
+        "v": "I know where my project files are.",
+        "lang": "text"
+      },
+      {
+        "t": "out",
+        "v": "Saved file: first-page/welcome.txt\nContents: I know where my project files are."
+      },
+      {
+        "t": "new",
+        "v": "Save and unsaved changes",
+        "note": "Typing changes the editor’s current document. Saving writes those changes to the stored file. A dot, star or other marker near an editor tab may mean unsaved changes, but the exact indicator depends on the editor."
+      },
+      {
+        "t": "p",
+        "v": "Close the document, reopen welcome.txt from first-page in the editor and check the sentence. Reopening tests whether you saved the correct file. If it is missing, look at the path and save location before rewriting everything."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Find the browser address bar"
+      },
+      {
+        "t": "new",
+        "v": "Tab and address bar",
+        "note": "A browser tab contains a page. The address bar shows or accepts its location. The search box inside a website is part of that page; typing a filename there does not normally open your local project."
+      },
+      {
+        "t": "p",
+        "v": "Open the browser and use Ctrl + L to focus the address bar (Command + L on macOS). You can drag welcome.txt from your file manager into a browser tab to open it. The browser may display its plain text. If your browser instead offers a download or refuses that file, this does not mean saving failed; check it in the editor and use the .html page on Day 4 for the web-page test."
+      },
+      {
+        "t": "new",
+        "v": "Local file",
+        "note": "A file opened from your device rather than fetched from a website host. Its browser address commonly starts with file://. Opening it locally does not publish it to the internet."
+      },
+      {
+        "t": "code",
+        "v": "Editor: open the file and change its saved source.\nBrowser: open the saved file and view its content.\nFile manager: find the file and check its location.",
+        "lang": "text"
+      },
+      {
+        "t": "p",
+        "v": "Typing into the browser address bar changes the location you are visiting; it does not change the file’s text. Editing a page temporarily in browser developer tools is also a different action from saving your project source. We will learn those tools in Week 2."
+      },
+      {
+        "t": "key",
+        "v": "Editor → save a file. Browser → open the saved file. Keep the two jobs separate."
+      },
+      {
+        "t": "h",
+        "v": "Practice · Choose the right tool"
+      },
+      {
+        "t": "try",
+        "q": "Where would you change a sentence in your saved source?",
+        "code": "A. Text editor\nB. Browser address bar\nC. Website search field",
+        "a": "A. Open the correct project file in the text editor, change it and save.",
+        "why": "The other fields navigate or search; they do not edit this saved source.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "You closed the editor and your sentence is missing on reopening. What do you check first?",
+        "code": "Expected file: first-page/welcome.txt",
+        "a": "Check whether the document was saved, then confirm its actual path and filename.",
+        "why": "The same filename in another folder can hide a save-location mistake.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "What does a file:// address tell you in this exercise?",
+        "code": "file:///.../first-page/welcome.txt",
+        "a": "The browser opened a local file. It does not prove the file is hosted publicly.",
+        "why": "The hosted versus local page journey is the main subject of Week 2.",
+        "lang": "text"
+      },
+      {
+        "t": "h",
+        "v": "Mini challenge · Explain your workflow"
+      },
+      {
+        "t": "p",
+        "v": "Change welcome.txt to say “I can edit and save a plain-text file.” Save, close and reopen it in the editor. Explain the three tool roles to an imaginary classmate. Keep the file for your debugging practice."
+      },
+      {
+        "t": "sol",
+        "code": "1. Editor: change the sentence.\n2. Save: write the change to first-page/welcome.txt.\n3. Reopen: verify the saved contents.\n4. Browser: view a saved file when that type is supported.",
+        "why": "The critical evidence is the text that survives closing and reopening. Your editor’s exact menu names may differ.",
+        "lang": "text"
+      },
+      {
+        "t": "h",
+        "v": "Ready to continue?"
+      },
+      {
+        "t": "p",
+        "v": "You have one known project folder, a working text editor and a browser. You can reopen a saved text file. You do not need a terminal command to begin Week 1."
+      }
+    ],
+    "quiz": [
+      {
+        "q": "Which tool changes the saved source text?",
+        "options": [
+          "A text/code editor",
+          "The address bar",
+          "The browser tab label"
+        ],
+        "correct": 0,
+        "why": "Use the editor, then save the file."
+      },
+      {
+        "q": "Which format do you need for HTML source?",
+        "options": [
+          "A .docx document renamed .html",
+          "A screenshot of some code",
+          "Plain text containing HTML markup"
+        ],
+        "correct": 2,
+        "why": "The source must contain actual text markup, not an image or word-processor package."
+      },
+      {
+        "q": "You type changes but never save. What may a browser reopening the file show?",
+        "options": [
+          "A guaranteed error message",
+          "The previous saved contents",
+          "Always the unsaved editor contents"
+        ],
+        "correct": 1,
+        "why": "The browser reads the file, not your unsaved editor buffer."
+      },
+      {
+        "q": "Opening a practice page with file:// means…",
+        "options": [
+          "You opened a file from your device",
+          "You published it to GitHub",
+          "Your notes were sent to a server"
+        ],
+        "correct": 0,
+        "why": "A local file address is different from hosting. Other sharing/sync tools have their own behaviour."
+      },
+      {
+        "q": "What is a reliable way to confirm a save?",
+        "options": [
+          "Assume every tab autosaves",
+          "Only check whether the icon changed",
+          "Close and reopen the exact file in the editor"
+        ],
+        "correct": 2,
+        "why": "Reopening the same path gives evidence of the saved contents."
+      }
+    ],
+    "reflection": "Name your editor and browser. Record how you save, how you reopen a file and how you confirm the path. What confused you today?"
+  },
+  "1.3": {
+    "id": "webdev:1.3",
+    "title": "The three web languages",
+    "objective": "Distinguish HTML structure, CSS presentation and JavaScript behaviour, and read your first heading and paragraph without needing CSS or JavaScript code.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Start with the job, then the name"
+      },
+      {
+        "t": "p",
+        "v": "Imagine a page introducing your study goals. It contains a main heading and a paragraph. You might later choose a green background. A button might later show or hide a note. These are related but different jobs. Learn to name each job before combining the languages."
+      },
+      {
+        "t": "new",
+        "v": "HTML — HyperText Markup Language",
+        "note": "A language for marking the meaning and structure of web content: this is a heading, this is a paragraph, this is a link. It is a markup language, not a general-purpose programming language like Python."
+      },
+      {
+        "t": "new",
+        "v": "CSS — Cascading Style Sheets",
+        "note": "A language for presentation: colours, spacing, font choices and layouts. HTML can display without your own CSS, using the browser’s default styles."
+      },
+      {
+        "t": "new",
+        "v": "JavaScript",
+        "note": "A programming language used for behaviour and logic in web pages, such as responding to a click or updating a score. JavaScript and Java are different languages. A simple reading page can work without custom JavaScript."
+      },
+      {
+        "t": "code",
+        "v": "Content is a heading or paragraph → HTML\nChoose colour, spacing or columns → CSS\nRespond to a click or update a total → JavaScript",
+        "lang": "text"
+      },
+      {
+        "t": "p",
+        "v": "These are useful starting roles, not absolute boundaries: HTML provides some built-in interactions, and CSS can animate presentation. You do not need JavaScript merely to display text. In this roadmap we build a dependable HTML foundation first. Detailed CSS comes later, and JavaScript foundations begin in Week 25."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Your first two elements"
+      },
+      {
+        "t": "new",
+        "v": "Element and tag",
+        "note": "An HTML element gives content a role. In <p>Hello.<\/p>, <p> is the opening tag, Hello. is the content and <\/p> is the closing tag. The slash belongs inside the closing tag. Most elements you meet today have both tags."
+      },
+      {
+        "t": "new",
+        "v": "h1 and p",
+        "note": "h1 marks the main heading of a page; the character after h is the digit 1, not a lowercase L. p marks a paragraph. The browser usually styles h1 larger, but meaning is the reason to use the element."
+      },
+      {
+        "t": "code",
+        "v": "<h1>My learning page<\/h1>\n<p>I am learning web development.<\/p>",
+        "lang": "html"
+      },
+      {
+        "t": "out",
+        "v": "Main heading: My learning page\nParagraph: I am learning web development."
+      },
+      {
+        "t": "p",
+        "v": "This small example is an HTML fragment: only part of a document. On Day 4 you will place these exact elements inside a complete page. For now point to each opening tag, text and closing tag. The browser uses the tags to build the page, so correctly parsed <h1> and <p> tags are not printed as visible angle-bracket text."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Structure is not appearance"
+      },
+      {
+        "t": "p",
+        "v": "If you want the paragraph to have more space around it, that is usually a CSS decision. If you want the paragraph to be a real heading, change its HTML role. Choosing a heading only to make text look large produces a confusing structure for readers and assistive tools. We will practise heading levels in later weeks."
+      },
+      {
+        "t": "mis",
+        "wrong": "<h1>My learning page<\/p>",
+        "right": "<h1>My learning page<\/h1>",
+        "why": "Match the closing element name to its opening name. Browsers may attempt to recover from bad markup, so a page appearing on screen does not prove the source is correct.",
+        "lang": "text"
+      },
+      {
+        "t": "key",
+        "v": "First make the content meaningful. Then style it. Add behaviour when the page needs it."
+      },
+      {
+        "t": "h",
+        "v": "Practice · Read before writing"
+      },
+      {
+        "t": "try",
+        "q": "Identify the opening tag, content and closing tag.",
+        "code": "<p>I practise every day.<\/p>",
+        "a": "Opening: <p>. Content: I practise every day. Closing: <\/p>.",
+        "why": "The whole structure is the paragraph element.",
+        "lang": "html"
+      },
+      {
+        "t": "try",
+        "q": "Which task needs which main language?",
+        "code": "1. Mark the main heading\n2. Change the heading colour\n3. Update a quiz result after a click",
+        "a": "1 HTML; 2 CSS; 3 JavaScript.",
+        "why": "Use the role, not the number of lines of code, to classify the work.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Spot the typo before the browser tries to recover.",
+        "code": "<h1>Learning<\/hl>",
+        "a": "The closing tag uses a letter l. It should use the digit 1: <\/h1>.",
+        "why": "A similar-looking character can make a different tag name.",
+        "lang": "html"
+      },
+      {
+        "t": "h",
+        "v": "Mini challenge · Mark your own content"
+      },
+      {
+        "t": "p",
+        "v": "On paper or in your text editor, write a main heading about your studies and one paragraph about why you want to learn. Use only h1 and p. First try without copying the example; then compare the tags."
+      },
+      {
+        "t": "sol",
+        "code": "<h1>My study goal<\/h1>\n<p>I want to build a useful learning page.<\/p>",
+        "why": "Both elements have matching tags. Your own wording can differ. This is a fragment, not yet the full document.",
+        "lang": "html",
+        "out": "Heading: My study goal\nParagraph: I want to build a useful learning page."
+      },
+      {
+        "t": "h",
+        "v": "Ready to continue?"
+      },
+      {
+        "t": "p",
+        "v": "You can explain the three language roles and identify two matching tag pairs. You are not expected to write CSS rules or JavaScript functions today."
+      }
+    ],
+    "quiz": [
+      {
+        "q": "Which language marks a paragraph as a paragraph?",
+        "options": [
+          "HTML",
+          "CSS",
+          "JavaScript"
+        ],
+        "correct": 0,
+        "why": "HTML supplies content structure and meaning."
+      },
+      {
+        "q": "Which task is mainly a CSS task?",
+        "options": [
+          "Mark text as a heading",
+          "Calculate a quiz score after a click",
+          "Adjust paragraph spacing"
+        ],
+        "correct": 2,
+        "why": "Spacing is presentation. The other tasks concern structure and behaviour."
+      },
+      {
+        "q": "Which is the matching closing tag for <h1>?",
+        "options": [
+          "<h1/>",
+          "<\/h1>",
+          "<\/hl>"
+        ],
+        "correct": 1,
+        "why": "The closing tag has a slash before h and the digit 1."
+      },
+      {
+        "q": "Can a simple HTML text page display without your own CSS and JavaScript?",
+        "options": [
+          "Yes, the browser can display the HTML",
+          "No, all three files are compulsory",
+          "Only when a database is installed"
+        ],
+        "correct": 0,
+        "why": "Browsers have default rendering. Custom styling and scripting are additional tools."
+      },
+      {
+        "q": "A heading appears large despite a mismatched closing tag. What follows?",
+        "options": [
+          "The markup must be correct",
+          "HTML does not use closing tags",
+          "Check the source; the browser may have recovered"
+        ],
+        "correct": 2,
+        "why": "Visible output alone is not a complete correctness check."
+      }
+    ],
+    "reflection": "Write one example each of structure, presentation and behaviour. Draw the parts of one HTML element and explain why a heading is more than large text."
+  },
+  "1.4": {
+    "id": "webdev:1.4",
+    "title": "Your first HTML file",
+    "objective": "Create a complete index.html, explain every new line at a basic level, and open the exact saved file in a browser.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Create the right file"
+      },
+      {
+        "t": "p",
+        "v": "Open first-page in your editor or create a new plain-text document there. Save it as index.html. If your editor offers a file-type selector and automatically adds .txt, choose All files and check the result in your file manager. Choose UTF-8 when an encoding choice is offered. Check the actual final name; do not assume a coloured icon proves it."
+      },
+      {
+        "t": "new",
+        "v": "index.html",
+        "note": "A conventional name for a site’s entry page. When you open a local file you can use other names too. Hosting services have their own entry-page rules. Here we use one consistent name to avoid unnecessary choices."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Build the document from the outside in"
+      },
+      {
+        "t": "new",
+        "v": "Doctype and root html element",
+        "note": "<!doctype html> tells the browser to use its modern HTML rendering mode. It is a declaration, not a paired element. The html element contains the document. Its lang=\"en\" setting says the main language is English."
+      },
+      {
+        "t": "new",
+        "v": "Attribute",
+        "note": "Extra information written inside an opening tag, usually as name=\"value\". In lang=\"en\", lang is the attribute name and en is its value. Quotes keep the value clear. Do not replace the straight quotes with word-processor curly quotes."
+      },
+      {
+        "t": "new",
+        "v": "head and body",
+        "note": "head holds document information such as the tab title and character encoding. body holds the content readers see on the page. head is not a heading; h1 is the main visible heading in this example."
+      },
+      {
+        "t": "new",
+        "v": "meta charset=\"utf-8\"",
+        "note": "Sets the document character encoding so saved text can be interpreted correctly. UTF-8 supports English, Nepali and Japanese. Save the file itself as UTF-8 too; this declaration cannot repair text already saved incorrectly."
+      },
+      {
+        "t": "new",
+        "v": "Viewport metadata",
+        "note": "The viewport meta line tells mobile browsers to use the device width as the page width and start at scale 1. It is a useful foundation, but it does not make every possible layout responsive by itself."
+      },
+      {
+        "t": "new",
+        "v": "title",
+        "note": "The document title commonly shown in the browser tab. It belongs in head. It is separate from the h1 heading inside body."
+      },
+      {
+        "t": "new",
+        "v": "Void element and nesting",
+        "note": "A void element such as meta has no closing tag. Paired elements fit inside one another: head and body inside html, title inside head, h1 and p inside body. Indentation shows that relationship for humans."
+      },
+      {
+        "t": "code",
+        "v": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>My first page<\/title>\n  <\/head>\n  <body>\n    <h1>My learning page<\/h1>\n    <p>I am learning web development.<\/p>\n  <\/body>\n<\/html>",
+        "lang": "html"
+      },
+      {
+        "t": "out",
+        "v": "Browser tab: My first page\nPage heading: My learning page\nPage paragraph: I am learning web development."
+      },
+      {
+        "t": "p",
+        "v": "Read the example in order. The declaration is first. html opens, head opens and closes, then body opens and closes, then html closes. The two meta elements do not need <\/meta>. The h1 and p use the same matching pairs you met on Day 3. You do not need to memorise the viewport spelling before you understand the document’s two main containers."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Open the saved page"
+      },
+      {
+        "t": "p",
+        "v": "Save the file, then locate first-page/index.html in your file manager. Drag it into a browser tab or use Open with and choose your browser. Double-clicking may open a browser or an editor depending on your device’s file associations. Either choice is normal; deliberately choose the browser when you want to view the page."
+      },
+      {
+        "t": "p",
+        "v": "Check that the address points to first-page/index.html and commonly starts with file://. Check the browser tab title and the large visible heading separately. You are opening a local page; no hosting account or internet connection is needed for this self-contained example."
+      },
+      {
+        "t": "mis",
+        "wrong": "<head>\n  <h1>My learning page<\/h1>\n<\/head>",
+        "right": "<body>\n  <h1>My learning page<\/h1>\n<\/body>",
+        "why": "Place the visible heading in body. Browsers can move invalid content while recovering, so put the source in the right place even if you see something on screen.",
+        "lang": "text"
+      },
+      {
+        "t": "tip",
+        "v": "If the browser displays the literal source, confirm the actual file type and extension. If you opened a view-source: address, return to the normal file address. If you changed another file with the same name, reopen the intended file."
+      },
+      {
+        "t": "h",
+        "v": "Practice · Explain your own page"
+      },
+      {
+        "t": "try",
+        "q": "Which line changes the browser tab rather than the visible heading?",
+        "code": "<title>My first page<\/title>\n<h1>My learning page<\/h1>",
+        "a": "title changes the document/tab title; h1 changes the visible main heading.",
+        "why": "They serve separate purposes, even if you choose identical wording.",
+        "lang": "html"
+      },
+      {
+        "t": "try",
+        "q": "Which elements in the example have no closing tag?",
+        "code": "<!doctype html>\n<meta charset=\"utf-8\">\n<p>Hello.<\/p>",
+        "a": "meta is a void element. The doctype is a declaration, not an element. p is paired.",
+        "why": "Do not invent <\/meta> or <\/doctype>.",
+        "lang": "html"
+      },
+      {
+        "t": "try",
+        "q": "Where does lang=\"en\" belong in our document?",
+        "code": "<html lang=\"en\">",
+        "a": "Inside the opening html tag. It labels the main language of the document.",
+        "why": "If a future page is mainly Nepali or Japanese, use an appropriate language value rather than blindly keeping en.",
+        "lang": "html"
+      },
+      {
+        "t": "try",
+        "q": "Why can the example open with Wi-Fi turned off?",
+        "code": "index.html contains only its own HTML and text.",
+        "a": "The browser can read this local file. No remote font, script, image or server response is required.",
+        "why": "This statement concerns this self-contained example, not every website.",
+        "lang": "text"
+      },
+      {
+        "t": "h",
+        "v": "Mini challenge · Make it yours"
+      },
+      {
+        "t": "p",
+        "v": "Change the tab title to “My web journey” and the main heading to “One small change at a time”. Keep the paragraph. Save, open the same file and check both places. If only one changed, compare which element you edited."
+      },
+      {
+        "t": "sol",
+        "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>My web journey<\/title>\n  <\/head>\n  <body>\n    <h1>One small change at a time<\/h1>\n    <p>I am learning web development.<\/p>\n  <\/body>\n<\/html>",
+        "why": "title is in head; h1 and p are in body. The whole document structure stays intact.",
+        "lang": "html",
+        "out": "Tab: My web journey\nHeading: One small change at a time\nParagraph: I am learning web development."
+      },
+      {
+        "t": "h",
+        "v": "Ready to continue?"
+      },
+      {
+        "t": "p",
+        "v": "You have opened the correct HTML file and can point to doctype, html, head, body, title, both meta lines and your content. Save the file for tomorrow."
+      }
+    ],
+    "quiz": [
+      {
+        "q": "Where should the visible h1 be placed?",
+        "options": [
+          "Inside body",
+          "Inside title",
+          "Inside meta"
+        ],
+        "correct": 0,
+        "why": "body holds visible page content; title and meta are document information."
+      },
+      {
+        "q": "Which text appears in the tab in the first complete example?",
+        "options": [
+          "My learning page",
+          "utf-8",
+          "My first page"
+        ],
+        "correct": 2,
+        "why": "title defines My first page. The heading has separate wording."
+      },
+      {
+        "q": "What is true about meta?",
+        "options": [
+          "It replaces body",
+          "It is a void element without a closing tag",
+          "It must end with <\/meta>"
+        ],
+        "correct": 1,
+        "why": "Void elements do not wrap child content."
+      },
+      {
+        "q": "What is lang=\"en\"?",
+        "options": [
+          "An attribute setting the primary document language",
+          "A JavaScript function",
+          "The name of the file"
+        ],
+        "correct": 0,
+        "why": "It is name/value information on the html opening tag."
+      },
+      {
+        "q": "Does the viewport line guarantee every future design fits a phone?",
+        "options": [
+          "Yes, overflow becomes impossible",
+          "Yes, it compresses all images automatically",
+          "No, layout and content still need responsive design"
+        ],
+        "correct": 2,
+        "why": "The viewport setting establishes a useful page width; later design choices still matter."
+      },
+      {
+        "q": "What is the safest first check when you see a different page?",
+        "options": [
+          "Install a JavaScript framework",
+          "Confirm the exact path and filename",
+          "Replace the whole project immediately"
+        ],
+        "correct": 1,
+        "why": "A second file or wrong path is a common cause. Diagnose before rewriting."
+      }
+    ],
+    "reflection": "Record the actual path that opened in the browser. Explain title versus h1, head versus body, and why your file is saved as UTF-8."
+  },
+  "1.5": {
+    "id": "webdev:1.5",
+    "title": "The edit–save–refresh cycle",
+    "objective": "Make a small change, verify the browser result and diagnose unsaved files, wrong paths and confusing copies in a predictable order.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Change one thing you can check"
+      },
+      {
+        "t": "p",
+        "v": "Keep the editor and browser open together. Start with the page from Day 4. Before changing it, predict exactly what should be different. For example: “The paragraph will say I can edit, save and refresh my own page.” A specific prediction is easier to check than “make it work”."
+      },
+      {
+        "t": "new",
+        "v": "Edit–save–refresh",
+        "note": "Edit changes the document in the editor. Save writes it to the file. Refresh tells the browser to load the page again. A browser tab does not always update just because you typed or saved."
+      },
+      {
+        "t": "code",
+        "v": "1. EDIT the paragraph in the editor.\n2. SAVE the file: Ctrl + S (Command + S on macOS).\n3. SWITCH to the matching browser tab.\n4. REFRESH: Ctrl + R (Command + R on macOS) or the reload button.\n5. CHECK the actual text against your prediction.",
+        "lang": "text"
+      },
+      {
+        "t": "p",
+        "v": "Change just the paragraph first and verify it. Then change the heading or title separately. Small changes make it easier to find which action caused an unexpected result. Auto-save and live preview tools can automate some steps, but learn the explicit cycle before relying on them."
+      },
+      {
+        "t": "code",
+        "v": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>My web journey<\/title>\n  <\/head>\n  <body>\n    <h1>One small change at a time<\/h1>\n    <p>I can edit, save and refresh my own page.<\/p>\n  <\/body>\n<\/html>",
+        "lang": "html"
+      },
+      {
+        "t": "out",
+        "v": "Tab: My web journey\nHeading: One small change at a time\nParagraph: I can edit, save and refresh my own page."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · A calm troubleshooting checklist"
+      },
+      {
+        "t": "new",
+        "v": "Debugging",
+        "note": "Finding and correcting the cause of an unexpected result. Start with what you expected, what happened and the smallest check that can distinguish possible causes."
+      },
+      {
+        "t": "p",
+        "v": "If the old sentence remains: first confirm that the editor saved. Then compare the editor’s full path with the browser address. Check the final extension. Reopen the exact file if necessary. Finally refresh that tab. Check these ordinary causes before assuming the browser is broken or deleting the page."
+      },
+      {
+        "t": "code",
+        "v": "Expected: New paragraph after refresh.\nObserved: Old paragraph remains.\nCheck 1: Did I save?\nCheck 2: Are editor and browser on the SAME full path?\nCheck 3: Is the final extension .html?\nCheck 4: Did I refresh the correct tab?",
+        "lang": "text"
+      },
+      {
+        "t": "p",
+        "v": "A useful controlled experiment: change a sentence but deliberately do not save. Refresh and observe the previous saved version. Now save and refresh again. If your editor auto-saves, the first observation may differ; record that setting instead of assuming every editor behaves identically."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Diagnose before replacing"
+      },
+      {
+        "t": "mis",
+        "wrong": "Editor: Documents/first-page/index.html\nBrowser: Downloads/first-page/index.html",
+        "right": "Editor and browser: the same actual file path",
+        "why": "Even perfect code saved in Documents cannot update a separate copy in Downloads. Reopen the saved project file in the browser.",
+        "lang": "text"
+      },
+      {
+        "t": "p",
+        "v": "If you see odd text layout, inspect your markup too. A missing closing tag may cause the browser to recover in an unexpected way. If text such as <h1> appears literally, check whether you opened a .txt copy, selected View Source, or typed escaped markup. Different symptoms suggest different checks."
+      },
+      {
+        "t": "key",
+        "v": "Expected → observed → one check → one change → save → refresh → compare. Keep the evidence in your notes."
+      },
+      {
+        "t": "h",
+        "v": "Practice · Name the missing step"
+      },
+      {
+        "t": "try",
+        "q": "What is missing from this sequence?",
+        "code": "Edit → switch to browser → refresh",
+        "a": "Save the edited file before refreshing.",
+        "why": "Unless auto-save is confirmed, the browser can only read the previous saved file.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "The new title shows in the tab, but the heading is old. What did you probably edit?",
+        "code": "Tab: My web journey\nHeading: My learning page",
+        "a": "You probably edited title but not h1. Check the body heading in the source.",
+        "why": "The two elements are independent; this is not automatically a cache problem.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "What will changing page-copy.html update?",
+        "code": "Browser is showing: index.html\nEditor is saving: page-copy.html",
+        "a": "The saved page-copy.html changes. The browser showing index.html will not automatically switch files.",
+        "why": "Different names are different resources. Open the intended file.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Does visible output guarantee that all tags are correct?",
+        "code": "<h1>Learning<\/h2>",
+        "a": "No. The tags do not match. Change the closing tag to <\/h1> and check again.",
+        "why": "Browser recovery can hide a source mistake.",
+        "lang": "html"
+      },
+      {
+        "t": "h",
+        "v": "Mini challenge · Repair a reproducible problem"
+      },
+      {
+        "t": "p",
+        "v": "Create a temporary copy named practice-copy.html inside your practice folder. Open index.html in the browser, change only practice-copy.html in the editor and save. Explain why refreshing index.html shows no change. Then open the copy directly and prove which file changed. Keep the original intact."
+      },
+      {
+        "t": "sol",
+        "code": "Symptom: Refreshing index.html shows no new sentence.\nCause: I edited practice-copy.html.\nFix: Open practice-copy.html to view its changes, or edit index.html if that is the intended page.\nEvidence: The browser path and visible sentence now match.",
+        "why": "The repair is about selecting the correct file. Rewriting the markup or refreshing repeatedly cannot merge two separate files.",
+        "lang": "text"
+      },
+      {
+        "t": "h",
+        "v": "Ready to continue?"
+      },
+      {
+        "t": "p",
+        "v": "You can deliberately cause and diagnose one save/path mismatch. You can make a heading change and a paragraph change separately, checking each after saving."
+      }
+    ],
+    "quiz": [
+      {
+        "q": "Which is the normal explicit cycle?",
+        "options": [
+          "Edit → save → refresh → check",
+          "Refresh → edit → assume saved",
+          "Edit → rename every file → publish"
+        ],
+        "correct": 0,
+        "why": "The saved file and the browser result are separate stages."
+      },
+      {
+        "q": "The browser shows Downloads/index.html; the editor saves Documents/index.html. What is the first issue?",
+        "options": [
+          "HTML cannot display local files",
+          "The viewport value is too small",
+          "They are different file paths"
+        ],
+        "correct": 2,
+        "why": "Correct code in a different file does not update the open page."
+      },
+      {
+        "q": "A changed title appears only in the tab. Is that expected?",
+        "options": [
+          "No, JavaScript is always missing",
+          "Yes, title is separate from h1",
+          "No, title must replace every heading"
+        ],
+        "correct": 1,
+        "why": "Edit h1 if you also want to change the visible heading."
+      },
+      {
+        "q": "Why change one thing at a time?",
+        "options": [
+          "It helps connect a change to its observed result",
+          "HTML permits only one change per day",
+          "Saving several changes is forbidden"
+        ],
+        "correct": 0,
+        "why": "Small experiments improve diagnosis; they are a learning habit, not a language restriction."
+      },
+      {
+        "q": "What should a debugging note contain?",
+        "options": [
+          "Only “it does not work”",
+          "An untested guess presented as fact",
+          "Expected result, actual result and the check/fix"
+        ],
+        "correct": 2,
+        "why": "Specific evidence makes the next attempt more useful."
+      }
+    ],
+    "reflection": "Write one real experiment as Expected / Observed / Cause / Fix / Verification. Include the exact file involved; do not rely only on its short filename."
+  },
+  "1.6": {
+    "id": "webdev:1.6",
+    "title": "Build a first page",
+    "objective": "Build a small personal learning page, make its document title and headings meaningful, and verify it offline without adding untaught CSS or JavaScript.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Plan before the template"
+      },
+      {
+        "t": "p",
+        "v": "Your project is a short learning journal page. It needs a document title, one main heading, a short introduction and two smaller sections: why you are learning and your next step. Write your content in ordinary sentences first. You can use a practice name rather than personal information you do not want to share."
+      },
+      {
+        "t": "new",
+        "v": "Requirement and acceptance check",
+        "note": "A requirement says what the page must do or contain. An acceptance check is an observable way to confirm it. “Looks professional” is vague; “the tab says Maya | Learning journal and the page has one main heading” can be checked."
+      },
+      {
+        "t": "code",
+        "v": "Required content\n[ ] One meaningful tab title\n[ ] One h1 introducing the page\n[ ] One short introduction paragraph\n[ ] Two smaller section headings with one paragraph each\n[ ] File saved as index.html inside the known project folder\n[ ] Page reopened from that exact file while offline",
+        "lang": "text"
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Add one small concept: h2"
+      },
+      {
+        "t": "new",
+        "v": "h2 — second-level heading",
+        "note": "A heading for a major section below the page’s h1. Here “Why I am learning” and “My next step” are sections of the same page, so they use h2. Choose heading levels for structure, not merely for the size you prefer."
+      },
+      {
+        "t": "p",
+        "v": "Use the same document shell from Day 4. Inside body, put one h1 and the introduction paragraph, then the first h2 and its paragraph, then the second h2 and its paragraph. Close each paired element before starting the next. Indentation is for readability; adding spaces in the source is not a reliable way to create a visual page layout."
+      },
+      {
+        "t": "code",
+        "v": "<h2>Why I am learning<\/h2>\n<p>I want to build useful pages for my studies.<\/p>",
+        "lang": "html"
+      },
+      {
+        "t": "out",
+        "v": "Section heading: Why I am learning\nParagraph: I want to build useful pages for my studies."
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Build, test and explain"
+      },
+      {
+        "t": "p",
+        "v": "Try creating the complete page before opening the solution. You may consult the meaning of an unfamiliar tag, but type the structure and your own content. Save and open the file. Change one sentence, save and refresh. Then close the tab and reopen the file from your folder."
+      },
+      {
+        "t": "p",
+        "v": "Temporarily disconnect Wi-Fi if convenient and reopen this self-contained file. It should still show its text because you did not add remote dependencies. This is different from proving that every online website works offline. Reconnect when you need other online services."
+      },
+      {
+        "t": "warn",
+        "v": "Your goal is a clear, correct first page. CSS layouts, links, images, forms, event handlers and a database are later topics. If you choose to explore them, label them as later learning rather than copying unfamiliar code into this checkpoint."
+      },
+      {
+        "t": "key",
+        "v": "You should be able to explain every line you use. A small page you understand is a useful foundation for the larger roadmap."
+      },
+      {
+        "t": "h",
+        "v": "Practice · Check the structure"
+      },
+      {
+        "t": "try",
+        "q": "Choose heading levels for this page.",
+        "code": "Page: Learning journal\nSection: Why I am learning\nSection: My next step",
+        "a": "h1 for Learning journal; h2 for each of the two sections.",
+        "why": "Both sections belong at the same level below the page heading.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Repair the structure.",
+        "code": "<h2>My next step<\/p>\n<p>I will practise tomorrow.<\/p>",
+        "a": "Change <\/p> on the first line to <\/h2>. Keep the paragraph as its own paired element.",
+        "why": "A heading and paragraph are different elements.",
+        "lang": "html"
+      },
+      {
+        "t": "try",
+        "q": "Name two independent checks for a title/heading change.",
+        "code": "I changed the title and h1.",
+        "a": "Check the browser tab for title and the visible main heading for h1.",
+        "why": "Looking at only one place cannot verify both requirements.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "How can you show that you understand the page rather than only copied it?",
+        "code": "A complete page opens.",
+        "a": "Explain head/body/title/h1/h2/p, then change a requested sentence and verify the result.",
+        "why": "A working copy is a starting point; explanation and controlled changes show understanding.",
+        "lang": "text"
+      },
+      {
+        "t": "h",
+        "v": "Mini project solution · Open after your attempt"
+      },
+      {
+        "t": "sol",
+        "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>Maya | Learning journal<\/title>\n  <\/head>\n  <body>\n    <h1>Maya's learning journal<\/h1>\n    <p>I am starting web development from the beginning.<\/p>\n    <h2>Why I am learning<\/h2>\n    <p>I want to build useful pages for my studies.<\/p>\n    <h2>My next step<\/h2>\n    <p>I will practise changing one sentence and checking it in the browser.<\/p>\n  <\/body>\n<\/html>",
+        "why": "The page has one h1 and two h2 sections. title is separate in head. Each paragraph closes before the next heading. The viewport and UTF-8 metadata are retained. Replace the sample name and sentences with your own wording.",
+        "lang": "html",
+        "out": "Tab: Maya | Learning journal\nMain heading: Maya's learning journal\nIntroduction paragraph\nSection: Why I am learning + its paragraph\nSection: My next step + its paragraph"
+      },
+      {
+        "t": "h",
+        "v": "Readiness demonstration"
+      },
+      {
+        "t": "p",
+        "v": "Ask yourself: Can I locate the file? Can I explain why the two meta lines have no closing tags? Can I change only the next-step paragraph? Can I reopen it and see the saved change? Record one uncertainty for the review day rather than hiding it."
+      }
+    ],
+    "quiz": [
+      {
+        "q": "Which describes an acceptance check?",
+        "options": [
+          "The browser tab shows my chosen title",
+          "The page should somehow be amazing",
+          "The code has many lines"
+        ],
+        "correct": 0,
+        "why": "An acceptance check is observable and specific."
+      },
+      {
+        "q": "What heading suits two equal sections below the page h1?",
+        "options": [
+          "h1 for every sentence",
+          "Choose a tag only by its default size",
+          "h2 for both"
+        ],
+        "correct": 2,
+        "why": "The heading levels express the content relationship."
+      },
+      {
+        "q": "Why can this project work without internet?",
+        "options": [
+          "The folder name provides hosting",
+          "Its text and markup are inside the local file",
+          "All websites ignore network connections"
+        ],
+        "correct": 1,
+        "why": "This claim applies to this self-contained example."
+      },
+      {
+        "q": "What should you do before opening the complete solution?",
+        "options": [
+          "Attempt the page using the requirements",
+          "Mark complete without creating a file",
+          "Copy extra unfamiliar frameworks"
+        ],
+        "correct": 0,
+        "why": "An attempt makes the comparison and explanation useful."
+      },
+      {
+        "q": "What should you carry into Day 7?",
+        "options": [
+          "A claim that all future web topics are finished",
+          "Only a screenshot with no source file",
+          "Your page and a note of what you still cannot explain"
+        ],
+        "correct": 2,
+        "why": "Review uses both your actual work and your remaining questions."
+      }
+    ],
+    "reflection": "Paste or describe your acceptance checks. Which passed? Which line can you not explain yet? Record the next small improvement without adding new languages."
+  },
+  "1.7": {
+    "id": "webdev:1.7",
+    "title": "Review, rebuild and catch up",
+    "objective": "Rebuild a complete first page from an empty practice folder, repair beginner mistakes and demonstrate the Week 1 checkpoint before moving on.",
+    "sections": [
+      {
+        "t": "h",
+        "v": "Part 1 · Retrieve before looking"
+      },
+      {
+        "t": "p",
+        "v": "Today is a review day, not a new list of technologies. Close the worked examples. Explain file/folder/path/extension, the three tool roles, the three web-language roles and edit–save–refresh. Then rebuild a complete page in a new folder named first-page-review. Keep the first project as evidence of your earlier work."
+      },
+      {
+        "t": "p",
+        "v": "Use a heading about building from memory and one paragraph explaining what you can now do. Include the document shell, meaningful tab title, UTF-8 and viewport metadata. Work without a timer first. If you need a hint, note which part you looked up and retry that part later."
+      },
+      {
+        "t": "h",
+        "v": "Part 2 · Six-day retrieval set"
+      },
+      {
+        "t": "try",
+        "q": "Day 1 · Compare a name and a location.",
+        "code": "first-page/index.html\nfirst-page-review/index.html",
+        "a": "These are two separate files with the same filename in different project folders.",
+        "why": "A full path prevents you from editing one and testing the other.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Day 1 · Find the actual extension.",
+        "code": "index.html.txt",
+        "a": "The final extension is .txt. For a plain-text HTML document saved under the intended name, check that it ends in .html.",
+        "why": "An extension is a naming/type clue, not a converter.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Day 2 · Assign the tool roles.",
+        "code": "Find the path / change the source / view the page",
+        "a": "File manager / text editor / browser.",
+        "why": "A single application may offer additional features, but these core roles remain useful.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Day 2 · Verify a save without trusting a tab marker.",
+        "code": "The editor says the document is open.",
+        "a": "Save, then close and reopen the exact file. Inspect its contents.",
+        "why": "An open document may have changes that have not been written to the file.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Day 3 · Classify three changes.",
+        "code": "Mark a paragraph / change colour / update a score after a click",
+        "a": "HTML / CSS / JavaScript.",
+        "why": "These are the starting roles; Week 1 code only needs HTML.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Day 3 · Name the parts.",
+        "code": "<p>I can explain my page.<\/p>",
+        "a": "Opening tag <p>, content I can explain my page., closing tag <\/p>; together a paragraph element.",
+        "why": "The visible content is not the same as the complete element.",
+        "lang": "html"
+      },
+      {
+        "t": "try",
+        "q": "Day 4 · Where do these belong?",
+        "code": "title / h1 / p / meta charset",
+        "a": "title and meta charset go in head. h1 and p go in body.",
+        "why": "Document information and visible content are distinct.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Day 4 · Identify one declaration and one void element.",
+        "code": "<!doctype html>\n<meta charset=\"utf-8\">",
+        "a": "doctype is the declaration; meta is the void element. Neither takes a corresponding closing tag here.",
+        "why": "html, head, title, body, h1 and p are paired in our example.",
+        "lang": "html"
+      },
+      {
+        "t": "try",
+        "q": "Day 5 · Diagnose the unchanged page.",
+        "code": "Editor: first-page-review/index.html\nBrowser: first-page/index.html",
+        "a": "Different files. Open the review file or edit the file the browser actually displays.",
+        "why": "Refresh cannot make one path become another.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Day 5 · The tab changed but the page heading did not.",
+        "code": "<title>New title<\/title>\n<h1>Old heading<\/h1>",
+        "a": "This is expected from the shown source. Change h1 separately if you intend a new heading.",
+        "why": "Do not diagnose a cache problem before inspecting the correct element.",
+        "lang": "html"
+      },
+      {
+        "t": "try",
+        "q": "Day 6 · Choose a hierarchy.",
+        "code": "One page heading with two equal major sections",
+        "a": "One h1, then an h2 for each section with a paragraph beneath it.",
+        "why": "The hierarchy describes meaning, not just default text size.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Day 6 · Name a test that proves more than a screenshot.",
+        "code": "The screenshot shows a complete page.",
+        "a": "Change a requested paragraph, save, refresh and reopen the exact file; explain which element changed.",
+        "why": "A screenshot cannot prove the saved source or your ability to edit it.",
+        "lang": "text"
+      },
+      {
+        "t": "h",
+        "v": "Part 3 · Repair before comparing"
+      },
+      {
+        "t": "p",
+        "v": "Try the four repairs below without reading the sample solution. State the cause, make the smallest repair and predict the visible result."
+      },
+      {
+        "t": "try",
+        "q": "Repair 1 · Fix both mismatched tag pairs.",
+        "code": "<h1>My review page<\/p>\n<p>I can rebuild.<\/h1>",
+        "a": "<h1>My review page<\/h1>\n<p>I can rebuild.<\/p>",
+        "why": "Each element must close with its own name.",
+        "lang": "html"
+      },
+      {
+        "t": "try",
+        "q": "Repair 2 · A title is used instead of a visible heading.",
+        "code": "<body>\n  <title>My learning page<\/title>\n<\/body>",
+        "a": "Move title into head. Use <h1>My learning page<\/h1> in body if you want a visible page heading.",
+        "why": "Correct placement matters even if the browser tries to recover.",
+        "lang": "html"
+      },
+      {
+        "t": "try",
+        "q": "Repair 3 · The filename is correct, but edits still do not show.",
+        "code": "Edited: first-page-review/index.html\nOpened: first-page/index.html",
+        "a": "Select the same actual file in both tools, save and refresh.",
+        "why": "Correct extensions do not rule out wrong-folder mistakes.",
+        "lang": "text"
+      },
+      {
+        "t": "try",
+        "q": "Repair 4 · The paragraph is new in the editor but old on disk.",
+        "code": "Editor has unsaved changes.\nBrowser has just refreshed.",
+        "a": "Save the editor document, then refresh the matching browser tab.",
+        "why": "Reloading does not write the editor buffer to disk.",
+        "lang": "text"
+      },
+      {
+        "t": "h",
+        "v": "Part 4 · Rebuild solution and readiness demonstration"
+      },
+      {
+        "t": "sol",
+        "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>My practice page<\/title>\n  <\/head>\n  <body>\n    <h1>Building from memory<\/h1>\n    <p>I can create and reopen my own HTML file.<\/p>\n  <\/body>\n<\/html>",
+        "why": "A complete shell surrounds the visible h1 and p. Your own words can differ. If you needed this solution, hide it and rebuild once more before calling the skill secure.",
+        "lang": "html",
+        "out": "Tab: My practice page\nMain heading: Building from memory\nParagraph: I can create and reopen my own HTML file."
+      },
+      {
+        "t": "p",
+        "v": "Demonstrate all six checks: (1) find the project folder, (2) show the real .html extension, (3) explain head and body, (4) change the tab title separately from h1, (5) change one paragraph through edit–save–refresh, (6) close and reopen the exact saved file without relying on a copied template. Mark complete only after your own attempt."
+      },
+      {
+        "t": "key",
+        "v": "Week 1 checkpoint: Create and reopen a simple HTML page from an empty folder, and explain the source you wrote."
+      },
+      {
+        "t": "tip",
+        "v": "If files/extensions were difficult, revisit Day 1–2. If tags or document structure were difficult, revisit Day 3–4. If changes did not appear, repeat Day 5. If the page works but you cannot explain it, repeat Day 6 with new wording."
+      },
+      {
+        "t": "p",
+        "v": "Next week explains URLs, clients, servers and the journey of a hosted page. That is a roadmap preview, not a requirement to publish today. CSS, images and JavaScript can wait until their place in the curriculum."
+      }
+    ],
+    "quiz": [
+      {
+        "q": "Which identifies a particular saved page most reliably?",
+        "options": [
+          "Its full path and filename",
+          "Only its icon",
+          "Only the word index"
+        ],
+        "correct": 0,
+        "why": "Location distinguishes separate files."
+      },
+      {
+        "q": "Which is an accidental text suffix to check?",
+        "options": [
+          "index.html",
+          "first-page/index.html",
+          "index.html.txt"
+        ],
+        "correct": 2,
+        "why": "Show real extensions and inspect the final name."
+      },
+      {
+        "q": "Which tool normally changes your source file?",
+        "options": [
+          "The website search field",
+          "The text/code editor",
+          "The browser tab label"
+        ],
+        "correct": 1,
+        "why": "Write source in an editor and save it."
+      },
+      {
+        "q": "What makes the unsaved-edit experiment useful?",
+        "options": [
+          "It separates editor changes from saved file contents",
+          "It proves saving is unnecessary",
+          "It guarantees every editor behaves identically"
+        ],
+        "correct": 0,
+        "why": "Auto-save may change the observation; identify that setting explicitly."
+      },
+      {
+        "q": "Which language provides content structure?",
+        "options": [
+          "CSS",
+          "JavaScript",
+          "HTML"
+        ],
+        "correct": 2,
+        "why": "HTML gives elements their roles."
+      },
+      {
+        "q": "Which is a valid matching pair?",
+        "options": [
+          "<p>Learning<\/h1>",
+          "<h1>Learning<\/h1>",
+          "<h1>Learning<\/p>"
+        ],
+        "correct": 1,
+        "why": "Match the element name at both ends."
+      },
+      {
+        "q": "Where is title placed?",
+        "options": [
+          "Inside head",
+          "Inside the visible h1",
+          "Inside meta as a child element"
+        ],
+        "correct": 0,
+        "why": "The document/tab title is document information."
+      },
+      {
+        "q": "What should you do with the viewport line?",
+        "options": [
+          "Assume every later layout must fit",
+          "Replace all paragraphs with it",
+          "Retain it and still test the layout on small screens"
+        ],
+        "correct": 2,
+        "why": "Viewport setup supports mobile rendering; responsive design still needs checks."
+      },
+      {
+        "q": "Old text remains after a refresh. What is a good first check?",
+        "options": [
+          "Delete the project immediately",
+          "Saved state and the exact file path",
+          "Add an unrelated framework"
+        ],
+        "correct": 1,
+        "why": "Ordinary save/path problems should be checked before drastic changes."
+      },
+      {
+        "q": "Which tag suits a section below the main page heading?",
+        "options": [
+          "h2",
+          "title inside body",
+          "meta"
+        ],
+        "correct": 0,
+        "why": "h2 provides a second-level heading."
+      },
+      {
+        "q": "Does opening your self-contained file locally publish it?",
+        "options": [
+          "Yes, every open file becomes a public website",
+          "Yes, if the heading is large",
+          "No, opening it is different from hosting/sharing"
+        ],
+        "correct": 2,
+        "why": "Publishing and local viewing are separate actions."
+      },
+      {
+        "q": "When is it sensible to continue to Week 2?",
+        "options": [
+          "After marking complete without checking",
+          "When you can rebuild, reopen and explain this small page",
+          "Only after perfect visual design"
+        ],
+        "correct": 1,
+        "why": "Use the practical readiness demonstration, and revisit weak parts when needed."
+      }
+    ],
+    "reflection": "Score yourself on the six-day retrieval set. Record which questions needed a hint, the cause of each error and the task you will repeat tomorrow. Completion is your own decision after the practical check."
+  }
+};
+/* WEB DEVELOPMENT TEACHING END */
 /* WEB DEVELOPMENT VIEW START */
 let webDevPage={mode:'overview',week:1,day:1};
+function webDevLessonHtml(lesson){
+  const context=lesson.id;
+  return '<article class="webdev-teaching"><div class="ls-obj"><div class="ls-obj-lab">What you will be able to do</div><div class="ls-obj-text">'+escapeHtml(lesson.objective)+'</div></div>'+
+    '<button type="button" class="btn secondary btn-sm" data-webdev-notes>My day notes ↓</button>'+renderSections(lesson.sections,context)+
+    renderLessonQuiz(lesson)+'</article><section id="webdevDayNotes" class="cyber-day-notes" aria-label="Day notes">'+
+    renderSections([{t:'h',v:'Day Notes',noteKey:context+'|day-notes'},{t:'p',v:lesson.reflection}],context)+'</section>'+
+    '<div class="webdev-completion"><button type="button" class="btn'+(lessonDone(context)?' secondary':'')+'" data-webdev-done="'+escapeAttr(context)+'" aria-pressed="'+lessonDone(context)+'">'+(lessonDone(context)?'✓ Completed · tap to undo':'Mark lesson complete')+'</button><span>Your progress and notes are saved in this browser. Backup/import and configured sync include them.</span></div>';
+}
 function renderWebDevelopment(){
   const body=document.getElementById('webDevelopmentBody');
   const week=WEBDEV_ROADMAP.find(item=>item.week===webDevPage.week)||WEBDEV_ROADMAP[0];
@@ -179133,21 +180630,35 @@ function renderWebDevelopment(){
     content='<div class="cyber-heading"><h1>Web Development</h1><p class="cyber-subtitle">Beginner path · 3 years · 156 weeks</p></div>'+
       '<section class="webdev-start"><div><span class="webdev-kicker">START FROM ZERO</span><h2>Your first page, then useful applications.</h2><p>No previous HTML, CSS or JavaScript knowledge is assumed. Start with files, folders and your browser. Learn the foundations before adding frameworks.</p></div><button type="button" class="btn" data-webdev-week="1">Start with Week 1 →</button></section>'+
       '<p class="webdev-rhythm">Each week: 5 study days · 1 project day · 1 review/catch-up day. Repeat a week whenever a topic needs more practice.</p>'+
-      '<div class="section-label">Choose a year, then a week</div>'+roadmapYearsHtml(WEBDEV_PATH,WEBDEV_ROADMAP,webDevPage.week,'webdev');
+      '<div class="section-label">Choose a year, then a week</div>'+roadmapYearsHtml(WEBDEV_PATH,WEBDEV_ROADMAP,webDevPage.week,'webdev',item=>Boolean(WEBDEV_TEACH[item.week+'.1']));
   }else if(webDevPage.mode==='week'){
     content='<button type="button" class="back-link" data-webdev-all>← All years and weeks</button><div class="week-header"><div class="wh-eyebrow">Year '+Math.ceil(week.week/52)+' · Week '+week.week+' · Web Development</div><h2>'+escapeHtml(week.title)+'</h2></div>'+
-      '<section class="webdev-checkpoint"><h3>This week’s readiness check</h3><p>'+escapeHtml(week.checkpoint)+'</p></section><div class="section-label">Daily roadmap</div><div class="day-list lesson-day-grid" aria-label="Choose a daily lesson">'+week.days.map(function(day){
-        return '<div class="day-row"><button type="button" class="day-open" data-webdev-day="'+day.day+'" title="'+escapeAttr("Day "+day.day+": "+day.focus)+'"><div class="dr-title day-card-number">Day '+day.day+'</div><div class="dr-meta">'+escapeHtml(day.focus)+'</div></button></div>';
+      '<section class="webdev-checkpoint"><h3>This week’s readiness check</h3><p>'+escapeHtml(week.checkpoint)+'</p>'+(WEBDEV_TEACH[week.week+'.1']?'<p class="webdev-week-progress">'+week.days.filter(d=>lessonDone('webdev:'+week.week+'.'+d.day)).length+' / 7 days complete</p>':'')+'</section><div class="section-label">'+(WEBDEV_TEACH[week.week+'.1']?'Daily lessons':'Daily roadmap')+'</div><div class="day-list lesson-day-grid" aria-label="Choose a daily lesson">'+week.days.map(function(day){
+        return '<div class="day-row"><button type="button" class="day-open" data-webdev-day="'+day.day+'" title="'+escapeAttr("Day "+day.day+": "+day.focus)+'"><div class="dr-title day-card-number">Day '+day.day+'</div><div class="dr-meta">'+escapeHtml(day.focus)+(lessonDone('webdev:'+week.week+'.'+day.day)?' · ✓ Completed':'')+'</div></button></div>';
       }).join('')+'</div>';
   }else{
     const day=week.days.find(item=>item.day===webDevPage.day)||week.days[0];webDevPage.day=day.day;
     const position=(week.week-1)*7+day.day-1;
+    const lesson=WEBDEV_TEACH[week.week+'.'+day.day];
     content='<button type="button" class="back-link" data-webdev-week="'+week.week+'">← Week '+week.week+'</button><div class="week-header"><div class="wh-eyebrow">Year '+Math.ceil(week.week/52)+' · Week '+week.week+' · Day '+day.day+' of 7</div><h2>Day '+day.day+'</h2><p class="wh-goal">'+escapeHtml(day.focus)+'</p></div>'+
       '<section class="cyber-day-topics"><h3>'+(day.day===6?'Project goals':day.day===7?'Review and catch up':'What to study')+'</h3><ul class="ex-list">'+day.topics.map(topic=>'<li>'+escapeHtml(topic)+'</li>').join('')+'</ul></section>'+
-      '<p class="webdev-roadmap-label">Roadmap only · This page lists learning and practice goals.</p>'+
+      (lesson?webDevLessonHtml(lesson):'<p class="webdev-roadmap-label">Roadmap only · This page lists learning and practice goals.</p>')+
       '<div class="cyber-day-navigation"><button type="button" class="btn secondary" data-webdev-step="-1"'+(position===0?' disabled':'')+'>← Previous day</button><button type="button" class="btn" data-webdev-step="1"'+(position===WEBDEV_ROADMAP.length*7-1?' disabled':'')+'>Next day →</button></div>';
   }
-  body.innerHTML=content+'<footer class="webdev-references"><p>Roadmap available offline. External references need internet.</p><div>References: '+WEBDEV_PATH.references.map(item=>'<a href="'+escapeAttr(item.url)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(item.title)+'</a>').join(' · ')+'</div></footer>';
+  body.innerHTML=content+'<footer class="webdev-references"><p>Lessons and roadmap available offline. External references need internet.</p><div>References: '+WEBDEV_PATH.references.map(item=>'<a href="'+escapeAttr(item.url)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(item.title)+'</a>').join(' · ')+'</div></footer>';
+  wireRevealButtons(body);wireHeadNotes(body);
+  const lesson=webDevPage.mode==='day'?WEBDEV_TEACH[week.week+'.'+webDevPage.day]:null;
+  if(lesson){
+    wireLessonQuiz(body,lesson);
+    const notes=body.querySelector('#webdevDayNotes'),box=notes.querySelector('.hn-box'),button=notes.querySelector('[data-hn]'),input=notes.querySelector('textarea');
+    box.hidden=false;button.classList.add('open');input.setAttribute('aria-label','Notes for Web Development Week '+week.week+' Day '+webDevPage.day);
+    input.placeholder='Write what you understood, your file path, experiments and questions.';
+    body.querySelector('[data-webdev-notes]').onclick=()=>{box.hidden=false;button.classList.add('open');notes.scrollIntoView({block:'center'});input.focus({preventScroll:true});};
+    body.querySelector('[data-webdev-done]').onclick=()=>{
+      if(DB.lessonsDone[lesson.id])delete DB.lessonsDone[lesson.id];else DB.lessonsDone[lesson.id]=nowISO();
+      save();const button=body.querySelector('[data-webdev-done]'),done=lessonDone(lesson.id);button.setAttribute('aria-pressed',String(done));button.classList.toggle('secondary',done);button.textContent=done?'✓ Completed · tap to undo':'Mark lesson complete';
+    };
+  }
   function update(){renderWebDevelopment();window.scrollTo(0,0);}
   body.querySelectorAll('[data-webdev-all]').forEach(button=>button.onclick=()=>{webDevPage.mode='overview';update();});
   body.querySelectorAll('[data-webdev-week]').forEach(button=>button.onclick=()=>{webDevPage={mode:'week',week:Number(button.dataset.webdevWeek),day:1};update();});

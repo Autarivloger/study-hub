@@ -629,3 +629,24 @@ themes, reload and actual backup/import controls. Speech checks use a controlled
 adapter to verify local-only selection, rates, Stop/end/error and no-voice
 fallback; physical sound still depends on the device and was not verified by
 the headless test.
+
+## Web Development Week 1 · complete beginner lessons
+
+**Web Development → Week 1 → Day 1–7** now contains full teaching, not only
+roadmap goals. Study files/folders, editor/browser roles, the three web languages,
+your first complete HTML document and edit–save–refresh before building a small
+learning journal. Every new construct is explained before the complete example.
+Day 7 includes 16 retrieval/repair exercises and a rebuild checkpoint. There are
+43 explained quiz questions across the week, with daily/heading notes, best quiz
+scores, manual completion/undo and a seven-day progress count.
+
+The existing section, quiz and note components are reused. HTML examples display
+as escaped source with an HTML label; existing Python code rendering remains
+unchanged. Saved work uses the existing `lessonsDone`, `lessonQuizScores` and
+`headNotes` maps with `webdev:1.N` keys, preserving backup/import and configured
+sync. The 156-week roadmap is unchanged; Week 2 onward still show roadmap goals.
+
+See [Week 1 guide and reference files](docs/web-development-week1/README.md).
+Validate with `node tests/web-development-week1.cjs` and
+`node tests/web-development-week1-browser.cjs` (Chrome required). The latter uses
+synthetic storage and also opens all four reference pages with networking off.
