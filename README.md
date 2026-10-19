@@ -524,3 +524,24 @@ that dictionary category. This is not a complete Japanese dictionary.
   `node scripts/update-kanji-readings.cjs` (requires network access).
 - Check the result with `node tests/kanji-readings.cjs` and
   `node tests/japanese-smoke.cjs`, inspect the diff, then publish.
+
+## Japanese Week 30
+
+Open **Japanese Language → Week 30 → Day 1**. Days 1–6 progress from notices,
+deadlines and changes to comparing two notices, following references in an essay,
+separating opinion from evidence, and giving a three-minute spoken summary.
+Each study day has 20 vocabulary slots (including intentional review), five
+contextual Kanji with selected On/Kun readings, three grammar patterns, an original
+reading with a Nepali explanation, six open reading questions and 14 quiz questions.
+Day 7 has a fresh integrated reading, 48 retrieval drills covering every study day,
+and a 24-question checkpoint. Practice timings are optional learning targets.
+
+These are original lessons, not an official JLPT paper. Reading task design was
+checked against the [JLPT section descriptions](https://www.jlpt.jp/e/guideline/testsections.html)
+and the Japan Foundation's [Irodori reading guidance](https://www.irodori.jpf.go.jp/assets/data/elementary02/pdf/Z_howto_en.pdf).
+The uncommon On reading for [届](https://www.kanjipedia.jp/kanji/0005337600)
+is marked as rare; learners should prioritize 届く and 届ける.
+
+Regenerate only this week's content with `node scripts/japanese-week30.cjs --update`.
+Check content preservation with `node tests/japanese-week30.cjs` and run the isolated
+browser test with `node tests/japanese-week30-browser.cjs` (Chrome required).
