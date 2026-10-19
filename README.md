@@ -38,6 +38,30 @@ the original 100/30 pairs remain unchanged. Per-pair timestamps merge edits acro
 the existing backup/sync system. Search, CSV downloads and future flashcard
 additions use the edited list; previously studied cards retain their own history.
 
+## Web Development — three-year beginner roadmap
+
+Open **Learn → Web Development → Year → Week → Day**. The 156-week path contains
+1,092 day plans with five study days, a project day and a review/catch-up day each
+week. Every week has a specific readiness check; repeat a week when needed.
+
+Year 1 begins with files, folders and a first HTML page, then develops semantic
+HTML, CSS, JavaScript, accessibility, testing and an independent browser app.
+Year 2 introduces TypeScript/React after JavaScript, then a Python bridge,
+Django, SQL, APIs, deployment and a full-stack capstone. Year 3 develops deeper
+architecture, multilingual/accessibility work, measured performance, offline
+data/sync, operations, specialisation and a major product/portfolio project.
+
+This is an original **roadmap only**, with topics, project goals and readiness
+criteria. Full teaching lessons have not been added yet. References use official
+MDN, web.dev, W3C, TypeScript, React, Django/DRF and PostgreSQL documentation.
+The plan works offline; external references require internet. No new learner
+storage keys or completion data are created by reading the roadmap.
+
+Authoring sources are `scripts/web-development-plan.txt` and
+`scripts/web-development-path.json`; the generated roadmap and view are embedded
+in the HTML. `scripts/roadmap-years.js` reuses the existing Cybersecurity year/week
+component, preserving its markup, navigation and lessons.
+
 ## Exercise log
 
 Open **To-Do → Exercise → Add exercise** to save your own exercise names and

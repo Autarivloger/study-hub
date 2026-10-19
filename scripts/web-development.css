@@ -1,0 +1,13 @@
+/* WEB DEVELOPMENT STYLE START */
+#webDevelopmentBody{padding:24px 32px;max-width:1320px;margin:auto;min-width:0}
+#webDevelopmentBody .cyber-heading h1{font-size:28px;font-weight:650}
+.webdev-start{display:flex;gap:24px;align-items:center;justify-content:space-between;padding:24px;border-radius:16px;background:var(--accent-soft);border:1px solid var(--border);margin:22px 0 12px}
+.webdev-start>div{max-width:68ch;min-width:0}.webdev-start h2{font-size:22px;line-height:1.4;margin:7px 0}.webdev-start p{font-size:14px;line-height:1.75;margin:0;color:var(--text-dim)}.webdev-start>.btn{flex-shrink:0}
+.webdev-kicker{color:var(--accent);font-size:10px;font-weight:750;letter-spacing:.12em}
+.webdev-rhythm,.webdev-roadmap-label{font-size:13px;line-height:1.7;color:var(--text-dim);margin:14px 0 24px}
+.webdev-checkpoint{padding:16px 18px;border:1px solid var(--border);border-radius:12px;background:var(--bg-soft);margin:16px 0 24px}.webdev-checkpoint h3{font-size:14px;margin:0 0 7px}.webdev-checkpoint p{font-size:14px;line-height:1.75;margin:0;overflow-wrap:anywhere}
+.webdev-references{margin-top:28px;border-top:1px solid var(--border);padding-top:14px;color:var(--text-dim);font-size:12px;line-height:1.8;overflow-wrap:anywhere}.webdev-references p{margin:0 0 7px}
+#webDevelopmentBody .week-header h2{font-size:25px;line-height:1.4;overflow-wrap:anywhere}
+@media(max-width:1000px){.webdev-start{align-items:flex-start;flex-direction:column;gap:16px}}
+@media(max-width:760px){#webDevelopmentBody{padding:20px 18px}.webdev-start{padding:18px}.webdev-start h2{font-size:20px}#webDevelopmentBody .cyber-heading h1{font-size:24px}#webDevelopmentBody .week-header h2{font-size:22px}}
+/* WEB DEVELOPMENT STYLE END */

@@ -2,6 +2,7 @@
 function initWorkspaceShell(){
   const paths={
     course:'M4 5h6a3 3 0 0 1 2 1 3 3 0 0 1 2-1h6v14h-6a3 3 0 0 0-2 1 3 3 0 0 0-2-1H4z M12 6v14',
+    webdev:'M3 4h18v16H3z M3 8h18 M9 12l-3 3 3 3 M15 12l3 3-3 3',
     japanese:'M4 5h12 M10 3v3 M6 9c2 5 5 7 9 9 M14 5c-1 6-5 11-10 13 M14 21l4-10 4 10 M16 17h4',
     quiz:'M12 3l8 3v6c0 5-8 9-8 9s-8-4-8-9V6z M8 12l3 3 5-6',
     reviews:'M4 10a8 8 0 1 1 1 8 M4 4v6h6 M12 7v5l3 2',

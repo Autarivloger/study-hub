@@ -1,25 +1,25 @@
 /* CYBERSECURITY THREE YEAR STYLE START */
-#cybersecurityBody .cyber-year{margin:14px 0;border:1px solid var(--border);border-radius:16px;background:var(--bg-elev);overflow:hidden}
-#cybersecurityBody .cyber-year>summary{display:flex;align-items:center;gap:14px;cursor:pointer;list-style:none;padding:18px 20px;color:var(--text)}
-#cybersecurityBody .cyber-year>summary::-webkit-details-marker{display:none}
-#cybersecurityBody .cyber-year>summary::after{content:'+';font-size:22px;color:var(--accent);margin-left:auto;flex-shrink:0}
-#cybersecurityBody .cyber-year[open]>summary::after{content:'−'}
-#cybersecurityBody .cyber-year[open]>summary{border-bottom:1px solid var(--border)}
-#cybersecurityBody .cyber-year-label{flex-shrink:0;padding:7px 10px;border-radius:9px;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:750}
-#cybersecurityBody .cyber-year-heading{min-width:0;display:grid;gap:5px;font-size:16px;font-weight:650;line-height:1.4}
-#cybersecurityBody .cyber-year-heading small{color:var(--text-dim);font-size:12px;font-weight:400}
-#cybersecurityBody .cyber-year-content{padding:6px 20px 20px}
-#cybersecurityBody .cyber-phase{margin-top:22px}
-#cybersecurityBody .cyber-phase h3{font-size:15px;line-height:1.5;margin:0 0 4px;overflow-wrap:anywhere}
-#cybersecurityBody .cyber-phase-range{color:var(--text-dim);font-size:11px;margin:0 0 10px}
-#cybersecurityBody .cyber-phase .week-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px}
-#cybersecurityBody .cyber-phase .week-chip{min-width:0;text-align:left;overflow-wrap:anywhere}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-year{margin:14px 0;border:1px solid var(--border);border-radius:16px;background:var(--bg-elev);overflow:hidden}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-year>summary{display:flex;align-items:center;gap:14px;cursor:pointer;list-style:none;padding:18px 20px;color:var(--text)}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-year>summary::-webkit-details-marker{display:none}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-year>summary::after{content:'+';font-size:22px;color:var(--accent);margin-left:auto;flex-shrink:0}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-year[open]>summary::after{content:'−'}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-year[open]>summary{border-bottom:1px solid var(--border)}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-year-label{flex-shrink:0;padding:7px 10px;border-radius:9px;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:750}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-year-heading{min-width:0;display:grid;gap:5px;font-size:16px;font-weight:650;line-height:1.4}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-year-heading small{color:var(--text-dim);font-size:12px;font-weight:400}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-year-content{padding:6px 20px 20px}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-phase{margin-top:22px}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-phase h3{font-size:15px;line-height:1.5;margin:0 0 4px;overflow-wrap:anywhere}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-phase-range{color:var(--text-dim);font-size:11px;margin:0 0 10px}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-phase .week-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px}
+:is(#cybersecurityBody,#webDevelopmentBody) .cyber-phase .week-chip{min-width:0;text-align:left;overflow-wrap:anywhere}
 @media(max-width:760px){
-  #cybersecurityBody .cyber-year>summary{padding:15px 12px;gap:10px;align-items:flex-start}
-  #cybersecurityBody .cyber-year-heading{font-size:14px}
-  #cybersecurityBody .cyber-year-content{padding:0 12px 16px}
-  #cybersecurityBody .cyber-phase .week-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-  #cybersecurityBody .cyber-phase .week-chip{padding:10px;min-height:132px}
+  :is(#cybersecurityBody,#webDevelopmentBody) .cyber-year>summary{padding:15px 12px;gap:10px;align-items:flex-start}
+  :is(#cybersecurityBody,#webDevelopmentBody) .cyber-year-heading{font-size:14px}
+  :is(#cybersecurityBody,#webDevelopmentBody) .cyber-year-content{padding:0 12px 16px}
+  :is(#cybersecurityBody,#webDevelopmentBody) .cyber-phase .week-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  :is(#cybersecurityBody,#webDevelopmentBody) .cyber-phase .week-chip{padding:10px;min-height:132px}
 }
-@media(max-width:350px){#cybersecurityBody .cyber-phase .week-grid{grid-template-columns:1fr}}
+@media(max-width:350px){:is(#cybersecurityBody,#webDevelopmentBody) .cyber-phase .week-grid{grid-template-columns:1fr}}
 /* CYBERSECURITY THREE YEAR STYLE END */
