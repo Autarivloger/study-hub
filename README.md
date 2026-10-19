@@ -49,12 +49,22 @@ the exact fictional Week 7 records, keeps originals unchanged and makes no
 network/account requests. Read lessons offline; run Python in the supplied local
 folder. Existing day notes use the same storage keys and backup/import paths.
 
-Weeks **9–16** now have daily cybersecurity roadmaps with Python's supporting
-role in every day. Week 9 has full teaching; **Weeks 10–16 are explicitly labelled
-roadmaps** awaiting full lessons. Topics progress through file integrity/recovery,
-network evidence, secure application behaviour, identity/configuration, detection,
-incident investigation and a defensive capstone. Navigation follows the actual
-roadmap length; the original eight-week foundation and Online Safety remain.
+The complete **three-year roadmap covers Weeks 1–156**, with seven day plans per
+week (1,092 study/project/review days). Open **Cybersecurity → Year 1 / Year 2 /
+Year 3 → Week → Day**. Four-week topic groups keep the list manageable. Year 1
+builds systems, network, identity and secure-development foundations; Year 2
+covers operations, application/cloud security and investigations; Year 3 adds
+engineering, specialisation and integrated capstones. The sequence is an original
+study plan informed by NIST CSF/NICE, OWASP, MITRE ATT&CK and incident-response
+guidance, with reference links inside the app. It is not an official certification
+syllabus or a guarantee of professional proficiency.
+
+**Weeks 1–9 retain their complete teaching; Weeks 10–156 are roadmaps only.**
+The original first 16 week plans, all existing lessons/notes/progress and Online
+Safety remain. New plans list topics and project/review goals, with Python as a
+supporting tool for evidence, testing and reporting. No new teaching explanations
+or executable labs were added. The complete path works offline; external
+references need internet. The schedule can be repeated or paced flexibly.
 
 ## Python Week 52 — Capstone & what comes next
 
