@@ -59,11 +59,11 @@ async function main(){
 
  // Every week keeps every day, including roadmaps without authored lessons.
  for(const subject of ['python','japanese','cyber','webdev']){
-  const weeks=subject==='python'?[1,13,14,17,19,35,52]:subject==='japanese'?[1,2,10,19,29,30,31]:[1,9,16,17,52,53,104,105,156];
+  const weeks=subject==='python'?[1,13,14,17,19,35,52]:subject==='japanese'?[1,2,10,19,29,30,31,32]:[1,9,16,17,52,53,104,105,156];
   for(const week of weeks){
    await show(subject,week);
    const count=await evaluate('document.querySelectorAll("#'+(subject==='python'?'courseBody':subject==='japanese'?'japaneseBody':subject==='cyber'?'cybersecurityBody':'webDevelopmentBody')+' .lesson-day-grid > *").length');
-   assert.equal(count,subject==='japanese'&&week===31?0:7,'Daily choices '+subject+' '+week);
+   assert.equal(count,subject==='japanese'&&week===32?0:7,'Daily choices '+subject+' '+week);
   }
  }
  // Cards still use their original navigation handlers and data keys.

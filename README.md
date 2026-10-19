@@ -579,3 +579,53 @@ The stylesheet is also embedded in `study-hub.html` for offline use. Reapply it 
 `node tests/premium-polish.cjs`. The browser comparison uses
 `node tests/premium-polish-browser.cjs --before`, then
 `node tests/premium-polish-browser.cjs` (Chrome required).
+
+## Japanese Week 31 · listening for actions and key points
+
+Open **Japanese Language → Week 31 → Day 1–7**. Six study days cover the next
+action, corrected times/venues, directions, quantities/counters, telephone
+messages and selecting an option against required conditions. Each includes 20
+vocabulary entries (new and deliberate review), five kanji with selected On/Kun
+readings and compounds, three explained grammar reviews, an original listening
+script, six evidence questions, 18 practice prompts and a 14-question quiz.
+Day 7 adds a fresh transfer script, 48 retrieval drills spanning all six days and
+a 24-question review. Uncommon dictionary readings are labelled; practical word
+readings take priority. No official JLPT vocabulary/kanji syllabus is claimed.
+
+For these seven lessons, the question and **Play / Slow / Stop** controls appear
+before the explanation. The transcript and its translation stay closed until
+the learner reveals them. Playback uses a Japanese voice explicitly reported as
+local by the device; it never substitutes an online voice. The 1× button uses
+the installed voice's default rate, not a recording of natural human speech or
+an official JLPT recording. If voices have not loaded, try Play again; if no
+local Japanese voice is installed, the transcript remains usable for reading.
+Listening practice is self-assessed, with no autoplay or automatic completion.
+Switching lessons or leaving Japanese stops playback. Older lessons retain their
+visible reading and existing 0.82× listening button through the shared helper.
+
+Original scripts and explanations were authored for Study Hub. Skill selection
+follows the [official N3 listening item purposes](https://www.jlpt.jp/e/guideline/pdf/n3_e.pdf):
+extracting a required action and identifying details relevant to a question.
+Official practice remains available separately through the
+[JLPT sample/workbook page](https://www.jlpt.jp/e/samples/sampleindex.html).
+Rare Kun readings were checked against 漢字ペディア entries for
+[訂](https://www.kanjipedia.jp/kanji/0004956900),
+[階](https://www.kanjipedia.jp/kanji/0000811200),
+[号](https://www.kanjipedia.jp/search?k=%E5%8F%B7&kt=1&sk=leftHand),
+[条](https://www.kanjipedia.jp/search?k=%E6%9D%A1&kt=1&sk=leftHand) and
+[件](https://www.kanjipedia.jp/search?k=%E4%BB%B6&kt=1&sk=leftHand).
+No external audio/content dependency was added to the offline app.
+
+Content source: `scripts/japanese-week31.cjs`; apply once with
+`node scripts/japanese-week31.cjs`, or revise just these lessons with `--update`.
+The optional listening renderer/control patch is maintained in
+`scripts/japanese-listening-ui.cjs` and is already embedded in the HTML.
+No learner-data key, backup/import, sync or progress format changed.
+
+Run `node tests/japanese-week31.cjs` for source/content preservation and
+`node tests/japanese-week31-browser.cjs` for isolated Chrome checks of all seven
+days, Furigana, quizzes, notes, Hard, separate weekly decks, navigation, responsive
+themes, reload and actual backup/import controls. Speech checks use a controlled
+adapter to verify local-only selection, rates, Stop/end/error and no-voice
+fallback; physical sound still depends on the device and was not verified by
+the headless test.
