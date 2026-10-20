@@ -75,6 +75,7 @@ async function main(){
  await shot('english-2-47');
  for(const [width,height] of [[1480,900],[1480,668],[768,1024],[375,812],[375,640],[320,700]]){
   await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<761});await sleep(200);
+  assert(await evaluate('document.querySelector(".gita-lesson-nav").getBoundingClientRect().height<=70'),'Compact chapter/verse navigation '+width);
   for(const theme of ['light','dark']){await evaluate('document.documentElement.dataset.theme='+JSON.stringify(theme));assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'English overflow '+width);await shot('english-'+width+'-'+theme);}
  }
  await send('Emulation.setDeviceMetricsOverride',{width:1480,height:900,deviceScaleFactor:1,mobile:false});
