@@ -695,3 +695,25 @@ Rebuild with `node scripts/add-gita-book.cjs`. Check with
 `node tests/gita-book.cjs` and `node tests/gita-book-browser.cjs`; the latter uses
 a disposable browser profile. Add `--hosted` to verify actual service-worker
 caching and offline reload. The original PDF and English lessons use local assets.
+
+## Spelling suggestions
+
+Writing fields offer English spelling suggestions after a short pause. Right-click
+an unfamiliar English word or click the small **ABC** button, then choose a
+replacement. Nothing is replaced automatically; normal typing, Space and Enter
+do not accept suggestions. The browser's Undo command works after a replacement.
+Common British variants and course terms are recognised too. Suggestions are
+spelling assistance, not grammar checking or a Nepali/Japanese dictionary.
+
+Multiword text selections and Shift + right-click keep the browser's normal menu.
+Typing practice, code-answer fields, credentials and technical identifiers are
+excluded. The helper uses existing input/autosave handlers and adds no learner
+storage keys. **Ignore word** lasts for the current visit.
+
+The bundled Typo.js/SCOWL dictionary runs in a local worker; the spelling helper
+does not send text to a remote spelling service. Browser-native spelling settings
+remain controlled by the browser. The existing service worker also precaches the
+local dictionary without replacing its cache or removing old offline assets.
+Run `node scripts/add-spelling.cjs` to embed the helper and styles, then
+`node tests/spelling.cjs` and `node tests/spelling-browser.cjs` to verify.
+Use `--hosted` on the browser test for actual offline cache/reload verification.

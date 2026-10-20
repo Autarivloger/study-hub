@@ -22,6 +22,7 @@ assert.equal(new Set(data.daily.map(d=>d.ref)).size,37);
 for(const d of data.daily){const chapter=data.chapters[Number(d.ref.split('.')[0])-1];assert(d.page>=chapter.page&&d.page<=chapter.end,'Reference outside chapter '+d.ref);assert(d.line&&d.meaning&&d.action&&d.theme);}
 assert.equal(new Set(data.daily.map(d=>Number(d.ref.split('.')[0]))).size,18,'Reflections must cover all chapters');
 let stripped=current.replace(/\/\* GITA BOOK DATA START \*\/[\s\S]*?\/\* GITA BOOK DATA END \*\/\n/,'');
+stripped=stripped.replace(/\/\* STUDY HUB SPELLING START[\s\S]*?\/\* STUDY HUB SPELLING END \*\/\n/,'').replace(/\/\* STUDY HUB SPELLING STYLE START \*\/[\s\S]*?\/\* STUDY HUB SPELLING STYLE END \*\/\n\n/,'');
 stripped=stripped.replace(/\/\* GITA BOOK STYLE START \*\/[\s\S]*?\/\* GITA BOOK STYLE END \*\/\n\n/,'');
 const view=/\/\* ================= YOGA & MEDITATION ================= \*\/[\s\S]*?(?=function renderLessons\(\)\{)/;
 stripped=stripped.replace(view,()=>old.match(view)[0]);

@@ -22,6 +22,7 @@ const SHELL = [
   "./",
   "./index.html",
   "./study-hub.html",
+  "./vendor/spelling/english-v1.js",
   "./manifest.webmanifest",
   "./icon.svg"
 ];

@@ -25,7 +25,7 @@ async function main(){
   localServer=http.createServer((req,res)=>{
    const u=new URL(req.url,'http://localhost'),name=decodeURIComponent(u.pathname).replace(/^\/+/,'')||'index.html';
    if(name==='favicon.ico'){res.writeHead(204);return res.end();}
-   if(!['index.html','study-hub.html','sw.js','manifest.webmanifest','icon.svg'].includes(name)&&!/^books\/[a-z0-9.-]+$/.test(name)&&!/^vendor\/pdfjs-6\.4\.299\/[a-z0-9.-]+$/.test(name)){res.writeHead(404);return res.end();}
+   if(!['index.html','study-hub.html','sw.js','manifest.webmanifest','icon.svg','vendor/spelling/english-v1.js'].includes(name)&&!/^books\/[a-z0-9.-]+$/.test(name)&&!/^vendor\/pdfjs-6\.4\.299\/[a-z0-9.-]+$/.test(name)){res.writeHead(404);return res.end();}
    const target=path.resolve(root,name);if(!target.startsWith(root+path.sep)||!fs.existsSync(target)){res.writeHead(404);return res.end();}
    const ext=path.extname(name),types={'.html':'text/html; charset=utf-8','.js':'application/javascript; charset=utf-8','.svg':'image/svg+xml','.webmanifest':'application/manifest+json','.jpg':'image/jpeg'};
    res.writeHead(200,{'Content-Type':types[ext]||'application/octet-stream','Cache-Control':'no-cache'});
