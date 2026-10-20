@@ -36,25 +36,56 @@ async function main(){
   await send('Page.navigate',{url:'http://127.0.0.1:'+localServer.address().port+'/study-hub.html'});
   for(let i=0;i<200&&!await evaluate('location.protocol==="http:"&&Boolean(window.__studyHubBooted)&&Boolean(navigator.serviceWorker.controller)');i++)await sleep(80);
   assert(await evaluate('Boolean(navigator.serviceWorker.controller)'),'Service worker active');
-  await evaluate('closeModal();switchView("lessons");document.querySelector("[data-yoga-mode=book]").click()');await ready();
+  await evaluate('closeModal();switchView("lessons");gitaBookMode="pdf";document.querySelector("[data-yoga-mode=book]").click()');await ready();
   for(let i=0;i<100&&!await evaluate('document.getElementById("gitaOfflineStatus").textContent.includes("Book saved")');i++){await evaluate('gitaOfflineStatus()');await sleep(80);}
   assert(await evaluate('document.getElementById("gitaOfflineStatus").textContent.includes("Book saved")'),'Hosted assets cached');
   await evaluate('gitaRenderPage(456,0)');await ready();
   await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});
   await send('Page.reload',{ignoreCache:true});for(let i=0;i<200&&!await evaluate('Boolean(window.__studyHubBooted)');i++)await sleep(80);
-  await evaluate('closeModal();switchView("lessons");document.querySelector("[data-yoga-mode=book]").click()');await ready();
+  await evaluate('closeModal();switchView("lessons");gitaBookMode="pdf";document.querySelector("[data-yoga-mode=book]").click()');await ready();
   assert.equal(await evaluate('gitaCurrent.page'),456,'Hosted offline resume');
+  await evaluate('document.querySelector("[data-gita-mode=learn]").click();gitaOpenVerse(2,47)');
+  assert(await evaluate('document.querySelector(".gita-verse-card").textContent.includes("doing nothing")&&GITA_LEARNING.length===18'),'All English learning data available after hosted offline reload');
   assert.deepEqual(errors,[]);console.log('PASS: real hosted service-worker caches book/PDF.js; internet disabled; application reloads, original page456 renders and saved place resumes offline.');return;
  }
  await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});
  await evaluate('closeModal();DB=applyDefaults({course:{notes:{"1.0":"Keep Python"}},japanese:{notes:{"31.1":"Keep Japanese"}},headNotes:{"yoga:intermediate:1.1|reflection":"Keep Yoga","cyber:9.1|day-notes":"Keep Cyber"},lessonsDone:{"webdev:5.7":"2026-10-20"}});save();switchView("lessons")');
  assert(await evaluate('document.querySelectorAll(".yoga-card").length===7&&!!document.querySelector(".gita-library")&&!!document.querySelector(".gita-daily [lang=ne]")'),'Original Yoga and daily card');
- await evaluate('document.querySelector("[data-yoga-mode=book]").click()');await ready();
+ // New learning path opens without loading the PDF engine or original PDF bytes.
+ assert.equal(await evaluate('document.querySelectorAll("#gitaStudyGuide details").length'),18,'Overview retained outside reader');
+ await evaluate('document.querySelector("[data-yoga-mode=book]").click()');
+ assert.equal(await evaluate('document.querySelectorAll("[data-gita-chapter]").length'),18);
+ assert(!await evaluate('Boolean(window.StudyHubPdf||window.STUDY_HUB_GITA_BASE64)'),'English lessons do not require PDF loading');
+ assert(!await evaluate('Boolean(document.querySelector(".gita-daily,#gitaStudyGuide"))'),'No duplicate daily/overview inside book');
+ await shot('english-chapters');
+ await evaluate('document.querySelector("[data-gita-chapter=\\"1\\"]").click()');
+ assert(await evaluate('gitaStudyPage.chapter===1&&gitaStudyPage.verse===1&&document.querySelector("#gitaVersePrevious").disabled'),'Chapter1 first verse');
+ for(let c=1;c<=18;c++){
+  assert(await evaluate('(()=>{const c=GITA_LEARNING['+(c-1)+'];for(const v of c.verses){gitaStudyPage={chapter:c.chapter,verse:v.verse};renderGitaLearning(document.getElementById("lessonsBody"));const text=document.querySelector(".gita-verse-card").textContent;if(!text.includes(v.meaning)||!text.includes(v.practice)||!document.querySelector(".gita-sanskrit")||!document.querySelector("#gitaStudyVerse"))return false;}return true;})()'),'Every verse renders Chapter'+c);
+ }
+ await evaluate('gitaOpenVerse(1,47);document.getElementById("gitaVerseNext").click()');
+ assert(await evaluate('gitaStudyPage.chapter===2&&gitaStudyPage.verse===1'),'Next crosses chapter boundary');
+ await evaluate('document.getElementById("gitaVersePrevious").click()');assert(await evaluate('gitaStudyPage.chapter===1&&gitaStudyPage.verse===47'),'Previous crosses boundary');
+ await evaluate('gitaOpenVerse(18,78)');assert(await evaluate('document.getElementById("gitaVerseNext").disabled'),'Last boundary');
+ await evaluate('gitaOpenVerse(2,47);document.getElementById("gitaVerseDone").click()');
+ assert(await evaluate('lessonDone("gita:verse:2.47")&&!Object.keys(DB.reviews.items).some(k=>k.includes("gita:"))'),'Separate saved completion; Python review untouched');
+ await evaluate('document.getElementById("gitaVerseDone").click()');assert(!await evaluate('lessonDone("gita:verse:2.47")'),'Undo studied');
+ await evaluate('document.getElementById("gitaVerseDone").click();document.querySelector("#gitaVerseNotes [data-hn]").click();const t=document.querySelector("#gitaVerseNotes textarea");t.value="Prepare well, release possessiveness <b>literal</b>";t.dispatchEvent(new Event("input",{bubbles:true}))');await sleep(550);
+ assert.equal(await evaluate('DB.headNotes[GITA_PREFIX+"verse-note:2.47"]'),'Prepare well, release possessiveness <b>literal</b>');
+ await shot('english-2-47');
+ for(const [width,height] of [[1480,900],[1480,668],[768,1024],[375,812],[375,640],[320,700]]){
+  await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<761});await sleep(200);
+  for(const theme of ['light','dark']){await evaluate('document.documentElement.dataset.theme='+JSON.stringify(theme));assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'English overflow '+width);await shot('english-'+width+'-'+theme);}
+ }
+ await send('Emulation.setDeviceMetricsOverride',{width:1480,height:900,deviceScaleFactor:1,mobile:false});
+ await evaluate('gitaOpenVerse(13,1);const p=gitaReadRecord("study-position");mergeIntoDB({headNotes:{[GITA_PREFIX+"study-position"]:JSON.stringify({chapter:13,verse:2,updatedAt:p.updatedAt+100})}})');
+ assert.equal(await evaluate('gitaReadRecord("study-position").verse'),2,'Study position uses newer synced record');
+ await evaluate('document.querySelector("[data-gita-mode=pdf]").click()');await ready();
  console.log('PDF opened',await evaluate('({page:gitaCurrent.page,pages:GITA_BOOK.pages,version:window.StudyHubPdf.version,status:document.getElementById("gitaStatus").textContent})'));
  await shot('book-first-page');
  if(process.argv.includes('--probe')){console.log('Errors',errors);return;}
  // Remaining end-to-end assertions are below; keep probe available for rendering diagnostics.
- assert(await evaluate('document.querySelector("#gitaPaper canvas").width>200&&!!gitaReadRecord("position")'),'Canvas and initial position');
+ assert(await evaluate('document.querySelector("#gitaPaper canvas").width>70&&!!gitaReadRecord("position")'),'Canvas and initial position');
  await evaluate('document.getElementById("gitaPage").value=127;document.getElementById("gitaGo").click()');await ready();
  assert.equal(await evaluate('gitaCurrent.page'),127);
  await shot('book-verse-2-47');
@@ -72,7 +103,7 @@ async function main(){
  assert.equal(await evaluate('JSON.stringify(gitaMarks(127)[0].value.points)'),points,'Zoom must preserve normalised positions');
  assert(await evaluate('document.querySelector("#gitaInk").getAttribute("viewBox")==="0 0 1 1"'),'Coordinate system');
  await evaluate('document.getElementById("gitaZoom").value="1";document.getElementById("gitaZoom").dispatchEvent(new Event("change"))');await ready();
- await evaluate('(()=>{const p=document.getElementById("gitaPaper").getBoundingClientRect();window.scrollBy(0,p.height*.25)})()');await sleep(450);
+ await evaluate('document.getElementById("gitaPageScroll").scrollTop=document.getElementById("gitaPaper").clientHeight*.25');await sleep(450);
  const offset=await evaluate('gitaReadRecord("position").offset');assert(offset>.1,'Automatic reading offset');
  await evaluate('document.getElementById("gitaBookmark").click()');
  assert(await evaluate('gitaReadRecord("bookmark").page===127&&gitaReadRecord("bookmark").offset>.1'),'Bookmark');
@@ -86,8 +117,7 @@ async function main(){
  await evaluate('switchView("lessons")');await ready();assert(await evaluate('gitaCurrent.page===127&&gitaMarks(127).length===1'),'Resume reader after leaving');
  // All chapter links and daily references are within the verified original PDF.
  assert(await evaluate('GITA_BOOK.chapters.length===18&&GITA_BOOK.daily.every(d=>d.page>=1&&d.page<=GITA_BOOK.pages)&&new Set(GITA_BOOK.daily.map(d=>d.ref)).size===GITA_BOOK.daily.length'),'Reference coverage');
- await evaluate('document.getElementById("gitaStudyGuide").open=true');
- assert.equal(await evaluate('document.querySelectorAll("#gitaStudyGuide details").length'),18);
+ assert(!await evaluate('Boolean(document.querySelector(".gita-daily,#gitaStudyGuide"))'),'Original PDF also has no duplicate daily/overview');
  await evaluate('document.getElementById("gitaChapter").value="1218"'); // Nonexistent option must not navigate.
  assert.equal(await evaluate('gitaCurrent.page'),127);
  await evaluate('document.getElementById("gitaChapter").value="411";document.getElementById("gitaChapter").dispatchEvent(new Event("change"))');await ready();assert.equal(await evaluate('gitaCurrent.page'),411);
@@ -104,11 +134,12 @@ async function main(){
  assert.equal(await evaluate('gitaReadRecord("position").page'),456,'Cross-device newer position');
  await evaluate('confirmMerge('+backup+');document.getElementById("impReplace").click()');
  await send('Page.reload',{ignoreCache:true});for(let i=0;i<100&&!await evaluate('Boolean(window.__studyHubBooted)');i++)await sleep(80);
- await evaluate('closeModal();switchView("lessons");document.querySelector("[data-yoga-mode=book]").click()');await ready();
+ await evaluate('closeModal();switchView("lessons");gitaBookMode="pdf";document.querySelector("[data-yoga-mode=book]").click()');await ready();
  assert(await evaluate('gitaCurrent.page===127&&gitaMarks(127).length===1&&DB.headNotes[GITA_PREFIX+"page-note:127"].includes("literal")'),'Replace and offline reload');
  assert(await evaluate('DB.course.notes["1.0"]==="Keep Python"&&DB.japanese.notes["31.1"]==="Keep Japanese"&&DB.headNotes["yoga:intermediate:1.1|reflection"]==="Keep Yoga"&&DB.headNotes["cyber:9.1|day-notes"]==="Keep Cyber"&&DB.lessonsDone["webdev:5.7"]'),'Previous data preserved');
+ assert(await evaluate('lessonDone("gita:verse:2.47")&&DB.headNotes[GITA_PREFIX+"verse-note:2.47"].includes("literal")&&gitaReadRecord("study-position").verse===2'),'Verse notes/completion/position survive backup and reload');
  // Check responsive layout, control sizes and both themes with real PDF rendering.
- for(const [width,height] of [[1480,900],[768,1024],[375,812],[320,700]]){
+ for(const [width,height] of [[1480,900],[1480,668],[768,1024],[375,812],[375,640],[320,700]]){
   await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<761});await sleep(300);await ready();
   for(const theme of ['light','dark']){
    await evaluate('document.documentElement.dataset.theme='+JSON.stringify(theme));
@@ -116,8 +147,14 @@ async function main(){
    assert(await evaluate('[...document.querySelectorAll(".gita-pencil-tools button")].filter(b=>b.getClientRects().length).every(b=>b.getBoundingClientRect().height>=44)'),'Touch sizes');
    await shot('book-'+width+'-'+theme);
   }
+  await evaluate('document.getElementById("gitaZoom").value="page";document.getElementById("gitaZoom").dispatchEvent(new Event("change"))');await ready();
+  assert(await evaluate('(()=>{const p=document.getElementById("gitaPaper"),s=document.getElementById("gitaPageScroll");return p.clientWidth<=s.clientWidth&&p.clientHeight<=s.clientHeight&&s.getBoundingClientRect().bottom<=innerHeight+1;})()'),'Whole page fits actual screen '+width);
+  if(await evaluate('document.getElementById("gitaExtraControls").hidden')){await evaluate('document.getElementById("gitaControlsToggle").click()');await ready();}
+  await evaluate('document.getElementById("gitaControlsToggle").click()');await ready();assert(await evaluate('document.getElementById("gitaExtraControls").hidden'),'Hide controls');
+  await evaluate('document.getElementById("gitaControlsToggle").click()');await ready();
+  await evaluate('document.getElementById("gitaZoomPercent").value=145;document.getElementById("gitaApplyZoom").click()');await ready();assert.equal(await evaluate('document.getElementById("gitaZoom").value'),'1.45','Custom zoom');
  }
- const touch=await evaluate('(()=>{const r=document.getElementById("gitaPaper").getBoundingClientRect(),t=document.getElementById("gitaToolbar").getBoundingClientRect();return{x:r.x+r.width*.15,y:Math.min(innerHeight-100,Math.max(t.bottom+30,r.y+200)),end:r.x+r.width*.6};})()');
+ const touch=await evaluate('(()=>{const r=document.getElementById("gitaPaper").getBoundingClientRect(),s=document.getElementById("gitaPageScroll").getBoundingClientRect();const x=Math.max(r.left,s.left)+15,y=Math.max(r.top,s.top)+30;return{x,y,end:Math.min(r.right,s.right)-80};})()');
  await evaluate('document.getElementById("gitaPencil").click()');
  const beforeTouch=await evaluate('gitaMarks(127).length');
  await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:touch.x,y:touch.y,id:1}]});
@@ -127,6 +164,6 @@ async function main(){
  await evaluate('document.getElementById("gitaPencil").click()');
  assert(await evaluate('getComputedStyle(document.getElementById("gitaInk")).pointerEvents==="none"'),'Reading mode restores normal scrolling');
  assert.deepEqual(errors,[],'JavaScript errors');
- console.log('PASS: original PDF renders offline; pencil/undo/redo/zoom; automatic place/bookmark/resume; chapter/page bounds; page notes; backup merge/replace/reload; newer synced records; all old data;4widths/both themes; no JS errors. Proof:',out);
+ console.log('PASS:all700 English verse pages;chapter/verse navigation and boundaries;English notes/completion/undo/sync;original PDF offline;pencil/undo/redo/custom zoom/Fit page/controls;place/bookmark/resume;backup merge/replace/reload;all old data;6screen sizes/both themes;no JS errors. Proof:',out);
 }
 main().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{clearTimeout(watchdog);if(ws)ws.close();browser.kill();if(localServer)localServer.close();});

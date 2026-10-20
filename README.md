@@ -675,3 +675,23 @@ Test packaging with
 The previous publishing setting was **Deploy from a branch → main → / (root)**;
 it remains a configuration rollback option. The domain and HTTPS setting stay
 the same. No password, personal token or additional repository secret is used.
+
+## Gita book and English study
+
+Open **Yoga & Meditation → Book → Learn in English** for all 18 chapters and
+700 verse lessons, with Sanskrit, original plain-English meanings, 93 passage
+guides, individual practical reflections, notes and saved study progress.
+Chapter 1 has 47 verses; Chapter 13 follows the supplied book's 34-verse numbering.
+These are original study notes, not a translation of the complete Hindi commentary.
+
+**Original PDF** preserves the supplied 1,296-page book. It supports Fit page,
+Fit width, custom zoom, collapsible controls, pencil overlays and bookmarks.
+PDF overlays and the separate English study position reuse the existing
+`headNotes` map; studied verses reuse `lessonsDone`. Backup/import retains both.
+
+Authoring sources are `scripts/gita-lessons/`, `scripts/gita-learning.js` and
+`scripts/gita-book.js`. Sanskrit provenance is in `books/GITA-SOURCES.txt`.
+Rebuild with `node scripts/add-gita-book.cjs`. Check with
+`node tests/gita-book.cjs` and `node tests/gita-book-browser.cjs`; the latter uses
+a disposable browser profile. Add `--hosted` to verify actual service-worker
+caching and offline reload. The original PDF and English lessons use local assets.

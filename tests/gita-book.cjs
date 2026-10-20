@@ -2,6 +2,18 @@ const fs=require('fs'),cp=require('child_process'),assert=require('assert/strict
 const current=fs.readFileSync('study-hub.html','utf8'),old=cp.execFileSync('git',['show','1818c5f:study-hub.html'],{encoding:'utf8',maxBuffer:45e6});
 const data=require('../scripts/gita-book-content.cjs');
 const embedded=JSON.parse(current.match(/const GITA_BOOK = ([\s\S]*?);\n\/\* GITA BOOK READER START \*\//)[1]);assert.deepEqual(embedded,data);
+const learning=require('../scripts/build-gita-lessons.cjs');
+const embeddedLearning=JSON.parse(current.match(/const GITA_LEARNING = ([\s\S]*?);\n\/\* GITA ENGLISH LEARNING START \*\//)[1]);assert.deepEqual(learning,embeddedLearning);
+assert.equal(learning.reduce((n,c)=>n+c.verses.length,0),700);
+assert.equal(learning[0].verses.length,47);assert.equal(learning[12].verses.length,34);
+assert(learning[0].verses[27].sanskrit.includes('कृपया परयाविष्टो'),'Verse1.28 must contain its opening line');
+assert(!learning[0].verses[27].sanskrit.includes('सीदन्ति'),'Do not duplicate1.29 into1.28');
+assert(learning[0].verses[32].meaning.includes('people for whose sake'),'Meaning1.33 alignment');
+assert(learning[12].verses[0].sanskrit.includes('इदं शरीरं'),'Chapter13 aligns to supplied34-verse edition');
+assert(learning[1].verses[46].meaning.includes('doing nothing'),'2.47 retains rejection of inaction');
+assert(learning[17].groups.find(g=>g.from===64).caution.includes('accountability'),'18.66 context preserved');
+assert.equal(new Set(learning.flatMap(c=>c.verses.map(v=>v.meaning))).size,700,'Individual meanings');
+assert.equal(new Set(learning.flatMap(c=>c.verses.map(v=>v.practice))).size,700,'Individual applications');
 const raw=JSON.parse(fs.readFileSync('books/gita-pdf-v1.js','utf8').split('window.STUDY_HUB_GITA_BASE64=')[1].trim().replace(/;$/,''));
 const bytes=Buffer.from(raw,'base64');assert.equal(bytes.length,8469916);assert.equal(bytes.subarray(0,5).toString(),'%PDF-');
 assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),data.sourceSha256,'Original PDF bytes changed');
@@ -27,4 +39,4 @@ assert.equal(merge(erased,visible),erased);assert.equal(merge(visible,erased),er
 const index=new Function('GITA_BOOK',fn('gitaDailyIndex')+';return gitaDailyIndex;')(data);
 assert.equal(index(new Date(2026,9,20,9)),0);assert.equal(index(new Date(2026,9,20,23)),0);assert.equal(index(new Date(2026,9,21,0)),1);assert.equal(index(new Date(2026,9,20+37,9)),0);
 for(const m of current.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)){if(/type=["']application\/json["']/.test(m[1]))JSON.parse(m[2]);else if(!/\bsrc=/.test(m[1]))new Function(m[2]);}
-console.log('PASS: exact original PDF digest/1296 pages;18 chapter guides;37 distinct referenced reflections covering all chapters;daily calendar rotation;newer record merge and deletion tombstones;existing HTML byte-identical outside explicitly scoped hooks;schemas and original courses retained;JS/JSON valid.');
+console.log('PASS:700 distinct verse meanings/applications,93 contexts,exact chapter counts,corrected Sanskrit verse boundaries and Chapter13 numbering;original PDF digest/1296 pages unchanged;daily reflections;merge/tombstones;existing HTML byte-identical outside Gita hooks;original schemas/courses retained;JS/JSON valid.');

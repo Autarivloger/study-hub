@@ -1,7 +1,8 @@
 const fs=require('fs'),assert=require('assert/strict');
 let html=fs.readFileSync('study-hub.html','utf8');
 const content=require('./gita-book-content.cjs');
-const block='/* GITA BOOK DATA START */\nconst GITA_BOOK = '+JSON.stringify(content,null,2).replace(/<\//g,'<\\/')+';\n'+fs.readFileSync('scripts/gita-book.js','utf8')+'\n/* GITA BOOK DATA END */\n';
+const lessons=require('./build-gita-lessons.cjs');
+const block='/* GITA BOOK DATA START */\nconst GITA_BOOK = '+JSON.stringify(content,null,2).replace(/<\//g,'<\\/')+';\n'+fs.readFileSync('scripts/gita-book.js','utf8')+'\nconst GITA_LEARNING = '+JSON.stringify(lessons).replace(/<\//g,'<\\/')+';\n'+fs.readFileSync('scripts/gita-learning.js','utf8')+'\n/* GITA BOOK DATA END */\n';
 const re=/\/\* GITA BOOK DATA START \*\/[\s\S]*?\/\* GITA BOOK DATA END \*\/\n/;
 if(re.test(html))html=html.replace(re,()=>block);else{assert(html.includes('const YOGA_COURSE = '));html=html.replace('const YOGA_COURSE = ',()=>block+'const YOGA_COURSE = ');}
 const style=fs.readFileSync('scripts/gita-book.css','utf8');

@@ -5,7 +5,7 @@ const gitaScriptPromises={};
 function gitaReadRecord(key,store){
   try{const v=JSON.parse((store||DB.headNotes)[GITA_PREFIX+key]||'null');return v&&typeof v==='object'&&!Array.isArray(v)?v:null;}catch(e){return null;}
 }
-function gitaIsRecordKey(key){return /^book:gita:v1\|(position|bookmark|mark:[a-z0-9-]+)$/.test(key);}
+function gitaIsRecordKey(key){return /^book:gita:v1\|(position|bookmark|study-position|mark:[a-z0-9-]+)$/.test(key);}
 function gitaMergeRecord(mine,theirs){
   try{const a=JSON.parse(mine||'null'),b=JSON.parse(theirs||'null');if(!b||typeof b!=='object'||!Number.isFinite(b.updatedAt))return mine===undefined?theirs:mine;
     if(!a||!Number.isFinite(a.updatedAt)||b.updatedAt>a.updatedAt||(b.updatedAt===a.updatedAt&&String(theirs)>String(mine)))return theirs;
@@ -29,7 +29,7 @@ function gitaDailyHtml(){
 }
 function gitaLibraryHtml(){
   const pos=gitaReadRecord('position'),page=Math.max(1,Math.min(GITA_BOOK.pages,Number(pos?.page)||1));
-  return '<div class="gita-library"><article class="card"><img class="gita-book-cover" src="books/gita-cover.jpg" alt="Cover of your supplied Bhagavad Gita" loading="lazy"><p class="yoga-eyebrow">BOOK</p><h3>श्रीमद्भगवद्गीता</h3><p>Sadhak-Sanjivani · Swami Ramsukhdas<br>Original supplied PDF · 1,296 pages</p><p class="gita-muted">Resume at PDF page '+page+'. Your reading place, pencil marks and notes save separately from the original book.</p><button type="button" class="btn" data-yoga-mode="book">Open Book →</button></article>'+gitaDailyHtml()+'</div>';
+  return '<div class="gita-library"><article class="card"><img class="gita-book-cover" src="books/gita-cover.jpg" alt="Cover of your supplied Bhagavad Gita" loading="lazy"><p class="yoga-eyebrow">BOOK</p><h3>श्रीमद्भगवद्गीता</h3><p>Learn in English · 18 chapters · 700 verses<br>Original Sadhak-Sanjivani PDF also preserved</p><p class="gita-muted">Read the meaning, understand the context, and choose a practical next step. Your PDF reading place is page '+page+'.</p><button type="button" class="btn" data-yoga-mode="book">Open Book →</button></article>'+gitaDailyHtml()+'</div><details class="card gita-study" id="gitaStudyGuide"><summary>Chapter overview & daily study method</summary>'+gitaStudyHtml()+'</details>';
 }
 function gitaLoadScript(path,test){
   if(test())return Promise.resolve();
@@ -50,9 +50,8 @@ function gitaLoadPdf(){
   return gitaPdfPromise;
 }
 function gitaPaperOffset(){
-  if(!gitaCurrent?.ready)return 0;const p=document.getElementById('gitaPaper');if(!p)return 0;
-  const rect=p.getBoundingClientRect(),top=gitaStickyTop()+70;
-  return Math.max(0,Math.min(1,(top-rect.top)/Math.max(rect.height,1)));
+  if(!gitaCurrent?.ready)return 0;const p=document.getElementById('gitaPaper'),wrap=document.getElementById('gitaPageScroll');if(!p||!wrap)return 0;
+  return Math.max(0,Math.min(1,wrap.scrollTop/Math.max(p.clientHeight,1)));
 }
 function gitaStickyTop(){
   let top=0;for(const id of ['topbar','tabnav']){const n=document.getElementById(id);if(!n||!n.getClientRects().length)continue;const r=n.getBoundingClientRect();if(r.top<=top+2)top=Math.max(top,r.bottom);}
@@ -110,8 +109,11 @@ async function gitaRenderPage(page,offset){
     const doc=await gitaLoadPdf();if(generation!==gitaRenderGeneration)return;
     const pdfPage=await doc.getPage(page);if(generation!==gitaRenderGeneration)return;
     const wrap=document.getElementById('gitaPageScroll'),paper=document.getElementById('gitaPaper'),canvas=paper.querySelector('canvas');
-    const zoom=Number(document.getElementById('gitaZoom').value)||1,base=pdfPage.getViewport({scale:1}),width=Math.max(200,Math.min(940,wrap.clientWidth-8))*zoom;
-    const viewport=pdfPage.getViewport({scale:width/base.width}),ratio=Math.min(devicePixelRatio||1,2);
+    gitaSizeViewport();
+    const zoom=document.getElementById('gitaZoom').value,base=pdfPage.getViewport({scale:1});
+    const fitWidth=Math.max(100,wrap.clientWidth-20)/base.width,fitPage=Math.min(fitWidth,Math.max(100,wrap.clientHeight-20)/base.height);
+    const scale=zoom==='page'?fitPage:zoom==='width'?fitWidth:fitWidth*(Number(zoom)||1);
+    const viewport=pdfPage.getViewport({scale}),ratio=Math.min(devicePixelRatio||1,2);
     paper.style.width=viewport.width+'px';paper.style.height=viewport.height+'px';
     canvas.width=Math.round(viewport.width*ratio);canvas.height=Math.round(viewport.height*ratio);
     canvas.setAttribute('aria-label','Original Bhagavad Gita · PDF page '+page+' of '+GITA_BOOK.pages);
@@ -124,7 +126,7 @@ async function gitaRenderPage(page,offset){
     status.textContent='Page ready. Your reading place saves automatically.';
     const notes=document.getElementById('gitaPageNotes');
     notes.innerHTML=renderSections([{t:'h',v:'My notes · PDF page '+page,noteKey:GITA_PREFIX+'page-note:'+page}],GITA_PREFIX+'page:'+page);wireHeadNotes(notes);
-    requestAnimationFrame(()=>{if(generation!==gitaRenderGeneration)return;const r=paper.getBoundingClientRect();window.scrollTo({top:Math.max(0,window.scrollY+r.top+(Number(offset)||0)*r.height-gitaStickyTop()-80),behavior:'instant'});gitaWriteRecord('position',{page:page,offset:Math.max(0,Math.min(1,Number(offset)||0))});});
+    requestAnimationFrame(()=>{if(generation!==gitaRenderGeneration)return;wrap.scrollTop=(Number(offset)||0)*paper.clientHeight;gitaSaveReading();});
     gitaOfflineStatus();
   }catch(e){if(e?.name==='RenderingCancelledException'||generation!==gitaRenderGeneration)return;status.textContent='Could not open the book. '+e.message;document.getElementById('gitaRetry').hidden=false;}
 }
@@ -134,24 +136,28 @@ async function gitaOfflineStatus(){
   try{const assets=['books/gita-pdf-v1.js','vendor/pdfjs-6.4.299/pdf.js','vendor/pdfjs-6.4.299/pdf.worker.js'];const hits=await Promise.all(assets.map(p=>caches.match(new URL(p,location.href).href)));node.textContent=hits.every(Boolean)?'Book saved for offline reading on this device.':'To save offline, open Book while online once and wait for the page to finish loading.';}catch(e){node.textContent='Offline availability depends on this browser keeping its website data.';}
 }
 function gitaSourceButtons(root){
-  root.querySelectorAll('[data-gita-source]').forEach(b=>b.onclick=()=>{const page=Number(b.dataset.gitaSource);yogaPage.mode='book';renderYoga();gitaRenderPage(page,0);});
+  root.querySelectorAll('[data-gita-source]').forEach(b=>b.onclick=()=>{const page=Number(b.dataset.gitaSource);yogaPage.mode='book';gitaBookMode='pdf';renderYoga();gitaRenderPage(page,0);});
 }
-function renderGitaBook(el){
+function renderGitaPdf(el){
   gitaBookLeave();const pos=gitaReadRecord('position')||{page:1,offset:0},bookmark=gitaReadRecord('bookmark');
   const pencil='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-1 5 5-1L20 8l-4-4L4 16Zm10-10 4 4M3 21l5-1"/></svg>';
-  el.innerHTML='<div class="gita-reader"><button type="button" class="back-link" id="gitaBookBack">← Yoga & Meditation</button><section class="card"><p class="yoga-eyebrow">BOOK · ORIGINAL PDF</p><h2>श्रीमद्भगवद्गीता</h2><p>Sadhak-Sanjivani Hindi commentary · Swami Ramsukhdas · Gita Press</p><p class="gita-muted">Your supplied 1,296-page PDF is preserved unchanged. Red pencil marks and reading progress are personal saved overlays, not changes to the book.</p><div class="gita-book-actions"><button type="button" class="btn" id="gitaResume">Resume reading →</button><button type="button" class="btn secondary" id="gitaBookmarkGo"'+(!bookmark?' disabled':'')+'>'+(bookmark?'Saved place · page '+Number(bookmark.page):'No saved bookmark yet')+'</button><button type="button" class="btn secondary" id="gitaDownload">Download original PDF</button></div><p class="gita-muted" id="gitaOfflineStatus">The reader loads only when opened.</p></section>'+gitaDailyHtml()+
-    '<details class="card gita-study" id="gitaStudyGuide"><summary>Understand the book · chapter guide and daily study method</summary>'+gitaStudyHtml()+'</details>'+
-    '<div class="gita-toolbar" id="gitaToolbar" aria-label="Book page controls"><button type="button" class="btn secondary" id="gitaPrevious" aria-label="Previous book page">←</button><label>PDF page <input type="number" min="1" max="'+GITA_BOOK.pages+'" id="gitaPage" value="'+Math.max(1,Math.min(GITA_BOOK.pages,Number(pos.page)||1))+'"></label><button type="button" class="btn secondary" id="gitaGo">Go</button><button type="button" class="btn secondary" id="gitaNext" aria-label="Next book page">→</button><select id="gitaChapter" class="gita-chapter-select" aria-label="Choose a Gita chapter"><option value="">Choose chapter</option>'+GITA_BOOK.chapters.map(c=>'<option value="'+c.page+'">'+c.chapter+'. '+escapeHtml(c.name)+'</option>').join('')+'</select><select id="gitaZoom" aria-label="Book zoom"><option value="1">Fit width</option><option value="1.3">130%</option><option value="1.6">160%</option><option value="2">200%</option></select></div>'+
+  el.innerHTML='<div class="gita-reader gita-pdf-reader">'+gitaWorkspaceHeader('pdf')+'<details class="gita-about"><summary>About this edition · download & saved place</summary><p>Sadhak-Sanjivani Hindi commentary · Swami Ramsukhdas · Gita Press. Your original 1,296-page PDF is unchanged. Notes and pencil marks save separately.</p><div class="gita-book-actions"><button type="button" class="btn secondary" id="gitaResume">Resume PDF</button><button type="button" class="btn secondary" id="gitaBookmarkGo"'+(!bookmark?' disabled':'')+'>'+(bookmark?'Saved place · page '+Number(bookmark.page):'No saved bookmark yet')+'</button><button type="button" class="btn secondary" id="gitaDownload">Download original PDF</button></div><p class="gita-muted" id="gitaOfflineStatus">The reader loads only when opened.</p></details>'+
+    '<div class="gita-toolbar" id="gitaToolbar" aria-label="Book page controls"><div class="gita-toolbar-primary"><button type="button" class="btn secondary" id="gitaPrevious" aria-label="Previous book page">←</button><label>Page <input type="number" min="1" max="'+GITA_BOOK.pages+'" id="gitaPage" value="'+Math.max(1,Math.min(GITA_BOOK.pages,Number(pos.page)||1))+'"></label><button type="button" class="btn secondary" id="gitaGo">Go</button><button type="button" class="btn secondary" id="gitaNext" aria-label="Next book page">→</button><button type="button" class="btn secondary" id="gitaControlsToggle" aria-expanded="true" aria-controls="gitaExtraControls">Hide controls</button></div><div class="gita-extra-controls" id="gitaExtraControls"><select id="gitaChapter" class="gita-chapter-select" aria-label="Choose a Gita chapter"><option value="">Choose chapter</option>'+GITA_BOOK.chapters.map(c=>'<option value="'+c.page+'">'+c.chapter+'. '+escapeHtml(c.name)+'</option>').join('')+'</select><select id="gitaZoom" aria-label="Book zoom"><option value="page">Fit page</option><option value="width">Fit width</option><option value="1">100%</option><option value="1.3">130%</option><option value="1.4">140%</option><option value="1.6">160%</option><option value="2">200%</option><option value="custom">Custom</option></select><label class="gita-custom-zoom"><input id="gitaZoomPercent" aria-label="Custom zoom percentage" type="number" min="25" max="300" step="5" value="100">% <button type="button" class="btn secondary" id="gitaApplyZoom">Apply</button></label></div></div>'+
     '<p id="gitaCurrentPage" class="gita-muted"></p><p class="gita-pencil-help" id="gitaPencilHelp">Reading mode · use the floating pencil to underline.</p><p class="gita-status" id="gitaStatus" role="status" aria-live="polite"></p><button type="button" class="btn secondary" id="gitaRetry" hidden>Retry opening</button><div class="gita-page-scroll" id="gitaPageScroll"><div class="gita-paper" id="gitaPaper"><canvas aria-label="Original Bhagavad Gita PDF page"></canvas><svg class="gita-ink" id="gitaInk" viewBox="0 0 1 1" preserveAspectRatio="none" aria-label="Pencil drawing area"></svg></div></div><section class="gita-notes" id="gitaPageNotes"></section>'+
     '<div class="gita-pencil-tools" aria-label="Reading pencil tools"><button type="button" class="btn secondary" id="gitaPencil" aria-label="Turn pencil on to underline" aria-pressed="false" title="Pencil · underline">'+pencil+'</button><button type="button" class="btn secondary" id="gitaUndo" aria-label="Undo last underline on this page" title="Undo underline" disabled>↶</button><button type="button" class="btn secondary" id="gitaRedo" aria-label="Restore last undone underline on this page" title="Redo underline" disabled>↷</button><button type="button" class="btn secondary" id="gitaBookmark" aria-label="Save my reading place" title="Save this reading place">▣</button></div></div>';
   el.querySelector('.gita-reader').style.setProperty('--gita-sticky-top',(gitaStickyTop()+4)+'px');
-  document.getElementById('gitaBookBack').onclick=()=>{gitaBookLeave();yogaPage.mode='home';renderYoga();window.scrollTo(0,0);};
+  gitaWireWorkspace(el);
   document.getElementById('gitaGo').onclick=()=>gitaRenderPage(document.getElementById('gitaPage').value,0);
   document.getElementById('gitaPage').onkeydown=e=>{if(e.key==='Enter')document.getElementById('gitaGo').click();};
   document.getElementById('gitaPrevious').onclick=()=>gitaRenderPage((gitaCurrent?.page||1)-1,0);
   document.getElementById('gitaNext').onclick=()=>gitaRenderPage((gitaCurrent?.page||1)+1,0);
   document.getElementById('gitaChapter').onchange=e=>{if(e.target.value)gitaRenderPage(e.target.value,0);};
-  document.getElementById('gitaZoom').onchange=()=>gitaRenderPage(gitaCurrent?.page||pos.page,gitaPaperOffset());
+  document.getElementById('gitaZoom').onchange=e=>{if(e.target.value==='custom'){const input=document.getElementById('gitaZoomPercent');input.focus();input.select();return;}if(Number(e.target.value))document.getElementById('gitaZoomPercent').value=Math.round(Number(e.target.value)*100);gitaRenderPage(gitaCurrent?.page||pos.page,gitaPaperOffset());};
+  document.getElementById('gitaControlsToggle').onclick=e=>{const extra=document.getElementById('gitaExtraControls');extra.hidden=!extra.hidden;e.target.setAttribute('aria-expanded',String(!extra.hidden));e.target.textContent=extra.hidden?'Show controls':'Hide controls';gitaRenderPage(gitaCurrent?.page||pos.page,gitaPaperOffset());};
+  function customZoom(){const n=Math.max(25,Math.min(300,Number(document.getElementById('gitaZoomPercent').value)||100));document.getElementById('gitaZoomPercent').value=n;const select=document.getElementById('gitaZoom');let option=select.querySelector('[data-custom]');if(!option){option=document.createElement('option');option.dataset.custom='true';select.add(option);}option.value=String(n/100);option.textContent=n+'%';select.value=option.value;gitaRenderPage(gitaCurrent?.page||pos.page,gitaPaperOffset());}
+  document.getElementById('gitaApplyZoom').onclick=customZoom;
+  document.getElementById('gitaZoomPercent').onkeydown=e=>{if(e.key==='Enter')customZoom();};
+  document.getElementById('gitaPageScroll').onscroll=()=>{clearTimeout(gitaReadTimer);gitaReadTimer=setTimeout(gitaSaveReading,250);};
   document.getElementById('gitaPencil').onclick=()=>gitaSetPencil(!gitaDrawing);
   document.getElementById('gitaUndo').onclick=()=>{const m=gitaMarks(gitaCurrent.page).slice(-1)[0];if(m){gitaWriteRecord(m.key,Object.assign({},m.value,{deleted:true}));gitaDrawMarks();}};
   document.getElementById('gitaRedo').onclick=()=>{const m=gitaMarks(gitaCurrent.page,true).filter(x=>x.value.deleted).sort((a,b)=>b.value.updatedAt-a.value.updatedAt)[0];if(m){gitaWriteRecord(m.key,Object.assign({},m.value,{deleted:false}));gitaDrawMarks();}};
@@ -161,6 +167,8 @@ function renderGitaBook(el){
   document.getElementById('gitaRetry').onclick=()=>{document.getElementById('gitaRetry').hidden=true;gitaRenderPage(gitaCurrent?.page||pos.page,0);};
   document.getElementById('gitaDownload').onclick=async()=>{try{await gitaLoadPdf();const raw=atob(window.STUDY_HUB_GITA_BASE64),bytes=Uint8Array.from(raw,c=>c.charCodeAt(0)),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');a.href=url;a.download='shrimad-bhagavad-gita.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);}catch(e){toast('Open the book successfully before downloading.');}};
   gitaSourceButtons(el);gitaWireDrawing();gitaRenderPage(pos.page,pos.offset);
+  if(innerWidth<600){document.getElementById('gitaExtraControls').hidden=true;const b=document.getElementById('gitaControlsToggle');b.textContent='Show controls';b.setAttribute('aria-expanded','false');}
+  el.querySelector('.gita-about').ontoggle=()=>{if(gitaCurrent?.ready)gitaRenderPage(gitaCurrent.page,gitaPaperOffset());};
 }
 function gitaStudyHtml(){
   return '<p lang="ne">यो ग्रन्थ युद्धभूमिमा अर्जुनको नैतिक सङ्कटबाट सुरु भएको कृष्ण–अर्जुन संवाद हो। साधक–सञ्जीवनीको केन्द्र केवल उपलब्धि वा जोस होइन; विवेक, निष्काम कर्म, आत्मबोध र भगवान्प्रतिको भक्ति जोडिएका छन्। तलका सार र जीवनका उदाहरण मौलिक अध्ययन-सहायता हुन्; मूल श्लोक र टीकाको विकल्प होइनन्।</p><h3>Read slowly · reflect · practise</h3><ol lang="ne"><li>पहिले अघिपछिको प्रसङ्ग पढ। आज १–३ श्लोक र तिनको टीका पर्याप्त हुन सक्छ। पृष्ठ सङ्ख्याको हतार नगर।</li><li>वक्ता, समस्या र उत्तर छुट्याऊ। नबुझेका शब्द लेख। एउटा वाक्य अलग गरेर आफ्नै इच्छाको अर्थ नलगाऊ।</li><li>एउटा सरल अर्थ आफ्नै शब्दमा लेख; त्यसपछि जीवनमा गर्ने एउटा सानो काम छान।</li><li>राति व्यवहार जाँच: कहाँ पालन भयो, कहाँ भएन, भोलि के सुधार्ने? आफूलाई गाली नगरी फेरि अभ्यास गर।</li></ol><p class="gita-muted">Chapter buttons use verified PDF page numbers from this file. A verse reference identifies the passage; read the surrounding commentary as well. Chapter 13 numbering can vary across editions; this guide follows the supplied book.</p><div class="gita-chapter-grid">'+GITA_BOOK.chapters.map(c=>'<button type="button" class="btn secondary" data-gita-source="'+c.page+'">'+c.chapter+'. '+escapeHtml(c.name)+'</button>').join('')+'</div>'+GITA_BOOK.chapters.map(c=>'<details><summary>'+c.chapter+'. '+escapeHtml(c.name)+' · PDF '+c.page+'</summary><p lang="ne"><b>प्रसङ्ग:</b> '+escapeHtml(c.context)+'</p><p lang="ne"><b>गहिरो विचार:</b> '+escapeHtml(c.insight)+'</p><p lang="ne"><b>जीवनमा अभ्यास:</b> '+escapeHtml(c.practice)+'</p><p lang="ne"><b>आफैँलाई प्रश्न:</b> '+escapeHtml(c.question)+'</p><button type="button" class="btn secondary" data-gita-source="'+c.page+'">Read Chapter '+c.chapter+' →</button></details>').join('');
@@ -175,6 +183,6 @@ function gitaRefreshDaily(){
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)gitaRefreshDaily();});
 setInterval(gitaRefreshDaily,60000);
 let gitaResizeTimer;
-window.addEventListener('resize',()=>{if(!gitaCurrent?.ready)return;clearTimeout(gitaResizeTimer);gitaResizeTimer=setTimeout(()=>{if(!gitaCurrent?.ready)return;const page=gitaCurrent.page,offset=gitaPaperOffset();document.querySelector('.gita-reader')?.style.setProperty('--gita-sticky-top',(gitaStickyTop()+4)+'px');gitaRenderPage(page,offset);},180);});
+window.addEventListener('resize',()=>{document.querySelector('.gita-reader')?.style.setProperty('--gita-sticky-top',(gitaStickyTop()+4)+'px');if(!gitaCurrent?.ready)return;clearTimeout(gitaResizeTimer);gitaResizeTimer=setTimeout(()=>{if(!gitaCurrent?.ready)return;const page=gitaCurrent.page,offset=gitaPaperOffset();gitaRenderPage(page,offset);},180);});
 new MutationObserver(()=>{if(gitaCurrent&&!document.getElementById('view-lessons').classList.contains('active'))gitaBookLeave();}).observe(document.getElementById('view-lessons'),{attributes:true,attributeFilter:['class']});
 /* GITA BOOK READER END */
