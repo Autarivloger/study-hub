@@ -539,7 +539,7 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .liked-play{
   flex-shrink:0; width:34px; height:34px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  background:var(--accent-soft); color:var(--accent); font-size:12px;
+  background:var(--accent-soft); color:var(--accent); font-size:13px; font-weight:800;
 }
 .liked-text{ min-width:0; display:flex; flex-direction:column; }
 .liked-name{ font-size:15px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -7071,7 +7071,7 @@ function renderLiked(){
 
   const inHere = DB.likedSongs.filter(function(song){
     return song.lang === group.id && (era ? song.era === era : true);
-  }).sort(function(a, b){ return (b.added || "").localeCompare(a.added || ""); });
+  });
 
   const countFor = function(lang){
     return DB.likedSongs.filter(function(x){ return x.lang === lang; }).length;
@@ -7079,15 +7079,20 @@ function renderLiked(){
   const eraCount = function(e){
     return DB.likedSongs.filter(function(x){ return x.lang === group.id && x.era === e; }).length;
   };
+  const badgeFor = function(n){
+    return n > 0 ? ` <span class="liked-n">${n}</span>` : "";
+  };
 
   const where = group.label + (era ? " \u00b7 " + ERA_LABEL[era] : "");
+  const addHeading = custom ? `Add a <b>${escapeHtml(group.label)}</b>` : `Add a song to <b>${escapeHtml(where)}</b>`;
+  const titlePlaceholder = custom ? `${group.label} name` : "Song name";
 
   const chipsHtml = LIKED_GROUPS.map(function(g){
     return `<button type="button" class="wz-chip${g.id === group.id ? " active" : ""}" data-liked-lang="${g.id}">
-      ${escapeHtml(g.label)} <span class="liked-n">${countFor(g.id)}</span></button>`;
+      ${escapeHtml(g.label)}${badgeFor(countFor(g.id))}</button>`;
   }).join("") + customFolders.map(function(f){
     return `<button type="button" class="wz-chip${f.id === group.id ? " active" : ""}" data-liked-lang="${escapeAttr(f.id)}">
-      ${escapeHtml(f.name)} <span class="liked-n">${countFor(f.id)}</span></button>`;
+      ${escapeHtml(f.name)}${badgeFor(countFor(f.id))}</button>`;
   }).join("") + `<button type="button" class="wz-chip liked-folder-add" id="likedAddFolderBtn" title="Create a new folder" aria-label="Create a new folder">+ Add</button>`;
 
   el.innerHTML = `
@@ -7099,7 +7104,7 @@ function renderLiked(){
       ${group.eras.length ? `<div class="liked-eras">
         ${group.eras.map(function(e){
           return `<button type="button" class="liked-era${e === era ? " active" : ""}" data-liked-era="${e}">
-            ${ERA_LABEL[e]} <span class="liked-n">${eraCount(e)}</span></button>`;
+            ${ERA_LABEL[e]}${badgeFor(eraCount(e))}</button>`;
         }).join("")}
       </div>` : ""}
 
@@ -7109,9 +7114,9 @@ function renderLiked(){
       </div>` : ""}
 
       <div class="liked-add">
-        <div class="liked-add-lab">Add a song to <b>${escapeHtml(where)}</b></div>
+        <div class="liked-add-lab">${addHeading}</div>
         <div class="liked-add-row">
-          <input type="text" id="likedTitle" placeholder="Song name" autocomplete="off">
+          <input type="text" id="likedTitle" placeholder="${escapeAttr(titlePlaceholder)}" autocomplete="off">
           <input type="url" id="likedUrl" placeholder="Paste the link" autocomplete="off" inputmode="url">
           <button type="button" class="btn" id="likedAddBtn">Add</button>
         </div>
@@ -7119,10 +7124,10 @@ function renderLiked(){
       </div>
 
       <div class="liked-list">
-        ${inHere.length ? inHere.map(function(song){
+        ${inHere.length ? inHere.map(function(song, idx){
           return `<div class="liked-song">
             <a class="liked-link" href="${escapeAttr(song.url)}" target="_blank" rel="noopener noreferrer">
-              <span class="liked-play">\u25b6</span>
+              <span class="liked-play">${idx + 1}</span>
               <span class="liked-text">
                 <span class="liked-name">${escapeHtml(song.title)}</span>
                 <span class="liked-site">${escapeHtml(songSite(song.url))}</span>
@@ -7131,10 +7136,12 @@ function renderLiked(){
             <button type="button" class="liked-del" data-liked-del="${escapeAttr(song.id)}"
               aria-label="Remove ${escapeAttr(song.title)}">\u2715</button>
           </div>`;
-        }).join("") : `<div class="empty-state liked-empty">
+        }).join("") : (custom ? `<div class="empty-state liked-empty">
+          <div>Nothing in ${escapeHtml(where)} yet. Add your first one above.</div>
+        </div>` : `<div class="empty-state liked-empty">
           <div class="big">\u{1F3B5}</div>
           <div>No songs in ${escapeHtml(where)} yet. Add your first one above.</div>
-        </div>`}
+        </div>`)}
       </div>
 
       <div class="liked-foot">
@@ -7191,7 +7198,7 @@ function renderLiked(){
   const add = function(){
     const title = titleEl.value.trim();
     const url = safeSongUrl(urlEl.value);
-    if(!title){ errEl.textContent = "Type the song name first."; titleEl.focus(); return; }
+    if(!title){ errEl.textContent = "Type the " + (custom ? group.label : "song") + " name first."; titleEl.focus(); return; }
     if(!url){ errEl.textContent = "That link doesn't look right. Paste a full web link, for example from YouTube."; urlEl.focus(); return; }
     DB.likedSongs.push({ id: uid(), title: title, url: url, lang: group.id, era: era, added: nowISO() });
     save();
