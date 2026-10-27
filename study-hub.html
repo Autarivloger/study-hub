@@ -6855,6 +6855,7 @@ function switchView(name){
   if(name==="lessons") renderLessons();
   if(name==="journal") renderJournal();
   if(name==="wisdom") renderWisdom();
+  if(name!=="liked" && typeof likedLockAll==="function") likedLockAll();
   if(name==="liked") renderLiked();
   if(name==="typing") renderTyping();
   if(name==="japanese") renderJapanese();
@@ -6929,6 +6930,7 @@ const LIKED_GROUPS = [
 const ERA_LABEL = { evergreen:"Evergreen", fresh:"Fresh" };
 
 let likedView = { lang:"hindi", era:"evergreen" };
+const likedUnlocked = new Set();
 try{
   const kept = JSON.parse(localStorage.getItem("studyHubLikedView"));
   if(kept && typeof kept.lang === "string" && kept.lang) likedView = kept;
@@ -6938,10 +6940,30 @@ function keepLikedView(){
   try{ localStorage.setItem("studyHubLikedView", JSON.stringify(likedView)); }catch(e){}
 }
 
+function likedLockAll(){
+  likedUnlocked.clear();
+}
+
+function likedHashPassword(folderId, raw){
+  const text = String(folderId || "") + "::studyHubLikedPass::" + String(raw || "");
+  let h1 = 0x811c9dc5, h2 = 0x9e3779b9;
+  for(let i = 0; i < text.length; i++){
+    const c = text.charCodeAt(i);
+    h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
+    h2 = Math.imul(h2 ^ (c + i), 0x85ebca6b) >>> 0;
+  }
+  for(let r = 0; r < 64; r++){
+    h1 = Math.imul(h1 ^ (h2 >>> 13), 0xc2b2ae35) >>> 0;
+    h2 = Math.imul(h2 ^ (h1 >>> 15), 0x27d4eb2f) >>> 0;
+  }
+  return "v1:" + h1.toString(16).padStart(8, "0") + h2.toString(16).padStart(8, "0");
+}
+
 function likedFolderValid(id, item){
   return Boolean(item && typeof item === "object" && !Array.isArray(item) &&
     item.id === id && typeof item.name === "string" && item.name.trim().length > 0 &&
     item.name.trim().length <= 120 && typeof item.content === "string" &&
+    (item.passHash === undefined || typeof item.passHash === "string") &&
     typeof item.deleted === "boolean" && Number.isFinite(item.createdAt) &&
     Number.isFinite(item.updatedAt));
 }
@@ -6958,6 +6980,7 @@ function likedFoldersMerge(incoming){
         id: id,
         name: theirs.name.trim(),
         content: theirs.content,
+        passHash: typeof theirs.passHash === "string" ? theirs.passHash : "",
         createdAt: theirs.createdAt,
         updatedAt: theirs.updatedAt,
         deleted: theirs.deleted
@@ -6974,12 +6997,23 @@ function likedCustomFolders(){
 }
 
 function likedOpenFolderModal(existing){
+  const hasPass = Boolean(existing && existing.passHash);
   openModal(
-    '<h2>' + (existing ? 'Rename folder' : 'New folder') + '</h2>' +
+    '<h2>' + (existing ? 'Rename / Password' : 'New folder') + '</h2>' +
     '<form id="likedFolderForm">' +
       '<div class="form-row">' +
         '<label for="likedFolderName">Folder name</label>' +
         '<input id="likedFolderName" type="text" required maxlength="80" autocomplete="off" value="' + escapeAttr(existing ? existing.name : '') + '">' +
+      '</div>' +
+      '<div class="form-row" style="margin-top:10px;">' +
+        '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:13.5px;">' +
+          '<input id="likedFolderUsePass" type="checkbox"' + (hasPass ? ' checked' : '') + '>' +
+          '<span>Set password for this folder</span>' +
+        '</label>' +
+      '</div>' +
+      '<div class="form-row" id="likedFolderPassWrap"' + (hasPass ? '' : ' hidden') + ' style="margin-top:8px;">' +
+        '<label for="likedFolderPassword">' + (hasPass ? 'Password (leave blank to keep current password)' : 'Password') + '</label>' +
+        '<input id="likedFolderPassword" type="password" maxlength="80" autocomplete="new-password" placeholder="' + (hasPass ? 'Enter new password to change' : 'Enter password') + '">' +
       '</div>' +
       '<div class="liked-err" id="likedFolderErr"></div>' +
       '<div class="modal-actions">' +
@@ -6989,9 +7023,18 @@ function likedOpenFolderModal(existing){
     '</form>'
   );
   const nameInput = document.getElementById("likedFolderName");
+  const usePassEl = document.getElementById("likedFolderUsePass");
+  const passWrapEl = document.getElementById("likedFolderPassWrap");
+  const passInput = document.getElementById("likedFolderPassword");
   const errBox = document.getElementById("likedFolderErr");
   document.getElementById("likedFolderCancel").onclick = closeModal;
   nameInput.addEventListener("input", function(){ errBox.textContent = ""; });
+  passInput.addEventListener("input", function(){ errBox.textContent = ""; });
+  usePassEl.addEventListener("change", function(){
+    errBox.textContent = "";
+    passWrapEl.hidden = !usePassEl.checked;
+    if(usePassEl.checked) setTimeout(function(){ try{ passInput.focus(); }catch(e){} }, 20);
+  });
   setTimeout(function(){ try{ nameInput.focus(); nameInput.select(); }catch(e){} }, 20);
   document.getElementById("likedFolderForm").onsubmit = function(ev){
     ev.preventDefault();
@@ -7001,17 +7044,33 @@ function likedOpenFolderModal(existing){
       nameInput.focus();
       return;
     }
+    const id = existing ? existing.id : ("folder_" + uid());
+    let passHash = "";
+    if(usePassEl.checked){
+      const rawPass = passInput.value;
+      if(rawPass.length > 0){
+        passHash = likedHashPassword(id, rawPass);
+      }else if(hasPass){
+        passHash = existing.passHash;
+      }else{
+        errBox.textContent = "Enter a password for this folder, or uncheck the password option.";
+        passInput.focus();
+        return;
+      }
+    }
     if(!DB.likedFolders || typeof DB.likedFolders !== "object" || Array.isArray(DB.likedFolders)) DB.likedFolders = {};
     const now = Math.max(Date.now(), ((existing && existing.updatedAt) || 0) + 1);
-    const id = existing ? existing.id : ("folder_" + uid());
     DB.likedFolders[id] = {
       id: id,
       name: name,
       content: existing ? existing.content : "",
+      passHash: passHash,
       createdAt: existing ? existing.createdAt : now,
       updatedAt: now,
       deleted: false
     };
+    if(passHash) likedUnlocked.add(id);
+    else likedUnlocked.delete(id);
     likedView.lang = id;
     likedView.era = null;
     keepLikedView();
@@ -7066,6 +7125,7 @@ function renderLiked(){
   const group = likedGroup();
   likedView.lang = group.id;
   const custom = group.custom || null;
+  const isLocked = Boolean(custom && custom.passHash && !likedUnlocked.has(custom.id));
   const era = group.eras.length ? (group.eras.indexOf(likedView.era) !== -1 ? likedView.era : group.eras[0]) : null;
   likedView.era = era;
 
@@ -7091,9 +7151,62 @@ function renderLiked(){
     return `<button type="button" class="wz-chip${g.id === group.id ? " active" : ""}" data-liked-lang="${g.id}">
       ${escapeHtml(g.label)}${badgeFor(countFor(g.id))}</button>`;
   }).join("") + customFolders.map(function(f){
+    const fLocked = Boolean(f.passHash && !likedUnlocked.has(f.id));
+    const lockIcon = f.passHash ? (fLocked ? "\u{1F512} " : "\u{1F513} ") : "";
     return `<button type="button" class="wz-chip${f.id === group.id ? " active" : ""}" data-liked-lang="${escapeAttr(f.id)}">
-      ${escapeHtml(f.name)}${badgeFor(countFor(f.id))}</button>`;
+      ${lockIcon}${escapeHtml(f.name)}${fLocked ? "" : badgeFor(countFor(f.id))}</button>`;
   }).join("") + `<button type="button" class="wz-chip liked-folder-add" id="likedAddFolderBtn" title="Create a new folder" aria-label="Create a new folder">+ Add</button>`;
+
+  if(isLocked){
+    el.innerHTML = `
+      <div class="liked-wrap">
+        <div class="wz-filters liked-langs">
+          ${chipsHtml}
+        </div>
+        <div class="liked-add">
+          <div class="liked-add-lab">\u{1F512} <b>${escapeHtml(custom.name)}</b> is password protected</div>
+          <form id="likedUnlockForm" class="liked-add-row">
+            <input type="password" id="likedUnlockPassword" placeholder="Enter password to open" autocomplete="off">
+            <button type="submit" class="btn" id="likedUnlockBtn">Unlock</button>
+          </form>
+          <div class="liked-err" id="likedUnlockErr"></div>
+        </div>
+        <div class="liked-foot">
+          <button type="button" class="btn secondary btn-sm" data-view="notes">\u{1F4DD} My old notes</button>
+        </div>
+      </div>`;
+
+    el.querySelectorAll("[data-liked-lang]").forEach(function(b){
+      b.onclick = function(){
+        if(b.dataset.likedLang !== likedView.lang) likedUnlocked.clear();
+        likedView.lang = b.dataset.likedLang;
+        const g = likedGroup();
+        likedView.era = g.eras.length ? g.eras[0] : null;
+        keepLikedView();
+        renderLiked();
+      };
+    });
+    const addFolderBtn = document.getElementById("likedAddFolderBtn");
+    if(addFolderBtn) addFolderBtn.onclick = function(){ likedOpenFolderModal(null); };
+
+    const unlockForm = document.getElementById("likedUnlockForm");
+    const unlockInput = document.getElementById("likedUnlockPassword");
+    const unlockErr = document.getElementById("likedUnlockErr");
+    unlockInput.addEventListener("input", function(){ unlockErr.textContent = ""; });
+    setTimeout(function(){ try{ unlockInput.focus(); }catch(e){} }, 20);
+    unlockForm.onsubmit = function(ev){
+      ev.preventDefault();
+      if(likedHashPassword(custom.id, unlockInput.value) === custom.passHash){
+        likedUnlocked.add(custom.id);
+        renderLiked();
+      }else{
+        unlockErr.textContent = "Incorrect password.";
+        unlockInput.focus();
+        unlockInput.select();
+      }
+    };
+    return;
+  }
 
   el.innerHTML = `
     <div class="liked-wrap">
@@ -7109,6 +7222,7 @@ function renderLiked(){
       </div>` : ""}
 
       ${custom ? `<div class="liked-custom-head">
+        ${custom.passHash ? `<button type="button" class="btn secondary btn-sm" id="likedLockFolderBtn">\u{1F512} Lock</button>` : ""}
         <button type="button" class="btn secondary btn-sm" id="likedRenameFolderBtn">Rename</button>
         <button type="button" class="btn danger btn-sm" id="likedDeleteFolderBtn">Delete</button>
       </div>` : ""}
@@ -7151,6 +7265,7 @@ function renderLiked(){
 
   el.querySelectorAll("[data-liked-lang]").forEach(function(b){
     b.onclick = function(){
+      if(b.dataset.likedLang !== likedView.lang) likedUnlocked.clear();
       likedView.lang = b.dataset.likedLang;
       const g = likedGroup();
       likedView.era = g.eras.length ? g.eras[0] : null;
@@ -7163,6 +7278,11 @@ function renderLiked(){
   if(addFolderBtn) addFolderBtn.onclick = function(){ likedOpenFolderModal(null); };
 
   if(custom){
+    const lockBtn = document.getElementById("likedLockFolderBtn");
+    if(lockBtn) lockBtn.onclick = function(){
+      likedUnlocked.delete(custom.id);
+      renderLiked();
+    };
     document.getElementById("likedRenameFolderBtn").onclick = function(){
       likedOpenFolderModal(custom);
     };
@@ -7170,6 +7290,7 @@ function renderLiked(){
       confirmDialog("Delete folder <b>" + escapeHtml(custom.name) + "</b>?", function(){
         custom.deleted = true;
         custom.updatedAt = Math.max(Date.now(), (custom.updatedAt || 0) + 1);
+        likedUnlocked.delete(custom.id);
         DB.likedSongs = DB.likedSongs.filter(function(x){ return x.lang !== custom.id; });
         likedView.lang = "hindi";
         likedView.era = "evergreen";
