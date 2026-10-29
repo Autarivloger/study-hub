@@ -570,22 +570,6 @@ h1, h2, h3{ text-wrap:balance; letter-spacing:-0.01em; }
 .liked-notepad:focus{
   outline:2px solid var(--accent); outline-offset:-1px;
 }
-.liked-lock-help{
-  display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;
-  margin-top:8px;
-}
-.liked-link-btn{
-  background:none; border:none; padding:2px 0; color:var(--accent); font-size:12.5px;
-  font-weight:700; cursor:pointer; text-decoration:underline;
-}
-.liked-pass-reveal{
-  display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
-  background:var(--bg-soft); border:1px solid var(--border); border-radius:10px;
-  padding:10px 12px; margin:8px 0 12px;
-}
-.liked-pass-reveal code{
-  font-size:16px; font-weight:800; color:var(--accent); user-select:all; word-break:break-all;
-}
 .liked-foot{ margin-top:22px; padding-top:14px; border-top:1px solid var(--border); }
 @media (max-width:760px){ .liked-wrap{ padding:4px 14px 24px; } }
 
@@ -6980,7 +6964,6 @@ function likedFolderValid(id, item){
     item.id === id && typeof item.name === "string" && item.name.trim().length > 0 &&
     item.name.trim().length <= 120 && typeof item.content === "string" &&
     (item.passHash === undefined || typeof item.passHash === "string") &&
-    (item.passText === undefined || typeof item.passText === "string") &&
     typeof item.deleted === "boolean" && Number.isFinite(item.createdAt) &&
     Number.isFinite(item.updatedAt));
 }
@@ -6993,234 +6976,17 @@ function likedFoldersMerge(incoming){
     const mine = DB.likedFolders[id];
     if(!likedFolderValid(id, mine) || theirs.updatedAt > mine.updatedAt ||
        (theirs.updatedAt === mine.updatedAt && JSON.stringify(theirs) > JSON.stringify(mine))){
-      const nextHash = typeof theirs.passHash === "string" ? theirs.passHash : "";
-      const nextText = (typeof theirs.passText === "string" && theirs.passText)
-        ? theirs.passText
-        : (mine && mine.passHash === nextHash && typeof mine.passText === "string" ? mine.passText : "");
       DB.likedFolders[id] = {
         id: id,
         name: theirs.name.trim(),
         content: theirs.content,
-        passHash: nextHash,
-        passText: nextHash ? nextText : "",
+        passHash: typeof theirs.passHash === "string" ? theirs.passHash : "",
         createdAt: theirs.createdAt,
         updatedAt: theirs.updatedAt,
         deleted: theirs.deleted
       };
     }
   });
-}
-
-function likedTryRecoverLegacyPass(folder){
-  if(!folder || !folder.passHash) return "";
-  if(typeof folder.passText === "string" && folder.passText.length > 0 &&
-     likedHashPassword(folder.id, folder.passText) === folder.passHash){
-    return folder.passText;
-  }
-  if(folder._passChecked) return "";
-  const hash = String(folder.passHash);
-  if(!/^v1:[0-9a-f]{16}$/i.test(hash)){
-    folder._passChecked = true;
-    return "";
-  }
-  const targetH1 = parseInt(hash.slice(3, 11), 16) >>> 0;
-  const targetH2 = parseInt(hash.slice(11, 19), 16) >>> 0;
-  const prefix = String(folder.id || "") + "::studyHubLikedPass::";
-  const baseLen = prefix.length;
-  let baseH1 = 0x811c9dc5, baseH2 = 0x9e3779b9;
-  for(let i = 0; i < baseLen; i++){
-    const c = prefix.charCodeAt(i);
-    baseH1 = Math.imul(baseH1 ^ c, 0x01000193) >>> 0;
-    baseH2 = Math.imul(baseH2 ^ (c + i), 0x85ebca6b) >>> 0;
-  }
-  function checkFinal(h1, h2){
-    for(let r = 0; r < 64; r++){
-      h1 = Math.imul(h1 ^ (h2 >>> 13), 0xc2b2ae35) >>> 0;
-      h2 = Math.imul(h2 ^ (h1 >>> 15), 0x27d4eb2f) >>> 0;
-    }
-    return h1 === targetH1 && h2 === targetH2;
-  }
-  function checkStr(raw){
-    let h1 = baseH1, h2 = baseH2;
-    for(let j = 0; j < raw.length; j++){
-      const c = raw.charCodeAt(j);
-      h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
-      h2 = Math.imul(h2 ^ (c + baseLen + j), 0x85ebca6b) >>> 0;
-    }
-    return checkFinal(h1, h2);
-  }
-  const nm = String(folder.name || "").trim();
-  const nmLow = nm.toLowerCase();
-  const baseWords = [
-    nm, nmLow, nm.toUpperCase(),
-    "1234", "12345", "123456", "1234567", "12345678", "123456789", "1234567890",
-    "0000", "00000", "000000", "1111", "111111", "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999",
-    "1212", "1122", "4321", "54321", "654321", "987654321",
-    "password", "pass", "admin", "secret", "lock", "love", "liked", "iloved", "iliked",
-    "motivation", "songs", "song", "nepal", "nepali", "hindi", "english", "study", "studyhub",
-    "autari", "vloger", "autarivloger", "qwerty", "qwerty123", "asdf", "asdf123", "abc123", "abcd", "abcde"
-  ];
-  const suffixes = ["", "1", "12", "123", "1234", "@123", "!", "0", "00", "2025", "2026", "2081", "2082", "2083"];
-  for(let wi = 0; wi < baseWords.length; wi++){
-    const w = baseWords[wi];
-    if(!w) continue;
-    for(let si = 0; si < suffixes.length; si++){
-      const cand = w + suffixes[si];
-      if(checkStr(cand)){
-        folder.passText = cand;
-        save();
-        return cand;
-      }
-    }
-  }
-  // Fast tree search for all 1..6 digit PINs/numbers (including leading zeros)
-  let found = "";
-  function searchDigits(h1, h2, depth, acc){
-    for(let d = 0; d < 10; d++){
-      const c = 48 + d;
-      const nh1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
-      const nh2 = Math.imul(h2 ^ (c + baseLen + depth), 0x85ebca6b) >>> 0;
-      const s = acc + d;
-      if(checkFinal(nh1, nh2)){ found = s; return true; }
-      if(depth < 5 && searchDigits(nh1, nh2, depth + 1, s)) return true;
-    }
-    return false;
-  }
-  if(searchDigits(baseH1, baseH2, 0, "")){
-    folder.passText = found;
-    save();
-    return found;
-  }
-  // Fast tree search for all 1..4 lowercase letters (a..zzzz)
-  function searchLower(h1, h2, depth, acc){
-    for(let l = 0; l < 26; l++){
-      const c = 97 + l;
-      const nh1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
-      const nh2 = Math.imul(h2 ^ (c + baseLen + depth), 0x85ebca6b) >>> 0;
-      const s = acc + String.fromCharCode(c);
-      if(checkFinal(nh1, nh2)){ found = s; return true; }
-      if(depth < 3 && searchLower(nh1, nh2, depth + 1, s)) return true;
-    }
-    return false;
-  }
-  if(searchLower(baseH1, baseH2, 0, "")){
-    folder.passText = found;
-    save();
-    return found;
-  }
-  // Fast tree search for all 1..3 printable ASCII characters
-  function searchAscii3(h1, h2, depth, acc){
-    for(let c = 32; c <= 126; c++){
-      const nh1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
-      const nh2 = Math.imul(h2 ^ (c + baseLen + depth), 0x85ebca6b) >>> 0;
-      const s = acc + String.fromCharCode(c);
-      if(checkFinal(nh1, nh2)){ found = s; return true; }
-      if(depth < 2 && searchAscii3(nh1, nh2, depth + 1, s)) return true;
-    }
-    return false;
-  }
-  if(searchAscii3(baseH1, baseH2, 0, "")){
-    folder.passText = found;
-    save();
-    return found;
-  }
-  folder._passChecked = true;
-  return "";
-}
-
-function likedOpenForgotPassModal(folder){
-  if(!folder) return;
-  const knownPass = likedTryRecoverLegacyPass(folder);
-  openModal(
-    '<h2>\u{1F511} Folder password \u00b7 ' + escapeHtml(folder.name) + '</h2>' +
-    (knownPass
-      ? '<div style="font-size:13.5px;color:var(--text-dim);margin-bottom:4px;">Your saved password for <b>' + escapeHtml(folder.name) + '</b> is:</div>' +
-        '<div class="liked-pass-reveal">' +
-          '<code id="likedRecoveredPassText">' + escapeHtml(knownPass) + '</code>' +
-          '<button type="button" class="btn btn-sm" id="likedUnlockWithSavedBtn">Unlock folder</button>' +
-        '</div>'
-      : '<div style="font-size:13.5px;color:var(--text-dim);line-height:1.55;margin-bottom:10px;">Set a new password below (or remove the password) to open <b>' + escapeHtml(folder.name) + '</b> right away. All your saved links in this folder remain safe.</div>') +
-    '<form id="likedResetPassForm" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">' +
-      '<div class="form-row">' +
-        '<label for="likedResetNewPass">' + (knownPass ? 'Change password (optional)' : 'Set new password') + '</label>' +
-        '<div style="display:flex;gap:6px;">' +
-          '<input id="likedResetNewPass" type="text" maxlength="80" autocomplete="off" placeholder="Enter new password" value="' + escapeAttr(knownPass) + '" style="flex:1;">' +
-        '</div>' +
-      '</div>' +
-      '<div class="liked-err" id="likedResetPassErr"></div>' +
-      '<div class="modal-actions" style="justify-content:space-between;flex-wrap:wrap;">' +
-        '<button type="button" class="btn danger btn-sm" id="likedRemovePassBtn">Remove password</button>' +
-        '<div style="display:flex;gap:8px;">' +
-          '<button type="button" class="btn secondary" id="likedResetCancelBtn">Close</button>' +
-          '<button type="submit" class="btn" id="likedResetSaveBtn">Save & Unlock</button>' +
-        '</div>' +
-      '</div>' +
-    '</form>'
-  );
-  const newPassInput = document.getElementById("likedResetNewPass");
-  const errBox = document.getElementById("likedResetPassErr");
-  const unlockSavedBtn = document.getElementById("likedUnlockWithSavedBtn");
-  if(unlockSavedBtn){
-    unlockSavedBtn.onclick = function(){
-      likedUnlocked.add(folder.id);
-      likedView.lang = folder.id;
-      likedView.era = null;
-      keepLikedView();
-      closeModal();
-      renderLiked();
-    };
-  }
-  document.getElementById("likedResetCancelBtn").onclick = closeModal;
-  newPassInput.addEventListener("input", function(){ errBox.textContent = ""; });
-  document.getElementById("likedRemovePassBtn").onclick = function(){
-    const now = Math.max(Date.now(), (folder.updatedAt || 0) + 1);
-    DB.likedFolders[folder.id] = {
-      id: folder.id,
-      name: folder.name,
-      content: folder.content || "",
-      passHash: "",
-      passText: "",
-      createdAt: folder.createdAt || now,
-      updatedAt: now,
-      deleted: false
-    };
-    likedUnlocked.delete(folder.id);
-    likedView.lang = folder.id;
-    likedView.era = null;
-    keepLikedView();
-    save();
-    closeModal();
-    renderLiked();
-    toast("Password removed");
-  };
-  document.getElementById("likedResetPassForm").onsubmit = function(ev){
-    ev.preventDefault();
-    const raw = newPassInput.value;
-    if(!raw){
-      errBox.textContent = "Enter a new password, or click Remove password.";
-      newPassInput.focus();
-      return;
-    }
-    const now = Math.max(Date.now(), (folder.updatedAt || 0) + 1);
-    DB.likedFolders[folder.id] = {
-      id: folder.id,
-      name: folder.name,
-      content: folder.content || "",
-      passHash: likedHashPassword(folder.id, raw),
-      passText: raw,
-      createdAt: folder.createdAt || now,
-      updatedAt: now,
-      deleted: false
-    };
-    likedUnlocked.add(folder.id);
-    likedView.lang = folder.id;
-    likedView.era = null;
-    keepLikedView();
-    save();
-    closeModal();
-    renderLiked();
-    toast("Password saved & folder unlocked");
-  };
 }
 
 function likedCustomFolders(){
@@ -7232,7 +6998,6 @@ function likedCustomFolders(){
 
 function likedOpenFolderModal(existing){
   const hasPass = Boolean(existing && existing.passHash);
-  const currentPass = hasPass ? likedTryRecoverLegacyPass(existing) : "";
   openModal(
     '<h2>' + (existing ? 'Rename / Password' : 'New folder') + '</h2>' +
     '<form id="likedFolderForm">' +
@@ -7248,11 +7013,7 @@ function likedOpenFolderModal(existing){
       '</div>' +
       '<div class="form-row" id="likedFolderPassWrap"' + (hasPass ? '' : ' hidden') + ' style="margin-top:8px;">' +
         '<label for="likedFolderPassword">' + (hasPass ? 'Password (leave blank to keep current password)' : 'Password') + '</label>' +
-        (hasPass && currentPass ? '<div style="font-size:12.5px;color:var(--text-dim);margin-bottom:6px;">Current password: <code style="font-weight:800;color:var(--accent);user-select:all;">' + escapeHtml(currentPass) + '</code></div>' : '') +
-        '<div style="display:flex;gap:6px;">' +
-          '<input id="likedFolderPassword" type="password" maxlength="80" autocomplete="new-password" placeholder="' + (hasPass ? 'Enter new password to change' : 'Enter password') + '" style="flex:1;">' +
-          '<button type="button" class="btn secondary btn-sm" id="likedFolderTogglePass" title="Show or hide password">Show</button>' +
-        '</div>' +
+        '<input id="likedFolderPassword" type="password" maxlength="80" autocomplete="new-password" placeholder="' + (hasPass ? 'Enter new password to change' : 'Enter password') + '">' +
       '</div>' +
       '<div class="liked-err" id="likedFolderErr"></div>' +
       '<div class="modal-actions">' +
@@ -7265,18 +7026,10 @@ function likedOpenFolderModal(existing){
   const usePassEl = document.getElementById("likedFolderUsePass");
   const passWrapEl = document.getElementById("likedFolderPassWrap");
   const passInput = document.getElementById("likedFolderPassword");
-  const togglePassBtn = document.getElementById("likedFolderTogglePass");
   const errBox = document.getElementById("likedFolderErr");
   document.getElementById("likedFolderCancel").onclick = closeModal;
   nameInput.addEventListener("input", function(){ errBox.textContent = ""; });
   passInput.addEventListener("input", function(){ errBox.textContent = ""; });
-  if(togglePassBtn){
-    togglePassBtn.onclick = function(){
-      const show = passInput.type === "password";
-      passInput.type = show ? "text" : "password";
-      togglePassBtn.textContent = show ? "Hide" : "Show";
-    };
-  }
   usePassEl.addEventListener("change", function(){
     errBox.textContent = "";
     passWrapEl.hidden = !usePassEl.checked;
@@ -7293,15 +7046,12 @@ function likedOpenFolderModal(existing){
     }
     const id = existing ? existing.id : ("folder_" + uid());
     let passHash = "";
-    let passText = "";
     if(usePassEl.checked){
       const rawPass = passInput.value;
       if(rawPass.length > 0){
         passHash = likedHashPassword(id, rawPass);
-        passText = rawPass;
       }else if(hasPass){
         passHash = existing.passHash;
-        passText = existing.passText || currentPass || "";
       }else{
         errBox.textContent = "Enter a password for this folder, or uncheck the password option.";
         passInput.focus();
@@ -7315,7 +7065,6 @@ function likedOpenFolderModal(existing){
       name: name,
       content: existing ? existing.content : "",
       passHash: passHash,
-      passText: passText,
       createdAt: existing ? existing.createdAt : now,
       updatedAt: now,
       deleted: false
@@ -7418,13 +7167,9 @@ function renderLiked(){
           <div class="liked-add-lab">\u{1F512} <b>${escapeHtml(custom.name)}</b> is password protected</div>
           <form id="likedUnlockForm" class="liked-add-row">
             <input type="password" id="likedUnlockPassword" placeholder="Enter password to open" autocomplete="off">
-            <button type="button" class="btn secondary btn-sm" id="likedUnlockToggleVis">Show</button>
             <button type="submit" class="btn" id="likedUnlockBtn">Unlock</button>
           </form>
-          <div class="liked-lock-help">
-            <div class="liked-err" id="likedUnlockErr" style="padding-top:0;"></div>
-            <button type="button" class="liked-link-btn" id="likedForgotPassBtn">Forgot / Show password?</button>
-          </div>
+          <div class="liked-err" id="likedUnlockErr"></div>
         </div>
         <div class="liked-foot">
           <button type="button" class="btn secondary btn-sm" data-view="notes">\u{1F4DD} My old notes</button>
@@ -7446,26 +7191,14 @@ function renderLiked(){
 
     const unlockForm = document.getElementById("likedUnlockForm");
     const unlockInput = document.getElementById("likedUnlockPassword");
-    const unlockToggleVis = document.getElementById("likedUnlockToggleVis");
-    const forgotPassBtn = document.getElementById("likedForgotPassBtn");
     const unlockErr = document.getElementById("likedUnlockErr");
     unlockInput.addEventListener("input", function(){ unlockErr.textContent = ""; });
-    if(unlockToggleVis){
-      unlockToggleVis.onclick = function(){
-        const show = unlockInput.type === "password";
-        unlockInput.type = show ? "text" : "password";
-        unlockToggleVis.textContent = show ? "Hide" : "Show";
-      };
-    }
-    if(forgotPassBtn){
-      forgotPassBtn.onclick = function(){ likedOpenForgotPassModal(custom); };
-    }
     setTimeout(function(){ try{ unlockInput.focus(); }catch(e){} }, 20);
     unlockForm.onsubmit = function(ev){
       ev.preventDefault();
       if(likedHashPassword(custom.id, unlockInput.value) === custom.passHash){
-        if(!custom.passText){
-          custom.passText = unlockInput.value;
+        if(custom.passText !== undefined){
+          delete custom.passText;
           save();
         }
         likedUnlocked.add(custom.id);
@@ -168832,26 +168565,8 @@ function runDiagnostics(){
     return '<tr><td>'+escapeHtml(l[0])+'</td><td class="'+(bad?'dg-bad':'')+'">'+escapeHtml(l[1])+'</td></tr>';
   }).join("");
 
-  var passFolders = (typeof likedCustomFolders === "function" ? likedCustomFolders() : []).filter(function(f){ return Boolean(f.passHash); });
-  var passHtml = "";
-  if(passFolders.length){
-    passHtml = '<div style="margin:0 0 14px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--bg-soft);">'
-      + '<div style="font-weight:800;font-size:13px;margin-bottom:8px;">\u{1F511} I Liked \u00b7 Folder Passwords</div>'
-      + passFolders.map(function(f){
-          var rec = typeof likedTryRecoverLegacyPass === "function" ? likedTryRecoverLegacyPass(f) : (f.passText || "");
-          return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--border);font-size:13px;">'
-            + '<span><b>' + escapeHtml(f.name) + '</b>: '
-            + (rec ? '<code style="font-weight:800;color:var(--accent);user-select:all;">' + escapeHtml(rec) + '</code>' : '<span style="color:var(--text-dim);">Protected</span>')
-            + '</span>'
-            + '<button type="button" class="btn secondary btn-sm" data-dg-folder-pass="' + escapeAttr(f.id) + '">View / Reset</button>'
-            + '</div>';
-        }).join("")
-      + '</div>';
-  }
-
   openModal(
     '<h2>Diagnostics</h2>'
-    + passHtml
     + '<p style="font-size:13px;color:var(--text-dim);line-height:1.55;">Tap the grey box to test whether touches register. Then send me a screenshot of this screen.</p>'
     + '<div id="tapTarget" style="border:2px dashed var(--accent);border-radius:10px;padding:22px;text-align:center;font-weight:700;font-size:15px;margin-bottom:12px;background:var(--bg-soft);">Tap me</div>'
     + '<div id="tapLog" style="font-size:12.5px;color:var(--text-dim);margin-bottom:14px;line-height:1.6;">No taps yet.</div>'
@@ -168860,16 +168575,6 @@ function runDiagnostics(){
     + '<button type="button" class="btn secondary" id="dgCopy">Copy report</button>'
     + '<button type="button" class="btn" id="dgClose">Close</button></div>'
   );
-
-  modalBox.querySelectorAll("[data-dg-folder-pass]").forEach(function(b){
-    b.onclick = function(){
-      var f = typeof likedCustomFolder === "function" ? likedCustomFolder(b.getAttribute("data-dg-folder-pass")) : null;
-      if(f && typeof likedOpenForgotPassModal === "function"){
-        switchView("liked");
-        likedOpenForgotPassModal(f);
-      }
-    };
-  });
 
   var count = { click:0, touch:0, pointer:0 };
   var target = document.getElementById('tapTarget');
