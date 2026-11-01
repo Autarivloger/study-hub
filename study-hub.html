@@ -6855,7 +6855,6 @@ function switchView(name){
   if(name==="lessons") renderLessons();
   if(name==="journal") renderJournal();
   if(name==="wisdom") renderWisdom();
-  if(name!=="liked" && typeof likedLockAll==="function") likedLockAll();
   if(name==="liked") renderLiked();
   if(name==="typing") renderTyping();
   if(name==="japanese") renderJapanese();
@@ -6935,13 +6934,30 @@ try{
   const kept = JSON.parse(localStorage.getItem("studyHubLikedView"));
   if(kept && typeof kept.lang === "string" && kept.lang) likedView = kept;
 }catch(e){}
+try{
+  const keptUnlocked = JSON.parse(sessionStorage.getItem("studyHubLikedUnlocked"));
+  if(Array.isArray(keptUnlocked)){
+    keptUnlocked.forEach(function(id){ if(typeof id === "string" && id) likedUnlocked.add(id); });
+  }
+}catch(e){}
 
 function keepLikedView(){
   try{ localStorage.setItem("studyHubLikedView", JSON.stringify(likedView)); }catch(e){}
 }
 
+function keepLikedUnlocked(){
+  try{ sessionStorage.setItem("studyHubLikedUnlocked", JSON.stringify(Array.from(likedUnlocked))); }catch(e){}
+}
+
+function likedSetUnlocked(folderId, open){
+  if(open) likedUnlocked.add(folderId);
+  else likedUnlocked.delete(folderId);
+  keepLikedUnlocked();
+}
+
 function likedLockAll(){
   likedUnlocked.clear();
+  try{ sessionStorage.removeItem("studyHubLikedUnlocked"); }catch(e){}
 }
 
 function likedHashPassword(folderId, raw){
@@ -7069,8 +7085,7 @@ function likedOpenFolderModal(existing){
       updatedAt: now,
       deleted: false
     };
-    if(passHash) likedUnlocked.add(id);
-    else likedUnlocked.delete(id);
+    likedSetUnlocked(id, Boolean(passHash));
     likedView.lang = id;
     likedView.era = null;
     keepLikedView();
@@ -7178,7 +7193,6 @@ function renderLiked(){
 
     el.querySelectorAll("[data-liked-lang]").forEach(function(b){
       b.onclick = function(){
-        if(b.dataset.likedLang !== likedView.lang) likedUnlocked.clear();
         likedView.lang = b.dataset.likedLang;
         const g = likedGroup();
         likedView.era = g.eras.length ? g.eras[0] : null;
@@ -7201,7 +7215,7 @@ function renderLiked(){
           delete custom.passText;
           save();
         }
-        likedUnlocked.add(custom.id);
+        likedSetUnlocked(custom.id, true);
         renderLiked();
       }else{
         unlockErr.textContent = "Incorrect password.";
@@ -7269,7 +7283,6 @@ function renderLiked(){
 
   el.querySelectorAll("[data-liked-lang]").forEach(function(b){
     b.onclick = function(){
-      if(b.dataset.likedLang !== likedView.lang) likedUnlocked.clear();
       likedView.lang = b.dataset.likedLang;
       const g = likedGroup();
       likedView.era = g.eras.length ? g.eras[0] : null;
@@ -7284,7 +7297,7 @@ function renderLiked(){
   if(custom){
     const lockBtn = document.getElementById("likedLockFolderBtn");
     if(lockBtn) lockBtn.onclick = function(){
-      likedUnlocked.delete(custom.id);
+      likedSetUnlocked(custom.id, false);
       renderLiked();
     };
     document.getElementById("likedRenameFolderBtn").onclick = function(){
@@ -7294,7 +7307,7 @@ function renderLiked(){
       confirmDialog("Delete folder <b>" + escapeHtml(custom.name) + "</b>?", function(){
         custom.deleted = true;
         custom.updatedAt = Math.max(Date.now(), (custom.updatedAt || 0) + 1);
-        likedUnlocked.delete(custom.id);
+        likedSetUnlocked(custom.id, false);
         DB.likedSongs = DB.likedSongs.filter(function(x){ return x.lang !== custom.id; });
         likedView.lang = "hindi";
         likedView.era = "evergreen";
